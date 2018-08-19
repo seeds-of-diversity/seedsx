@@ -1,0 +1,102 @@
+%% main
+<table>
+<tr>
+<td>[[include:first]]</td>
+<td>[[include:second]]</td>
+</tr>
+<tr>
+<td>[[include:third]]</td>
+<td>[[include:fourth]]</td>
+</tr>
+</table>
+
+%% first
+{% extends 'box' %}                 {* this is a comment *}
+{%block stuff %}one{%endblock%}
+
+%% second
+{% extends 'box' %}
+{%block stuff %}two{%endblock%}
+
+%% third
+{% extends 'box' %}
+{%block stuff %}three{%endblock%}
+
+%% fourth
+{% extends 'box' %}
+{%block stuff %}four{%endblock%}
+
+%% box
+<div style='background-color:#aca;margin:auto;font-family:sans serif;font-weight:bold'>{%block stuff %}{%endblock%}</div>
+
+
+%% mymain
+{% extends 'main' %}
+{% block first %}one{%endblock%}
+{% block second %}two{%endblock%}
+{% block third %}three{%endblock%}
+{% block fourth %}four{%endblock%}
+
+%% mbroStyle
+<style type='text/css'>
+.mbro_box           { margin-bottom:10px; }
+.mbro_boxheader     { background-color:#aaa; color:white; text-align:center; padding:4px; font-weight:bold; font-size:11pt; }
+                          
+</style>
+
+
+
+%% page1Box
+<div class='mbro_box'>
+  <div class='mbro_boxheader'>{% block boxTitle %}{% endblock %}</div>
+  <div class='mbro_boxbody'>
+    {% block boxBody %}{% endblock %}
+  </div>
+</div>
+
+
+%% page1LoginBox
+{% extends 'page1Box' %}
+{% block boxTitle %}{% if mbrname %}{{mbrname}} {%else%}[[Local:Login]]{%endif%}{% endblock %}
+{% block boxBody %}
+<div class='mbro_ctrl'>
+{% if bLogin %}
+  {% if mbrid %}
+    <p>You are logged in as {{mbrname}} (member # {{mbrid}}).  Please update your address information if necessary.</p>
+  {% else %}
+    {* We don't support this login for people who have logins but aren't in the member database. *}
+    <p>You are logged in. Please enter your address information below.</p>
+  {% endif %}
+{% else %}
+  <div class='mbro_infobox'>
+  {% if lang == 'FR' %}
+    Les membres qui ont d&eacute;j&agrave; un compte Web peuvent se connecter 
+    pour modifier leurs renseignements personnels.<br/><br/>
+  {% else %}
+    <p>Members: if you have a Seeds of Diversity web account you can save time. Login here and we'll fill in your most recent address information below.</p>
+  {% endif %}
+  {* Because microsoft is stupid, IE doesn't use accept-charset to send the form data in latin1. 
+     FF and Chrome do, regardless of the page encoding (utf-8 in drupal), but IE sends the form data using the page encoding. 
+     The onsubmit re-encodes the page before data is sent, which seems to work for all three browsers.
+     If you re-load or go back and forth between pages, it still works, because the page is always storing the form data in whichever 
+     encoding the browser thinks is right (utf-8 for IE presumably, and latin1 for the others due to accept-charset) so the displayed data 
+     is consistent. And when we draw drupal pages we compose the checkout in latin1 then iconv it for drupal. So everything works out - only 
+     needing the bit of js to make IE do the right thing - which is redundant to others.
+   *}
+  {* use 1252 in case people have accents in passwords? *}
+  <form action='{{SitePathSelf}}' method='post' accept-charset='ISO-8859-1' onsubmit='document.charset="iso-8859-1"'>
+  [[LocalLang:Email address or member number | Adresse courriel ou num&eacute;ro de membre]]<br/>
+  <input type='text' name='{{sessionNameUID}}' value=''/><br/>
+  [[LocalLang:Password | Mot de passe]]<br/>
+  <input type='password' name='{{sessionNamePWD}}' value=''/><br/>
+  <input type='submit' value='Login'/>
+  </form>
+  <br/>
+  {% if lang == 'FR' %}
+  {% else %}
+    <p><i style='font-size:9pt'>Forget your password? No problem, just skip this step, type your name and address in the form below, and we'll figure it out.</i></p>
+  {% endif %}
+  </div>
+{% endif %}
+</div>
+{% endblock %}    

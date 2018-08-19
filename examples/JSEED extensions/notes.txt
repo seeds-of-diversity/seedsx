@@ -1,0 +1,3 @@
+Joomla/index.php @ top:
+    if( empty($_REQUEST['lang']) ) { $_REQUEST['lang'] = (strpos($_SERVER['SERVER_NAME'],'semences.ca') !== false ? 'fr' : 'en'); }
+    

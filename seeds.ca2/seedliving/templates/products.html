@@ -1,0 +1,126 @@
+# Templates for the product details page
+
+%% productDetails
+{% extends 'slivContent2' %}
+{% block slb-crumb %}&gt;&nbsp;{% if bc_id %}<a href="{{SEONAME2}}/sl.php?{{bc_raw}}">search results - {{bc_overlord}}</a>&nbsp;&gt;&nbsp;{% endif %}{{seed_title}}{% endblock %}
+{% block slb-hdrL %}{{seed_title}}{% endblock %}
+{% block slb-hdrLAttrs %}style="width:100%"{% endblock %}
+{% block slb-hdrR %}{% endblock %}
+{% block slb-prodHdr %}
+    <ul>
+      {% if seed_nopack %}
+          <li class="first">{{seed_nopack}}&nbsp;items/pack</li>
+      {% endif %}
+      <li style="text-align:center;">{% if seed_quantity %}{{seed_quantity}} in stock {% else %} Not in stock{% endif %}</li>
+      {{basketLink|safe}}
+    </ul>
+{% endblock %}
+{% block slb-prodDetails %}
+    {% if seed_sfile %}
+    <div id="slProductImg"><img src="{{seed_sfile}}" id="imgMain" width="430px"/></div>
+    <div id="slProductThmb">
+      [[Var:seed_sfile_1]]
+      [[Var:seed_sfile_2]]
+      [[Var:seed_sfile_3]]      
+    </div>
+    {% endif %}
+    <div style='float:right;width:155px'>      
+      {% if seed_trade=='N' %}
+      <div id="slShipWrapper">
+        <h2>{{seed_price|currency}}&nbsp;{{seed_currency}}</h2>
+      </div>
+      {% endif %}
+
+      {% if seed_trade=='Y' %}
+      <div id="slShipWrapper">
+        <h2>{{seed_price|currency}}&nbsp;{{seed_currency}}</h2>
+      </div>
+      {% endif %}
+
+      {% if SLivParm_bLoginSession=='Yes' %}
+      <div id="slShipWrapper">
+        <h2 class="basketAdd" seedid="{{seed_id}}" style="color:blue;cursor:pointer;">Add to basket</h2>
+      </div>
+      <div id="slShipWrapper">
+        <h2><a href='{{SEONAME2}}/mybasket'>Checkout</a></h2>
+      </div>
+      {% endif %}
+
+      {{slButtons |safe}}
+
+      [[Var:productDetailsRequestSwap]]
+
+      {% if fee_enabled=='Y' %}
+      [[Var:productDetailsPreSwap]]
+      {% endif %}
+
+      <div id="slShipWrapper">
+        Shipping fee:<br />
+        <a href="#">{{seed_shipcost|currency}}&nbsp;{{seed_currency}}</a>      
+      </div>
+
+      <div id="slProductMenu">
+        <ul>
+          <li>seller <span>{{sellerUsername}}</span></li>
+          <li>joined {{account_tsadd|date"Y-M-d"}}</li>
+          <li>location {{user_city}}{% if user_state != "" %}, {{user_state}}{%endif%}</li>
+          <li>country {{user_country}}</li>
+          <li><a href="/{{SEONAME}}/{{sellerUsername}}/">seller's profile</a></li>
+          <li><a href="/{{SEONAME}}/{{sellerUsername}}_Items/">seller's sale items {{sellersSeedCount}}</a></li>
+          <li><a href="/{{SEONAME}}/{{sellerUsername}}_Swap/">swap items {{sellersSwapCount}}</a></li>
+          <li><a href="/{{SEONAME}}/{{sellerUsername}}_Items/">total items {{totalItems}}</a></li>
+        </ul>
+
+        {% if SLivParm_bLoginSession=='Yes' %}
+        <div id="slProductComments">
+          <form id="seedCommentForm">
+            <input type="hidden" id="seed" name='seed_id' value="{{seed_id}}"/>
+            <h4>Comment on {{seed_title}}</h4>
+            <label>Your Comment</label>
+            <textarea style="width:120px;height:50px;" name="sc_text" id="sc_text"></textarea>
+            <input type="button" class="button" value="Submit" id="seedCommentSubmit"/>
+          </form>
+          <div class="failure"></div>
+        </div>
+        {% endif %}
+      </div>
+    </div>            
+
+    <div id="slProductTags">{% if seedTagDesc %}tags {{seedTagDesc|safe}} {% endif %}</div>
+    <div id="slProductDetails">
+      <h2>Description</h2>
+      <p><div style="display:inline;" class="fb-like" data-href="http://www.seedliving.ca[SL]REQUEST_URI[/SL]" data-send="false" data-layout="button_count" data-width="50" data-show-faces="true"></div>&nbsp;<a href="https://twitter.com/share" class="twitter-share-button" data-lang="en">Tweet</a></p>
+      {% if seed_type=='P' %}<p><strong>this product is a live plant.</strong></p>{% endif %}
+      <p>{{seed_desc}}</p>
+      <style>.slProductDetailsTable tr th { background-color:#eee; }</style>
+      <table class='slProductDetailsTable'>
+        {% if seed_plantsize %}    <tr><th>Plant Size</th>         <td>{{seed_plantsize}}</td></tr>{% endif %}
+        {% if seed_sew %}          <tr><th>Sowing instructions</th><td>{{seed_sew}}</td></tr>{% endif %}
+        {% if seed_sun %}          <tr><th>Sun conditions</th>     <td>{{seed_sun}}</td></tr>{% endif %}
+        {% if seed_plantingdepth %}<tr><th>Planting depth</th>     <td>{{seed_plantingdepth}}</td></tr>{% endif %}
+        {% if seed_daystogerm %}   <tr><th>Days to germination</th><td>{{seed_daystogerm}}</td></tr>{% endif %}
+        {% if seed_daystomat %}    <tr><th>Days to maturity</th>   <td>{{seed_daystomat}}</td></tr>{% endif %}
+        {% if seed_watering %}     <tr><th>Watering</th>           <td>{{seed_watering}}</td></tr>{% endif %}
+        {% if seed_spacing %}      <tr><th>Spacing</th>            <td>{{seed_spacing}}</td></tr>{% endif %}
+        {% if seed_sizeatmat %}    <tr><th>Size at maturity</th>   <td>{{seed_sizeatmat}}</td></tr>{% endif %}
+      </table>
+      <h2>Comments</h2>
+      <p id="commentsSpan">{{seedComments}}</p>    
+    </div>
+{% endblock %}
+
+%% productDetailsLinkAddToBasket
+# The link to add a product to the basket. 
+# JQuery picks up .basketAdd and puts {{seed_id}} in the user's basket. 
+<li class="basketAdd" seedid="{{seed_id}}">{% if SLivParm_bLoginSession=='Yes' %}<a href="#">Add to basket</a>{%endif%}</li>
+
+%% productDetailsLinkSwap
+<li>{%if SLivParm_bLoginSession=='Yes'%}<a href="/{{SEONAME}}/slDoSwap-{{seed_id}}/">Request a swap</a>{%endif%}</li>
+ 
+%% productDetailsBuyButton
+<div id="slShipWrapper" style="font-size:14px;">[[slivLink:login | add to basket]]</div>
+
+%% productDetailsSwapButton
+<div id="slShipWrapper" style="font-size:10px;"><a href="/{{SEONAME}}/account">swap only item. please create an account, add items first.</a></div>
+
+

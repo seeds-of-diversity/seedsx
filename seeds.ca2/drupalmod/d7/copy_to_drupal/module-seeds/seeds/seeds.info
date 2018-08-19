@@ -1,0 +1,6 @@
+name = seeds
+description = Seeds public web site module
+package = Seeds modules
+core = 7.x
+
+files[] = seeds.module

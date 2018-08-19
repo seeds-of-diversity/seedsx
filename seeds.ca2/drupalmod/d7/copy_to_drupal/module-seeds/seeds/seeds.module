@@ -1,0 +1,50 @@
+<?php
+// Although this code is stored in seeds.ca/swww/sites/all/modules/custom/seeds, it appears to have file scope of seeds.ca/drupal
+define( "SITEROOT", "../" );
+include_once( SITEROOT."site.php" );
+include_once( SITEROOT."drupalmod/lib/dmod_seeds.php" );
+
+
+function seeds_menu()
+{
+    return( DMod_Seeds_Menu() );
+}
+
+/*
+function seeds_block_info() {
+    // This example comes from node.module.
+    $blocks['seeds'] = array(
+        'info' => t('Seeds Block'),
+        'cache' => DRUPAL_NO_CACHE,
+    );
+
+    return $blocks;
+}
+
+function seeds_block_view_alter( &$data, $block )
+{
+    if( $block->delta == 'seeds' ) {
+        $data['content']['main']['#markup'] = "<p>Foo</p>";
+    }
+}
+*/
+
+
+/**********
+    Custom Content Types
+ */
+
+/*
+function seeds_node_info()
+{
+    return( DMod_Seeds_NodeInfo() );
+}
+*/
+function seeds_node_view( $node, $view_mode, $lang )
+{
+    DMod_Seeds_NodeView( $node, $view_mode, $lang );
+}
+
+
+
+?>

@@ -1,0 +1,4 @@
+@CHARSET "UTF-8";
+
+#collection_perms td { font-size:8pt; width:30%; }
+#collection_perms td div { border:1px solid #aaa; padding:10px; margin-right:20px; height:150px; overflow:auto; font-size:11pt; }

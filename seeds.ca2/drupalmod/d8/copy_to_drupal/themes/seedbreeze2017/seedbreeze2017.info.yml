@@ -1,0 +1,40 @@
+# core: 8.x
+type: theme
+base theme: breeze
+
+name: 'SEEDBreeze2017 Drupal 8 Theme'
+description: 'Our Drupal 8 theme based on Breeze.'
+package: 'Bootstrap'
+
+regions:
+  header: 'Header'
+  header_right: 'Header Right'
+  navigation: 'Navigation'
+  navigation_collapsible: 'Navigation (Collapsible)'
+  highlighted: 'Highlighted'
+  help: 'Help'
+  content: 'Content'
+  sidebar_first: 'Primary'
+  sidebar_second: 'Secondary'
+  content_bottom1: 'Content Bottom 1'
+  content_bottom2: 'Content Bottom 2'
+  content_bottom3: 'Content Bottom 3'
+  footer: 'Footer'
+  footer1: 'Footer One'
+  footer2: 'Footer Two'
+  footer3: 'Footer Three'
+  page_top: 'Page top'
+  page_bottom: 'Page bottom'
+
+libraries:
+  - 'seedbreeze2017/global-styling'
+  - 'seedbreeze2017/open-sans'
+  - 'seedbreeze2017/global-js'
+  - 'seedbreeze2017/sbz2018'
+
+
+# Information added by Drupal.org packaging script on 2017-04-25
+version: '8.x-1.17'
+core: '8.x'
+project: 'seedbreeze2017'
+datestamp: 1493125451

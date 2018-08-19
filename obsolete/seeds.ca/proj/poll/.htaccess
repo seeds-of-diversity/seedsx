@@ -1,0 +1,4 @@
+# Use RedirectMatch(w/o subst parms) instead of Redirect to cause complete URL replacement instead of match substitution
+# Need ^ to prevent infinite loops in some of these
+RedirectMatch permanent   ^/test$     https://www.seeds.ca/proj/poll/test.php
+

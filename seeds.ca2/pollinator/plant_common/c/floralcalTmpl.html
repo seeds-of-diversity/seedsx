@@ -1,0 +1,146 @@
+# Main page with Search Panel
+#
+%% main
+{% extends 'page' %}
+{% block body %}
+<div class='container-fluid'><div class='row'>
+  <div class='col-md-6' style="padding-top:5px;">
+    <h3 style='font-weight:bold'>Search Plant</h3>
+    [[Var:sSearchPanel]]
+  </div>
+
+  <div class='col-md-6' style="padding-top:5px;">
+    <div id="details" style="width:500px">
+      <div id="sp_logo" style="padding-left:85px;">
+        <img src="../plant_common/i/logo/NSERC.jpg" width="400" height="100" class="img-polaroid img-thumbnail">
+        <img src="../plant_common/i/logo/OMAFRA.gif" width="400" height="100" class="img-polaroid img-thumbnail">
+        <img src="//seeds.ca/i/img/logo/logoA_h-en-750x.png" style="width:400px; height:140px;" class="img-polaroid img-thumbnail">
+        <img src="../plant_common/i/logo/Ulogo.jpg" width="400" height="100" class="img-polaroid img-thumbnail">
+      </div>
+
+      <div id="plant_details"> </div>
+      <div id="edit_Plant"> </div>
+    </div>
+  </div>
+</div></div>
+{% endblock %}
+
+
+
+# Contacts page
+#
+%% contact
+{% extends 'page' %}
+{% block body %}
+<style>h4 { font-weight:bold }</style>
+<h4>By Email</h4>
+<hr />
+<div><a href='mailto:canpolin@uoguelph.ca' target='_blank'>canpolin@uoguelph.ca</a></div>
+<div><br /></div>
+<h4>By Mail</h4>
+<hr />
+<div>University of Guelph&nbsp;<br />
+     c/o School of Environmental Sciences&nbsp;<br />
+     SES-BOVEY, University of Guelph&nbsp;<br />
+     Guelph, Ontario, Canada&nbsp;<br />
+     N1G 2W1&nbsp;
+</div>
+<div><br /></div>
+<h4>By Phone</h4>
+<hr />
+<div><a href='tel:519.824.4120%20ext%2052479' value='+15198244120' target='_blank'>519.824.4120 ext 52479</a></div>
+<div><br /></div>
+<h4>By Fax</h4>
+<hr />
+<div><a href='tel:519.837.0442' value='+15198370442' target='_blank'>519.837.0442</a></div>
+{% endblock %}
+
+
+
+# Login page
+#
+%% login
+{% extends 'page' %}
+{% block body %}
+<div class='container'>
+  <div class='row'>
+    <div class='col-sm-4 col-sm-offset-3 well'>
+      <legend>Please Sign In</legend>
+      {% if bLoginFail %}
+        <div class='alert alert-danger'>Incorrect Username or Password</div>
+      {% endif %}
+      <form method='post' action='index.php' accept-charset='UTF-8'>
+      <input type='hidden' name='cmd' value='login'/>
+      <input type='text' id='username' name='username' placeholder='Username' class='form-control'/>
+      <input type='password' id='password' name='password' placeholder='Password' class='form-control'/>
+      <button type='submit' name='submit' class='btn btn-success btn-block'>Sign in</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+
+
+# Admin page
+#
+%% admin
+{% extends 'page' %}
+{% block body %}
+<center><h2>Admin Panel</h2></center>
+  <hr />
+<div class='container-fluid'><div class='row'>
+  <div class='col-md-6' style="padding-top:5px;">
+    <h3 style='font-weight:bold'>Search Plant</h3>
+    [[Var:sSearchPanel]]
+  </div>
+  <div class='col-md-6' style="padding-top:5px;">
+    <div id="details" style="width:500px">
+      {% if sNewPlantForm %}
+        <div id="new_Plant">
+          <div style="text-align:center"><h4 align="center">Add Plants</h4></div>
+          <form id="newPlant" action="new.php" method="post" enctype="multipart/form-data">
+          [[Var: sNewPlantForm]]
+          </form>
+        </div>
+      {% endif %}
+      <!-- Edit Plant Div -->
+      <div id="edit_Plant"></div>
+      <!--  Plant detail Div Ends -->
+      <div id="plant_details">[[Var:sPlantDetails]]</div>
+    </div>
+  </div>
+</div></div>
+{% endblock %}
+
+
+# Page Template - all pages extend this template
+#
+%% page
+[[Var:sHead]]
+<body>
+<div id='block-header'>
+  <img src='images/bg1.png'/>
+  [[include:menublock]]
+</div>
+<div id='block-inner'>
+  {% block body %}{% endblock %}
+</div>
+<div id='block-footer' class='container-fluid'><div class='row'>
+  <div class='text-center col-md-4'>&copy; 2013-2017</div>
+  <!-- <div class='text-center col-md-4'>Design by: <a href='http://www.algofact.com'>Algorithm Factory</a></div> -->
+  <div class='text-center col-md-4'><a href='../plant_common/c/Published_Sources_Used.pdf' target='_blank'>Published Sources Used</a></div>
+</div></div>
+</body></html>
+
+
+
+# Menu block
+#
+%% menublock
+<div id='block-menu'>
+  {% if isLogin %} <a href='index.php?cmd=logout' class='toplinks'>Logout</a> {% endif %}
+  <a href='index.php?cmd=contact' class='toplinks'>Contact</a>
+  <a href='admin.php' class='toplinks'>Admin</a>
+  <a href='index.php' class='toplinks'>Home</a>
+</div>

@@ -1,0 +1,383 @@
+%% a
+{% extends 'a-profile' %}
+{% block name %}[[Var:blart]] Blarty [[SetVar:blart|Again]] [[Var:blart]]{% endblock %}
+{% block city %} Waterloo-Kitchener {% endblock %}
+
+
+%% a-profile
+{% extends 'a-top' %}
+{% block spotlight %}
+{{blart}}
+Your name is {% block name%}unknown (override){%endblock%}, and you live in {% block city%}some city (override){%endblock%}.
+[[SetVar:blart|Two]]
+{% endblock %}
+
+%% a-top
+[[SetVar:blart|Three]]This is the top.  Here is a spotlight: {% block spotlight %}default content if no override{%endblock%}
+and also  [[if: 1 | Go! | Stop!]]    {{blart}}
+
+
+%% slivPageBody
+{% extends 'SLivPage' %}
+{% block slb-Content %}
+<div id="slContentCrumbs">[[slivLink:|home]]&nbsp;{% block slb-crumb %}{% endblock %}</div>
+<div id="slContentHeaderWrapper">
+  <div id="slContentHeaderLeft"{% block slb-hdrLAttrs %}{% endblock %}>{% block slb-hdrL %}{% endblock %}</div>
+  <div id="slContentHeaderRight"{% block slb-hdrRAttrs %}{% endblock %}>{% block slb-hdrR %}{% endblock %}</div>
+</div>
+{% block slb-content1 %}{% endblock %}
+{% endblock %}
+
+
+%% slivContent0
+# Basic structure
+#     slb-crumb
+#     slb-hdrL, slb-hdrLAttrs
+#     slb-hdrR, slb-hdrRAttrs
+{% extends 'slivPageBody' %}
+{% block slb-content1 %}
+<div id="slContentLeft">{% block slb-cntL %}{% endblock %}</div>
+<div id="slContentRight">{% block slb-cntR %}{% endblock %}</div>
+{% endblock %}
+# necessary because h2o doesn't support deep inheritance naturally, so these blocks are overridden by the 
+# template that overrides this, and these override the template that this extends
+{% block slb-crumb %}{% endblock %}
+{% block slb-hdrL %}{% endblock %}
+{% block slb-hdrR %}{% endblock %}
+{% block slb-hdrLAttrs %}{% endblock %}
+{% block slb-hdrRAttrs %}{% endblock %}
+
+%% slivContent1
+# With slPrimaryForm2 on the contentRight -- maybe that should be in the derived template and this can just be slivContent0
+{% extends 'slivPageBody' %}
+{% block slb-content1 %}
+<div id="slContentLeft">{% block slb-cntL %}{% endblock %}</div>
+<div id="slContentRight"><div class="slPrimaryForm2">{% block slb-cntR %}{% endblock %}</div></div>
+{% endblock %}
+{% block slb-crumb %}{% endblock %}
+{% block slb-hdrL %}{% endblock %}
+{% block slb-hdrR %}{% endblock %}
+{% block slb-hdrLAttrs %}{% endblock %}
+{% block slb-hdrRAttrs %}{% endblock %}
+
+%% slivContent1b
+# With slPrimaryForm2 on the contentRight and no contentLeft
+{% extends 'slivPageBody' %}
+{% block slb-content1 %}
+<div id="slContentRight" style="width:770px;" class="slPrimaryForm2">{% block slb-cntR %}{% endblock %}</div>
+{% endblock %}
+{% block slb-crumb %}{% endblock %}
+{% block slb-hdrL %}{% endblock %}
+{% block slb-hdrR %}{% endblock %}
+{% block slb-hdrLAttrs %}{% endblock %}
+{% block slb-hdrRAttrs %}{% endblock %}
+
+
+%% slivContent2
+# With slProductWrapper instead of content left-right
+{% extends 'slivPageBody' %}
+{% block slb-content1 %}
+<div id="slProductWrapper">
+  <div id="slProductHeader">{% block slb-prodHdr %}{% endblock %}</div>
+  <div id="slProductDetailsWrapper">{% block slb-prodDetails %}{% endblock %}</div>
+</div>
+{% endblock %}
+{% block slb-crumb %}{% endblock %}
+{% block slb-hdrL %}{% endblock %}
+{% block slb-hdrR %}{% endblock %}
+{% block slb-hdrLAttrs %}{% endblock %}
+{% block slb-hdrRAttrs %}{% endblock %}
+
+
+%% SLivHome
+[[Include:slivHead]]
+<body>
+[[Include:slivBodyTop]]
+<div id="wrapper">
+  <div id="slTop">
+    <!--#include virtual="sl.php?overlord=slLoadBasket"-->
+    <!--#include virtual="sl.php?overlord=slLoadUser"-->
+  </div>
+  <div id="slHeader">
+    <div id="slHeaderImg"><script type="text/javascript">document.write("<img src='{{SL2URL}}/i/"+Math.floor(Math.random()*6)+".jpg' width='385px'/>");</script></div>
+    <div id="slHeaderMinorWrapper">
+      [[Include:slivPgHeaderMenu]]
+      <div id="slHeaderSlogan"><a href="#"><img src="{{SL2URL}}/i/slogan.png" /></a></div>
+      <div id="slHeaderSearch">
+        <form action="{{SEONAME2}}/searchall/" method="post">
+        <input type="text" class="text" value="search" id="generalSearch" name="@search" />
+        <button alt="Click to search" title="Click to search"></button>
+        </form>
+      </div>
+    </div>
+  </div>
+  [[Include:slivPgCategory]]
+  <div id="slContentWrapper">
+    <div id="slContentLeft">
+      <!--#include virtual="includes/tags.html"-->
+      <br /><br />
+      <!--#include virtual="sl.php?overlord=slDonateCheck"-->
+      <br /><br /><br />
+      <script src="http://widgets.twimg.com/j/2/widget.js"></script>
+      <script>
+        new TWTR.Widget({
+          version: 2,
+          type: 'profile',
+          rpp: 3,
+          interval: 6000,
+          width: 160,
+          height: 420,
+          theme: {
+            shell: {
+              background: '#c7c7c7',
+              color: '#fcfcfc'
+            },
+            tweets: {
+              background: '#ffffff',
+              color: '#5e5e5e',
+              links: '#fac905'
+            }
+          },
+          features: {
+            scrollbar: false,
+            loop: false,
+            live: false,
+            hashtags: true,
+            timestamp: true,
+            avatars: false,
+            behavior: 'all'
+          }
+        }).render().setUser('SeedLiving').start();
+      </script>
+      <br /><br /><br />
+      <iframe src="http://www.facebook.com/plugins/likebox.php?id=122524504451093&amp;width=160&amp;connections=8&amp;stream=false&amp;header=false&amp;height=420"
+              scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:160px; height:420px;" allowTransparency="true"></iframe>
+      <br /><br /><br />
+      <!--#include virtual="includes/links.html"-->
+      <?php $f = fopen("http://www.seeds.ca/seedliving/includes/links.html", "r" ); fpassthru($f); fclose($f); ?>
+    </div>
+    <div id="slContentRight">
+      <div class="slContentLeftHeader">
+        <img src="i/fs.jpg" />
+        <div style="float:right;padding-right:2px;">
+          <a href="https://twitter.com/share" class="twitter-share-button" data-lang="en">Tweet</a>
+          <!--        <a href="/pdf/Seedy Sat YYC 2012.pdf" target="_blank"><img src="i/seedy.png" /></a>&nbsp;   -->
+          <a href="http://www.facebook.com/pages/SeedLiving/122524504451093" target="_blank"><img src="i/facebook.png" /></a>&nbsp;
+          <a href="http://twitter.com/SeedLiving" target="_blank"><img src="i/twitter.png" /></a>
+        </div>
+      </div>
+      [[sliv:DrawSeedsSplash]]
+      <!--<div class="slContentLeftHeader"><img src="i/news_tips.jpg" /></div>-->
+      <!--   [!--#include virtual="sl.php?overlord=newsSplash"--]  -->
+      <br />
+      <!--  <div class="slContentLeftHeader"><img src="i/events.jpg" /></div>  -->
+      <!--   [!--#include virtual="sl.php?overlord=eventsSplash"--]  -->
+    </div>
+  </div>
+</div>
+[[Include:slivBodyBot]]
+</body>
+</html>
+
+
+%% SLivPage
+[[Include:slivHead]]
+<body id="slEngine">
+[[Include:slivBodyTop]]
+<div id="wrapper">
+  <div id="slTop">
+    {% if SLivParm_bLoginSession=='Yes' %}
+      <div id="slTopBasket" style="width:385px;">[[Var:cartTotal]]</div>
+    {% else %}
+      <div id="slTopBasketNone"></div>
+    {% endif %}
+    [[Include:slivPgHeaderMenu]]
+  </div>  <!-- slTop -->  
+
+  <div id="slHeader">
+    <div id="slHeaderImg"><a href="{{SL2URL}}/"><img src="{{SL2URL}}/i/logo.png" /></a></div>
+    <div id="slHeaderMinorWrapper">
+      <div id="slTopAccount"></div>
+      <div id="slHeaderSearch">
+        <form action="/{{SEONAME}}/searchall/" method="post">
+          <input type="text" class="text" value="search by tag, description, title, zone, seller" id="generalSearch" name="@search" />
+          <input type="image" style="width:25px;height:25px;border:none;display:inline;" src="{{SL2URL}}/i/icon_search.png" 
+                 alt="Click to search" title="Click to search" />
+        </form>
+      </div>
+    </div>
+  </div>
+
+  [[Include:slivPgCategory]]
+
+  <div id="slContentWrapper">
+    {% block slb-Content %}{% endblock %}
+  </div>
+</div>  <!--  wrapper  -->
+[[Include:slivBodyBot]]
+</body>
+</html>
+
+
+%% slivHead
+# included by page-level templates
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+{% if new_title %}
+<title>{{new_title}}</title>
+{% else %}
+<title>Welcome to SeedLiving - Your online venue for buying, selling and swapping open pollinated seeds and live plants</title>
+{% endif %}
+
+{% if new_desc2 %}
+<meta name="description" content="{{new_desc2}}"/>
+{% else %}
+<meta name="description" content="SeedLiving was created so that anyone can make a living or supplement their income from open pollinated, 
+untreated seeds and live plants, while promoting and enhancing biodiversity on our planet. At SeedLiving, you can buy seeds online, sell 
+seeds online and swap seeds online. The goal of SeedLiving is to augment biodiversity and to foster sustainable living. If everyone on 
+the planet with access to the internet fostered the native plants in their growing region, this in turn would foster healthy communities 
+and healthy ecosystems. There is no reason why making money and living sustainably cannot go hand in hand. SeedLiving's online marketplace 
+for seeds and live plants provides new business opportunities for many organic growers. Seeds are easy to package and can be sent in the mail. 
+If you have access to a great garden you can buy, sell and swap open pollinated, untreated seeds and live plants online. If you're a novice 
+gardener and you want to buy seeds online but aren't sure where to begin, SeedLiving is a great way to support the small growers. Purchasing 
+seeds directly from small growers supports the independent seed saver, seed grower and family farm. If you have access to endangered varieties 
+you can sell seeds to another gardener or farmer across the country. If you are a small family farm with some fabulous heirloom seeds you can 
+easily list your seeds for free and reach millions of new gardeners. SeedLiving is the first and only website of its kind entirely devoted to 
+buying, selling and trading open pollinated, untreated seeds and live plants. SeedLiving is your chance to help the planet and supplement your 
+income. Buy seeds online. Sell seeds online. Swap seeds online." />
+{% endif %}
+
+{% if new_keys %}
+<meta name="keywords" content="{{new_keys}}" />
+{% else %}
+<meta name="keywords" content="seeds,sell,buy,swap,vegetables,flowers,herbs,fruits,cover crops,grasses,live plants,bulbs,certified organic" />
+{% endif %}
+
+<meta name="owner" content="Seeds of Diversity Canada" />
+<meta name="copyright" content="Copyright 2013-2016" />
+<meta http-equiv="cache-control" content="no-cache" />
+<meta http-equiv="expires" content="Mon, 22 Jul 2002 11:12:01 GMT" />
+<meta http-equiv="imagetoolbar" content="no" />
+<meta name="language" content="english" />
+<meta name="rating" content="general" />
+<meta name="distribution" content="global" />
+<meta name="revisit-after" content="30 days" />
+<meta name="robots" content="index, follow" />
+<!-- 
+<link rel="stylesheet" href="[SL]SL2WROOT[/SL]/os/bootstrap3/dist/css/bootstrap.min.css" type="text/css" media="screen, projection" />
+-->
+<link rel="stylesheet" href="{{SL2URL}}/c/print.css" type="text/css" media="print" />
+<link rel="stylesheet" href="{{SL2URL}}/c/screen.css" type="text/css" media="screen, projection" />
+<!--[if lte IE 7]>
+<style type="text/css" media="all">
+@import url("{{SL2URL}}/c/lib/ie.css");
+</style>
+<![endif]-->
+
+<!--  use W_ROOT_JQUERY -->
+<script type="text/javascript" src="{{SL2URL}}/s/jquery-1.4.2.js"></script>
+<script type="text/javascript" src="{{SL2URL}}/s/jquery-ui-1.8rc3.custom.min.js"></script>
+<script type="text/javascript" src="{{SL2URL}}/s/jquery.tablesorter.min.js"></script>
+<script type="text/javascript" src="{{SL2URL}}/s/jquery.wysiwyg.js"></script>
+<script type="text/javascript" src="{{SL2URL}}/s/jquery.cmxforms.js"></script>
+<script type="text/javascript" src="{{SL2URL}}/s/slivSite.js"></script>
+<script type="text/javascript" src="{{SL2URL}}/s/site.js"></script>
+<script type="text/javascript" src="{{W_ROOT}}std/js/SEEDStd.js"></script>
+<script type="text/javascript" src="{{W_ROOT}}std/js/SEEDSession.js"></script>
+<script type="text/javascript" src="{{SL2URL}}/s/validate.js"></script>
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-18689937-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+
+
+
+
+%% slivBodyTop
+# include at the top of the body
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);} }(document,"script","twitter-wjs");</script>
+
+
+%% slivBodyBot
+# include at the bottom of the body
+<div id="slFooter">
+  <span class="first company">2013-2016 Seeds of Diversity Canada</span>
+  <span class="first"><a href="/{{SEONAME}}/contact/">Contact</a></span>
+  <span><a href="/{{SEONAME}}/terms/">Terms of Use</a></span>    
+  <span><a href="/{{SEONAME}}/privacy/">Privacy Policy</a></span>
+  <span><a href="/{{SEONAME}}/fees/">Fees</a></span>   
+  <span><a href="/{{SEONAME}}/about/">Buy, Sell, Swap Homegrown Products Online</a></span>              
+</div> 
+<map name="Map2" id="Map2">
+<area shape="rect" coords="4,5,70,39" href="{{SEONAME2}}/blog/" alt="Our Blog" />
+<area shape="rect" coords="92,7,157,32" href="http://www.facebook.com/pages/SeedLiving/122524504451093" alt="facebook" target="_new"/>
+<area shape="rect"  coords="260,4,369,41"  href="http://www.youtube.com/user/YourSeedLiving" alt="Youtube" target="_new"/>
+<area shape="rect" coords="183,6,249,37" href="http://twitter.com/#!/seedliving" alt="Twitter" target="_new"/>
+</map>
+<div id="slSocialFooter">
+<!--
+  reformat this image 
+  <img src="{{SL2URL}}/i/footer.png" usemap="#Map2"/>
+-->
+</div>
+
+
+%% slivPgCategory
+<div id="slCategory">
+  <ul>
+    <li class="first"><a class="first" href="{{SEONAME2}}/garlicbulbils/">Garlic bulbils</a></li>
+<!--
+    <li class="first"><a class="first" href="{{SEONAME2}}/beeproduct/">Bee products</a></li>
+    <li><a href="{{SEONAME2}}/bulbs/">Bulbs</a></li>
+    <li><a href="{{SEONAME2}}/certifiedorganic/">Certified organic</a></li>
+    <li><a href="{{SEONAME2}}/flowers/">Flower seeds</a></li>
+    <li><a href="{{SEONAME2}}/fruits/">Fruit seeds</a></li>
+    <li><a href="{{SEONAME2}}/grasses/">Grass seeds</a></li>
+    <li><a href="{{SEONAME2}}/herbs/">Herb seeds</a></li><br />
+    <li><a href="{{SEONAME2}}/liveplants/">Live plants</a></li>
+    <li><a href="{{SEONAME2}}/naturalfibreproduct/">Natural fibre products</a></li>
+    <li><a href="{{SEONAME2}}/potatoes/">Potatoes</a></li>
+    <li><a href="{{SEONAME2}}/trees/">Trees</a></li>
+    <li><a href="{{SEONAME2}}/vegetables/">Vegetable seeds</a></li>
+    <li><a href="{{SEONAME2}}/woodproduct/">Wood products</a></li>
+    <li><a class="last" href="{{SEONAME2}}/usedproducts/">Used Products</a></li>
+-->
+  </ul>
+</div>
+
+%% slivPgHeaderMenu
+# When logged in, there's a link to the basket in slTop, so the width and float prevent the menu from breaking below that on some pages.
+# Not sure what happens if these styles are given on non-login pages (would be simpler to position the menu the same all the time).
+<div id="slHeaderMenu" {% if SLivParm_bLoginSession=='Yes' %} style="width:370px; float:left;" {% endif %} >
+  <ul {% if SLivParm_bLoginSession=='Yes' %} style="width:320px;" {% endif %} >
+    {% if SLivParm_bLoginSession=='Yes' %}
+    <li><a href="/{{SEONAME}}/accountProfile/" class="first">my profile</a></li>
+    <li><a href="/{{SEONAME}}/userLogout/">logout</a></li>
+    {% else %}
+    <li><a href="/{{SEONAME}}/accountCreate/" class="first">create my account</a></li>
+    <li><a href="/{{SEONAME}}/login/">sign in</a></li>
+    {% endif %}
+    <li><a href="{{SEONAME2}}/buy/">buy</a></li>
+    <li><a href="{{SEONAME2}}/sell/">sell</a></li>
+#    <li><a href="{{SEONAME2}}/tradetable/">swap</a></li>
+#    <li><a href="{{SEONAME2}}/community/" class="last">community</a></li>
+  </ul>
+</div>

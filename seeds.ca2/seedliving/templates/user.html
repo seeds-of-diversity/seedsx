@@ -1,0 +1,180 @@
+%% user-comments
+--Make SEEDTemplate ignore any block called Comments
+This contains the templates called by SEEDSessionAccount_UI
+    acctCreate-0
+    acctCreate-1aOk
+    acctCreate-1aErr
+    acctUpdate-0
+    acctProfile
+
+
+
+%% AccountLogin
+{% extends 'slivContent1' %}
+{% block slb-crumb %} >&nbsp;login{% endblock %}
+{% block slb-hdrL %} login {% endblock %}
+{% block slb-hdrR %} <img src="{{SL2URL}}/i/sell.png" /> {%endblock%}
+{% block slb-cntL %} [[slivTags:]] {%endblock%}
+{% block slb-cntR %} [[Include:SEEDSessionUser_Login]] {%endblock%}
+
+%% AccountCreate-0
+{% extends 'slivContent1' %}
+// overrides the entry-point template in SEEDSession.html
+{% block slb-crumb %} >&nbsp;create my account{% endblock %}
+{% block slb-hdrL %} create my account {% endblock %}
+{% block slb-hdrR %} <img src="{{SL2URL}}/i/sell.png" /> {%endblock%}
+{% block slb-cntL %} [[slivTags:]] {%endblock%}
+{% block slb-cntR %} [[Include:SEEDSessionUser_CreateAccount-0]] {%endblock%}
+
+%% AccountCreate-1a
+{% extends 'slivContent1' %}
+{% block slb-crumb %} >&nbsp;create my account{% endblock %}
+{% block slb-hdrL %} create my account {% endblock %}
+{% block slb-hdrR %} <img src="{{SL2URL}}/i/sell.png" /> {%endblock%}
+{% block slb-cntL %} [[slivTags:]] {%endblock%}
+{% block slb-cntR %} [[Include:SEEDSessionUser_CreateAccount-1a]] {%endblock%}
+
+%% AccountCreate-1aErr
+{% extends 'slivContent1' %}
+{% block slb-crumb %} >&nbsp;create my account{% endblock %}
+{% block slb-hdrL %} create my account {% endblock %}
+{% block slb-hdrR %} <img src="{{SL2URL}}/i/sell.png" /> {%endblock%}
+{% block slb-cntL %} [[slivTags:]] {%endblock%}
+{% block slb-cntR %} [[Include:SEEDSessionUser_CreateAccount-1aErr]] {%endblock%}
+
+%% AccountUpdate
+{% extends 'slivContent1' %}
+{% block slb-crumb %} >&nbsp;[[Link:accountProfile|my profile]]&nbsp;>&nbsp;details {% endblock %}
+{% block slb-hdrL %} my profile details {% endblock %}
+{% block slb-hdrR %} <img src="{{SL2URL}}/i/sell.png" /> {%endblock%}
+{% block slb-cntL %} [[slivTags:]] {%endblock%}
+{% block slb-cntR %} [[Include:SEEDSessionUser_AccountUpdate]] {%endblock%}
+
+
+%% AccountProfile
+{% extends 'slivContent2' %}
+{% block slb-crumb %} >&nbsp;[[if:$account_username | [[Var:account_username]]'s | ]] profile {% endblock %}
+{% block slb-hdrL %} my profile {% endblock %}
+{% block slb-hdrR %}
+    {% if slAdmin=='1'%}
+      <span style="padding-top:20px;display:block;">
+        <span>[[Link:secureMassEmail           |mass email]]</span>&nbsp;&nbsp;
+        <span>[[Link:secureNews                |edit news]]</span>&nbsp;&nbsp;
+        <span>[[Link:secureEvents              |edit events]]</span>&nbsp;&nbsp;
+        <span>[[Link:secureFees-{{fee_enabled}}|{{fee_text}}]]</span>
+      </span>
+    {%endif%}
+{%endblock%}
+{% block slb-prodHdr %}
+    <ul>
+      <li>[[Link:accountProfileEdit|edit profile]]</li>
+      <li style="margin-left:-70px;">[[Link:secureUserAddEditPassword-{{account_id}}|change password]]</li>
+      {% if slAdmin=='1' %}
+      <li style="margin-left:-25px;">[[Link:slLinks|preferred sites]]</li>
+      {%endif%}
+    </ul>
+{%endblock%}
+{% block slb-prodDetails %}
+    <div id="slProductImg"><img src="{{user_sfile}}" id="imgMain" width="200px"/><!--  430px  --></div> 
+    <div id="slProductMenu">
+      <ul>
+        <li>user {{account_username}}</li>
+        <li>joined {{account_tsadd|date"Y-M-d"}}</li>
+        <li>location {{user_city}}{% if user_state != "" %}, {{user_state}}{%endif%}</li>
+        <li>country {{user_country}}</li>
+        <!-- <li>zone:</li> -->
+
+        <li><a href="#">total purchases</a>: ({{totalPurchased}})</li>
+        {% if account_accesslevel=='S' %}
+            <li>[[Link:myseedsList    | my sale items]]: ({{totalSale}})</li>
+            <li>[[Link:secureSwapView | my swap items]]: ({{totalSwap}})</li>
+            <li><a href="#">total sales</a>: ({{totalSold}})</li>
+            <li>[[Link:secureSwap     | my swap requests]]: ({{totalSwapRequests}})</li>
+        {% endif %}
+        <li>[[Link:news   | my news]]:   ({{totalNews}})</li>
+        <li>[[Link:events | my events]]: ({{totalEvents}})</li>
+
+        {% if fee_enabled=='Y' %}
+            {{slAccountDesc}}
+        {% endif %}
+      </ul>
+    </div>
+    {% if fee_enabled=='N' %}
+      <div id="slProductMenu" style="clear:right;background:none;">
+#       [[Link:slDonate | <img src="{{SL2URL}}/i/paywhatyoucan2.png" />]]
+      </div>
+    {% endif %}
+
+    <div id="slProductDetails">
+      <table border='0' cellspacing='10'>
+      <tr>
+#        <td valign='top'>
+#          <h2>Account Information ({{kSLivAccid}})</h2>
+#          <p>{{account_username}}<br/>
+#             {{account_email}}<br/>
+#             {{account_how}}<br/>
+#          </p>
+#        </td>
+        <td valign='top'>
+          <h2>Contact Information ({{kSLivUserid}})</h2>
+          <p>{{user_firstname}} {{user_lastname}}<br/>
+             {{user_address}}<br/>
+             {{user_city}} {{user_state}} {{user_zip}} {{user_country}}<br/>
+             {{user_phone}}
+          </p>
+        </td>
+      </tr>
+      </table>
+      <h2>About You</h2>
+      <p>{{user_desc}}</p>
+      <h2>Comments</h2>
+      <p id="commentsSpan">{{userComments}}</p>
+    </div>
+{%endblock%}
+
+
+%% userProfile
+<!--  someone else's profile; use AccountProfile for the current user's profile (though they should both use a common template  -->
+<div id="slContentCrumbs">[[slivLink:|home]]&nbsp;>&nbsp;{{account_username}}'s profile</div>
+<div id="slContentHeaderWrapper">
+  <div id="slContentHeaderLeft" style="width:100%;">{{account_username}}'s Profile</div>
+  <div id="slContentHeaderRight"></div>
+</div>
+<div id="slProductWrapper">
+  <div id="slProductHeader"></div>
+  <div id="slProductDetailsWrapper">
+    <div id="slProductImg">
+      <img src="{{SL2URL}}/iu/{{user_image}}" id="imgMain" width="250px"/>
+    </div>
+    <div id="slProductMenu">
+      <ul>
+        <li>seller <span>{{account_username}}</span></li>
+        <li>joined {{account_tsadd|date"Y-M-d"}}</li>
+        <li>location {{user_city}}{% if user_state != "" %}, {{user_state}}{%endif%}</li>
+        <li>country {{user_country}}</li>
+        <li>seller's profile</li>
+        <li><a href="/{{SEONAME}}/{{account_username}}_Items/">seller's sale items {{sellersSeedCount}}</a></li>
+        <li><a href="/{{SEONAME}}/{{account_username}}_Swap/">swap items {{sellersSwapCount}}</a></li>
+        <li><a href="/{{SEONAME}}/{{account_username}}_Items/">total items {{totalItems}}</a></li>
+      </ul>
+      {%if SLivParm_bLoginSession=='Yes'%}
+        <div id="slProductComments">
+          <form id="CommentForm">
+          <input type="hidden" id="account" value="{{account_id}}"/>
+          <h4>Comment on {{account_username}}</h4>
+          <label>Your Comment</label>
+          <textarea style="width:120px;height:50px;" name="uc_text" id="uc_text"></textarea>
+          <input type="button" class="button" value="Submit" id="commentSubmit"/>
+          </form>
+          <div class="failure"></div>
+        </div>
+      {%endif%}
+    </div>
+    <div id="slProductDetails">
+      <h2>About</h2>
+      <p>{{user_desc}}</p>
+      <h2>Comments</h2>
+      <p id="commentsSpan">{{userComments}}</p>   
+    </div>
+  </div>
+</div>

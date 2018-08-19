@@ -1,0 +1,9 @@
+alias l.='ls -Adlh .* --color=tty'
+alias ll='ls -lh --color=tty'
+alias la='ls -Alh --color=tty'
+alias lr='ls -R | awk -f ~/lr.awk'
+alias lg='ls -R | awk -f ~/lr.awk | grep'
+alias du='du -h'
+alias svnst='svn status -u'
+alias svnd='svn diff -r head'
+

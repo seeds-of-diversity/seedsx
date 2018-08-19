@@ -1,0 +1,37 @@
+Options +Includes
+Options -Indexes
+AddHandler server-parsed .shtml .html .htm
+Options +FollowSymLinks
+
+RewriteEngine On
+
+# Get a "RewriteBase" according to the host name.
+RewriteBase /
+RewriteRule ^ - [E=BASE:/seedliving/]
+RewriteCond %{HTTP_HOST} ^localhost$
+RewriteRule ^ - [E=BASE:/seedsCurr/seeds.ca2/seedliving/]
+# now use BASE like this : RewriteRule ^(.*)$ %{ENV:BASE}index.php [L,QSA]
+
+
+# home
+RewriteRule ^$  %{ENV:BASE}index.php  [L]
+
+# don't allow access to .svn etc
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule \.svn %{ENV:BASE}index.php [L]
+
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !=/favicon.ico
+RewriteRule ^([^/\.]+)/?$  %{ENV:BASE}sl.php?overlord=$1 [L,QSA]
+#RewriteRule sl2/([^/\.]+)/?$ %{ENV:BASE}sl.php?overlord=$1 [L]
+
+
+<IfModule mod_php5.c>
+  php_flag display_startup_errors off
+  php_flag display_errors on
+  php_flag html_errors off
+  php_value docref_root 0
+  php_value docref_ext 0
+</IfModule>

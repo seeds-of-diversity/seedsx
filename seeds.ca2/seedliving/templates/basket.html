@@ -1,0 +1,52 @@
+# basket
+#
+# Lists and forms for managing a shopping basket
+
+
+%% basketHeader
+<div id="slContentCrumbs"><a href="{{SL2URL}}/">home</a>&nbsp;>&nbsp;<a href="/{{SEONAME}}/{{bc_overlord_full}}/">search results - {{bc_overlord}}</a>&nbsp;>&nbsp;my cart</div>
+<div id="slContentHeaderWrapper">
+  <div id="slContentHeaderLeft">my cart</div>
+  <div id="slContentHeaderRight"><img src="{{SL2URL}}/i/sell.png" /></div>
+</div>
+<div id="slContentLeft">[[slivTags:]]</div>
+<div id="slContentRight">   
+
+
+%% basketTop
+<form action="/{{SEONAME}}/checkout/" method="post">
+<table id="secureTable" class="tablesorter" cellspacing="0" cellpadding="0">
+  <thead>
+    <tr>
+      <th><input type="checkbox" id="toggle"/></th>
+      <th>ID#</th>
+      <th>User</th>
+      <th>Seed</th>
+      <th>Price</th>
+      <th>Quantity</th>
+    </tr>
+  </thead>
+  <tbody>
+
+  
+%% basketRow
+<tr id="{{cart_id}}">
+<td><input type="checkbox" cartid="{{cart_id}}" class="tableToggle"/></td>
+<td valign="middle">{{seed_id}}</td>
+<td valign="middle">{{user_screenname}}</td>
+<td valign="middle">{{seed_title}}</td>
+<td valign="middle">{{seed_price|currency}}&nbsp;{{seed_currency}}</td>
+<td><select name="{{seed_id}}q">{{seedQ|safe}}</select></td>
+</tr>
+
+%% basketBottom
+</tbody>
+<tfoot>
+<tr><td colspan="3">With selected:&nbsp;<select id="slCartActions"><option value="" selected="selected">--select--</option>
+<option value="Remove">Remove</option></select></td><td></td><td></td><td style="text-align:right;"><input type="submit" value="Checkout"/></td></tr>
+</tfoot>
+</table>
+</form>
+
+
+  

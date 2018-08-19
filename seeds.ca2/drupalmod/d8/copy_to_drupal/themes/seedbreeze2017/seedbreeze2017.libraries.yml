@@ -1,0 +1,26 @@
+global-styling:
+  css:
+    theme:
+      css/style.css: {}
+      css/responsive.css: {}
+
+open-sans:
+  css:
+    theme:
+      '//fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,700,600,800': { type: external, minified: true }
+  license:
+    name: SIL Open Font License 1.1
+    url: http://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL
+
+sbz2018:
+  version: 1.x
+  css:
+    theme:
+      css/sbz2018.css: {}
+      
+  header: true
+  js:
+    js/sbz2018.js: { preprocess: false }
+   
+  dependencies:
+    - core/jquery

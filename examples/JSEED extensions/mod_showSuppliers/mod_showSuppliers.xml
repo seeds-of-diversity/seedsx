@@ -1,0 +1,15 @@
+<?xml version="1.0"  encoding="UTF-8"?>
+<install type="module" version="1.5">
+    <name>show seed suppliers</name>
+    <author>Seeds of Diversity Canada</author>
+    <version>1.6.3</version>
+    <description>Used to display companies who supply seeds</description>
+    <files>
+        <filename module="mod_showSuppliers">mod_showSuppliers.php</filename>
+        <filename>mod_showSuppliers.xml</filename>
+        <filename>tmpl/index.html</filename>
+        <filename>tmpl/default.php</filename>
+    </files>
+    <params>
+    </params>
+</install>

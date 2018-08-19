@@ -1,0 +1,86 @@
+/* Console01 general
+ */
+.console01_instructions {
+	font-size:9pt; background-color:#eee; padding:10px; border-radius:5px;
+}
+
+
+
+/* Console01 Blue style
+ */
+
+
+
+/* Frame - Control area
+ *
+ */
+.console01_frame2-ctrl, .console01_frame2-ctrl-body
+{ position: relative; }
+
+.console01_frame2-ctrl-tl, .console01_frame2-ctrl-tc, .console01_frame2-ctrl-tr,
+.console01_frame2-ctrl-cl, .console01_frame2-ctrl-cc, .console01_frame2-ctrl-cr,
+.console01_frame2-ctrl-bl, .console01_frame2-ctrl-bc, .console01_frame2-ctrl-br
+{ position: absolute; }
+
+/* top row */
+.console01_frame2-ctrl-tl, .console01_frame2-ctrl-tc, .console01_frame2-ctrl-tr {
+    top: 0px; height: 20px;
+}
+/* center row */
+.console01_frame2-ctrl-cl, .console01_frame2-ctrl-cc, .console01_frame2-ctrl-cr {
+    top: 19px; bottom: 19px;  /* top:19 instead of :20 fixes a gap when Chrome zoomed out */
+}
+/* bottom row */
+.console01_frame2-ctrl-bl, .console01_frame2-ctrl-bc, .console01_frame2-ctrl-br {
+    bottom: 0px; height: 40px; /* 40 is the height of console01_frame_x_blue.png - these images are placed 40px from the bottom of the container and the bottom part is clipped visible */
+}
+/* left col */
+.console01_frame2-ctrl-tl, .console01_frame2-ctrl-cl, .console01_frame2-ctrl-bl {
+    left: 0px; width: 12px;
+}
+/* center col */
+.console01_frame2-ctrl-tc, .console01_frame2-ctrl-cc, .console01_frame2-ctrl-bc {
+    left: 10px; right: 15px;  /* left:10 instead of :12 fixes a gap when Chrome zoomed out */
+}
+/* right col */
+.console01_frame2-ctrl-tr, .console01_frame2-ctrl-cr, .console01_frame2-ctrl-br {
+    right: 0px; width: 28px;  /* 28 is the width of console01_frame_x_blue.png - these images are placed 28px from the right of the container and the right-hand part is clipped visible */
+}
+
+
+.console01_frame2-ctrl-tl { clip: rect( auto, 12px, 20px, auto ); }
+.console01_frame2-ctrl-tr { clip: rect( auto, auto, 20px, 13px); }
+.console01_frame2-ctrl-bl { clip: rect( 20px, 12px, auto, auto ); }
+.console01_frame2-ctrl-br { clip: rect( 20px, auto, auto, 13px ); }
+.console01_frame2-ctrl-tc { clip: rect( auto, auto, 20px, auto); background-repeat: repeat-x;  }
+.console01_frame2-ctrl-bc { clip: rect( 21px, auto, auto, auto); background-repeat: repeat-x;  }
+.console01_frame2-ctrl-cl { clip: rect( auto, 12px, auto, auto); background-repeat: repeat-y;  }
+.console01_frame2-ctrl-cr { clip: rect( auto, auto, auto, 12px); background-repeat: repeat-y;  }
+
+
+/* backgrounds */
+.console01_frame2-ctrl-tl, .console01_frame2-ctrl-tr,
+.console01_frame2-ctrl-bl, .console01_frame2-ctrl-br
+{ background-image: url(console01_frame_x_blue.png); }
+
+.console01_frame2-ctrl-tc, .console01_frame2-ctrl-bc 
+{ background-image: url(console01_frame_h_blue.png); }
+
+.console01_frame2-ctrl-cl, .console01_frame2-ctrl-cr 
+{ background-image: url(console01_frame_v_blue.png); }
+
+.console01_frame2-ctrl-cc
+{ background-color: #d9e9f2; }
+
+/* body */
+.console01_frame2-ctrl-body {
+    background-color: none;
+    padding: 15px;
+}
+
+
+
+/* Frame - Content area
+ *
+ */
+

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install type="module" version="1.5.0">
+    <name>JSEED Events</name>
+    <author>Seeds of Diversity Canada</author>
+    <version>1.5.0</version>
+    <description>Module showing upcoming events.</description>
+    <files>
+        <filename module="mod_jseedevents">mod_jseedevents.php</filename>
+        <filename>tmpl/default.php</filename>
+        <filename>mod_jseedevents.xml</filename>
+
+<!--
+        <filename>index.html</filename>
+        <filename>helper.php</filename>
+        <filename>tmpl/index.html</filename>
+-->
+    </files>
+    <params>
+    </params>
+</install>

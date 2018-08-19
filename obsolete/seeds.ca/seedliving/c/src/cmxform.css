@@ -1,0 +1,112 @@
+/**********************************
+
+Use: cmxform template
+
+***********************************/
+form.cmxform fieldset {
+	margin-bottom: 1.5em;
+}
+
+form.cmxform legend {
+	padding: 0 2px;
+	font-weight: bold;
+	_margin: 0 -7px; /* IE Win */
+}
+
+form.cmxform label {
+	display: inline-block;
+	line-height: 1.8;
+	vertical-align: top;
+	cursor: pointer;
+}
+
+form.cmxform fieldset p {
+	padding: 5px;
+	margin: 0;
+}
+
+form.cmxform fieldset fieldset {
+	border: none;
+	margin: 3px 0 0;
+}
+
+form.cmxform fieldset fieldset legend {
+	padding: 0 0 5px;
+	font-weight:normal;
+}
+
+form.cmxform fieldset fieldset label {
+	display: block;
+	width: auto;
+}
+form.cmxform label { width: 200px; } /* Width of labels */
+form.cmxform fieldset fieldset label { margin-left: 203px; } /* Width plus 3 (html space) */
+form.cmxform label.error {
+	margin-left: 203px;
+}
+
+form.cmxform input.submit {
+	margin-left: 203px;
+}
+
+form.cmxform em { font-weight: bold; font-style: normal; color: #f00; }
+
+/*\*//*/ form.cmxform legend { display: inline-block; } /* IE Mac legend fix */
+
+/**********************************
+
+Name: cmxform Styles
+
+***********************************/
+form.cmxform {
+	font-size: 1.0em;
+}
+
+form.cmxform legend {
+	padding-left: 0;
+}
+
+form.cmxform legend{
+	color:#000;
+}
+form.cmxform label {
+
+}
+
+form.cmxform fieldset {
+	border: none;
+	border-top: 1px solid #000;
+	background-color: #FAF8F5;
+}
+
+form.cmxform fieldset fieldset {
+	background: none;
+}
+
+form.cmxform fieldset p, form.cmxform fieldset fieldset {
+	padding: 5px 10px 7px;
+	border-bottom:1px dotted #ccc;
+}
+
+form.cmxform label.error, label.error {
+	color: red;
+	width: auto;
+	display: block;
+}
+option {padding: 0 .2em 0 .1em;}
+div.error { display: none; }
+input:focus { border: 1px solid black; }
+input.error{ border: 1px dotted red; }
+form.cmxform span.notes{
+	font-size:0.8em;
+	line-height:12px;
+	color:#666;
+}
+
+form.cmxform.noindent label, form.cmxform.noindent label.error, form.cmxform.noindent input.submit{
+	width:auto;
+	margin:0;
+}
+form.cmxform.noindent label{
+	width:80px;
+}

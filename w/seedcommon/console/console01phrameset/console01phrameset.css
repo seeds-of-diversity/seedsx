@@ -1,0 +1,56 @@
+/* Console01 PhrameSet style
+ */
+
+.c01PhrameSet { width: 100%; }
+.c01PhrameBlock {
+    position: relative;
+    width: 100%;
+    border:0;
+    font-family: Verdana,Geneva,Arial,Helvetica,sans-serif;
+    font-size: 11px;
+    margin: 5px;
+    padding: 5px;
+    min-height:20;
+}
+.c01PhrameBlock-tl, .c01PhrameBlock-tc, .c01PhrameBlock-tr, 
+.c01PhrameBlock-cl, .c01PhrameBlock-cc, .c01PhrameBlock-cr,
+.c01PhrameBlock-bl, .c01PhrameBlock-bc, .c01PhrameBlock-br {
+    position: absolute;
+    z-index:-1;
+}
+
+.c01PhrameBlock-tl, .c01PhrameBlock-tc, .c01PhrameBlock-tr { top:0; height:14; }
+.c01PhrameBlock-cl,                     .c01PhrameBlock-cr { top:7; bottom: 7; width:14; }
+.c01PhrameBlock-bl, .c01PhrameBlock-bc, .c01PhrameBlock-br { bottom:0; height:14; }
+
+.c01PhrameBlock-tl, .c01PhrameBlock-bl { left:0; width:14; }
+.c01PhrameBlock-tr, .c01PhrameBlock-br { right:0; width:14; }
+ 
+.c01PhrameBlock-tc, .c01PhrameBlock-cc, .c01PhrameBlock-bc { left:7; right:7; }
+.c01PhrameBlock-cl { left:0; }
+.c01PhrameBlock-cc { top:7; bottom:7; }
+.c01PhrameBlock-cr { right:0; }
+
+.c01PhrameBlock-tl { clip: rect(auto,7px,7px,auto); }
+.c01PhrameBlock-bl { clip: rect(7px,7px,auto,auto); }
+.c01PhrameBlock-tr { clip: rect(auto,auto,7px,7px); }
+.c01PhrameBlock-br { clip: rect(7px,auto,auto,7px); }
+.c01PhrameBlock-tc { clip: rect(auto,auto,7px,auto); background-repeat: repeat-x; }
+.c01PhrameBlock-bc { clip: rect(7px,auto,auto,auto); background-repeat: repeat-x; }
+.c01PhrameBlock-cl { clip: rect(auto,7px,auto,auto); background-repeat: repeat-y; }
+.c01PhrameBlock-cr { clip: rect(auto,auto,auto,7px); background-repeat: repeat-y; }
+
+.c01PhrameBlockGray-tl, .c01PhrameBlockGray-bl, 
+.c01PhrameBlockGray-tr, .c01PhrameBlockGray-br  { background-image: url( c01phrameGrayX.png ); }
+.c01PhrameBlockGray-tc, .c01PhrameBlockGray-bc  { background-image: url( c01phrameGrayH.png ); }
+.c01PhrameBlockGray-cl, .c01PhrameBlockGray-cr  { background-image: url( c01phrameGrayV.png ); }
+.c01PhrameBlockGray-cc { background-color: #ecede3; }
+
+.c01PhrameBlockWhite-tl, .c01PhrameBlockWhite-bl,
+.c01PhrameBlockWhite-tr, .c01PhrameBlockWhite-br  { background-image: url( c01phrameX.png ); }
+.c01PhrameBlockWhite-tc, .c01PhrameBlockWhite-bc  { background-image: url( c01phrameH.png ); }
+.c01PhrameBlockWhite-cl, .c01PhrameBlockWhite-cr  { background-image: url( c01phrameV.png ); }
+.c01PhrameBlockWhite-cc { background-color: #ffffff; }
+
+
+

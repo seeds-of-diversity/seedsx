@@ -1,0 +1,7 @@
+name: Seeds
+description: Seeds of Diversity web site for Drupal 8
+package: Custom
+
+type: module
+core: 8.x 
+

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install type="module" version="2.5.0">
+    <name>Seeds of Diversity</name>
+    <author>Seeds of Diversity Canada</author>
+    <version>2.5.0</version>
+    <description>Gateway for Bauta Web Service</description>
+    <files>
+        <filename module="mod_seedsofdiversity">mod_seedsofdiversity.php</filename>
+        <filename>tmpl/default.php</filename>
+        <filename>mod_seedsofdiversity.xml</filename>
+    </files>
+
+    <config>
+    <fields name="params">
+        <fieldset name="basic" label="Module Parameters" description="Module settings">
+            <field name="modtype" type="text" default="" label="Module type" description="Module type"/>
+            <field name="modlang" type="radio" default="EN" label="Language" description="Language">
+                <option value="EN">English</option>
+                <option value="FR">French</option>
+            </field>
+            <field name="generic_a" type="text" label="Generic A" description="Generic A"/>
+            <field name="generic_b" type="text" label="Generic B" description="Generic B"/>
+            <field name="generic_c" type="text" label="Generic C" description="Generic C"/>
+            <field name="generic_d" type="text" label="Generic D" description="Generic D"/>
+            <field name="generic_e" type="text" label="Generic E" description="Generic E"/>
+            <field name="generic_f" type="text" label="Generic F" description="Generic F"/>
+            <field name="generic_g" type="text" label="Generic G" description="Generic G"/>
+        </fieldset>
+    </fields>
+    </config>
+</install>

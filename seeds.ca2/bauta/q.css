@@ -1,0 +1,15 @@
+@CHARSET "UTF-8";
+
+.qSearchTerm {
+    font-weight: bold;
+    color: blue;
+}
+
+.qPara {
+    max-width: 450px;
+    margin: auto;
+}
+
+.qMainSm {
+    font-weight: bold;
+}

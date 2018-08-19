@@ -1,0 +1,26 @@
+/*
+*	Matt Potts
+*	2011-07-14
+*	sourceCSS.css
+*	This is the style sheet used primarily for sources.php but may be used for other pages. 
+*/
+
+
+.seedMail
+{
+	HREF='mailto:office@seeds.ca';
+}
+	
+.printList
+{
+	HREF = 'rl_prn.php'; 
+	TARGET ='rl-prn-window';
+	font-size : 20; 
+	font-style:italic;
+}
+
+.frenchSeedMail
+{
+	HREF='mailto:courriel@semences.ca';
+}
+

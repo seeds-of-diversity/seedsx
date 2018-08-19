@@ -1,0 +1,180 @@
+<HTML>
+
+<H2>KeyFrame Documentation</H2>
+
+<OL>
+<LI><A HREF='#s1'>What is KeyFrame?<A></LI>
+<LI><A HREF='#s2'>A Basic Example<A></LI>
+<LI><A HREF='#s3'>Table Joins<A></LI>
+<LI><A HREF='#s4'>Cursors<A></LI>
+<LI><A HREF='#s5'>Inserting New Rows<A></LI>            - defaults in kfrel
+<LI><A HREF='#s6'>Created, Updated, Status<A></LI>      - our examples so far haven't shown the whole field structure - uid field of KeyFrameRelation()
+<LI><A HREF='#s7'>Logging<A></LI>
+<LI><A HREF='#s8'>User Interface<A></LI>
+
+
+</OL>
+
+
+<A name='s1'/>
+<H3>What is KeyFrame?</H3>
+<P>
+KeyFrame provides advanced services for applications that manipulate database records, especially interactive web
+applications that use online forms.
+</P>
+
+<UL>
+<LI>Accept form data (via GET or POST), validate types, and prepare for database record insertion. Ideal for applications
+that use HTML forms to enter/edit database records. Forms can relate to one table, or a multi-table relation.</LI>
+</UL>
+
+<A name='s2'/>
+<H3>A Basic Example</H3>
+<P>
+Here's a simplified example to give you an idea of what KeyFrame does. Say you have a table of people like this:
+</P>
+<TABLE cellpadding='20'><TR><TD valign='top'>
+
+<TABLE cellpadding='5' border='1'>
+<TR><TH colspan='3' style='background-color:#AAAAAA'>keyframe_example_people</TH></TR>
+<TR><TD align='center' valign='top'><B>_key</B><BR/><BR/><I>INTEGER<BR/>PRIMARY_KEY</I></TD>
+    <TD align='center' valign='top'><B>name</B><BR/><BR/><I>TEXT</I></TD>
+    <TD align='center' valign='top'><B>age</B><BR/><BR/><I>INTEGER</I></TD></TR>
+<TR><TD>1</TD><TD>Alice</TD><TD>40</TD></TR>
+<TR><TD>2</TD><TD>Bob</TD><TD>39</TD></TR>
+<TR><TD>3</TD><TD>Cathy</TD><TD>37</TD></TR>
+<TR><TD>4</TD><TD>Dave</TD><TD>42</TD></TR>
+</TABLE>
+
+</TD><TD valign='center'>
+You can describe this table with this KeyFrame Relation Definition
+</TD><TD valign='center'>
+<PRE>
+array( "Tables" =>
+    array( array( "Table" => 'keyframe_example_people',
+                  "Fields" => array(
+                      array( "col"=>"name", "type"=>"S"),
+                      array( "col"=>"age",  "type"=>"I")))));
+
+</PRE>
+</TD></TR></TABLE>
+<P>
+The KeyFrame Relation Definition (kfrel_def) tells KeyFrame that there is one table in your relation. It specifies the table name, and
+defines two columns, name and age, with their types. This gives KeyFrame all of the information that it needs to construct
+SELECT, INSERT, UPDATE and DELETE statements on the table.
+</P>
+<P>
+Notice that the _key column (the primary key) is not specified in the kfrel_def. KeyFrame assumes that you always have
+this column. You can use KeyFrame without a primary key called '_key', which is handy for implementing existing relations
+and tables under KeyFrame, but it's highly recommended that you use this convention with new tables so that you can use
+KeyFrame's join functionality.
+</P>
+<P>
+With this kfrel_def, you can use KeyFrame to manage data in the table, and automatically generate a user interface. Plus,
+KeyFrame can automatically log all changes, and keep track of who changed what.
+</P>
+<P>
+See example1.php to see how KeyFrameRecord and KeyFrameRecordCursor classes are used to read tables, and update records.
+</P>
+<P>
+So far, this looks like a lot of code to solve a simple problem. But there's much more. Read on to see how KeyFrame makes
+more complex jobs just as easy as this basic example.
+</P>
+
+
+
+
+
+
+
+<H3>What is KeyPhrame?</H3>
+<P>KeyPhrame is not another database abstraction class.  It's a set of classes for data relation abstraction,
+data management, and database user interface construction.  It is designed to take the work out of database programming
+while providing flexibility to the application developer.</P>
+
+<H3>What's Relation Abstraction?</H3>
+<P>Take this example.  Say you have a list of people and a list of homes.  That's a one-to-many
+relationship, because each person lives in one home, and each home can have more than one person.  It can also be
+called a Parent-Child relationship: the home is the parent, housing zero or more people (children).</P>
+<P>In a Parent-Child relationship, the parent table has a primary key.  The rows of the child table have a foreign
+key referring to the parent's primary key.  That means you get information about a child and its parent by performing
+a join on the two tables where foreign key = primary key.</P>
+<P>With KeyPhrame, you just define the relation.  You tell KeyPhrame that you have a Parent-Child relationship.  You
+tell it the names of the tables, the names and types of the columns that you care about, and the name of the foreign key.
+KeyPhrame does the rest.  It knows when and how to join the tables to get what you want.</P>
+<P>Another example:  say you have a list of people and a list of college degrees.  That's a many-to-many relationship
+because each person can have more than one degree, and more than one person can have the same degree.  You implement
+this with two tables, each with a primary key, and a "join table" with two foreign keys that relate people and degrees.</P>
+<P>With KeyPhrame, you could define three relations: a Simple (single-table) description of the people table, a Simple
+description of the degrees table, and a ManyToMany relation.  The latter would tell KeyPhrame that you have a
+ManyToMany relation, the names of the three tables, and the names of the two foreign keys in the join table.  KeyPhrame
+would then take care of joining the tables to fetch various relations, and inserting/deleting rows from the join table
+to create and remove relations between people and their degrees.</P>
+
+<H3>Why do we need KeyPhrame?</H3>
+<P>Maybe you're thinking, 'I can write SQL joins, so why do I need some class to do it for me?'  Good question.  KeyPhrame
+does much more than cobble together join clauses.  It automatically timestamps all records, optionally logs updates,
+and provides methods for fetching, inserting and updating records based on a single relation definition.  In other words,
+if you change your data model, you only have to change your KeyPhrame definition in one place instead of rewriting all
+of your SQL.</P>
+
+<H3>Anything else?</H3>
+<P>Even better, KeyPhrame provides UI tools for easy display, sorting, filtering, inputting and editing of data
+records, in various data relations.  With KeyPhrame you can build a complete data management user interface for
+any supported relation in under an hour, and usually with less than 50 lines of code.</P>
+
+<H3>How does it work?</H3>
+<P>KeyPhrame is called that because it is based on a framework of data relation keys.  To simplify the description of
+relations, it requires primary keys and foreign keys to adhere to certain naming conventions.</P>
+<UL>
+<LI>The primary key of each table must be called <B>_rowid</B>, and it must be an integer.
+The KeyPhrame data logic expects that.
+Usually the data model designer makes it auto-increment to ensure uniqueness.
+</LI>
+<LI>Every foreign key must start with <B>fk_</B> followed by the name of the table.  e.g. foreign key to table <I>people</I>
+must be called <B>fk_people</B></LI>
+</UL>
+<P>This way, KeyPhrame can create a Parent-Child join just by knowing the names of the tables.  If the parent table
+is <B>homes</B> and the child table is <B>people</B>, then the join is <B>homes join people where
+homes._rowid = people.fk_homes</B>.  This makes it very easy for a KeyPhrame programmer to describe the relation.</P>
+<BLOCKQUOTE>e.g.<PRE>
+Table=people
+Fields=array("firstname","lastname","birthday")
+RelationType=Parent
+RelationParentTable=homes
+RelationParentFields= array("address","colour")
+</PRE></BLOCKQUOTE>
+<P>Imagine in this example you wanted to show all information about a certain person.  Each record in the people table
+has a unique _rowid, so you might query the row where people._rowid=N, where N is a known integer primary key value.
+KeyPhrame would use the above description to generate the SQL
+<B>SELECT people._rowid as _rowid, people.firstname as firstname, people.lastname as lastname, people.birthday as birthday,
+homes._rowid as P__rowid, homes.address as P_homes, homes.colour as P_colour from people,homes
+where people.fk_homes=homes._rowid and people._rowid=N</B>.
+
+
+<P>
+Base table fields are fetched by their column names.
+Related table fields are defined with an alias.
+RelationTableFields=array( array("colname"=>"address", "alias"=>"home_address", "type"=>"S") );
+Then SELECT people._rowid as _rowid, people.firstname as firstname, homes.address as home_address.
+The client code expects to find the values $ra['firstname'] and $ra['home_address'].
+There is thus no dependency on table names in the code, so data model and table names can be changed as long as aliases
+remain the same, with no need to change the code.
+
+GrandParent Relation:
+Table=kiddo
+Fields=array("colname"=>"colA")
+RelationType=GrandParent
+RelationParentTable=dad
+RelationGrandParentTable=grampa
+RelationParentFields=array(array("colname"=>"colA","alias"=>"aliasA"))
+RelationGrandParentFields=array(array("colname"=>"colA","alias"=>"aliasB"))
+
+SELECT kiddo._rowid as _rowid, kiddo.colA as colA, dad.colA as aliasA, grampa.colA as aliasB FROM kiddo,dad,grampa
+WHERE kiddo.fk_dad=dad._rowid AND dad.fk_grampa=grampa._rowid
+
+Also should have a condition-generation-helper function that can retrieve the correct column name.  It shouldn't be
+hard to figure it out (must use kiddo._rowid instead of just _rowid) but it would be nicer and data-model-independent
+to use KPhGetDBColName("base","_rowid") to generate "kiddo._rowid" and KPhGetDBColName("parent", "aliasA") to generate
+"dad.colA".
+

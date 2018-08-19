@@ -1,0 +1,1652 @@
+<?
+
+define( "SITEROOT", "../../" );
+include_once( SITEROOT."site.php" );
+include_once( PAGE1_TEMPLATE );
+
+
+
+$page1parms = array (
+                "lang"      => "EN",
+                "title"     => "Canadian Bred Tomatoes",
+                "tabname"   => "Library",
+//              "box1title" => "Canadian Tomato Project",
+//              "box1text"  => "Box2Text",
+//              "box1fn"    => "Box1Fn",
+//              "box2title" => "Box2Title",
+//              "box2text"  => "Box2Text",
+//              "box2fn"    => "Box2Fn"
+             );
+
+
+
+Page1( $page1parms );
+
+
+function Page1Body() {
+?>
+<h2>Canadian-Bred Tomatoes</h2>
+<p style="margin-bottom: 0cm;"><font size="2"><font
+ face="Times New Roman, serif">Christene
+Rafuse</font></font></p>
+<p style="margin-bottom: 0cm;"><font face="Times New Roman, serif"><font
+ size="2">[This
+article originally appeared in the Heritage Seed Program magazine,
+August 1990.] </font></font>
+</p>
+<p style="margin-bottom: 0cm;"><br>
+</p>
+<p style="margin-bottom: 0cm;"><font face="Times New Roman, serif"><font
+ size="3">With
+Meech Lake constantly in the news over the last year, most of us have
+had cause to ponder what it means to be Canadian. When I joined the
+Heritage Seed Program, it seemed to me that one way we could
+distinguish ourselves from our friends in the Seed Savers Exchange in
+the States would be by placing a special emphasis on preserving
+varieties developed or formerly popular in Canada. My hobby is
+growing different tomatoes. Last winter I decided to research the
+history of tomato breeding in Canada and find out what originated
+here.</font></font></p>
+<p style="margin-bottom: 0cm;"><font face="Times New Roman, serif"><font
+ size="3">Tomatoes
+are the most popular home garden vegetable in North America today.
+With the hundreds of varieties now existing, it is easy to forget
+that they were not widely grown before the 1860s. This makes
+researching the history of tomato varieties somewhat easier than that
+of other vegetables.</font></font></p>
+<p style="margin-bottom: 0cm;"><font face="Times New Roman, serif"><font
+ size="3">From
+the time of Confederation, Agricultural Research Stations have been
+testing varieties on the market and making recommendations for home
+and market growers. Early reports are filled with the struggles to
+make tomatoes grow &#8212; period &#8212; with discouraging comments from
+Brandon, Manitoba and Swift Current, Saskatchewan stating, &#8220;None
+ripened this year.&#8221;</font></font></p>
+<p style="margin-bottom: 0cm;"><font face="Times New Roman, serif"><font
+ size="3">Tomato
+breeding was definitely not a science in the late 1800s. The laws of
+genetics were poorly understood. Seedsmen would often select only the
+largest fruit in the field for saving seed. It was the American
+Alexander Livingston who first realized that one had to look at the
+entire plant, as well as the fruit, when making selections. Within a
+short time, the market was filled with varieties showing the merits
+of his system, all of which bore his name: Livingston&#8217;s Perfection,
+L. Aristocrat, L. Magnus, and L. Beauty. One of his varieties,
+Livingston&#8217;s Globe, was still in Stokes catalogue in 1975.</font></font></p>
+<p style="margin-bottom: 0cm;"><font face="Times New Roman, serif"><font
+ size="3">It
+was no wonder that early seedsmen had trouble fixing their lines.
+Today, we know proper isolation distances (150 feet for potato leaf
+varieties, for example), while they would often plant one row next to
+another. A common complaint was that varieties would not come true as
+advertised. Another was the blatant use of duplicitous names &#8212; a
+practice not fully stopped until 1924 when the Canadian Seed Growers
+Association set standards for vegetable seed production. Even today,
+unscrupulous bedding plant growers have been known to tag the latest
+hybrid as Bonny Best.</font></font></p>
+<p style="margin-bottom: 0cm;"><font face="Times New Roman, serif"><font
+ size="3">These
+were just a few of the problems faced by stations doing trials in
+those early years. The objectives at all the stations were the same &#8212;
+to find varieties that produced good yields of early ripening, medium
+to large, smooth fruit. Reports from the 1870s and 1880s described
+seedy and lumpy failures.</font></font></p>
+<p style="margin-bottom: 0cm;"><font face="Times New Roman, serif"><font
+ size="3">Tomato
+breeding can be said to have originated in Canada in 1900. W.T.
+Macoun, at the Central Experimental Farm in Ottawa, began making
+selections from Spark&#8217;s Earliana. The best of these selections was
+dubbed Alacrity and released across Canada via the other research
+stations and local Department of Agriculture branches. Alacrity was
+not a static selection &#8212;improvements continued to be made to the
+variety, which was a top producer in trials across Canada until the
+1930s. As well, different Alacrity selections were made for different
+purposes &#8212; some for earliness, some for higher yield and
+uniformity.</font></font></p>
+<p style="margin-bottom: 0cm;"><font face="Times New Roman, serif"><font
+ size="3">A
+1926 quarter-century retrospective described the development of
+Alacrity and its importance to settlers in isolated northern regions.
+Even in 1926, maturity for the earliest strains was still 104 days
+from seeding. Eventually, these different strains became the numbered
+Ottawa lines as different crosses were introduced.</font></font></p>
+<p style="margin-bottom: 0cm;"><font face="Times New Roman, serif"><font
+ size="3">From
+the start, stations concentrated on the production of open-pollinated
+varieties. As the producers of Monarch and Mustang hybrids at Morden,
+Manitoba found in the 1950s, people did not want to pay more for
+hybrid seed. But more important, the stations encouraged the use of
+home-grown seed. It was hoped that people receiving samples from
+stations would multiply them for their friends and neighbours. A
+report from 1894 states, &#8220;Home-grown seed gives better yields than
+boughten.&#8221;</font></font></p>
+<p style="margin-bottom: 0cm;"><font face="Times New Roman, serif"><font
+ size="3">Breeding
+programs did not get started in a large way until after the Second
+World War. Research was disrupted first by the First World War and
+then by the Great Depression. Breeding over the years has centred in
+a few areas. Morden has been a centre for the Western program, with
+affiliated projects in Saskatchewan and Alberta. Ontario has produced
+the bulk of varieties, with large programs at the Central
+Experimental Farm and Simcoe. The contribution made by Quebec is
+often ignored, mostly because their research is not readily found in
+major Canadian English scientific journals. The small program at
+Kentville, Nova Scotia, yielded Scotia, still the best variety for
+the Atlantic provinces.</font></font></p>
+<p style="margin-bottom: 0cm;"><font face="Times New Roman, serif"><font
+ size="3">Despite
+the onslaught of so-called bigger and better hybrid tomatoes in the
+post Second World War period, many of the station varieties have
+stood the test of time. Many have disappeared. The stations lacked
+the budgets and means to promote their varieties and depended upon
+their being adopted by seed companies, to which they might give
+exclusive rights. Small seedsmen, like Edward Lowden, made it their
+policy for many years to promote local varieties. But in the last 20
+years, the amalgamation of the seed business has eliminated most of
+the smaller companies and encouraged the selling of fewer varieties.</font></font></p>
+<p style="margin-bottom: 0cm;"><br>
+</p>
+<h3>Varieties developed in Canada</h3>
+<p style="margin-bottom: 0cm;"><br>
+</p>
+<p style="margin-bottom: 0cm;"><font face="Times New Roman, serif"><font
+ size="3">Note:
+This is a list of field varieties and it does not include greenhouse
+ones</font></font></p>
+<table width="697" border="0" cellpadding="2" cellspacing="0">
+  <col width="174"> <col width="44"> <col width="182"> <col
+ width="281"> <thead> <tr>
+    <td width="174" height="8">
+    <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Name</font></font></p>
+    </td>
+    <td width="44">
+    <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Intro Date</font></font></p>
+    </td>
+    <td width="182">
+    <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Station</font></font></p>
+    </td>
+    <td width="281">
+    <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Varieties used in
+parentage</font></font></p>
+    </td>
+  </tr>
+  </thead> <tbody>
+    <tr>
+      <td width="174" height="20">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1. Alacrity</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Early 1900s</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Ottawa</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Spark's Earliana </font></font>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="10">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">2. Herald</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1926</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Ottawa</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Alacrity, Hipper </font></font>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="13">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">3. Harkness</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1937</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Vineland, ON</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Old English</font></font></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="12">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">4. Morden</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1945</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Morden, MB</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><br>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="11">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">5. Carleton</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1952</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Ottawa</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Abel, Marglobe </font></font>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="12">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">6. Meteor</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1952</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Morden</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Earlinorth, Bonton </font></font>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="13">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">7. Mustang F1 hybid</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1952</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Morden</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Bounty, Redskin</font></font></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="12">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">8. Earlinorth</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1952</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Lethbridge, AB</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Farthest North, Polar
+Circle </font></font> </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="12">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">9. Monarch F1 hybrid</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1953</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Morden</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Early Chatham, Bounty </font></font>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="12">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">to. Early Lethbridge</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1953</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Lethbridge</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Farthest North, Polar
+Circle </font></font> </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="12">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">11. Harrow</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1955</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Harrow, ON</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Red Cloud</font></font></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="11">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">12. Manitoba</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1956</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Morden</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Redskin, Marglobe, Bounty
+      </font></font> </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="13">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">13. Ferguson</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1956</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Ottawa</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Bounty, Early Rutgers </font></font>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="11">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">14. Scotia</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1957</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Kentville, NS</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Meteor, Quebec #5</font></font></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="12">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">15. Kenearly</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1957</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Kentville</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><br>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="10">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">16. Bush Beefsteak</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">195?</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Morden</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><br>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="13">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">17. Quebec #5</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">195?</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Saint-Hyacinthe, QC</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><br>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="10">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">18. Cabot</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">195?</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Kentville</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><br>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="12">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">19. Vinered</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1960</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Vineland</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Early Chatham, Rutgers </font></font>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="13">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">20. Viceroy</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1961</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Vineland</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Bounty, Rutgers </font></font>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="13">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">21. Coldset</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1961</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Ont. Agr. College, Guelph</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Fireball, wild species </font></font>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="11">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">22. Rideau (Ottawa,
+Ottawa 28)</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1962</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Ottawa</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Meteor, Urbana</font></font></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="12">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">23. Ottawa 39</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1962</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Ottawa</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Meteor, Urbana </font></font>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="12">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">24. Ottawa 6</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1963</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Ottawa</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Bounty, Ottawa 10</font></font></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="14">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">25. High Crimson</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1963</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">OAC, Guelph</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><br>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="10">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">26. Venture</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1963</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Vineland</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><br>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="12">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">27. Viscount</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1963</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Vineland</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Ace, Rideau</font></font></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="12">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">28. Starfire</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1963</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Morden</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Earlinorth</font></font></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="13">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">29. Rocket (Centennial
+Rocket)</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1966</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Lacombe, AB</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Farthest North, Early
+Chatham</font></font></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="12">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">30. Trent</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1967</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Trenton</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><br>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="13">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">31. Swift</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">196?</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Swift Current, SK</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><br>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="11">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">32. Ottawa 78</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">196?</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Ottawa</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><br>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="13">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">33. Mini Rose (Ottawa 85)</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1970</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Ottawa</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Ottawa 30</font></font></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="12">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">34. Vision</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1971</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Vineland</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Campbell 1327, Coldset</font></font></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="12">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">35. Moira</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1972</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Trenton</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><br>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="12">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">36. Trimson</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1972</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Trenton</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><br>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="21">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">37. Sub Arctic Early</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1972</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Beaverlodge, AB</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Farthest North, Polar
+Circle, Fargo Yellow Pear, Fireball, Firesteel </font></font> </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="20">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">38. Sub Arctic Midi</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1972</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Beaverlodge</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">same as above</font></font></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="12">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">39. Sub Arctic Plenty</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1972</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Beaverlodge</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><br>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="11">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">40. Melfort</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1973</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Melfort, SK</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><br>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="11">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">41. Booster</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1973</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Lacombe</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><br>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="13">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">42. Pembina</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1973</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Portage La Prairie, MB</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><br>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="12">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">43. Mac Pink</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1973</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Macdonald College, QC</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Coldset, Homestead</font></font></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="11">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">44. Veemore</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1975</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Simcoe, ON</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><br>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="11">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">45. Veeroma</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1975</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Simcoe</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><br>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="14">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">46. Rosabec</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1975</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Saint-Hyacinthe</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><br>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="10">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">47. Earlirouge</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1977</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Trenton</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Moira, Trimson, Trent,
+Starfire, Micando Ecarlate</font></font></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="8">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">48. Basketvee</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1978</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Simcoe</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><br>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="14">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">49. Veepro</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1978</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Simcoe</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><br>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="12">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">50. Prairie Pride</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1978</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">U of M, Winnipeg, MB</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Summit </font></font> </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="12">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">51. Keystone</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1978</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">U of M, Winnipeg</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Summit </font></font> </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="12">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">52. Manette</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1978</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">U of M, Winnipeg</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Summit </font></font> </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="12">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">53. Ping Pong</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1978</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">U of M, Winnipeg</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Summit, Red Cherry</font></font></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="10">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">54. Crimsonvee</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1979</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Simcoe</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><br>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="14">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">55. Precocibec</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">197?</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Saint-Hyacinthe</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><br>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="12">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">56. Canabec</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">197?</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Saint-Hyacinthe</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><br>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="10">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">57. Sub Arctic Maxi</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">197?</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">?</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><br>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="13">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">58. Sub Arctic Cherry</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">197?</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">?</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><br>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="12">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">59. Sub Arctic Delight</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">197?</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">?</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><br>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="12">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">60. Earlibright</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1980</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Trenton</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Earlirouge, Quinte,
+Moira, Starfire </font></font> </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="20">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">61. Bonnyvee</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1980</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Simcoe</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Vision, Veeset, Roma VF,
+Heinz 1350, High Crimson, Kecskemeti Export </font></font> </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="18">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">62. Harvestvee</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1980</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Simcoe</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Veebrite</font></font></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="14">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">63. Quebec 1121 (Square)</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1980</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Saint-Hyacinthe</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Cannabec, Petomech 11,
+Trimson </font></font> </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="10">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">64. Bellestar</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1981</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Vineland</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Libby 7281, Moira,
+Veebrite, Trimson </font></font> </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="14">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">65. Rubyvee</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1981</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Simcoe</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Roma VF, High Crimson</font></font></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="12">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">66. Veeking</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1982</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Simcoe</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Lafayette</font></font></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="20">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">67. Quebec 200</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">1987</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Saint-Hyacinthe</font></font></p>
+      </td>
+      <td width="281">
+      <p><span style="text-decoration: none;"><font size="3"><font
+ face="Times New Roman, serif">Ottawa 39, Petomech <span style="">11, </span>Cannabec,
+Trimson</font></font></span></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="20">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">68. Quebec #13</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">?</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Saint-Hyacinthe</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><br>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="12">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">69. Quebec #59</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">?</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Saint-Hyacinthe</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><br>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="12">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">70. Quebec #309</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">?</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Saint-Hyacinthe</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><br>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="12">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">71. Quebec #314</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">?</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Saint-Hyacinthe</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><br>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="12">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">72. Veebrite</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">?</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">(Simcoe?)</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><br>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="12">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">73. Veeset</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">?</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">(Simcoe?)</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><br>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="12">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">74. Veepick</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">?</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">?</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><br>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="12">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">75. Fundy</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">195?</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">Kentville</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><br>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td width="174" height="11">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">76. Quinte</font></font></p>
+      </td>
+      <td width="44">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">?</font></font></p>
+      </td>
+      <td width="182">
+      <p style="text-decoration: none;"><font
+ face="Times New Roman, serif"><font size="3">(Trenton?)</font></font></p>
+      </td>
+      <td width="281">
+      <p style="text-decoration: none;"><br>
+      </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<p style="margin-bottom: 0cm;"><br>
+</p>
+<p style="margin-bottom: 0cm;"><font face="Times New Roman, serif"><font
+ size="3">This
+list of varieties is not complete. Information on varieties has been
+gleaned from station reports, scientific journals, trade papers, and
+seed catalogues. Any further information would be greatly
+appreciated. Many of the Simcoe varieties (all the &#8220;Vee&#8221; ones)
+are available from Stokes Seeds (39 James St., Box 10, St.
+Catharines, Ontario, L2R 6R6). These were developed mainly for the
+canning and processing trade. Dr. Kerr, former plant breeder for
+Simcoe, now works for Stokes.</font></font></p>
+<p style="margin-bottom: 0cm;"><br>
+</p>
+<p style="margin-bottom: 0cm;"><font face="Times New Roman, serif"><font
+ size="3">Varieties
+recommended over the years</font></font></p>
+<p style="margin-bottom: 0cm;"><font size="3"><font
+ face="Times New Roman, serif"><span style="text-decoration: none;">1880s:
+</span>Livingston&#8217;s Favorite, Livingston&#8217;s Beauty, Dwarf
+Champion*, Perfection, Conqueror, Canada Victor, Pear* (a.k.a. Fig)</font></font></p>
+<p style="margin-bottom: 0cm;"><font size="3"><font
+ face="Times New Roman, serif"><span style="text-decoration: none;">1890s:
+</span>Early Ruby, Atlantic Prize, Everbearing, Livingston&#8217;s
+Aristocrat, Potato Leaf, Henderson&#8217;s 400 (Ponderosa)*, Golden
+Queen*, Earliest of All, Mikado, Electric</font></font></p>
+<p style="margin-bottom: 0cm;"><font size="3"><font
+ face="Times New Roman, serif"><span style="text-decoration: none;">1900s:
+</span>Dominion Day, June Pink*, Sparks Earliana*, Early Leader,
+Imperial, Stone*</font></font></p>
+<p style="margin-bottom: 0cm;"><font size="3"><font
+ face="Times New Roman, serif"><span style="text-decoration: none;">1910s:
+</span>Alacrity, Prosperity, Bonny Best*, King Edward, First and
+Best, Crimson Cushion *, Extra Early, Wealthy, Chalks Early Jewel</font></font></p>
+<p style="margin-bottom: 0cm;"><font size="3"><font
+ face="Times New Roman, serif"><span style="text-decoration: none;">1920s:
+</span>Burbank*, Early Atlantic, Early Prosperity, Sunnybrook
+Earliana, Viking, Herald, Fargo, Livingston&#8217;s Globe, Earlibell</font></font></p>
+<p style="margin-bottom: 0cm;"><font size="3"><font
+ face="Times New Roman, serif"><span style="text-decoration: none;">1930s:
+</span>Livingston&#8217;s Beauty, John Baer*, Farthest North, Bounty,
+Abel, Early Chatham, Harkness, Bison, Marglobe*, Princess Mary, Polar
+Circle, Bestal</font></font></p>
+<p style="margin-bottom: 0cm;"><font size="3"><font
+ face="Times New Roman, serif"><span style="text-decoration: none;">1940s:
+</span>Stokesalaska*, Carleton, Valiant*, Redskin, Morden, Red Cloud,
+Victor*, Stokesdale</font></font></p>
+<p style="margin-bottom: 0cm;"><font size="3"><font
+ face="Times New Roman, serif"><span style="text-decoration: none;">1950s:
+</span>Fireball*, Scotia*, Harrow, Meteor, Valnorth</font></font></p>
+<p style="margin-bottom: 0cm;"><br>
+</p>
+<p style="margin-bottom: 0cm;"><font face="Times New Roman, serif"><font
+ size="3">*
+varieties still available today</font></font></p>
+<p style="margin-bottom: 0cm;"><br>
+</p>
+<p style="margin-bottom: 0cm;"><font face="Times New Roman, serif"><font
+ size="3">Bibliography</font></font></p>
+<p style="margin-bottom: 0cm;"><font size="3"><font
+ face="Times New Roman, serif">American
+Society for Horticultural Science. <span style="text-decoration: none;"><i>New
+Vegetable Variety Lists</i>, </span>1&#8211;18. These are published
+periodically in <span style="text-decoration: none;"><i>Horticultural
+Science</i>.</span></font></font></p>
+<p style="margin-bottom: 0cm;"><font size="3"><font
+ face="Times New Roman, serif">Fell,
+D. (1977) Everything you always wanted to know about the tomato.
+<span style="text-decoration: none;"><i>Horticulture. </i>Feb: </span>16&#8211;23.</font></font></p>
+<p style="margin-bottom: 0cm;"><font face="Times New Roman, serif"><font
+ size="3">Yearly
+reports from these stations and others: Morden, Manitoba; Central
+Experimental Farm, Ottawa; Beaverlodge, Alberta; Kentville, Nova
+Scotia; Charlottetown, PEI; Melfort, Saskatchewan.</font></font></p>
+<p style="margin-bottom: 0cm;"><font face="Times New Roman, serif"><font
+ size="3">Canadian
+Horticultural Council yearly reports.</font></font></p>
+
+<?
+}
+
+?>

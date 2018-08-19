@@ -1,0 +1,2 @@
+zip -D ignored_files.zip _captcha/*  i/events/* i/news/* i/seeds/* i/seeds/thmb/* i/seeds/users/* pdf/* 
+zip -r ignored_apps.zip  blog forum s/tiny_mce  -x \*.svn\*

@@ -1,0 +1,272 @@
+%%main
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  [[include:sf-head]]
+  </head>
+  <body>
+  [[setvarmap:sodlink|$lang|EN|http://seeds.ca|FR|http://semences.ca]]
+  [[setvarmap:usclink|$lang|EN|http://usc-canada.org|FR|http://fr.usc-canada.org]]
+  [[setvar:sodlogo|//seeds.ca/i/img/logo/logoA_h-[[ifeq:$lang|EN|en|fr]]-300x.png]]
+
+  [[include:sf-body-header]]
+  [[include:sf-body-banner]]
+# [[include:sf-body-slider-obsolete]]
+  [[include:sf-body-searchform]]
+  <section class="results">
+    <h1></h1>
+    <!-- <h1>Search results</h1> -->
+    <div class="container-fluid">
+      <div class="fmt1 row seeds-results"></div>
+      <div class="fmt2 row">
+        <div class="col-sm-8"><div class="row seeds-results"></div></div>
+        <div class="col-sm-4">
+          <div style="background-color:rgba(255,255,255,0.3);padding:20px;text-align:center">
+            <h3 style="width:100%;text-align:center" class="profile-name"></h3>
+            <div class="profile"></div>
+          </div>
+        </div>      
+      </div>
+    </div>
+  </section>
+  <section class="extra">
+    <img class="img-responsive" src="images/extra/background.jpg" width="100%" height="auto">
+  </section>
+  [[include:sf-body-footer]]
+  [[include:sf-body-copyright]]
+  
+  <script>sfLang = "[[var:lang]]";</script>
+  </body>
+</html>
+
+
+%%sf-head
+        <meta charset="UTF-8">
+        <meta name="description" content="" />
+        <meta name="keywords" content="" />
+        <meta name="robots" content="index,follow" />
+        <meta name="author" content="Template Builder" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <title>Seed finder</title>
+        <link rel="stylesheet" type="text/css" class="bootstrap" href="bootstrap/css/bootstrap.min.css" />
+        <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+        <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+        <script src="widgets/responsiveSlides/responsiveslides.min.js"></script>
+        <script src="widgets/jquery-match-height/jquery.matchHeight-min.js"></script>
+        <script src="widgets/jquery-scrollTo/jquery.scrollTo.min.js"></script>
+        <script type="text/javascript" src="js/custom.js"></script>
+        <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="widgets/responsiveSlides/responsiveslides.css" />
+        <link rel="stylesheet" type="text/css" href="style/custom.css" />
+        <link rel="stylesheet" type="text/css" href="style/style.css" />
+        <link rel="stylesheet" type="text/css" href="style/edits/custom.css" />
+        <!--[if lt IE 9]>
+            <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+%%sf-body-header
+<section class="header">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <h1 align="center">[[ifeq:$lang|EN|The Ecological Seed Finder|Localisateur de semences &eacute;cologiques]]</h1>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+%%sf-body-banner
+<section class="sub-banner">
+  <img class="img-responsive" src="images/banner/background.jpg" width="100%" height="auto">
+</section>
+<section class="banner">
+<div class="container-fluid"><div class="row">
+  <div class="col col-lg-4 col-md-4 col-sm-12 col-xs-12">
+    <a href='[[var:sodlink]]' target='_blank'><img class="img-responsive" src="[[var:sodlogo]]" width="100%" height="auto"></a>
+  </div>
+  <div class="col col-lg-4 col-md-4 col-sm-12 col-xs-12">
+    <a href='[[var:usclink]]' target='_blank'><img class="img-responsive" src="images/logos/usc-canada.png" width="100%" height="auto"></a>
+  </div>
+  <div class="col col-lg-4 col-md-4 col-sm-12 col-xs-12">
+    <img class="img-responsive" src="images/logos/w-garfield-weston-foundation.png" width="100%" height="auto">
+  </div>
+</div></div>
+</section>
+
+
+%%sf-body-searchform
+        <section class="search-form" id="search">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col col-lg-7 col-md-12 col-sm-12 col-xs-12 description">
+                        <div class="content">
+                            {% if lang=='EN' %}
+                            <h1><span>Good</span> food begins<br>with <span>good seed</span></h1>
+                            <h2><span>Find the best</span> locally adapted seeds <span>in your region</span></h2>
+                            {% else %}
+                            <h1 style='font-size:2.6em'>De <span>bonnes semences</span> donnent de la <span>bonne nourriture</span></h1>
+                            <h2><span>Trouvez les meilleures</span> semences adapt&eacute;es localement <span>dans votre r&eacute;gion</span></h2>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col col-lg-5 col-md-12 col-sm-12 col-xs-12 search">
+                        <div class="content">
+                            <h1>[[ifeq:$lang|EN|Search| ]]</h1>
+                            <form role="form" method="get" id="finder">
+                                <div class="form-group">
+                                    <select name="sfAp_sp" id="sfAp_sp" class="form-control" required>
+                                        <option value="0">[[ifeq:$lang|EN|By crop|Par culture]]</option>
+                                        [[var:spOptions]]
+<!-- 
+                                        <option value="27">Asparagus</option>
+                                        <option value="33">Barley</option>
+                                        <option value="36">Bean</option>
+                                        <option value="42">Fava Bean</option>
+                                        <option value="45">Beet</option>
+                                        <option value="49">Broccoli</option>
+                                        <option value="54">Cabbage</option>
+                                        <option value="61">Carrot</option>
+                                        <option value="66">Cauliflower</option>
+                                        <option value="92">Corn</option>
+                                        <option value="95">Cow pea</option>
+                                        <option value="97">Cucumber</option>
+                                        <option value="113">Eggplant</option>
+                                        <option value="134">Garlic</option>
+                                        <option value="164">Kale</option>
+                                        <option value="173">Leek</option>
+                                        <option value="175">Lettuce</option>
+                                        <option value="209">Muskmelon</option>
+                                        <option value="216">Oats</option>
+                                        <option value="219">Onion</option>
+                                        <option value="221">Orach</option>
+                                        <option value="226">Pea</option>
+                                        <option value="228">Pepper</option>
+                                        <option value="245">Potato</option>
+                                        <option value="250">Quinoa</option>
+                                        <option value="251">Radish</option>
+                                        <option value="294">Soybean</option>
+                                        <option value="304">Sunflower</option>
+                                        <option value="309">Swiss chard</option>
+                                        <option value="317">Tomato</option>
+                                        <option value="333">Watermelon</option>
+                                        <option value="334">Wheat</option>
+                                        <option value="358">Brussels Sprouts</option>
+-->
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <input name="sfAp_srch" id="sfAp_srch" value="" size="20" placeholder="[[ifeq:$lang|EN|By variety|Par Vari&eacute;t&eacute;]]" class="form-control" type="text">
+                                </div>
+                                <div class="form-group">
+                                    <select name="sfAp_region" id="sfAp_region" class="form-control">
+                                        <option value="0">[[ifeq:$lang|EN|By region|Par R&eacute;gion]]</option>
+                                        <option value="bc">B.C.</option>
+                                        <option value="pr">Prairies</option>
+                                        <option value="on">Ontario</option>
+                                        <option value="qc">Quebec</option>
+                                        <option value="at">Atlantic</option>
+                                    </select>
+                                </div>
+                                <div class="checkbox form-control">
+                                    [[ifeq:$lang|EN|Certified organic only|Certifi&eacute; biologique]]
+                                    <input name="sfAp_organic" id="sfAp_organic" class="organic" type="checkbox" value="1">
+                                </div>
+                                <button type="submit" class="btn btn-default">
+                                    [[ifeq:$lang|EN|Find|Trouver]]
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+%%sf-body-footer
+<section class="footer">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col col-lg-4 col-md-12 col-sm-12 col-xs-12">
+        <div class="content">
+          <h1>[[ifeq:$lang|EN|Visit us at|Visitez nous]]:</h1>
+          <p><a href='[[var:sodlink]]' target='_blank'><img class="img-responsive" src="[[var:sodlogo]]" width="100%" height="auto"></a></p>
+          <p><a href='[[var:usclink]]' target='_blank'><img class="img-responsive" src="images/logos/usc-canada.png" width="100%" height="auto"></a></p>
+        </div>
+      </div>
+      <div class="col col-lg-4 col-md-12 col-sm-12 col-xs-12">
+        <div class="content">
+          {% if lang=='EN' %}
+          <h1>Thank you:</h1>
+          <p><img class="img-responsive" src="images/logos/w-garfield-weston-foundation.png" width="100%" height="auto"></p>
+          <p>The Ecological Seed Finder is brought to you by Seeds of Diversity and USC Canada, through the generous support of The W. Garfield Weston Foundation</p>
+          {% else %}
+          <h1>Merci:</h1>
+          <p><img class="img-responsive" src="images/logos/w-garfield-weston-foundation.png" width="100%" height="auto"></p>
+          <p>Le Localisateur de semences &eacute;cologiques vous est pr&eacute;sent&eacute; par Semences du patrimoine et USC Canada, 
+          gr&acirc;ce au soutien g&eacute;n&eacute;reux de la Fondation W. Garfield Weston.</p>
+          {% endif %}
+        </div>
+      </div>
+      <div class="col col-lg-4 col-md-12 col-sm-12 col-xs-12">
+        <div class="content">
+          {% if lang=='EN' %}
+          <h1>Contact Us</h1>
+          <p>If you don't find what you need here, we'll be glad to help.</p>
+          <p>Please contact | <a href="mailto:mail@seeds.ca">mail@seeds.ca</a><br /><a href="tel:2266007782" class="tel">226-600-7782</a></p>
+          <p>Seeds of Diversity Canada<br>1-12 Dupont St. West, Waterloo, ON N2L 2X6</p>
+          {% else %}
+          <h1>Contactez nous</h1>
+          <p>Si vous ne trouvez pas ce dont vous avez besoin ici, nous serons heureux de vous aider.</p>
+          <p>Contactez | <a href="mailto:courriel@semences.ca">courriel@semences.ca</a><br /><a href="tel:2266007782" class="tel">226-600-7782</a></p>
+          <p>Semences du patrimoine Canada<br>1-12 Dupont St. West, Waterloo, ON N2L 2X6</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+%%sf-body-copyright
+<section class="copyright">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="content">
+          <p><small>Copyright &copy; 2016-2018 [[ifeq:$lang|EN|Seeds of Diversity|Semences du patrimoine]] Canada</small></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+%%sf-body-slider-obsolete
+<!--
+<section class="slider">
+    <ul class="rslides">
+        <li>
+            <img class="img-responsive" src="images/slider/slider_1.jpg" width="100%" height="auto" />
+            <p align="center">
+                I want to search now !<br />
+                <a class="go btn btn-warning btn-lg" id="scroll">GO</a>
+            </p>
+        </li>
+        <li>
+            <img class="img-responsive" src="images/slider/slider_2.jpg" width="100%" height="auto" />
+        </li>
+        <li>
+            <img class="img-responsive" src="images/slider/slider_3.jpg" width="100%" height="auto" />
+        </li>
+        <li>
+            <img class="img-responsive" src="images/slider/slider_4.jpg" width="100%" height="auto" />
+        </li>
+        <li>
+            <img class="img-responsive" src="images/slider/slider_5.jpg" width="100%" height="auto" />
+        </li>
+    </ul>
+    <div class="nav"></div>
+</section>
+-->

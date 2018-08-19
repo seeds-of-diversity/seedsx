@@ -1,0 +1,32 @@
+install drupal8 in swww8
+
+
+1)
+On www12.peaceworks.ca you have to edit swww8/sites/default/files/.htaccess
+Remove -MultiViews option because that causes a 500 errir on any access to "files" which is where drupal caches 
+aggregated css, so you will not get any css and your themes will all look weird.
+
+
+2)
+In swww8/.htaccess uncomment "RewriteBase /drupal8" and change it to "RewriteBase /swww8"
+
+If you've accessed pages using swww8 in the url you should probably clear the cache after this change.
+
+
+3)
+Add this to the bottom of settings.php. This helps drupal figure out what's going on when you redirect seeds.ca/A to seeds.ca/swww8/A
+
+// Bob as per https://www.drupal.org/node/2612160
+if( isset($GLOBALS['request']) && '/swww8/index.php' === $GLOBALS['request']->server->get('SCRIPT_NAME') ) {
+    $GLOBALS['request']->server->set('SCRIPT_NAME', '/index.php');
+}
+
+
+4)
+Copy bootstrap theme to swww8/themes
+Copy breeze theme to swww8/themes
+./cp_to_swww8
+In Appearance, make seedbreeze your default theme.
+
+
+5)

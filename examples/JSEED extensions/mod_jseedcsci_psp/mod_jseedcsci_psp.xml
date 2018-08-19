@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install type="module" version="1.5.0">
+    <name>JSEED CSCI PSP</name>
+    <author>Seeds of Diversity Canada</author>
+    <version>1.5.0</version>
+    <description>Module showing CSCI Species.</description>
+    <files>
+        <filename module="mod_jseedcsci_psp">mod_jseedcsci_psp.php</filename>
+        <filename>tmpl/default.php</filename>
+        <filename>mod_jseedcsci_psp.xml</filename>
+    </files>
+    <params>
+    </params>
+</install>

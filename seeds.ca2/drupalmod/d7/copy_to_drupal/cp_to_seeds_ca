@@ -1,0 +1,13 @@
+SITES_DIR=../../../swww/sites/all
+
+MODULES_DIR=$SITES_DIR/modules
+THEMES_DIR=$SITES_DIR/themes
+
+rm -Rf $MODULES_DIR/seeds
+cp -R module-seeds/seeds $MODULES_DIR 
+
+rm -Rf $THEMES_DIR/seeds2014bootstrap
+cp -R theme-seeds/seeds2014bootstrap $THEMES_DIR
+
+echo Enable the seeds2014bootstrap theme
+echo Update your drupal modules, or disable/enable the seeds module

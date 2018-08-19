@@ -1,0 +1,77 @@
+<header role="banner" class="section-header">
+  <div class="row">
+    <div class="logox         col-md-6 col-sm-6 col-xs-12"> <img src='https://seeds.ca/i/img/logo/logoA_h-en-750x.png' style='max-width:350px;width:100%'/> {# page.header #} </div>
+    <div class="header-right col-md-6 col-sm-6 col-xs-12"> {{ page.header_right }} {% include 'sectionmenu.html.twig' %}</div>
+  </div>
+</header>
+
+
+<div class="navigation-wrapper">
+  <div class="navigation"> {{ page.navigation }} </div>
+</div>
+
+
+{% if page.breadcrumb %}    {{ page.breadcrumb }}   {% endif %}
+{% if page.highlighted %}   {{ page.highlighted }}  {% endif %}
+{% if page.help %}          {{ page.help }}         {% endif %}
+
+
+{% set sidebarClass = 'col-md-12' %}
+{% if page.sidebar_first %}
+  {% set sidebarClass = 'col-md-8 col-sm-8' %}
+{% endif %}
+{% if page.sidebar_second %}
+  {% set sidebarClass = 'col-md-8 col-sm-8' %}
+{% endif %}
+{% if page.sidebar_second %}
+  {% if page.sidebar_first %}
+    {% set sidebarClass = 'col-md-4 col-sm-4' %}
+  {% endif %}
+{% endif %}
+
+
+<main role="main">
+  <div class="row">
+    <a id="main-content" tabindex="-1"></a>{# link is in html.html.twig #}
+
+    <div class="layout-content {{ sidebarClass }}">
+      {{ page.content }}
+    </div>{# /.layout-content #}
+
+    {% if page.sidebar_first %}
+      <aside class="layout-sidebar-first col-md-4 col-sm-4" role="complementary">
+        {{ page.sidebar_first }}
+      </aside>
+    {% endif %}
+
+    {% if page.sidebar_second %}
+      <aside class="layout-sidebar-second col-md-4 col-sm-4" role="complementary">
+        {{ page.sidebar_second }}
+      </aside>
+    {% endif %}
+  </div>
+</main>
+
+
+<div class="content-bottom row">
+  <div class="content-bottom-1 col-md-4 col-sm-4">{{ page.content_bottom1 }}</div>
+  <div class="content-bottom-2 col-md-4 col-sm-4">{{ page.content_bottom2 }}</div>
+  <div class="content-bottom-3 col-md-4 col-sm-4">{{ page.content_bottom3 }}</div>
+</div>
+
+
+<footer role="contentinfo" class="footer">
+  <div>Cool, there are {{count_SEEDSession_Users}} users registered on the web site, and {{count_sl_inventory}} seed samples in the Seed Library.</div>
+  <div class="section-footer">
+    <div class="row">
+      {% if page.footer1 %} <div class="footer_one    col-md-4 col-sm-4"> {{ page.footer1 }} </div> {% endif %}
+      {% if page.footer2 %} <div class="footer_second col-md-4 col-sm-4"> {{ page.footer2 }} </div> {% endif %}
+      {% if page.footer3 %} <div class="footer_third  col-md-4 col-sm-4"> {{ page.footer3 }} </div> {% endif %}
+    </div>
+    <p>Seeds of Diversity is a national organization of seed savers and gardeners who preserve
+       the biodiversity of vegetables, fruit, and grains all across Canada. By saving seeds of
+       rare and endangered food plants, our members help make thousands of varieties available
+       that might otherwise disappear forever.</p>
+    <p>And also pollinators.</p>
+  </div>
+</footer>

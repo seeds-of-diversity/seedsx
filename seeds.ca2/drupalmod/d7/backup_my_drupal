@@ -1,0 +1,16 @@
+if [ ! -n "$1" ]
+then
+    echo "$0 YYMMDD   (you will also need the seeds4 password)"
+    exit
+fi
+
+
+DIR=~/mydrup$1
+
+mkdir $DIR
+cp ~/public_html/swww/.htaccess $DIR/htaccess
+cp ~/public_html/swww/sites/default/settings.php $DIR/settings.php
+echo "Please enter the seeds4 password\n"
+mysqldump -u seeds4 -p --default-character-set=latin1 -N --result-file=$DIR/drupal.sql seeds4
+
+zip -r ~/mydrup$1 $DIR

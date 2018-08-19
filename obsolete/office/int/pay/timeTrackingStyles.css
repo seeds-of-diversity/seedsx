@@ -1,0 +1,126 @@
+@CHARSET "ISO-8859-1";
+
+table, span
+{
+	border-collapse:collapse;
+}
+
+#page1Table td
+{
+	vertical-align:text-top;
+	padding: 1px 5px 1px 5px;
+}
+
+#dollarResults, #dollarDiv
+{
+	padding: 0px 5px 0px 5px;
+}
+	
+#inputTable, #dollarTable
+{
+	text-align:left;
+}
+
+#inputTable td
+{
+	width:200px;
+	padding:7px 0px 7px 0px;
+}
+
+#dollarTable td
+{
+	width:300px;
+	padding:7px 0px 7px 0px;
+}
+
+#resultsTable th, #dollarResults th
+{
+	padding:10px;
+	background-color:orange;	
+}
+
+#resultsTable td
+{
+	border: 1px solid orange;
+	text-align:center;
+	width:100px;
+	padding:7px 0px 7px 0px;
+}
+
+#reasonHeader
+{
+	width:400px;
+}
+
+.dollarHeaders
+{
+	width:100px;
+}
+
+#dollarResults td
+{
+	border: 1px solid orange;
+	text-align:center;
+	padding:7px 0px 7px 0px;
+}
+
+#dateErrorBox, #hoursErrorBox, #dollarError, #reasonError 
+{
+	color:red;
+	font-style:oblique;
+}
+
+#validateButton, #reimbursementButton
+{
+	background-color:orange;
+	font-weight:bold;
+}
+
+#page1
+{
+	border: 1px solid black;
+}
+
+#page2
+{
+	border: 1px solid black;
+	display:none; /* default value */
+}
+
+#tabSpace
+{
+	height:30px;
+}
+
+.tabButtons
+{
+	background-color:orange;
+	border: 1px solid black;
+	height:30px;
+	width:150px;
+	cursor:pointer;
+	font-weight:bold;
+	
+}
+
+h2
+{
+	padding: 5px 5px;
+}
+
+hr
+{
+	color:black;
+}
+
+#pages, input.tabButtons
+{
+	border-collapse:collapse;
+}
+
+#dateInputTextbox, #hoursInputTextbox, #dollars, #reason
+{
+	border: 1px solid black;
+}
+
+

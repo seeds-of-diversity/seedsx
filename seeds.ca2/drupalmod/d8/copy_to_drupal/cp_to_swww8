@@ -1,0 +1,18 @@
+SITES_DIR=../../../swww8/sites/all
+
+MODULES_DIR=$SITES_DIR/modules
+THEMES_DIR=$SITES_DIR/themes
+
+
+echo Unarchive themes/bootstrap to swww8/themes
+echo Unarchive themes/breeze to swww8/themes
+
+
+#rm -Rf $MODULES_DIR/seeds
+cp -R modules/seeds $MODULES_DIR 
+
+#rm -Rf $THEMES_DIR/seedbreeze2017
+cp -R themes/seedbreeze2017 $THEMES_DIR
+
+echo Enable the seedbreeze2017 theme
+echo Update your drupal modules, or disable/enable the seeds module

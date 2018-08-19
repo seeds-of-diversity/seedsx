@@ -1,0 +1,157 @@
+# Access drupal from within the subdirectory swww.
+#
+#   1) Requests for real files/directories relative in seeds.ca are served via the !-f and !-d conditions
+#   2) Requests that aren't files/dirs are redirected to swww via those conditions.
+#      So host/swww/sites/foo.css can be requested by the name host/sites/foo.css
+#   3) The swww/.htaccess serves any real files/dirs
+#   4) The swww/.htaccess sends all other requests to drupal index.php
+#
+#
+# You must also edit swww/.htaccess to have the following lines:
+#     RewriteBase /swww/
+#     RewriteCond %{REQUEST_FILENAME} !-f      // this serves real files in non-swww directories
+#     RewriteCond %{REQUEST_FILENAME} !-d
+#     RewriteCond %{REQUEST_URI} !=/favicon.ico
+#     RewriteRule ^(.*)$ index.php?q=$1 [L]    // this makes requests to swww go through drupal, unless they're files e.g. in themes
+#
+# And swww/sites/default/settings.php:
+#     $base_url = 'http://host/dev/seeds.ca';  (Development)     // this makes drupal write its menu links without the swww
+#  or $base_url = 'http://www.seeds.ca';       (Production)
+
+
+Options -Indexes
+Options +FollowSymLinks
+
+RedirectMatch ^/int/doc/docpub.php(.*)$   http://www.seeds.ca/d$1
+Redirect       /int/doc/docedit.php       http://www.seeds.ca/d/docedit.php
+Redirect       /doc                       http://www.seeds.ca/d/docedit.php
+
+Redirect       /ecosgn/speaker            http://www.seeds.ca/ecosgn/speaker.php
+
+Redirect       /en.php                    http://www.seeds.ca
+Redirect       /fr.php                    http://www.semences.ca
+Redirect       /ev/events.php             http://www.seeds.ca/events
+Redirect       /ev/evenements.php         http://www.semences.ca/evenements
+Redirect       /sources                   http://www.seeds.ca/diversity/seed-catalogue-index
+Redirect       /indice-catalogues         http://www.semences.ca/diversite/indice-catalogues-semences
+Redirect       /csci                      http://www.seeds.ca/diversity/seed-catalogue-index
+Redirect       /seedysaturdays            http://www.seeds.ca/events
+Redirect       /fetes                     http://www.semences.ca/evenements
+RedirectMatch ^/mbr/m.*$                  https://www.seeds.ca/store
+
+
+Redirect       /checkout                  https://www.seeds.ca/store
+Redirect       /donate                    https://www.seeds.ca/store
+Redirect       /donation                  https://www.seeds.ca/store
+Redirect       /subscribe                 https://www.seeds.ca/store
+Redirect       /register                  https://www.seeds.ca/store
+Redirect       /member                    https://www.seeds.ca/store
+Redirect       /adopt                     https://www.seeds.ca/store
+Redirect       /adopt-a-seed              https://www.seeds.ca/store
+
+Redirect       /adhesion                  https://www.semences.ca/boutique
+Redirect       /membre                    https://www.semences.ca/boutique
+Redirect       /don                       https://www.semences.ca/boutique
+
+Redirect       /sl                        http://www.seeds.ca/diversity/seed-library
+Redirect       /library                   http://www.seeds.ca/diversity/seed-library
+Redirect       /bibliotheque              http://www.semences.ca/diversite/bibliotheque-semences
+Redirect       /bibliotheque-semences     http://www.semences.ca/diversite/bibliotheque-semences
+
+Redirect       /saveyourseeds             http://www.seeds.ca/publications
+Redirect       /conservezvossemences      http://www.semences.ca/nos-livres
+Redirect       /publications_fr           http://www.semences.ca/nos-livres
+Redirect       /publications-fr           http://www.semences.ca/nos-livres
+
+#Redirect       /seedfinder                http://www.seeds.ca/bauta/seedfinder.php
+Redirect       /localisateur-semences     http://www.semences.ca/seedfinder
+Redirect       /localisateurdesemences    http://www.semences.ca/bauta/seedfinder.php
+
+Redirect       /explorer                  http://www.seeds.ca/bauta/explorer.php
+Redirect       /explorateur               http://www.seeds.ca/bauta/explorateur.php
+
+Redirect       /magazine_submissions     "http://www.seeds.ca/d?n=mag/Seeds of Diversity magazine submission guidelines 2014.pdf"
+Redirect       /magazine-submissions     "http://www.seeds.ca/d?n=mag/Seeds of Diversity magazine submission guidelines 2014.pdf"
+Redirect       /magazine_advertising     "http://www.seeds.ca/d?n=mag/Seeds-of-Diversity-magazine-advertising-rate-sheet-2017.pdf"
+Redirect       /magazine-advertising     "http://www.seeds.ca/d?n=mag/Seeds-of-Diversity-magazine-advertising-rate-sheet-2017.pdf"
+Redirect       /revue_soumission         "http://www.seeds.ca/d?n=mag/Semences du patrimoine revue - directives pour la soumission 2014.pdf"
+Redirect       /revue-soumission         "http://www.seeds.ca/d?n=mag/Semences du patrimoine revue - directives pour la soumission 2014.pdf"
+Redirect       /revue_soumissions        "http://www.seeds.ca/d?n=mag/Semences du patrimoine revue - directives pour la soumission 2014.pdf"
+Redirect       /revue-soumissions        "http://www.seeds.ca/d?n=mag/Semences du patrimoine revue - directives pour la soumission 2014.pdf"
+Redirect       /revue_publicite          "http://www.seeds.ca/d?n=mag/Semences-du-patrimoine-revue-publicites-2017.pdf"
+Redirect       /revue-publicite          "http://www.seeds.ca/d?n=mag/Semences-du-patrimoine-revue-publicites-2017.pdf"
+Redirect       /revue_publicites         "http://www.seeds.ca/d?n=mag/Semences-du-patrimoine-revue-publicites-2017.pdf"
+Redirect       /revue-publicites         "http://www.seeds.ca/d?n=mag/Semences-du-patrimoine-revue-publicites-2017.pdf"
+
+Redirect       /seed-directory           http://www.seeds.ca/app/seedexchange
+Redirect       /catalogue-semences       http://www.semences.ca/app/seedexchange
+
+Redirect       /bautagrowouts            http://www.seedsecurity.ca/en/118-seed-grow-outs
+Redirect       /cropnotes                http://www.seedsecurity.ca/en/118-seed-grow-outs
+Redirect       /bauta-essais             http://www.seedsecurity.ca/fr/122-essais-en-matiere-de-production-de-semences
+
+Redirect       /how-to-grow-garlic-bulbils http://www.seeds.ca/d?n=web/ebulletin/2016-08-en/articles/garlic
+Redirect       /comment-cultiver-bulbilles http:///www.semences.ca/d?n=web/ebulletin/2016-08-fr/articles/ail
+
+
+
+RewriteEngine on
+
+RewriteRule ^diversity/seed-library-list.php diversity/seed-library-list    [L,QSA]
+
+
+# This almost works to capture this file's path relative to the docroot and set it as the rewritebase
+# The only problem is the server gives a 500 error if %{ENV:BASE} is at the start of the rule output 
+#RewriteBase /
+#RewriteCond %{REQUEST_URI}::$1 ^(.*?/)(.*)::\2$
+#RewriteRule ^(.*)$ - [E=BASE:%1]
+# Now BASE has the path to this htaccess file's directory
+#RewriteRule ^(.*)$ XX%{ENV:BASE}YY [L,QSA]
+#RewriteRule ^(.*)$ %{ENV:BASE} [L,QSA]             # this causes a 500
+#RewriteRule ^(.*)$ blart [L,QSA]
+
+
+
+# Get a "RewriteBase" according to the host name.
+RewriteBase /
+RewriteRule ^ - [E=BASE:/swww/]
+RewriteCond %{HTTP_HOST} ^localhost$
+RewriteRule ^ - [E=BASE:/~bob/seeds.ca2/swww/]
+# now use BASE like this : RewriteRule ^(.*)$ %{ENV:BASE}index.php [L,QSA]
+
+
+# Any requests not for this site get redirected to this site
+#RewriteCond %{HTTP_HOST} !^www\.mysite\.com$ [NC]
+#RewriteRule .* http://www.mysite.com/	[L,R=301]
+
+# Requests to the root go straight to the home page (I think query strings are appended by default if the rewrite has none)
+RewriteRule ^$  %{ENV:BASE}index.php  [L]
+
+# Serve file requests beneath the drupal root (e.g. theme files - img, css, js) - not sure if this works
+RewriteCond %{DOCUMENT_ROOT}%(ENV:BASE}%{REQUEST_URI} -f
+RewriteRule .*  %{ENV:BASE}$0 [L]
+# not sure this works because if I subst the above with this, there's no difference  RewriteRule .* http://www.seeds.ca [L]
+
+# don't allow access to .svn etc
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule \.svn %{ENV:BASE}index.php [L]
+
+# tmp rule for development of french site
+RewriteRule ^fr$ %{ENV:BASE}index.php?lang=FR [L,QSA]
+RewriteRule ^fr/(.*)$ %{ENV:BASE}index.php?q=$1&lang=FR [L,QSA]
+
+# Serve other applications in the root directory (e.g. seedliving, bauta/descriptions)
+# If the request is not elsewhere in the root, redirect into swww.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-l
+RewriteRule ^(.*)$ %{ENV:BASE}$1 [L,QSA]
+
+
+# L = last
+# QSA = query string append (add the request ?query to the rewritten url)
+# QSD = query string discard  - default is to discard the original ?query if rewritten has a query string, append if it doesn't
+# S=n skip the next n rules
+#
+# NC = case insensitive condition
+# OR = this condition or the next condition

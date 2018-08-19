@@ -1,0 +1,59 @@
+ErrorDocument 404 /404.html
+ErrorDocument 403 http://www.seeds.ca
+DirectoryIndex index.php index.html index.htm
+Options -Indexes
+
+# Use RedirectMatch(w/o subst parms) instead of Redirect to cause complete URL replacement instead of match substitution
+# Need ^ to prevent infinite loops in some of these
+Redirect permanent      /en.htm                 http://www.seeds.ca/en.php
+Redirect permanent      /fr.htm                 http://www.semences.ca/fr.php
+RedirectMatch permanent ^/about                 http://www.seeds.ca/info/sod/index.php
+RedirectMatch permanent ^/de_psp                http://www.semences.ca/info/sdp/index.php
+RedirectMatch permanent ^/events                http://www.seeds.ca/ev/events.php
+RedirectMatch permanent ^/evenements            http://www.semences.ca/ev/evenements.php
+RedirectMatch permanent ^/forsale               http://www.seeds.ca/vend/forsale.php
+RedirectMatch permanent ^/vendre                http://www.semences.ca/vend/vendre.php
+RedirectMatch permanent ^/csci                  http://www.seeds.ca/sl/csci
+RedirectMatch permanent ^/hvd                   http://www.seeds.ca/hpd
+RedirectMatch permanent ^/pollinationcanada     http://www.seeds.ca/proj/poll
+RedirectMatch permanent ^/pollinatorwatch       http://www.seeds.ca/proj/poll
+RedirectMatch permanent /proj/pollinatorwatch   http://www.seeds.ca/proj/poll
+RedirectMatch permanent /historicseedcatalogues http://www.seeds.ca/lib/index.php?seedcat=index
+
+Redirect /seed-directory            http://www.seeds.ca/sl/mbr/seed-directory.php
+Redirect /seeddirectory             http://www.seeds.ca/sl/mbr/seed-directory.php
+Redirect /catalogue-semences        http://www.semences.ca/sl/mbr/catalogue-semences.php
+Redirect /cataloguesemences         http://www.semences.ca/sl/mbr/catalogue-semences.php
+
+Redirect /seedysaturdays            http://www.seeds.ca/ev/events.php
+Redirect /fetes                     http://www.semences.ca/ev/evenements.php
+Redirect /seedsavereducator         http://seedsavereducator.blogspot.com
+Redirect /ce                        http://www.seeds.ca/erb_st/erb_st_ce.php
+Redirect /doc                       http://www.seeds.ca/int/doc/docedit.php
+
+Redirect /store                     http://www.seeds.ca/mbr/checkout.php
+Redirect /checkout                  http://www.seeds.ca/mbr/checkout.php
+Redirect /donate                    http://www.seeds.ca/mbr/checkout.php
+Redirect /subscribe                 http://www.seeds.ca/mbr/checkout.php
+Redirect /register                  http://www.seeds.ca/mbr/checkout.php
+Redirect /member                    http://www.seeds.ca/mbr/checkout.php
+
+Redirect /boutique                  http://www.semences.ca/mbr/checkout.php
+Redirect /adhesion                  http://www.semences.ca/mbr/checkout.php
+Redirect /membre                    http://www.semences.ca/mbr/checkout.php
+
+Redirect /library                   http://www.seeds.ca/sl
+Redirect /bibliotheque              http://www.seeds.ca/sl
+
+Redirect /saveyourseeds             http://www.seeds.ca/vend/forsale.php
+
+Redirect /seedfinder                http://www.seeds.ca/bauta/seedfinder.php
+Redirect /localisateurdesemences    http://www.semences.ca/bauta/seedfinder.php
+
+Redirect /publications              http://www.seeds.ca/vend/forsale.php
+Redirect /magazine_submissions     "http://www.seeds.ca/f/Seeds of Diversity magazine submission guidelines 2014.pdf"
+Redirect /magazine_advertising     "http://www.seeds.ca/f/Seeds of Diversity magazine advertising rate sheet 2014.pdf"
+Redirect /revue_soumission         "http://www.seeds.ca/f/Seeds of Diversity magazine submission guidelines 2014.pdf"
+Redirect /revue_soumissions        "http://www.seeds.ca/f/Seeds of Diversity magazine submission guidelines 2014.pdf"
+
+

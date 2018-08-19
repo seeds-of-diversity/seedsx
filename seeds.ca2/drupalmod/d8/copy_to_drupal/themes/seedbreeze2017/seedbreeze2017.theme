@@ -1,0 +1,16 @@
+<?php
+
+if( !defined("SITEROOT") ) define( "SITEROOT", DRUPAL_ROOT."/../" );    // because seeds.module also does this
+include_once( SITEROOT."site.php" );
+include_once( SITEROOT."drupalmod/lib/d8_seedbreeze.php" );
+
+/* All of the code here could go in drupalmod/lib but it is here instead to remind us that the function entry points here are
+ * cached in Drupal 8 and the functions they call are not. You can modify anything in drupalmod/lib without refreshing the Drupal 8 cache
+ * but if you add or change a function api here you have to refresh the cache to see the effect.
+ */
+
+function seedbreeze2017_preprocess_page(&$variables) {
+    D8SeedBreeze_PreprocessPage( $variables );
+}
+
+?>

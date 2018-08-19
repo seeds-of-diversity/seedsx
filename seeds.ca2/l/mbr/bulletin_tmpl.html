@@ -1,0 +1,119 @@
+%% bullControlForm
+<div class='well'>
+  <form action='{{formAction}}' method='post'>
+  <input type='email' required='required' name='{{emailParmName}}' style='width:100%' />
+  <div class='container-fluid'><div class='row' style='margin:20px 0px 50px 0px'>
+    <div class='col-md-6' style='min-width:80px;padding-left:0px;padding-right:0px;'><input style='' type='submit' name='bullCtlCmd' value='Subscribe'/></div>
+    <div class='col-md-6' style='min-width:80px;padding-right:0px;padding-left:0px;text-align:right;'><input style='' type='submit' name='bullCtlCmd' value='Unsubscribe'/></div>
+  </div></div><!--
+  <div style='position:relative;margin:20px 0px 50px 0px'>
+    <input style='position:absolute;left:0' type='submit' name='bullCtlCmd' value='Subscribe'/>
+    <input style='position:absolute;right:0' type='submit' name='bullCtlCmd' value='Unsubscribe'/>
+  </div> -->
+  </form>
+</div>
+
+%% emailConfirmSubscribe-subject
+{% if lang=='FR' %}
+Please confirm your subscription for Seeds of Diversity's e-bulletin
+{% else %}
+Please confirm your subscription for Seeds of Diversity's monthly e-bulletin
+{% endif %}
+
+%% emailConfirmSubscribe
+<h3>[[include:emailConfirmSubscribe-subject]].</h3>
+Thank you for your interest in Seeds of Diversity's monthly email bulletin.
+We're delighted that you're joining thousands of Canadians who share your 
+interest in seed and pollinator diversity.<br/>
+This message has been sent to you because your email address was entered
+for subscription.  To confirm this address and to begin your subscription, 
+please click on the link below or copy and paste it into your web browser.<br/><br/>
+<a href='[[Var:link]]'>[[Var:link]]</a><br/>
+<br/>
+<hr/>
+If you have any questions about this notice, please contact Seeds of Diversity at [[mailto:office@seeds.ca]]
+
+%% emailConfirmUnsubscribe-subject
+{% if lang=='FR' %}
+Please confirm that you want to unsubscribe from Seeds of Diversity's e-bulletin
+{% else %}
+Please confirm that you want to unsubscribe from Seeds of Diversity's e-bulletin
+{% endif %}
+
+%% emailConfirmUnsubscribe
+<h3>[[include:emailConfirmUnsubscribe-subject]].</h3>
+This message has been sent to you because your email address was entered for 
+removal from our monthly email bulletin.  To confirm this address and cancel 
+your subscription, please click on the link below or copy and paste it into 
+your web browser.<br/><br/>
+<a href='[[Var:link]]'>[[Var:link]]</a><br/><br/>
+Thanks for your previous interest. We'd love for you to subscribe again sometime!
+<hr/>
+If you have any questions about this notice, please contact Seeds of Diversity at [[mailto:office@seeds.ca]]
+
+
+%% subscribe-youAreAlreadySubscribed
+{% if lang=='FR' %}
+You (<strong>{{email}}</strong>) are already subscribed to Seeds of Diversity's monthly e-bulletin. You should receive the next issue within a month.
+{% else %}
+You (<strong>{{email}}</strong>) are already subscribed to Seeds of Diversity's monthly e-bulletin. You should receive the next issue within a month.
+{% endif %}
+
+%% subscribe-confirmationSent
+{% if lang=='FR' %}
+Thank you for subscribing. A confirmation email has been sent to <strong>{{email}}</strong>. Please click on the link in that email to complete your subscription.
+{% else %}
+Thank you for subscribing. A confirmation email has been sent to <strong>{{email}}</strong>. Please click on the link in that email to complete your subscription.
+{% endif %}
+
+
+%% unsubscribe-youAreNotSubscribed
+{% if lang=='FR' %}
+You (<strong>{{email}}</strong>) aren't currently subscribed. Maybe you've been receiving the e-bulletin at another email address?
+{% else %}
+You (<strong>{{email}}</strong>) aren't currently subscribed. Maybe you've been receiving the e-bulletin at another email address?
+{% endif %}
+
+%% unsubscribe-butYouAreNoEbull
+{% if lang=='FR' %}
+Your member preferences currently show that you don't want to receive the e-bulletin. 
+You shouldn't be receiving it, but if you are, please contact [[mailto:office@seeds.ca]].
+{% else %}
+Your member preferences currently show that you don't want to receive the e-bulletin. 
+You shouldn't be receiving it, but if you are, please contact [[mailto:office@seeds.ca]].
+{% endif %}
+
+%% unsubscribe-confirmationSent
+{% if lang=='FR' %}
+An unsubscribe email has been sent to <strong>{{email}}</strong>. Please click on the link in that email to confirm.
+{% else %}
+An unsubscribe email has been sent to <strong>{{email}}</strong>. Please click on the link in that email to confirm.
+{% endif %}
+
+
+%% confirm-subscribe
+{% if lang=='FR' %}
+<p>Hello <strong>{{email}}</strong>, you are now subscribed to Seeds of Diversity's monthly e-bulletin!</p> 
+<p>Thank you for your interest in Canada's seed and pollinator diversity. You should receive your first issue within a month.</p>
+{% else %}
+<p>Hello <strong>{{email}}</strong>, you are now subscribed to Seeds of Diversity's monthly e-bulletin!</p> 
+<p>Thank you for your interest in Canada's seed and pollinator diversity. You should receive your first issue within a month.</p>
+{% endif %}
+
+%% confirm-unsubscribe
+{% if lang=='FR' %}
+<p>Your subscription to Seeds of Diversity's monthly e-bulletin has been removed. We have deleted <b>{{email}}</b> from our list permanently: you will not receive further unsolicited email from us.</p>
+<p>We'd like to take this moment to thank you for your past interest in our e-bulletin. If you change your mind we'd love to have you back sometime!</p>
+{% else %}
+<p>Your subscription to Seeds of Diversity's monthly e-bulletin has been removed. We have deleted <b>{{email}}</b> from our list permanently: you will not receive further unsolicited email from us.</p>
+<p>We'd like to take this moment to thank you for your past interest in our e-bulletin. If you change your mind we'd love to have you back sometime!</p>
+{% endif %}
+
+%% confirm-badMD5
+{% if lang=='FR' %}
+Sorry, that [[if:[[Var:bSubscribe]]|subscribe|unsubscribe]] link is not valid. Please try again, or contact [[mailto:office@seeds.ca]] for assistance.
+{% else %}
+Sorry, that [[if:[[Var:bSubscribe]]|subscribe|unsubscribe]] link is not valid. Please try again, or contact [[mailto:office@seeds.ca]] for assistance.
+{% endif %}
+
+

@@ -1,0 +1,18 @@
+ErrorDocument 404 /404.html
+ErrorDocument 403 http://www.seeds.ca
+#DirectoryIndex index.php index.html index.htm
+#Options -Indexes
+
+# Use RedirectMatch(w/o subst parms) instead of Redirect to cause complete URL replacement instead of match substitution
+# Need ^ and/or $ to prevent infinite loops in some matches 
+# RedirectMatch  ^/sed     https://office.seeds.ca/int/sed/sed.php          this needs ^ to prevent rematching
+# Redirect        /mbr     https://office.seeds.ca/mbr/mbr_contacts.php     this infinite loops because /mbr always redirects again
+# RedirectMatch  ^/mbr$    https://office.seeds.ca/mbr/mbr_contacts.php     this needs $ to prevent rematching
+
+RedirectMatch ^/mbr$    https://office.seeds.ca/mbr/mbr_contacts.php
+Redirect       /sed    https://office.seeds.ca/int/sed/sed.php
+Redirect       /garlic https://office.seeds.ca/gcgc/gcgc_admin.php
+Redirect       /doc    https://office.seeds.ca/d/docedit.php
+Redirect       /contacts https://office.seeds.ca/mbr/mbr_contacts.php
+Redirect       /events https://office.seeds.ca/ev/ev_admin.php
+

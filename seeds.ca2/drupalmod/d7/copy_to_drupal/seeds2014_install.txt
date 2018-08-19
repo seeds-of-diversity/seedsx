@@ -1,0 +1,69 @@
+Install drupal-7
+
+# From this directory:
+unzip d7mods2014/jquery_update-7.x-2.3.zip -d ../../swww/sites/all/modules/  ;
+unzip d7mods2014/nice_menus-7.x-2.5.zip    -d ../../swww/sites/all/modules/  ;
+unzip d7mods2014/bootstrap-7.x-3.0.zip     -d ../../swww/sites/all/themes/   ;
+
+# and 
+    The ckeditor-7.x is a drupal7 wrapper for ckeditor
+    The ckeditor_4.2_full is the actual ckeditor, which has to be downloaded separately.
+        - there is also ckeditor_4.2_standard if you prefer
+        - this creates another ckeditor folder so it winds up in all/modules/ckeditor/ckeditor
+    The ckfinder_php_2... is another app from CK
+        - it goes in the same place as the actual ckeditor, creating ckfinder directory at all/modules/ckeditor/ckfinder
+
+unzip d7mods2014/ckeditor-7.x-1.13.zip     -d ../../swww/sites/all/modules/          ;
+unzip d7mods2014/ckeditor_4.2_full.zip     -d ../../swww/sites/all/modules/ckeditor  ;
+//unzip d7mods2014/ckfinder_php_2.2.2.1.zip  -d ../../swww/sites/all/modules/ckeditor  ;
+
+# and
+    These three for Advanced Forum
+
+unzip d7mods2014/advanced_forum-7.x-2.4.zip -d ../../swww/sites/all/modules/          ;
+unzip d7mods2014/ctools-7.x-1.5.zip         -d ../../swww/sites/all/modules/          ;
+unzip d7mods2014/views-7.x-3.8.zip          -d ../../swww/sites/all/modules/          ;
+
+# and for extra cool styling
+unzip d7mods2014/advanced_forum_bootstrap-7.x-3.x-dev.zip -d ../../swww/sites/all/modules/ ;
+
+
+# copy our seeds modules / themes
+./cp_to_seeds_ca
+
+
+
+Go to admin->Modules and enable:
+    Book
+    
+    seeds
+    CKEditor
+    jquery-update
+    Advanced Forum & Advanced Forum Bootstrap (they should automatically enable their dependencies)
+    
+    In jquery-update config, set version to at least 1.7
+
+
+Go to admin->Appearance and enable:
+    seeds2014bootstrap
+    (don't enable bootstrap because it's just a base for seeds2014bootstrap)
+
+
+Edit modules/ckeditor/ckeditor.config.js, which overrides the base modules/ckeditor/ckeditor/config.js,
+      and put config.allowedContent=true;
+      This turns off Advanced Content Filtering, so we can do what we want in the html
+*** Might have to re-do this when ckeditor is upgraded
+
+See http://docs.cksource.com/CKEditor_for_Drupal/Open_Source/Drupal_7/CKFinder  to set access permission, otherwise it is disabled by default.
+
+
+swww/.htaccess is part of drupal, so all changes to that file have to be hand-edited, and restored on updates. Here's what you need there:
+
+  RewriteBase /swww/      ( or maybe RewriteBase /~bob/seeds.ca2/swww/ )
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_URI} !=/favicon.ico
+  RewriteRule ^(.*)$ index.php?q=$1 [L,QSA]
+
+  Most of this is in the vanilla drupal .htaccess, but make sure the RewriteBase is the rooted url of the site, and
+  you probably have to add QSA - this is used by our pages that make self-links containing nav parms

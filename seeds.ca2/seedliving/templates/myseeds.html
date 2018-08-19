@@ -1,0 +1,270 @@
+# myseeds
+#
+# Lists and forms for adding, editing, deleting, managing your seeds.
+# In admin mode, more information is available and additional controls allow comprehensive management
+
+
+%% myseedsList
+{% extends 'slivContent1b' %}
+{% block slb-crumb %}[[SetVar:_title|[[if:$bSwap|swaps|list items]]]] >&nbsp;[[Link:accountProfile|my profile]]&nbsp;>&nbsp;[[Var:_title]]{% endblock %}
+{% block slb-hdrL %}[[SetVar:_title|[[if:$bSwap|swaps|list items]]]] [[Var:_title]] {% endblock %}
+{% block slb-hdrR %} [[SLivImg:i/sell.png]] {%endblock%}
+{% block slb-cntR %} 
+#  <div id="slContentRight" style="width:770px;" class="slPrimaryForm2">
+#<div style="width:770px;">
+    <span>[[Link:myseedsAdd|Add Seed]]</span>
+    [[Include:_myseedsListTable]]
+    <div class="bottomborder"></div>
+    [[Include:_myseedsListFeatures]]
+#</div>    
+#  </div> 
+{%endblock%}
+
+
+%% _myseedsListFeatures
+<div>
+  <select id="tableAction">
+    <option selected>-- choose one --</option>
+    <option value="Enable">Enable</option>
+    <option value="Delete">Delete</option>
+    <option value="Disable">Disable</option>
+  </select>
+  &nbsp;the selected items&nbsp;<input type="button" class="action" callback="tableActions('seeds')" value="Go"/>
+</div>
+<div class="failure">&nbsp;</div>
+<h2>Featured Items</h2>
+{% if nFeatured==0 %}
+  <p>You currently have no featured items. 
+#    To feature items on the homepage you will be charged a feature listing fee of $0.50 CAD per item. 
+#    Items are featured on a rotational basis when the homepage is refreshed. Please choose an item from the list menu below and click Feature.
+  </p>
+{% else %}
+  <p>You currently have {{nFeatured}} featured items on the homepage. Click "remove" next to the seed to disable from being featured. 
+#    To feature items on the homepage you will be charged a feature listing fee of $0.50 CAD per item. 
+#    Items are featured on a rotational basis when the homepage is refreshed. Please choose an item from the list menu below and click Feature.
+  </p>
+  <ol>
+    [[Var:sFeatured]]
+  </ol>
+{% endif %}
+<p></p>
+{% if bUnlimitedFeatures %}
+  <p>Your items are automatically set to being featured on the homepage.</p>
+{% else %}
+  <p>Feature a Seed: <select id="featureSeedSelect"><option value="">--select to feature--</option>[[Var:sFeatureOpts]]</select>&nbsp;<input type="button" id="slSetFeature" value="Feature"/></p>
+{% endif %}
+
+
+%% _myseedsListTable
+<table id="secureTable" class="tablesorter pright" cellspacing="0" cellpadding="0">
+  <thead>
+    <tr>
+      <th><input type="checkbox" id="toggle"/></th>
+      <th>ID#</th>
+      <th>Title</th>
+      <th>Top Category</th>
+      <th>Trade</th>
+      <th>giveaway table</th>
+      <th>Zone</th>
+      <th>Price</th>
+      <th>Quantity</th>
+      <th>Featured</th>
+      <th>Enabled</th>
+      <th style="width:5px;"></th>
+    </tr>
+  </thead>
+  <tbody>
+  [[Var:sMyseedsListRows]]
+  </tbody>
+</table>
+
+
+# *****************************************
+# defines each row of sMyseedsListRows
+%% myseedsListRow  
+<tr id="{{seed_id}}" class='myseedsListRow-ro-{{seed_id}}'>
+<td valign='top'><input type="checkbox" eventid="{{seed_id}}" class="tableToggle"/></td>
+<td valign='top'>{{seed_id}}</td>
+<td valign='top'>{{seed_title}}</td>
+<td valign='top'>{{seed_topcat}}</td>
+<td valign='top'>{{seed_trade}}</td>
+<td valign='top'>{{seed_tradetable}}</td>
+<td valign='top'>{{seed_zone}}</td>
+#use dollar formatting
+<td valign='top'>${{seed_price}}</td>
+<td valign='top'>{{seed_quantity}}</td>
+<td valign='top'>
+[[ifeq:$seed_featured|N|No|Yes]]
+</td>
+<td valign='top' id="enable_{{seed_id}}">{{seed_enabled}}</td>
+<td valign='top' style="width:5px;">[[Link:myseedsEdit-{{seed_id}}|Edit]]<br/>
+<span onclick='$(".myseedsListRow-ro-{{seed_id}}").hide();$(".myseedsListRow-edit-{{seed_id}}").show();'>Edit2</span></td>
+</tr>
+<tr id="{{seed_id}}" class='myseedsListRow-edit-{{seed_id}}' style='display:none'>
+<td valign='top'><input type="checkbox" eventid="{{seed_id}}" class="tableToggle"/></td>
+<td valign='top'>{{seed_id}} A</td>
+<td valign='top'>{{seed_title}} A</td>
+<td valign='top'>{{seed_topcat}} A</td>
+<td valign='top'>{{seed_trade}}</td>
+<td valign='top'>{{seed_tradetable}}</td>
+<td valign='top'>{{seed_zone}}</td>
+#use dollar formatting
+<td valign='top'>${{seed_price}}</td>
+<td valign='top'>{{seed_quantity}}</td>
+<td valign='top'>
+[[ifeq:$seed_featured|N|No|Yes]]
+</td>
+<td valign='top' id="enable_{{seed_id}}">{{seed_enabled}}</td>
+<td valign='top' style="width:5px;">[[Link:myseedsEdit-{{seed_id}}|Edit]]<br/>
+<!--  <span onclick='$(".myseedsListRow-edit-{{seed_id}}").hide();$(".myseedsListRow-ro-{{seed_id}}").show();'>Edit3</span> -->
+</td>
+</tr>
+
+
+%% myseedsAdd
+{% extends 'slivContent1' %}
+{% block slb-crumb %} >&nbsp;[[Link:accountProfile|my profile]]&nbsp;>&nbsp;[[Link:myseedsList|list items]]&nbsp;>&nbsp;add item{% endblock %}
+{% block slb-hdrL %} add item {% endblock %}
+{% block slb-hdrR %} [[SLivImg:i/sell.png]] {%endblock%}
+{% block slb-cntL %} [[slivTags:]] {%endblock%}
+{% block slb-cntR %} [[Include:_myseedsAddEdit]] {%endblock%} 
+
+%% myseedsEdit
+{% extends 'slivContent1' %}
+{% block slb-crumb %} >&nbsp;[[Link:accountProfile|my profile]]&nbsp;>&nbsp;[[Link:myseedsList|list items]]&nbsp;>&nbsp;edit item{% endblock %}
+{% block slb-hdrL %} edit item {% endblock %}
+{% block slb-hdrR %} [[SLivImg:i/sell.png]] {%endblock%}
+{% block slb-cntL %} [[slivTags:]] {%endblock%}
+{% block slb-cntR %} [[Include:_myseedsAddEdit]] {%endblock%} 
+
+%% _myseedsAddEdit
+<script type="application/javascript">
+$(document).ready(function(){
+    $("#seed_sun").val("{{seed_sun}}");
+    $("#seed_topcat").val("{{seed_topcat}}");
+    $("#seed_tradeopt").val("{{seed_tradeopt}}");
+    $("#seed_currency").val("{{seed_currency}}");
+    $("#seed_type").val("{{seed_type}}");
+    
+    if($("#seed_type").val() == "P"){
+        $("#slPlantDisplay").show();
+            $("#seed_plantsize").attr("required","required");
+            $(".slNoPlant").attr("required","");
+            $(".noRequired").html("");
+    }
+    
+    $("#seed_type").click(function(){
+        if($(this).val() == "S"){
+            $("#slPlantDisplay").hide();
+        } else {
+            $("#slPlantDisplay").show();
+            $("#seed_plantsize").attr("required","required");
+            $(".slNoPlant").attr("required","");
+            $(".noRequired").html("");
+        }
+    });
+});
+</script>
+<form action="{{SL2URL}}/secureSeedSave/" method="post" id="validateform" enctype="multipart/form-data">
+  <input type="hidden" name="seed_id" value="{{seed_id}}" />
+  <input type="hidden" name="seed_enabled" value="Y" />
+  <input type="hidden" name="seed_userid" value="{{user_id}}" />
+  <input type="hidden" name="seed_featured" value="{{seed_featured}}" />
+  <p><em>*</em><dfn> Indicates a required field</dfn></p>
+  <label>Type<em>*</em></label>
+  <select name="seed_type" id="seed_type" required="required" title="Type">
+    <option value="S">Seed</option>
+    <option value="P">Live Plant</option>
+    <option value="WP">Wood Product</option>
+    <option value="NFP">Natural Fibre Product</option>
+    <option value="UWP">Used Wood Product</option>
+    <option value="UFB">Used Fibre Product</option>
+    <option value="BP">Bee Product</option>
+  </select>
+  <span style="display:none;" id="slPlantDisplay">
+    <label>Size of Plant<em>*</em></label>
+    <input type="text" class="text" name="seed_plantsize" title="Plant Size" id="seed_plantsize" value="{{seed_plantsize}}"/>
+  </span>
+# SELL, SWAP, SELL + SWAP, GIVEAWAY TABLE
+#    <br /><em>To learn more about the giveaway table, please <a href="/[SL]SEONAME[/SL]/tradetable/#swap" target="_blank">click here</a></em>
+#    <label>Available for trade?<em>*</em></label> 
+#    <select class="text" name="seed_tradeopt" required="required" title="Seed available for trade" id="seed_tradeopt">
+#    <option value="">--select--</option>
+#    <option [SL]#if seed_tradeopt='N'[/SL]selected[SL]#endif[/SL] value="N">Sell only</option>
+#    <option [SL]#if seed_tradeopt='S'[/SL]selected[SL]#endif[/SL] value="S">Swap Only</option>
+#    <option [SL]#if seed_tradeopt='Y'[/SL]selected[SL]#endif[/SL] value="Y">Sell and Swap</option>
+#    <option [SL]#if seed_tradeopt='T'[/SL]selected[SL]#endif[/SL] value="T">giveaway table only</option>
+#    </select>
+  <label>Title<em>*</em></label>
+  <input type="text" class="text" name="seed_title" required="required" title="Title" id="seed_title" value="{{seed_title}}"/>
+  <label>Top Category<em>*</em></label>
+  <select name="seed_topcat" id="seed_topcat" required="required" title="Seed top Category" class="text">[[Var:seedtopcat]]</select>
+  <!--
+    <label>Seed sewing instructions</label>
+    <input type="text" class="text" name="seed_sew" id="seed_sew" value="[SL]seed_sew[/SL]"/>
+    <label>Sun Conditions: </label>
+    <select name="seed_sun" id="seed_sun" class="text">
+    <option value="">--select--</option>
+    <option value="full sun">full sun</option>
+    <option value="partial sun">partial sun</option>
+    <option value="full shade">full shade</option>
+    <option value="full sun to partial sun">full sun to partial sun</option>
+    <option value="partial sun to full shade">partial sun to full shade</option>
+    </select>
+  -->
+  <label>Zone<em>*</em></label> 
+  <input type="text" class="text" name="seed_zone" required="required" title="Seed zone" id="seed_zone" value="{{seed_zone}}"/>
+  <label>Price<em>*</em></label>
+  <em>Example: 1.50 You are not required to input $ or currency type.</em><br />
+  <input type="text" class="text" name="seed_price" id="seed_price" required="required" title="Seed price" value="{{seed_price}}"/>
+  <label>Currency<em>*</em></label>
+  <select class="text" name="seed_currency" required="required" title="Seed currency" id="seed_currency">
+    <option value="">--select--</option>
+#   <option [SL]#if seed_currency='AUS'[/SL]selected[SL]#endif[/SL] value="AUS">AUS</option>
+#   <option [SL]#if seed_currency='CAD'[/SL]selected[SL]#endif[/SL] value="CAD">CAD</option>
+#   <option [SL]#if seed_currency='USD'[/SL]selected[SL]#endif[/SL] value="USD">USD</option>
+    <option                                                          value="CAD">CAD</option>
+  </select>
+  <label>Quantity<em>*</em></label>  
+  <input type="text" class="text" name="seed_quantity" required="required" title="Seed quantity" id="seed_quantity" value="{{seed_quantity}}"/>
+  <label>Number of items per pack<em class="noRequired">*</em></label> 
+  <input type="text" class="text slNoPlant" name="seed_nopack" id="seed_nopack" required="required" title="item per pack" value="{{seed_nopack}}"/>
+  <!--
+    <label>Planting depth</label> 
+    <input type="text" class="text" name="seed_plantingdepth" id="seed_plantingdepth" value="[SL]seed_plantingdepth[/SL]"/>
+    <label>Days to germination</label> 
+    <input type="text" class="text" name="seed_daystogerm" id="seed_daystogerm" value="[SL]seed_daystogerm[/SL]"/>
+    <label>Days to maturity</label> 
+    <input type="text" class="text" name="seed_daystomat" id="seed_daystomat" value="[SL]seed_daystomat[/SL]"/>
+    <label>Watering</label> 
+    <input type="text" class="text" name="seed_watering" id="seed_watering" value="[SL]seed_watering[/SL]"/>
+    <label>Spacing</label> 
+    <input type="text" class="text" name="seed_spacing" id="seed_spacing" value="[SL]seed_spacing[/SL]"/>
+    <label>Size at maturity</label> 
+    <input type="text" class="text" name="seed_sizeatmat" id="seed_sizeatmat" value="[SL]seed_sizeatmat[/SL]"/>
+  -->
+  <label>Description:<em>*</em></label>
+  <textarea name="seed_desc" required="required" title="Seed description" class="text">{{seed_desc}}</textarea>
+  <label>Tags:<em>*</em></label><br />
+  <em>separate multiples with a semi-colon (;) tag;tag;tag</em><br />
+  <textarea class="text" required="required" title="Seed tags" name="seed_tagdesc" id="seed_tagdesc">{{seed_tagdesc}}</textarea>
+  <label>Shipping Cost</label>
+  <em>Example: 1.50 Do not input $ or currency type. Enter shipping for up to 10 of the same items</em><br />
+  <input type="text" class="text" name="seed_shipcost"    title="item shipping cost" id="seed_shipcost" value="{{seed_shipcost}}"/>
+  <label>Secondary Shipping Cost</label>
+  <em>Example: 1.50 Do not input $ or currency type. Enter shipping for up to 10 different items</em><br />
+  <input type="text" class="text" name="seed_shipcost2"   title="multiple shipping cost" id="seed_shipcost2" value="{{seed_shipcost2}}"/>
+  {% if seed_id %}
+    <label>Images: (JPG ONLY)<em>*</em></label>
+    <p>To change an image, upload new image in the box next to the image you want to replace</p>
+    [[Var: slSeedsEditImages]]
+  {% else %}
+    <label>Images: (JPG ONLY)<em>*</em></label>
+    <input type="file" name="seed_image[]" required="required" title="At least one image is" id="seed_image" /><br />
+    <input type="file" name="seed_image[]" id="seed_image" /><br />
+    <input type="file" name="seed_image[]" id="seed_image" /><br /><br />
+  {% endif %}
+
+  <p><input type="button" id="validate" value="Save" /></p>
+</form>
+

@@ -1,0 +1,3 @@
+Bootstrap   bootstrap-3.0.2-dist.zip
+JQuery      jquery-1.11.0.min.js
+TinyMCE     4.0.1

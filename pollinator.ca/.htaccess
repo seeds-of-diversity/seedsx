@@ -1,0 +1,4 @@
+# This doesn't break the home page, but /doc gives 403     Redirect /doc             http://www.pollinator.ca/int/doc/docmanager.php
+Redirect /canpolin       http://www.pollinator.ca/bestpractices
+Redirect /guelph         http://www.pollinationguelph.ca
+
