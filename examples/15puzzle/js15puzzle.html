@@ -1,0 +1,251 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><title>Javascript 15-puzzle Sliding Tile Game</title></head><body>
+<!--
+Copyright (c) 2011, Bo Yang (by321@hotmail.com)
+All rights reserved.
+
+Redistribution and non-commercial use in source and binary forms,
+with or without modification, are permitted provided that the
+following conditions are met:
+
+- Redistributions of source code must retain the above copyright
+notice, this list of conditions and the following disclaimer.
+
+- Name of the author may not be used to endorse or promote products
+derived from this software without specific prior written permission. 
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES INCLUDING,
+BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT 
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN 
+ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+POSSIBILITY OF SUCH DAMAGE.
+-->
+<p>This is the classic <a href="http://en.wikipedia.org/wiki/Sliding_puzzle">15-puzzle sliding tile game</a> implemented on the web using HTML and Javascript.</p>
+
+<p>But in stead of numbered tiles, this game uses tiled images. To use an image, just enter the URL to the image below.</p>
+<p>
+Image URL: <input type="text" id="imgURL" style="width:80%"><br>
+
+This implementation doesn't resize images, so it's better if you use one that can fit inside your web browser window.
+For best performance, I suggest using an image that's at most 800x600 pixels.
+</p>
+
+<p>
+Missing tile position:<br>
+<input type="radio" name="mtloc" id="mtlocLR" value="0" checked="checked"> Lower-right corner<br>
+<input type="radio" name="mtloc" id="mtlocRnd" value="1"> Random position<br>
+<br>
+
+<input type="button" value="Load Image and Shuffle Tiles" onclick="ShuffleStart()">
+</p>
+
+<div id="txtInf"> </div><br>
+
+<div id="TileBox" style="height:256px;width:256px; border:8px solid blue; position:relative;">
+
+<div id="b0"  onClick="clickf(0)" ></div>
+<div id="b1"  onClick="clickf(1)" ></div>
+<div id="b2"  onClick="clickf(2)" ></div>
+<div id="b3"  onClick="clickf(3)" ></div>
+<div id="b4"  onClick="clickf(4)" ></div>
+<div id="b5"  onClick="clickf(5)" ></div>
+<div id="b6"  onClick="clickf(6)" ></div>
+<div id="b7"  onClick="clickf(7)" ></div>
+<div id="b8"  onClick="clickf(8)" ></div>
+<div id="b9"  onClick="clickf(9)" ></div>
+<div id="b10" onClick="clickf(10)"></div>
+<div id="b11" onClick="clickf(11)"></div>
+<div id="b12" onClick="clickf(12)"></div>
+<div id="b13" onClick="clickf(13)"></div>
+<div id="b14" onClick="clickf(14)"></div>
+<div id="b15" onClick="clickf(15)"></div>
+</div>
+<hr>
+<p>This is far more difficult than using numbered tiles,
+because without numbers, you don't know where each tile is supposed to go,
+unless you're looking at the original image in another window.<br><br>
+<a href="http://dmnewbie.blogspot.com/">Back to blog</a><p>
+
+<SCRIPT type="text/javascript">
+
+var inPrg=false;
+var sid; //arr
+var bid;
+var COLS=4,ROWS=4;
+var imgURL,theImg,rectW,rectH;
+var moveMax=3,moveCur=3,moveDelay=60,moveFrom,moveTo;
+var hTimer=null;
+
+function MoveTile()
+{
+    if (false==inPrg) return;
+    if (moveCur>=moveMax) return;
+    r0=Math.floor(moveFrom/COLS); c0=moveFrom%COLS;
+    r1=Math.floor(moveTo/COLS); c1=moveTo%COLS;
+    
+    moveCur++;
+    x=Math.floor( (c0+(c1-c0)*moveCur/moveMax)*rectW );
+    y=Math.floor( (r0+(r1-r0)*moveCur/moveMax)*rectH );
+    //SetStatusText(x.toString()+","+y.toString());
+
+    e=getSq(moveTo);
+    e.style.left=x.toString()+"px";
+    e.style.top=y.toString()+"px";
+    
+    if (moveCur!=moveMax) {
+        hTimer=setTimeout("MoveTile()",moveDelay);
+        return;
+    }
+
+    for (i=0;i<ROWS*COLS;i++) {
+        if (sid[i]!=i) return;
+    }
+    inPrg=false;
+    ShowRawImage();
+    alert("Solved !");
+}
+
+function getSq(a) { return document.getElementById("b"+a.toString()); }
+function SetStatusText(t){document.getElementById("txtInf").innerHTML=t.replace("&","&amp;").replace("<","&lt;").replace(">","&gt;");}
+
+function ShowRawImage()
+{   for (i=0;i<ROWS*COLS;i++) getSq(i).style.visibility="hidden";
+    document.getElementById("TileBox").style.backgroundImage="url(" + imgURL +")";
+}
+
+function RandomizeSquares()
+{
+    sid=new Array();
+    for (i=0;i<ROWS*COLS;i++) sid[i]=i;
+
+    bid=ROWS*COLS;
+    if (document.getElementById("mtlocRnd").checked) bid=Math.floor(Math.random()*ROWS*COLS);
+    if (bid==ROWS*COLS) bid--;
+    r=Math.floor(bid/COLS); c=Math.floor(bid%COLS);
+    
+    xs=ROWS*COLS*32; //xs=0;
+    while (xs>0) {
+        fr=Math.random();
+        if (fr<0.25) { //left
+            if (c>0) c--;
+        } else if (fr<0.5) { //right
+            if (c<COLS-1) c++;
+        } else if (fr<0.75) { //up
+            if (r>0) r--;
+        } else { //down
+            if (r<ROWS-1) r++;
+        }
+        n=(r*COLS)+c;
+        if (n==bid) continue;
+        xs--;
+        old=sid[n]; sid[n]=sid[bid]; sid[bid]=old;
+        bid=n;
+    }
+}
+
+function ImageLoadErr() { alert("Failed to download or parse image, please verify URL is valid and the image can be displayed in your web browser."); }
+
+function ImageLoaded()
+{
+    if (theImg.width<64 || theImg.height<64) {
+        alert("The image is too small, the minimum size is 64x64.");
+        return;
+    } 
+    SetStatusText("");
+
+    rectW=Math.floor(theImg.width/4);
+    rectH=Math.floor(theImg.height/4);
+    
+    tb=document.getElementById("TileBox");
+    tb.style.width=(rectW*4).toString() + "px";
+    tb.style.height=(rectH*4).toString()+"px";
+    
+    RandomizeSquares();
+    for (i=0;i<ROWS*COLS;i++) {
+        e=getSq(i);
+        e.style.width=(rectW-2).toString() + "px";
+        e.style.height=(rectH-2).toString()+"px";
+        e.style.backgroundImage="url(" + imgURL + ")";
+        r=Math.floor(i/COLS);
+        c=Math.floor(i%COLS);
+        e.style.left=(c*rectW).toString()+"px";
+        e.style.top=(r*rectH).toString()+"px";
+        e.style.border="2px solid red";
+        e.style.position="absolute";
+        j=sid[i];
+        //e.innerHTML=(j+1).toString();
+        r=Math.floor(j/COLS);
+        c=Math.floor(j%COLS);
+        e.style.backgroundPosition=(-c*rectW).toString()+"px "+(-r*rectH).toString()+"px";
+        e.style.visibility='visible';
+    }
+    getSq(bid).style.visibility='hidden';
+    //document.getElementById("info").innerHTML=bid;
+    inPrg=true; moveCur=moveMax;
+}
+
+function clickf(a)
+{ 
+    if (false==inPrg) return; //not currently in progress
+    if (moveCur<moveMax) return; //a tile is currently moving
+
+    col=Math.floor(a%COLS);
+    if (a==bid-COLS) {
+    } else if (a==bid+COLS) {
+    } else if (a==bid-1 && col!=COLS-1) {
+    } else if (a==bid+1 && 0!=col) {
+    } else {
+        return;
+    }
+
+    moveFrom=a; moveTo=bid;
+    
+    x=sid[a]; sid[a]=sid[bid]; sid[bid]=x;
+
+    ae=getSq(a); be=getSq(bid);
+    be.style.left=ae.style.left; be.style.top=ae.style.top;
+    x=be.style.backgroundPosition; be.style.backgroundPosition=ae.style.backgroundPosition; 
+    ih=be.innerHTML; be.innerHTML=ae.innerHTML;
+    be.style.visibility='visible';
+    ae.style.visibility='hidden';
+    ae.style.backgroundPosition=x; ae.innerHTML=ih;
+
+    bid=a;
+    moveCur=0;
+    hTimer=setTimeout("MoveTile()",moveDelay);
+    //document.getElementById("info").innerHTML=bid;
+}
+
+function ShuffleStart()
+{
+    if (window.stop!== undefined) try {window.stop();}catch(e2){}
+    if (document.execCommand!==undefined) try {document.execCommand("Stop", false,null);}catch(e1){}
+    inPrg=false;
+    if (null!=hTimer) { clearTimeout(hTimer); hTimer=null; }
+    
+    document.getElementById("TileBox").style.backgroundImage="none";
+
+    imgURL=document.getElementById("imgURL").value;
+    imgURL=imgURL.replace(/^\s+/g, "").replace(/\s+$/g, "");
+    if (imgURL.length<5) { //a.jpg
+        alert("The image URL you entered is too short.");
+        return;
+    }
+
+    SetStatusText("Downloading image ...");
+    theImg=new Image();
+    theImg.onload=ImageLoaded;
+    theImg.onerror=ImageLoadErr;
+    theImg.src=imgURL;
+}
+</SCRIPT></body></html>
+
+
+

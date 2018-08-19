@@ -1,0 +1,67 @@
+<script>
+function alertWindowStats() {
+	var winW = 0, winH = 0;
+	var scrX = 0, scrY = 0;
+	
+	// Get the window client size
+	if( typeof( window.innerWidth ) == 'number' ) {
+		winW = window.innerWidth; 
+		winH = window.innerHeight;
+	} else if( document.documentElement && ( document.documentElement.clientWidth ||document.documentElement.clientHeight ) ) {
+		winW = document.documentElement.clientWidth; 
+		winH = document.documentElement.clientHeight;
+	} else if( document.body && ( document.body.clientWidth || document.body.clientHeight ) ) {
+		winW = document.body.clientWidth; 
+		winH = document.body.clientHeight;
+	}
+
+    // Get scroll position
+	if( typeof( window.pageYOffset ) == 'number' ) {
+		scrY = window.pageYOffset; 
+		scrX = window.pageXOffset;
+	} else if( document.body && ( document.body.scrollLeft || document.body.scrollTop ) ) {
+		scrY = document.body.scrollTop; 
+		scrX = document.body.scrollLeft;
+	} else if( document.documentElement && ( document.documentElement.scrollLeft || document.documentElement.scrollTop ) ) {
+		scrY = document.documentElement.scrollTop; 
+		scrX = document.documentElement.scrollLeft;
+	}
+
+    window.alert( 'Width = ' + winW + '\nHeight = ' + winH + '\nHoriz scroll = ' + scrX + '\nVert scroll = ' + scrY );
+}
+</script>
+
+<P>*</P>
+<P>*</P>
+<P>*</P>
+<P>*</P>
+<P>*</P>
+<P>*</P>
+<P>*</P>
+<P>*</P>
+<P>*</P>
+<P>*</P>
+<P>*</P>
+<P>*</P>
+<P>*</P>
+<P>*</P>
+<P>*</P>
+<P>*</P>
+<P>*</P>
+<P>*</P>
+<P>*</P>
+<P>*</P>
+<P>*</P>
+<P>*</P>
+<P>*</P>
+<P>*</P>
+<P>*</P>
+<P>*</P>
+<P>*</P>
+<P>*</P>
+<P>*</P>
+<P>*</P>
+<P>*</P>
+<P>*</P>
+
+<A href="javascript:alertWindowStats();">Go</A>

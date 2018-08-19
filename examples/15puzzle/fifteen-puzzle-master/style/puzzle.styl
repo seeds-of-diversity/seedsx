@@ -1,0 +1,131 @@
+vendor(prop, args)
+  {prop} unquote(args)
+  for prefix in webkit moz o ms
+    -{prefix}-{prop} unquote(args)
+
+box-shadow()
+  vendor('box-shadow', arguments)
+
+border-radius()
+  vendor('border-radius', arguments)
+
+background-image-linear-gradient(color1, color2)
+  background-image vendor('linear-gradient', top, color1, color2)
+  background-image -o-linear-gradient(top, color1, color2)
+  background-image -moz-linear-gradient(top, color1, color2)
+  background-image -webkit-linear-gradient(top, color1, color2)
+  background-image -ms-linear-gradient(top, color1, color2)
+
+fancy(fg, bg, height, width, button=false)
+  color fg
+  border 1px solid darken(bg, 40%)
+  border-radius "5px"
+
+  background-image-linear-gradient(lighten(bg, 10%), darken(bg, 10%))
+  box-shadow("inset 3px 3px 3px 0px rgba(255, 255, 255, 0.15), inset -3px -3px 3px rgba(0, 0, 0, 0.25)")
+  text-shadow lighten(bg, 25%) 1px 1px 2px, darken(bg, 25%) -1px -1px 2px
+
+  width width
+  height height
+  line-height height
+  text-align center
+
+  if button
+    &:hover
+      color lighten(fg, 50%)
+
+    &:active
+      background-image-linear-gradient(darken(bg, 10%), darken(bg, 30%))
+      text-shadow lighten(bg, 5%) 1px 1px 2px, darken(bg, 45%) -1px -1px 2px
+      box-shadow("inset -3px -3px 3px 0px rgba(255, 255, 255, 0.15), inset 3px 3px 3px rgba(0, 0, 0, 0.25)")
+
+
+cell-size = 100px
+spacing = 5px
+dimension = spacing + (4px * (cell-size + spacing))
+control-bar-height = 45px
+
+.puzzle-container
+  width dimension
+  height dimension + control-bar-height + spacing
+  overflow hidden
+
+.puzzle
+  overflow         hidden
+  border-radius    '5px'
+  position         relative
+  width            dimension
+  height           dimension + control-bar-height + spacing
+  background-color #222
+  font-family      sans-serif
+
+  .overlay-container
+    width    dimension
+    height   dimension
+    position absolute
+    top      0
+    left     0
+    z-index  10
+    background-color rgba(32, 32, 32, 0.25)
+
+    .overlay
+      overlay-height = 100px
+      overlay-width  = 100px
+
+      width            overlay-width
+      height           overlay-height
+      position         absolute
+      top              (dimension/2) - (overlay-height/2)
+      left             (dimension/2) - (overlay-width/2)
+      z-index          20
+      background-color rgb(32, 32, 32)
+      opacity          0.8
+      border-radius    '10px'
+      line-height      overlay-height
+      color            #ccc
+      text-align       center
+
+  vendor('user-select', none)
+
+  .control-bar
+    margin-top dimension + spacing
+    padding 0 spacing
+
+    inner-control-height = control-bar-height - spacing
+    inner-control-width = dimension - 2 * spacing
+
+    .shuffle-button, .solve-button
+      float left
+      font-weight bold
+      font-size 15px
+
+    .shuffle-button
+      fancy(fg: #556, bg: #c9c9c0, width: 0.3px * inner-control-width - 2px, height: inner-control-height - 2px, button: true)
+
+    .title-text
+      fg-color = #999
+
+      float left
+      text-align center
+      width 0.4px * inner-control-width
+      line-height inner-controller-height
+      font-size 30px
+      color fg-color
+      font-family Satisfy, serif
+      text-shadow darken(fg-color, 25%) 0 -1px 1px, lighten(fg-color, 25%) 0 1px 1px
+
+    .solve-button
+      fancy(fg: #D80, bg: #722, width: 0.3px * inner-control-width - 2px, height: inner-control-height - 2px, button: true)
+
+  .cell
+    border-width = 1px
+    inner-width = cell-size - (2 * border-width)
+
+    position       absolute
+    font-size      35px
+
+    &.dark
+      fancy(fg: #D80, bg: #722, width: inner-width, height: inner-width)
+
+    &.light
+      fancy(fg: #556, bg: #c9c9c0, width: inner-width, height: inner-width)
