@@ -289,16 +289,13 @@ class KeyFrameDB extends KeyframeDatabase
 */
 
     // deprecated method names
-    function KFDB_Connect( $a )              { return( $this->Connect( $a ) ); }
     function KFDB_Execute( $a )              { return( $this->Execute( $a ) ); }
     function KFDB_CursorOpen( $a )           { return( $this->CursorOpen( $a ) ); }
     function KFDB_CursorFetch( $a )          { return( $this->CursorFetch( $a ) ); }
     function KFDB_CursorClose( $a )          {         $this->CursorClose( $a ); }
     function KFDB_QueryRA( $a )              { return( $this->QueryRA( $a ) ); }
     function KFDB_Query1( $a )               { return( $this->Query1( $a ) ); }
-    function KFDB_InsertAutoInc( $a )        { return( $this->InsertAutoInc( $a ) ); }
     function KFDB_GetErrMsg()                { return( $this->GetErrMsg() ); }
-    function KFDB_SetDebug( $a )             {         $this->SetDebug( $a ); }
 }
 
 ?>
