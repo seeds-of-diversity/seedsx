@@ -26,9 +26,6 @@ define( "Q_ROOT", STD_isLocal ? (SITEROOT."app/q/") : "https://seeds.ca/app/q/" 
 //define("SITEINC_STDJS", SITEINC."std/js/");     // STDINC/js or a copy that the web server can see
 define("SITEIMG_STDIMG", SITEINC."std/img/");   // STDINC/img or a copy that the web server can see
 
-define("PAGE2_ROOT",     SEEDCOMMON."page/");
-define("PAGE2_TEMPLATE", PAGE2_ROOT."page2.php" );
-
 define("ADMIN_HOME", SITEROOT."login/index.php");
 
 define( "CLR_BG_editEN","#e0e0e0");
