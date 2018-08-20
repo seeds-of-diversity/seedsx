@@ -1,7 +1,0 @@
-for i in ./*.jpg; do
-    echo $i
-    convert "$i" -resize 800x800\>  -quality 85 "$i"
-    echo $?
-done
-
-
