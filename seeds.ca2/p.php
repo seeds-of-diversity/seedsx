@@ -5,13 +5,13 @@ include( "site.php" );
 SiteStartSessionAccount( array('DocRepMgr'=>'A') );     // this has nothing to do with DocRep but it means you're somebody
 
 
-$x = null; 
+$x = null;
 echo "whoami: ";
-system("/usr/bin/whoami", $x); 
+system("/usr/bin/whoami", $x);
 echo "<br/>$x<br/><br/><br/>";
 
 
-include( STDINC."os/phpinfo.php" );
+include( SEEDCORE."os/phpinfo.php" );
 echo "<pre>";
 var_dump($_SERVER);
 echo "</pre>";
