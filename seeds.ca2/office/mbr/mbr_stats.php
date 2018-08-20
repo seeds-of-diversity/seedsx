@@ -16,7 +16,8 @@ $year = SEEDSafeGPC_GetInt("year");
 if( !$year )  $year = date( "Y" );
 
 
-SiteApp_KFUIAppHeader( "Seeds of Diversity Membership Statistics for $year" );
+//SiteApp_KFUIAppHeader( "Seeds of Diversity Membership Statistics for $year" );
+echo "<h3>Seeds of Diversity Membership Statistics for $year</h3>";
 
 echo "<STYLE>"
     ."table#stat { margin-left:3em; }"
