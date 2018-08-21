@@ -8,7 +8,6 @@ include_once( "../site2.php" );
 include_once( STDINC."SEEDForm.php" );
 include_once( STDINC."SEEDDate.php" );
 include_once( SEEDCOMMON."siteStart.php" );
-include_once( SEEDCOMMON."siteApp.php" );
 include_once( SEEDCOMMON."siteutil.php" );  // SiteUtilRaProvinces
 include_once( SEEDCOMMON."ev/_ev.php" );
 include_once( STDINC."SEEDEditor.php" );

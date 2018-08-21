@@ -3,7 +3,6 @@
 if( !defined("SITEROOT") )  define("SITEROOT", "../../");
 include_once( SITEROOT."site2.php" );
 
-include_once( SEEDCOMMON."siteApp.php" );
 include_once( SEEDCOMMON."console/console01kfui.php" );
 include_once( SEEDCOMMON."sl/sl_db.php" );
 include_once( "_sl_admin_accession.php" );

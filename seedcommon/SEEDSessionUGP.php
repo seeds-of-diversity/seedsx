@@ -4,7 +4,7 @@
  *
  * Show permissions available by Users, Groups, Perms, plus SEEDPerms/Classes
  *
- * Copyright (c) 2010-2015 Seeds of Diversity Canada
+ * Copyright (c) 2010-2018 Seeds of Diversity Canada
  *
  *
  * Typical invocation:
@@ -17,7 +17,7 @@
 include_once( "siteStart.php" );
 include_once( STDINC."KeyFrame/KFUIComponent.php" );
 include_once( STDINC."KeyFrame/KFUIForm.php" );
-include_once( STDINC."SEEDPerms.php" );
+include_once( SEEDCORE."SEEDPerms.php" );
 include_once( SEEDCOMMON."console/console01kfui.php" );
 
 
@@ -34,12 +34,14 @@ class MyConsole extends Console01KFUI
 
     private $oSessDB = NULL;    // deprecate
     private $oAccountDB;
+    private $oSEEDPerms;
 
     function __construct( KeyFrameDB $kfdb, SEEDSessionAccount $sess, $raParms )
     {
         parent::__construct( $kfdb, $sess, $raParms );
         $this->oSessDB = new SEEDSessionAuthDB( $kfdb, $sess->GetUID() );   // deprecate
         $this->oAccountDB = new SEEDSessionAccountDB( $kfdb, $sess->GetUID() );
+        $this->oSEEDPerms = new SEEDPermsWrite( New_SiteAppDB(), $sess->GetUID() );
 
         // deprecated
         SEEDSessionAuthStatic::Init( $this->kfdb, $sess->GetUID() );  // SEEDSessionAuthStatic provides kfrels for each of the components
@@ -64,6 +66,11 @@ class MyConsole extends Console01KFUI
     function TFmainSEEDPermClassesContent() { return( $this->CompListForm_Horz() ); }
     function TFmainSEEDPermsContent()   { return( $this->CompListForm_Horz() ); }
 
+    function TabSetPermission( $tsid, $tabname )
+    {
+        return( in_array($tabname, array('SEEDPerms','SEEDPermClasses')) ? Console01::TABSET_PERM_GHOST : Console01::TABSET_PERM_SHOW );
+    }
+
     function myInit( $k )
     {
         $oAcctDB = new SEEDSessionAccountDB2( $this->kfdb, $this->sess->GetUID() );
@@ -72,8 +79,8 @@ class MyConsole extends Console01KFUI
             case 'users':           $kfrel = SEEDSessionAuthStatic::KfrelUsers();             break;
             case 'groups':          $kfrel = SEEDSessionAuthStatic::KfrelGroups();            break;
             case 'perms':           $kfrel = SEEDSessionAuthStatic::KfrelPerms();             break;
-            case 'seedpermclasses': $kfrel = SEEDPerms::KfrelSEEDPermClasses( $this->kfdb, $this->sess->GetUID() );  break;
-            case 'seedperms':       $kfrel = SEEDPerms::KfrelSEEDPerms_P_C( $this->kfdb, $this->sess->GetUID() );    break;
+            case 'seedpermclasses': $kfrel = $this->oSEEDPerms->KFRel("C");                   break;
+            case 'seedperms':       $kfrel = $this->oSEEDPerms->KFRel("P");                   break;
         }
 
         $raCompParms = array(
@@ -518,7 +525,7 @@ class MyConsole extends Console01KFUI
     /***********************************
      */
     {
-        $raPermOpts = array_merge( array("--- Perm Class ---"=>0), SEEDPerms::GetRAClassesOpts( $this->kfdb, "", true ) );
+        $raPermOpts = array_merge( array("--- Perm Class ---"=>0), $this->oSEEDPerms->GetRAClassesOpts( "", true ) );
 
         $s = "<table border='0' cellpadding='5'>"
             .$oForm->ExpandForm(

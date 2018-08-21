@@ -84,7 +84,7 @@ class DocWebsite extends DocRepWebsite {
         // Get raPermsClassesR
         $uid = @$this->raParms['uid'] ? $this->raParms['uid'] : -1;  // -1 is the anonymous user
 
-        $oPerms = New_DocRepSEEDPermsFromUID( $this->kfdb, $uid );
+        $oPerms = New_DocRepSEEDPermsFromUID( New_SiteAppDB(), $uid );
         $this->raParms['raPermClassesR'] = $oPerms->GetClassesAllowed( "R", false );
 
         $ret = $this->Main();    // true: served IMAGE/DOC, false: error, else $ret = page text

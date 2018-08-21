@@ -37,7 +37,7 @@
 
 /* DocRepApp02
  *
- * Copyright (c) 2006-2017 Seeds of Diversity Canada
+ * Copyright (c) 2006-2018 Seeds of Diversity Canada
  *
  * Application class for a DocRep document manager
  *
@@ -906,7 +906,7 @@ class DocRepApp02_DocRepMgr extends DocRepMgr
 // no not good enough, this needs to know about P and A perms, and an enumeration of permclass names for DocUI (unless DocUI has its own SEEDPerms for that)
 // and now this is duplicated in doc/ebulletin (and it should be done whereever you want to make a DocRepDB)
 
-        $this->oPerms = New_DocRepSEEDPermsFromUID( $kfdb, $uid );
+        $this->oPerms = New_DocRepSEEDPermsFromUID( New_SiteAppDB(), $uid );
         $this->raPermsR   = $this->oPerms->GetClassesAllowed( "R", false );
         $this->raPermsW   = $this->oPerms->GetClassesAllowed( "W", false );
         $this->raPermsP   = $this->oPerms->GetClassesAllowed( "P", false );

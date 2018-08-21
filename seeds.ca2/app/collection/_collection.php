@@ -33,7 +33,7 @@ class SLCollectionCollection
             $sCond = "eReadAccess in ('PUBLIC','COLLECTORS') OR "
                     ."uid_owner='".$this->oSCA->sess->GetUID()."'";
 
-            $raP = $this->oSCA->oPerms->GetClassesAllowed( "R", false );    // current user's R permclasses
+            $raP = $this->oSCA->oPermsTest->GetClassesAllowed( "R", false );    // current user's R permclasses
             if( count($raP) ) {
                 $sCond .= " OR ".SEEDCore_MakeRangeStrDB( $raP, 'permclass' );
             }
@@ -87,7 +87,7 @@ class SLCollectionCollection
 
             // test if the current user has the required permclass mode
             if( ($permclass = $kfr->Value('permclass')) &&
-                $this->oSCA->oPerms->IsClassModeAllowed( $permclass, $mode ) )  return( true );
+                $this->oSCA->oPermsTest->IsClassModeAllowed( $permclass, $mode ) )  return( true );
         }
 
         return( false );
@@ -204,7 +204,8 @@ class SLCollectionCollection
         if( !$kfr->Value('permclass') ) {
             // Create a new permclass for this collection.
             // By convention it is named SLCollection:kColl where kColl is a string value of the sl_collection._key
-            $permclass = SEEDPermsStatic::CreatePermClass( $this->oSCA->kfdb, "SLCollection", strval($kfr->Key()) );
+            $permclass = $this->oSCA->oPerms->CreatePermClass( "SLCollection", strval($kfr->Key()) );
+            //$permclass = SEEDPermsStatic::CreatePermClass( $this->oSCA->kfdb, "SLCollection", strval($kfr->Key()) );
             $kfr->SetValue( 'permclass', $permclass );
             $kfr->PutDBRow();
         }
@@ -220,7 +221,7 @@ class SLCollectionCollection
 
     private function updatePerms( $pEmails, $permclass, $mode )
     {
-        list($raOldUsers,$raOldGroups) = SEEDPermsStatic::GetUsersFromPermClass( $this->oSCA->kfdb, $permclass, $mode );
+        list($raOldUsers,$raOldGroups) = $this->oSCA->oPerms->GetUsersFromPermClass( $permclass, $mode );
         if( count($raOldGroups) ) {
             /* Cannot allow SEEDPerms groups:
              *     removing from a group is impossible;
@@ -239,7 +240,7 @@ class SLCollectionCollection
         foreach( $raEmails as $email ) {
             if( ($kUser = array_search( $email, $raUsers )) ) {
                 // this is a real user
-                SEEDPermsStatic::AddPermForUser( $this->oSCA->kfdb, $kUser, $permclass, $mode );
+                $this->oSCA->oPerms->AddPermForUser( $kUser, $permclass, $mode );
             } else {
                 echo "$email is not a real user";
             }
@@ -248,7 +249,7 @@ class SLCollectionCollection
         // Subtract friends whose perms are no longer in the given list
         foreach( $raOldUsers as $kUser ) {
             if( !isset($raUsers[$kUser]) ) {
-                SEEDPermsStatic::RemovePermForUser( $this->oSCA->kfdb, $kUser, $permclass, $mode );
+                $this->oSCA->oPerms->RemovePermForUser( $kUser, $permclass, $mode );
             }
         }
     }
@@ -260,7 +261,7 @@ class SLCollectionCollection
                ."<input type='submit' value='$label'/>"
                ."<input type='hidden' name='pScreen' value='$pScreen'/>"
                ."<input type='hidden' name='pCmd' value='$pColl'/>"          // used by pScreen==collections
-               ."<input type='hidden' name='sfCp_selSC' value='$pColl'/>"    // used by pScreen==seeds
+               .($pScreen=='seeds' ? "<input type='hidden' name='sfCp_selSC' value='$pColl'/>" : "")
                ."</form>" );
     }
 
@@ -307,7 +308,7 @@ class SLCollectionCollection
         if( $this->oSCA->IsAdmin ) {
             // only if you have UGP SLCollection=='A' or SL=='A'
             $s .= "<div style='margin:10px'><i><b>Admin</b></i><br/>"
-                 ."<i>Permclass: ".SEEDPermsStatic::GetClassName( $this->oSCA->kfdb, $kfr->Value('permclass'), true )."</i>"
+                 ."<i>Permclass: ".$this->oSCA->oPermsTest->GetClassName( $kfr->Value('permclass'), true )."</i>"
                  ."</div>";
         }
 
@@ -330,7 +331,7 @@ class SLCollectionCollection
         $sAdmin = "";
         if( $this->oSCA->IsAdmin ) {
             $sOpts = array_merge( array("Create a new permclass" => 0),
-                                  SEEDPermsStatic::GetRAClassesOpts($this->oSCA->kfdb, "SLCollection", true) );
+                                  $this->oSCA->oPerms->GetRAClassesOpts("SLCollection", true) );
             $sAdmin = "||| <br/><b>Admin</b> || &nbsp;"
                      ."||| Permclass || ".$oForm->Select2( 'permclass', $sOpts )." || &nbsp;";
         }
@@ -373,7 +374,8 @@ class SLCollectionCollection
      */
     {
         $s = "";
-        $raUsers = SEEDSessionPerms_GetUseridsFromPermClass( $this->oSCA->kfdb, $permclass, $mode, true );
+
+        $raUsers = SEEDSessionPerms_GetUseridsFromPermClass( New_SiteAppDB(), $permclass, $mode, true );
 
         foreach( $raUsers as $uid => $raU ) {
             $s .= $raU['email']."\n";

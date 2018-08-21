@@ -10,7 +10,7 @@
 if( !defined("SITEROOT") )  define("SITEROOT", "../../");
 include_once( SITEROOT."site2.php" );
 include_once( STDINC."KeyFrame/KFUIForm.php" );
-include_once( STDINC."SEEDPerms.php" );
+//include_once( SEEDCORE."SEEDPerms.php" );
 include_once( SEEDCOMMON."console/console01.php" );
 include_once( SEEDCOMMON."doc/docUtil.php" );
 include_once( "_mbr_mail.php" );
@@ -354,7 +354,7 @@ $bNoStore = ( $p_action != 'Create' && $p_action != 'Update' );
         } else {
             $kMbr = 0;
         }
-        
+
         $sHeader = $sDocOutput = "";
         if( ($kfr = $this->oMail->kfrelMail->GetRecordFromDBKey( $this->kMail )) ) {
 

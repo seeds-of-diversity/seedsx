@@ -29,7 +29,7 @@ require_once( STDINC."KeyFrame/KFDB.php" );
 require_once( SEEDCOMMON."console/console01.php" );
 require_once( STDINC."SEEDSetup.php");
 require_once( STDINC."SEEDSession.php" );       // SEEDSession_Setup()
-require_once( STDINC."SEEDPerms.php" );         // SEEDPerms_Setup()
+require_once( SEEDCORE."SEEDPerms.php" );         // SEEDPerms_Setup()
 require_once( STDINC."SEEDMetaTable.php" );     // SEEDMetaTable_Setup()
 require_once( STDINC."DocRep/DocRepDB.php" );   // DocRep_Setup()
 

@@ -4,7 +4,7 @@
 // preserve window scroll on collection and germ forms - and inventory?
 // initial user goes to collection screen, but not obvious how to see the seeds
 
-include_once( STDINC."SEEDSessionPerms.php" );
+include_once( SEEDCORE."SEEDSessionPerms.php" );
 include_once( STDINC."SEEDUIWidgets.php" );
 
 include_once( "_collection.php" );
@@ -20,7 +20,8 @@ class SLCollectionAdmin extends Console01_Worker1
     public $oSLDBMaster;
     public $oUGP;    // SEEDSessionAuthDBRead for general use
 
-    public $oPerms; // SEEDPerms for this user, in the SLCollection namespace
+    public $oPerms;      // for reading/writing arbitrary seedperms
+    public $oPermsTest;  // SEEDPermsTest for this user, in the SLCollection namespace
 
     public $kInvCurr = 0;
 
@@ -45,7 +46,8 @@ class SLCollectionAdmin extends Console01_Worker1
         $this->oSVA = $this->oC->oSVA;  // could use the TabSetGetSVA() for this tab but we don't know the tsid/tabname here
         $this->oSLDBMaster = new SLDB_Master( $kfdb, $sess->GetUID() );
         $this->oUGP = new SEEDSessionAuthDBRead( $kfdb );
-        $this->oPerms = New_SEEDPermsFromUID( $this->kfdb, $this->sess->GetUID(), "SLCollection" );
+        $this->oPerms = new SEEDPermsWrite( New_SiteAppDB(), $this->sess->GetUID() );
+        $this->oPermsTest = New_SEEDPermsFromUID( New_SiteAppDB(), $this->sess->GetUID(), "SLCollection" );
 
         // these don't have to be created here, but they contain oForms that have to be Updated before the UI is drawn, especially drawList
         $this->oAcc = new SLCollectionAccession( $this );

@@ -9,7 +9,6 @@
 define( "SITEROOT", "../../" );
 include_once( SITEROOT."site2.php" );
 include_once( STDINC."SEEDForm.php" );
-include_once( SEEDCOMMON."siteApp.php" );
 include_once( SEEDCOMMON."console/console01.php" );
 include_once( "_mbr.php" );
 

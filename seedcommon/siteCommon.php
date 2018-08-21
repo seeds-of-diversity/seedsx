@@ -33,7 +33,15 @@ function SiteCommon_init( $raParms )
     include_once( SEEDAPP."SEEDApp.php" );
 }
 
-
+function New_SiteAppDB()
+{
+    // Normally an app would make this in its init code but we have some old code that uses seedcore
+    // classes so it suddenly needs one of these. Deprecate when no longer needed.
+    return( new SEEDAppDB( array( 'kfdbUserid' => SiteKFDB_USERID,
+                                  'kfdbPassword' => SiteKFDB_PASSWORD,
+                                  'kfdbDatabase' => SiteKFDB_DB,
+                                  'logdir' => SITE_LOG_ROOT ) ) );
+}
 
 function site_define_lang( $lang = "" )
 /**************************************

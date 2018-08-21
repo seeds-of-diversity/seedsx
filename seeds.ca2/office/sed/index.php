@@ -28,7 +28,6 @@
 
 define("SITEROOT", "../../");
 include_once( SITEROOT."site2.php" );
-include_once( SEEDCOMMON."siteApp.php" );
 include_once( "_sed.php" );
 include_once( SEEDCOMMON."console/console01.php" );
 

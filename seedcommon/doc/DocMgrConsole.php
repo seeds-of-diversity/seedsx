@@ -15,7 +15,7 @@
 /*
  * DocMgrConsole
  *
- * Copyright 2012-2015 Seeds of Diversity Canada
+ * Copyright 2012-2018 Seeds of Diversity Canada
  *
  * Implement a console application for the docrep manager
  *
@@ -28,7 +28,6 @@
  */
 
 include_once( SEEDCOMMON."siteStart.php" );
-include_once( SEEDCOMMON."siteApp.php" );
 include_once( SEEDCOMMON."console/console01.php" );
 include_once( SEEDCOMMON."doc/docUtil.php" );
 include_once( STDINC."DocRep/DocRepImg.php" );
@@ -53,7 +52,8 @@ class MyDocRepApp extends DocRepApp02 {
 
         // note that DocRepApp02 instantiates raSVA via derived methods, so the Session setup happens here and the SVA is stored in DocRepApp
         parent::__construct( $kfdb, $sess->GetUID(), DOCREP_KEY_HASH_SEED );
-        $this->oPerms = New_DocRepSEEDPermsFromUID( $kfdb, $sess->GetUID() );
+
+        $this->oPerms = New_DocRepSEEDPermsFromUID( New_SiteAppDB(), $sess->GetUID() );
     }
 
     function GetUserName( $uid )

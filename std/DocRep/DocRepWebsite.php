@@ -2,7 +2,7 @@
 
 /* DocRepWebsite
  *
- * Copyright (c) 2007-2011 Seeds of Diversity Canada
+ * Copyright (c) 2007-2018 Seeds of Diversity Canada
  *
  * Serve a website contained in a DocRepository.
  */
@@ -10,7 +10,7 @@
 include_once( "DocRepAppCommon.php" );      // DocRep_GetDocGPC()
 include_once( "DocRepDB.php" );
 include_once( "DocRepWiki.php" );
-include_once( STDINC."SEEDPerms.php" );
+//include_once( SEEDCORE."SEEDPerms.php" );
 
 
 class DocRepWebsite

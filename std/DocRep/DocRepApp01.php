@@ -900,7 +900,7 @@ class DocRepApp01_DocRepMgr extends DocRepMgr
 // no they shouldn't, there should be a factory_DocRepDB method
 // no not good enough, this needs to know about P and A perms, and an enumeration of permclass names for DocUI (unless DocUI has its own SEEDPerms for that)
 
-        $this->oPerms = New_DocRepSEEDPermsFromUID( $kfdb, $uid );
+        $this->oPerms = New_DocRepSEEDPermsFromUID( New_SiteAppDB(), $uid );
         $this->raPermsR   = $this->oPerms->GetClassesAllowed( "R", false );
         $this->raPermsW   = $this->oPerms->GetClassesAllowed( "W", false );
         $this->raPermsP   = $this->oPerms->GetClassesAllowed( "P", false );

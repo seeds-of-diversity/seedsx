@@ -4,7 +4,6 @@
 define( "SITEROOT", "../../" );
 include_once( SITEROOT."site2.php" );
 //include_once( STDINC."KeyFrame/KFUIAppSimple.php" );
-include_once( SEEDCOMMON."siteApp.php" );
 include_once( "_mbr.php" );
 
 list($kfdb, $sess) = SiteStartSessionAccount( array("MBR" => "R") );

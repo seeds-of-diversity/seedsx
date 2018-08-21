@@ -11,7 +11,7 @@
 if( !defined("SITEROOT") )  define("SITEROOT", "../../");
 include_once( SITEROOT."site2.php" );
 include_once( SEEDCOMMON."siteutil.php" );   // Site_Log
-include_once( STDINC."SEEDPerms.php" );
+//include_once( SEEDCORE."SEEDPerms.php" );
 include_once( "_mbr_mail.php" );
 
 

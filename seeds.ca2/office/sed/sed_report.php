@@ -1,6 +1,6 @@
 <?php
 
-include_once( STDINC."SEEDPerms.php" );
+//include_once( SEEDCORE."SEEDPerms.php" );
 include_once( SEEDCOMMON."doc/docUtil.php" );
 include_once( STDINC."DocRep/DocRepWiki.php" );
 

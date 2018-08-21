@@ -2,11 +2,11 @@
 /*
  * docUtil
  *
- * Copyright 2009-2017 Seeds of Diversity Canada
+ * Copyright 2009-2018 Seeds of Diversity Canada
  *
  * Functions to simplify DocRep applications
  */
-include_once( STDINC."SEEDPerms.php" );
+include_once( SEEDCORE."SEEDPerms.php" );
 include_once( STDINC."SEEDSession.php" );
 include_once( STDINC."DocRep/DocRepDB.php" );
 include_once( STDINC."DocRep/DocRepAppCommon.php" );  // DocRep_GetDocGPC
@@ -17,22 +17,23 @@ include_once( SEEDCORE."SEEDTag.php" );                 // SEEDTagBasicHandler
 
 
 // replace this with a SEEDSessionPerms function that takes the DOCREP_SEEDPERMS_APP as an argument
-function New_DocRepSEEDPermsFromUID( $kfdb, $uid )
+function New_DocRepSEEDPermsFromUID( SEEDAppDB $oApp, $uid )
 {
 // kluge: $uid should never be 0 but if it is we undoubtedly mean the anonymous user
 if( !$uid )  $uid = -1;
 
-    SEEDSessionAuthStatic::Init($kfdb, 0);
+    SEEDSessionAuthStatic::Init($oApp->kfdb, 0);
     $raGroups = SEEDSessionAuthStatic::GetGroupsFromUserKey( $uid, false );
-    return( new SEEDPerms( $kfdb, DOCREP_SEEDPERMS_APP, array($uid), $raGroups ) );
+    return( new SEEDPermsTest( $oApp, DOCREP_SEEDPERMS_APP, array($uid), $raGroups ) );
 }
 
 function New_DocRepDB_WithMyPerms( $kfdb, $uid, $raParms = array() )
 {
     $bReadonly = isset($raParms['bReadonly']) ? $raParms['bReadonly'] : false;
 
+$oApp = New_SiteAppDB();
     $parms = array();
-    $oPerms = New_DocRepSEEDPermsFromUID( $kfdb, $uid );
+    $oPerms = New_DocRepSEEDPermsFromUID( $oApp, $uid );
     $parms['raPermClassesR'] = $oPerms->GetClassesAllowed( "R", false );
     if( !$bReadonly ) {
         $parms['raPermClassesW'] = $oPerms->GetClassesAllowed( "W", false );
