@@ -11,11 +11,11 @@
 if( ($pCmd = $request->variable('seeds-admin','')) ) {
 
     include( "../../seeds1_def.php" );
-    include( "../../std/KeyFrame/KFDB.php" );
-    $kfdb = new KeyFrameDB( SiteKFDB_HOST, SiteKFDB_USERID, SiteKFDB_PASSWORD );
+    include( "../../seeds/Keyframe/KeyframeDB.php" );
+    $kfdb = new KeyFrameDatabase( SiteKFDB_USERID, SiteKFDB_PASSWORD, SiteKFDB_HOST );
     $kfdb->Connect( "seeds" ) or die( "kfdb connection failed" );
 
-    $kfdb_bb = new KeyFrameDB( SiteKFDB_HOST_phpbb, SiteKFDB_USERID_phpbb, SiteKFDB_PASSWORD_phpbb );
+    $kfdb_bb = new KeyFrameDatabase( SiteKFDB_USERID_phpbb, SiteKFDB_PASSWORD_phpbb, SiteKFDB_HOST_phpbb );
     $kfdb_bb->Connect( SiteKFDB_DB_phpbb ) or die( "kfdb_bb connection failed" );
 
     require($phpbb_root_path ."includes/functions_user.php");
