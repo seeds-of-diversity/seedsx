@@ -10,6 +10,8 @@
 include_once( STDINC."SEEDProblemSolver.php" );
 include_once( SEEDCOMMON."sl/q/_QServerPCV.php" );
 
+include_once( SEEDLIB."sl/sources/sl_sources_rosetta.php" );
+
 class SLSourceRosetta extends Console01_Worker
 {
     private $oPS;
@@ -58,61 +60,22 @@ class SLSourceRosetta extends Console01_Worker
         return( $s );
     }
 
-    private function drawCommands()
+   private function drawCommands()
     {
         $s = "";
         $sResult = "";
-
+//$this->kfdb->SetDebug(2);
         $cmd = SEEDSafeGPC_GetStrPlain('cmd');
         switch( $cmd ) {
-            case 'rebuild':  $sResult = $this->doRebuild();    break;
-            case 'pcvAdd':   $sResult = $this->doPCVAdd();     break;
+            case 'rebuild_srccv':          $sResult = SLSourceCV_Build::BuildAll( $this->kfdb, 'seeds.sl_cv_sources' );            break;
+            case 'rebuild_srccv_archive':  $sResult = SLSourceCV_Build::BuildAll( $this->kfdb, 'seeds.sl_cv_sources_archive' );    break;
+            case 'pcvAdd':                 $sResult = $this->doPCVAdd();     break;
         }
-
+//$this->kfdb->SetDebug(0);
 
         $s .= $sResult
-             ."<p><a href='{$_SERVER['PHP_SELF']}?cmd=rebuild'>Rebuild Names Index</a></p>";
-
-        return( $s );
-    }
-
-
-    private function doRebuild()
-    {
-        $s = "";
-
-        $s .= "<h4>Rebuilding the names index</h4>";
-
-        $s .= "<p style='margin-left:10px'>";
-
-        /* Delete the sp and cv keys from sl_cv_sources
-         */
-        $c = $this->kfdb->Query1( "SELECT count(*) as c FROM seeds.sl_cv_sources WHERE _status='0' AND (fk_sl_species OR fk_sl_pcv)" );
-        SLSourceRosetta_BuildDB::ClearIndex( $this->kfdb );
-        $s .= "Index deleted ($c entries)<br/>";
-
-        /* Species: fill in all the fk_sl_species keys that we can find in RosettaSEED
-         */
-        SLSourceRosetta_BuildDB::BuildSpeciesIndex( $this->kfdb, "seeds.sl_cv_sources", "" );
-        $c = $this->kfdb->Query1( "SELECT count(*) as c FROM sl_cv_sources WHERE _status='0' AND fk_sl_species" );
-        $s .= "Species index rebuilt ($c entries)<br/>";
-
-        /* Cultivars: fill in all the cv keys that we can find in RosettaSEED (for SrcCV records that have species keys now)
-         */
-        SLSourceRosetta_BuildDB::BuildCultivarIndex( $this->kfdb, "seeds.sl_cv_sources", "" );
-
-        /* Compute soundex and metaphone for unmatched names
-         */
-        SLSourceRosetta_BuildDB::BuildSoundIndex( $this->kfdb );
-// move these two lines to a SLRosetta_BuildDB class
-        $this->kfdb->Execute( "UPDATE seeds.sl_pcv SET sound_soundex=soundex(name) WHERE sound_soundex=''" );
-        $this->kfdb->Execute( "UPDATE seeds.sl_pcv SET sound_metaphone=metaphone(name) WHERE sound_metaphone=''" );
-
-        $c = $this->kfdb->Query1( "SELECT count(*) as c FROM sl_cv_sources WHERE _status='0' AND fk_sl_pcv" );
-        $s .= "Cultivar index rebuilt ($c entries)<br/>";
-
-        $s .= "</p><br/>";
-
+             ."<p><a href='{$_SERVER['PHP_SELF']}?cmd=rebuild_srccv'>Rebuild cv_sources index</a></p>"
+             ."<p><a href='{$_SERVER['PHP_SELF']}?cmd=rebuild_srccv_archive'>Rebuild cv_sources_archive index</a></p>";
 
         return( $s );
     }
