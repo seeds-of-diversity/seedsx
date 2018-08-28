@@ -493,7 +493,8 @@ function DrawEvents( KeyFrameDB $kfdb, $lang )
 //             ."<H2>Seedy Events</H2>"  // "<H2>Seedy Saturdays and Seedy Sundays</H2>"
              ."<P>This is a listing of events for our members and others interested in plant biodiversity, heritage gardening,"
              ." organic gardening, and seeds. If you know of any other upcoming events, please send the information to "
-             .SEEDCore_EmailAddress( "office", "seeds.ca" )
+             //.SEEDCore_EmailAddress( "office", "seeds.ca" )
+             ."<a href='mailto:office@seeds.ca'>office@seeds.ca</a>"
              ."</P>";
 
 
@@ -502,7 +503,8 @@ function DrawEvents( KeyFrameDB $kfdb, $lang )
              ."<P>Voici des &eacute;v&eacute;nements d'int&eacute;r&ecirc;t pour nos membres ou autres personnes pr&eacute;occup&eacute;es par la biodiversit&eacute;, la culture"
              ." de vari&eacute;t&eacute;s du patrimoine, la culture biologique ainsi que les semences."
              ." Si vous savez d'autres &eacute;v&eacute;nements, SVP courriel "
-             .SEEDCore_EmailAddress("courriel", "semences.ca")
+             //.SEEDCore_EmailAddress("courriel", "semences.ca")
+             ."<a href='mailto:courriel@semences.ca'>courriel@semences.ca</a>"
              ."</P>";
     }
 
