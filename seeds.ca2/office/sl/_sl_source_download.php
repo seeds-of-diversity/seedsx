@@ -111,6 +111,7 @@ class SLSourceDownload
                           'pgrc'      => array( "Canada: Plant Gene Resources (PGRC)" ),
                           'npgs'      => array( "USA: National Plant Germplasm System (NPGS)" ),
                           'sound'     => array( "Sound Tests" ),
+                          'one-off-csci' => array( "One-off CSCI loading" ),
         );
 
 
@@ -354,6 +355,43 @@ class SLSourceDownload
                          ."<P><A href='{$_SERVER['PHP_SELF']}?cmd=showslpcv'>sl_pcv</A></P>"
                          ."<P><A href='{$_SERVER['PHP_SELF']}?cmd=addedtoslcvsources'>Added to sl_cv_sources</A></P>"
                          ."<P><A href='{$_SERVER['PHP_SELF']}?cmd=updatefromslcvsources'>Update from sl_cv_sources</A></P>";
+                    break;
+
+                case 'one-off-csci':
+// SLSourceCV_Build in sl_cv_sources_tmp
+// Move the reporting to a report method of that class
+
+                    // xlsupload is in seeds2. All other db access in this class is for db-seeds1 so the kfdb is for user-seeds1.
+                    // Better to prefix all the tables and use user-seeds2.
+                    $kfdb2 = SiteKFDB( SiteKFDB_DB_seeds2 ) or die( "Cannot connect to database" );
+                    $s .= "<h3 class='DownloadBodyHeading'>Old CSCI loader</h3>";
+                    $kfdb2->SetDebug(2);
+                    if( !$kfdb2->Query1( "SELECT count(*) FROM seeds2.xlsupload WHERE fk_sl_sources IS NOT NULL" ) ) { // fails if column not created yet
+                        $kfdb2->Execute( "ALTER TABLE seeds2.xlsupload ADD fk_sl_sources INTEGER NOT NULL DEFAULT '0'" );
+                        $kfdb2->Execute( "ALTER TABLE seeds2.xlsupload ADD fk_sl_species INTEGER NOT NULL DEFAULT '0'" );
+                        $kfdb2->Execute( "ALTER TABLE seeds2.xlsupload ADD fk_sl_pcv     INTEGER NOT NULL DEFAULT '0'" );
+                    } else {
+                        $kfdb2->Execute( "UPDATE seeds2.xlsupload SET fk_sl_sources='0',fk_sl_species='0'" );
+                    }
+
+                    // Companies
+                    $kfdb2->Execute( "UPDATE seeds2.xlsupload X, seeds.sl_sources S "
+                                             ."SET X.fk_sl_sources=S._key "
+                                             ."WHERE S._status='0' AND X.company<>' ' AND X.company=S.name_en" );
+                    $ra = $kfdb2->QueryRowsRA( "SELECT company FROM seeds2.xlsupload WHERE fk_sl_sources='0' GROUP BY 1" );
+                    $s .= "<p>".count($ra)." companies not known</p><ul>".SEEDCore_ArrayExpandRows($ra, "<li>[[company]]</li>")."</ul>";
+
+                    // Species
+                    $kfdb2->Execute( "UPDATE seeds2.xlsupload X, seeds.sl_species S "
+                                             ."SET X.fk_sl_species=S._key "
+                                             ."WHERE S._status='0' AND X.species<>' ' AND "
+                                             ."(X.species=S.name_en OR X.species=S.name_fr OR X.species=S.iname_en OR X.species=S.iname_fr OR X.species=S.name_bot)" );
+                    $kfdb2->Execute( "UPDATE seeds2.xlsupload X, seeds.sl_species_syn SY "
+                                             ."SET X.fk_sl_species=S.fk_sl_species "
+                                             ."WHERE S._status='0' AND X.species<>' ' AND X.fk_sl_species='0' AND "
+                                             ."X.species=S.name" );
+                    $ra = $kfdb2->QueryRowsRA( "SELECT species FROM seeds2.xlsupload WHERE fk_sl_species='0' GROUP BY 1" );
+                    $s .= "<p>".count($ra)." species not known</p><ul>".SEEDCore_ArrayExpandRows($ra, "<li>[[species]]</li>")."</ul>";
                     break;
             }
         }
