@@ -102,7 +102,12 @@ if( $ipn->response != "VERIFIED" ) {
 /*  The IPN is real.   Process the POSTed parms.
  */
 
-$kfdb = SiteKFDB() or die( "Cannot connect to database" );
+$kfdb = SiteKFDB(); // or die( "Cannot connect to database" );
+if( !$kfdb ) {
+    $ipn->log( "Can't connect to database" );
+    $ipn->mail( "PPIPN: Can't connect to database" );
+    die;
+}
 $oOrder = new MbrOrderCommon( $kfdb, "EN", 0 );
 $kfrel = $oOrder->kfrelOrder;
 
