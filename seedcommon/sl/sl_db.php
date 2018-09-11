@@ -1718,4 +1718,49 @@ CREATE TABLE sl_cv_sources_archive (
 "
 );
 
+
+class SLDB_Create
+{
+    const SEEDS_DB_TABLE_SL_TMP_CV_SOURCES = "
+CREATE TABLE seeds.sl_tmp_cv_sources (
+    -- These columns are required in the spreadsheet
+    -- osp and ocv are named this way to enable compatible code with SLSourceRosetta
+    k             integer not null default 0,            -- sl_cv_sources._key, preserved here for re-integration
+    company       varchar(200) not null default '',      -- must match sl_sources.name_en
+    osp           varchar(200) not null default '',      -- copy of sl_cv_sources.osp
+    ocv           varchar(200) not null default '',      -- copy of sl_cv_sources.ocv
+    organic       tinyint not null default 0,            -- copy of sl_cv_sources.bOrganic
+    year          integer not null default 0,
+    notes         text,
+
+    -- These columns are generated when the spreadsheet is uploaded
+    kUpload       integer not null,                      -- each upload has a unique number for grouping rows of that upload
+    _created      datetime,                              -- time when this row was uploaded - for garbage collection of orphaned uploads
+    _status       integer not null default 0,            -- mainly so we can apply queries written for sl_cv_sources
+
+    -- Computed after loading
+    fk_sl_sources integer default 0,                     -- validates integrity of (company)
+    fk_sl_species integer default 0,                     -- attempts to match (species) with a species identifier, but allows 0 so Rosetta can work on it
+    fk_sl_pcv     integer default 0,                     -- attempts to match (fk_sl_species,cultivar), but allows 0 so Rosetta can work on it
+    op            CHAR not null default ' ',             -- ' ' = not computed yet, 'N' = new, 'U' = update, 'D' = delete1, 'X' = delete2, 'Y' = year updated, '-' = no change
+
+    -- These are obsolete, probably
+    -- sp_old        varchar(200) not null default '',
+    -- var_old       varchar(200) not null default '',
+
+    -- Indexes
+    index (k),
+    index (osp(20)),
+    index (ocv(20)),
+    -- index (sp_old(20)),
+    -- index (var_old(20)),
+    index (fk_sl_sources),
+    index (fk_sl_species),
+    index (fk_sl_pcv),
+    index (kUpload)
+) CHARSET latin1;
+";
+}
+
+
 ?>

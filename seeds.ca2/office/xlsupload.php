@@ -126,6 +126,7 @@ function uploadFile( KeyFrameDB $kfdb, $bCSV )
 
     $keys = array_keys($raRows[0]);
     //var_dump($keys,$raRows);
+
     $kfdb->SetDebug(2);
 
     /* Drop the db-table if it was left over from last time
@@ -140,6 +141,10 @@ function uploadFile( KeyFrameDB $kfdb, $bCSV )
         $raK[] = addslashes($k)." text";
     }
     $kfdb->Execute( "CREATE TABLE xlsupload (".implode(",",$raK).");" );
+
+    // the insert statement is only interesting if something goes wrong
+    $kfdb->SetDebug(1);
+
 
     /* Generate an INSERT statement to fill the db-table.
      * A single INSERT is efficent:  INSERT INTO xlsupload (keys) VALUES (values-row-1),(values-row-2),(values-row-3)...

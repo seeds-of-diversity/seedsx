@@ -355,40 +355,40 @@ class SLSourceDownload
                     break;
 
                 case 'one-off-csci':
-// SLSourceCV_Build in sl_cv_sources_tmp
-// Move the reporting to a report method of that class
+                    // Use xlsload.php to upload a file containing (k,company,species,cultivar,organic,notes).
+                    // This copies it to sl_tmp_cv_sources, and tries to build its index.
+                    // When it works, it's up to you to copy the tmp table to sl_cv_sources or sl_cv_sources_archive
+                    // The reason for this is it's much easier to manage the process of fixing errors by fixing the spreadsheet and re-uploading.
+
+                    $s .= "<h3 class='DownloadBodyHeading'>Old CSCI loader</h3>";
+
+                    $dbtable = "seeds.sl_tmp_cv_sources";
 
                     // xlsupload is in seeds2. All other db access in this class is for db-seeds1 so the kfdb is for user-seeds1.
                     // Better to prefix all the tables and use user-seeds2.
                     $kfdb2 = SiteKFDB( SiteKFDB_DB_seeds2 ) or die( "Cannot connect to database" );
-                    $s .= "<h3 class='DownloadBodyHeading'>Old CSCI loader</h3>";
-                    $kfdb2->SetDebug(2);
-                    if( !$kfdb2->Query1( "SELECT count(*) FROM seeds2.xlsupload WHERE fk_sl_sources IS NOT NULL" ) ) { // fails if column not created yet
-                        $kfdb2->Execute( "ALTER TABLE seeds2.xlsupload ADD fk_sl_sources INTEGER NOT NULL DEFAULT '0'" );
-                        $kfdb2->Execute( "ALTER TABLE seeds2.xlsupload ADD fk_sl_species INTEGER NOT NULL DEFAULT '0'" );
-                        $kfdb2->Execute( "ALTER TABLE seeds2.xlsupload ADD fk_sl_pcv     INTEGER NOT NULL DEFAULT '0'" );
-                    } else {
-                        $kfdb2->Execute( "UPDATE seeds2.xlsupload SET fk_sl_sources='0',fk_sl_species='0'" );
-                    }
 
-                    // Companies
-                    $kfdb2->Execute( "UPDATE seeds2.xlsupload X, seeds.sl_sources S "
-                                             ."SET X.fk_sl_sources=S._key "
-                                             ."WHERE S._status='0' AND X.company<>' ' AND X.company=S.name_en" );
-                    $ra = $kfdb2->QueryRowsRA( "SELECT company FROM seeds2.xlsupload WHERE fk_sl_sources='0' GROUP BY 1" );
-                    $s .= "<p>".count($ra)." companies not known</p><ul>".SEEDCore_ArrayExpandRows($ra, "<li>[[company]]</li>")."</ul>";
+                    $kUpload = 12345;
+$kfdb2->SetDebug(2);
+                    $kfdb2->Execute( "UPDATE seeds2.xlsupload SET k=trim(k),company=trim(company),species=trim(species),cultivar=trim(cultivar),organic=trim(organic)" );
+                    $kfdb2->Execute( "UPDATE seeds2.xlsupload SET k='0' WHERE k='' or k IS NULL" );
+                    $kfdb2->Execute( "UPDATE seeds2.xlsupload SET organic='0' WHERE organic='' or organic IS NULL" );
+                    $kfdb2->Execute( "UPDATE seeds2.xlsupload SET organic='1' WHERE organic<>'0'" );
+                    $this->kfdb->Execute( "DELETE FROM seeds.sl_tmp_cv_sources" );
+$kfdb2->SetDebug(0);
+                    $kfdb2->Execute( "INSERT INTO $dbtable (k,company,osp,ocv,organic,notes,kUpload) "
+                                    ."SELECT k,company,species,cultivar,organic,notes,{$kUpload} FROM seeds2.xlsupload" );
+                    $s .= "<p>Copied ".$this->kfdb->Query1( "SELECT count(*) FROM $dbtable" )." rows to sl_tmp_cv_sources.</p>";
 
-                    // Species
-                    $kfdb2->Execute( "UPDATE seeds2.xlsupload X, seeds.sl_species S "
-                                             ."SET X.fk_sl_species=S._key "
-                                             ."WHERE S._status='0' AND X.species<>' ' AND "
-                                             ."(X.species=S.name_en OR X.species=S.name_fr OR X.species=S.iname_en OR X.species=S.iname_fr OR X.species=S.name_bot)" );
-                    $kfdb2->Execute( "UPDATE seeds2.xlsupload X, seeds.sl_species_syn SY "
-                                             ."SET X.fk_sl_species=S.fk_sl_species "
-                                             ."WHERE S._status='0' AND X.species<>' ' AND X.fk_sl_species='0' AND "
-                                             ."X.species=S.name" );
-                    $ra = $kfdb2->QueryRowsRA( "SELECT species FROM seeds2.xlsupload WHERE fk_sl_species='0' GROUP BY 1" );
-                    $s .= "<p>".count($ra)." species not known</p><ul>".SEEDCore_ArrayExpandRows($ra, "<li>[[species]]</li>")."</ul>";
+                    $s .= SLSourceCV_Build::BuildAll( $this->kfdb, $dbtable );
+
+                    // Report
+                    $raReport = SLSourceCV_Build::ReportTmpTable( $this->kfdb, $kUpload );
+                    $s .= "<p>".count($raReport['raUnknownCompanies'])." companies not known</p>"
+                         ."<ul>".SEEDCore_ArrayExpandRows($raReport['raUnknownCompanies'], "<li>[[company]]</li>")."</ul>";
+                    $s .= "<p>".count($raReport['raUnknownSpecies'])." species not known</p>"
+                         ."<ul>".SEEDCore_ArrayExpandRows($raReport['raUnknownSpecies'], "<li>[[osp]]</li>")."</ul>";
+
                     break;
             }
         }
@@ -1466,7 +1466,7 @@ class SLUploadCVSources
 // There's code here to handle multiple updates simultaneously. That means you don't want to drop and recreate the table all the time.
 // Let's keep the multiple-update facility but not use it and just drop/create the table at the start of every update.
 $this->oW->kfdb->Execute( "DROP TABLE IF EXISTS {$this->tmpTable}" );
-$this->oW->kfdb->Execute( $this->sqlTmpTableCreate );
+$this->oW->kfdb->Execute( SLDB_Create::SEEDS_DB_TABLE_SL_TMP_CV_SOURCES );
 
         /* This number groups this upload's rows in the db table. It doesn't matter what the number is, as long as it's different from others in the kUpload column
          */
@@ -1491,7 +1491,7 @@ $this->oW->kfdb->Execute( $this->sqlTmpTableCreate );
             $company = trim(addslashes($ra['company']));
             $species = trim(addslashes($ra['species']));
             $cultivar = trim(addslashes($ra['cultivar']));
-            $organic = in_array( trim($ra['organic']), array(1,'1','y','Y','yes','YES') ) ? 1 : 0;
+            $organic = in_array( trim($ra['organic']), array(1,'1','x','X','y','Y','yes','YES') ) ? 1 : 0;
             $notes  = trim(addslashes($ra['notes']));
             $year = intval(@$ra['year']) or ($year = date("Y"));
 
@@ -1695,25 +1695,7 @@ $this->oW->kfdb->Execute( $this->sqlTmpTableCreate );
         This can only be used after the tmp.op column is computed
      */
     {
-        $raReport = array(
-            'nRows'              => $this->oW->kfdb->Query1( "SELECT count(*) FROM {$this->tmpTable} WHERE kUpload='$kUpload'" ),
-            'nRowsUncomputed'    => $this->oW->kfdb->Query1( "SELECT count(*) FROM {$this->tmpTable} WHERE kUpload='$kUpload' AND op=''" ),
-            'nRowsSame'          => $this->oW->kfdb->Query1( "SELECT count(*) FROM {$this->tmpTable} WHERE kUpload='$kUpload' AND op='-'" ),
-            'nRowsN'             => $this->oW->kfdb->Query1( "SELECT count(*) FROM {$this->tmpTable} WHERE kUpload='$kUpload' AND op='N'" ),
-            'nRowsU'             => $this->oW->kfdb->Query1( "SELECT count(*) FROM {$this->tmpTable} WHERE kUpload='$kUpload' AND op='U'" ),
-            'nRowsV'             => $this->oW->kfdb->Query1( "SELECT count(*) FROM {$this->tmpTable} WHERE kUpload='$kUpload' AND op='V'" ),
-            'nRowsY'             => $this->oW->kfdb->Query1( "SELECT count(*) FROM {$this->tmpTable} WHERE kUpload='$kUpload' AND op='Y'" ),
-            'nRowsD1'            => $this->oW->kfdb->Query1( "SELECT count(*) FROM {$this->tmpTable} WHERE kUpload='$kUpload' AND op='D'" ),
-            'nRowsD2'            => $this->oW->kfdb->Query1( "SELECT count(*) FROM {$this->tmpTable} WHERE kUpload='$kUpload' AND op='X'" ),
-            'nDistinctCompanies' => $this->oW->kfdb->Query1( "SELECT count(distinct fk_sl_sources) FROM {$this->tmpTable} WHERE kUpload='$kUpload' AND fk_sl_sources<>'0'" ),
-
-            // rows with unmatched species, ignoring those where species is blank or company is blank (those are rows to be deleted)
-            'raUnknownSpecies'   => $this->oW->kfdb->QueryRowsRA( "SELECT osp FROM {$this->tmpTable} WHERE kUpload='$kUpload' "
-                                                                 ."AND fk_sl_species='0' AND osp<>'' AND company<>'' GROUP BY 1" ),
-            // rows with unmatched cultivars, not counting those where species was unmatched (reported above and prerequisite)
-            'raUnknownCultivars' => $this->oW->kfdb->QueryRowsRA( "SELECT osp,ocv FROM {$this->tmpTable} WHERE kUpload='$kUpload' "
-                                                                 ."AND fk_sl_pcv='0' AND fk_sl_species<>'0' GROUP BY 1,2" ),
-        );
+        $raReport = SLSourceCV_Build::ReportTmpTable( $this->oW->kfdb, $kUpload );
 
         return( $raReport );
     }
@@ -1832,47 +1814,6 @@ $this->oW->kfdb->Execute( $this->sqlTmpTableCreate );
         }
         return( $k );
     }
-
-    private $sqlTmpTableCreate = "
-CREATE TABLE seeds.sl_tmp_cv_sources (
-    -- These columns are required in the spreadsheet
-    -- osp and ocv are named this way to enable compatible code with SLSourceRosetta
-    k             integer not null default 0,            -- sl_cv_sources._key, preserved here for re-integration
-    company       varchar(200) not null default '',      -- must match sl_sources.name_en
-    osp           varchar(200) not null default '',      -- copy of sl_cv_sources.osp
-    ocv           varchar(200) not null default '',      -- copy of sl_cv_sources.ocv
-    organic       tinyint not null default 0,            -- copy of sl_cv_sources.bOrganic
-    year          integer not null default 0,
-    notes         text,
-
-    -- These columns are generated when the spreadsheet is uploaded
-    kUpload       integer not null,                      -- each upload has a unique number for grouping rows of that upload
-    _created      datetime,                              -- time when this row was uploaded - for garbage collection of orphaned uploads
-    _status       integer not null default 0,            -- mainly so we can apply queries written for sl_cv_sources
-
-    -- Computed after loading
-    fk_sl_sources integer default 0,                     -- validates integrity of (company)
-    fk_sl_species integer default 0,                     -- attempts to match (species) with a species identifier, but allows 0 so Rosetta can work on it
-    fk_sl_pcv     integer default 0,                     -- attempts to match (fk_sl_species,cultivar), but allows 0 so Rosetta can work on it
-    op            CHAR not null default ' ',             -- ' ' = not computed yet, 'N' = new, 'U' = update, 'D' = delete1, 'X' = delete2, 'Y' = year updated, '-' = no change
-
-    -- These are obsolete, probably
-    -- sp_old        varchar(200) not null default '',
-    -- var_old       varchar(200) not null default '',
-
-    -- Indexes
-    index (k),
-    index (osp(20)),
-    index (ocv(20)),
-    -- index (sp_old(20)),
-    -- index (var_old(20)),
-    index (fk_sl_sources),
-    index (fk_sl_species),
-    index (fk_sl_pcv),
-    index (kUpload)
-) CHARSET latin1;
-";
-
 }
 
 ?>

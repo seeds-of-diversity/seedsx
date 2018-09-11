@@ -2,7 +2,7 @@
 
 /* _sl_source_rosetta.php
  *
- * Copyright 2015-2016 Seeds of Diversity Canada
+ * Copyright 2015-2018 Seeds of Diversity Canada
  *
  * Implement the user interface for RosettaSEED tests and updates in the Seed Source tables
  */
