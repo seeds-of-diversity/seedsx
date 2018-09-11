@@ -287,7 +287,7 @@ function MbrUpload_UpdateDB( $pg2 )
             $s .= "<br/>Added member # $mbrid";
             ++$nNewGood;
         } else {
-            $s .= "<br/><font color='red'>Error inserting member # $mbrid</font>";
+            $s .= "<br/><font color='red'>Error inserting member # $mbrid : ".$kfdb->GetErrMsg()."</font>";
             ++$nNewBad;
         }
     }

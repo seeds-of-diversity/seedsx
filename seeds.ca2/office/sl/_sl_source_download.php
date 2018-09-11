@@ -200,9 +200,6 @@ class SLSourceDownload
             case 'sound_build':
                 SLSourceRosetta_BuildDB::ClearSoundIndex( $this->oW->kfdb );
                 SLSourceRosetta_BuildDB::BuildSoundIndex( $this->oW->kfdb );
-// move this to a SLRosetta_BuildDB class
-                $this->oW->kfdb->Execute( "UPDATE seeds.sl_pcv SET sound_soundex=soundex(name) WHERE sound_soundex=''" );
-                $this->oW->kfdb->Execute( "UPDATE seeds.sl_pcv SET sound_metaphone=metaphone(name) WHERE sound_metaphone=''" );
                 break;
 
             case 'sound_status':
@@ -1715,7 +1712,7 @@ $this->oW->kfdb->Execute( $this->sqlTmpTableCreate );
                                                                  ."AND fk_sl_species='0' AND osp<>'' AND company<>'' GROUP BY 1" ),
             // rows with unmatched cultivars, not counting those where species was unmatched (reported above and prerequisite)
             'raUnknownCultivars' => $this->oW->kfdb->QueryRowsRA( "SELECT osp,ocv FROM {$this->tmpTable} WHERE kUpload='$kUpload' "
-                                                                 ."AND fk_sl_pcv='0' AND fk_sl_species<>'0' GROUP BY 1" ),
+                                                                 ."AND fk_sl_pcv='0' AND fk_sl_species<>'0' GROUP BY 1,2" ),
         );
 
         return( $raReport );

@@ -10,7 +10,6 @@ $date     = date("ymd");
 
 // file_prefix => tables to be saved to file
 
-// Add SEEDBasket
 $raTables1 = array( "ev"     => array( "ev_events" ),
                     "rl"     => array( "rl_companies" ),
                     "bull"   => array( "bull_list" ),
@@ -24,11 +23,14 @@ $raTables1 = array( "ev"     => array( "ev_events" ),
                     "sl"      => array( "sl_collection", "sl_accession", "sl_inventory", "sl_adoption", "sl_germ",
                                         "sl_species", "sl_species_syn", "sl_pcv", "sl_pcv_syn", "sl_pcv_meta" ),
                     "sldesc"  => array( "mbr_sites", "sl_varinst", "sl_desc_obs", "sl_desc_cfg_tags", "sl_desc_cfg_m" ),
-                    "slsources" => array( "sl_sources", "sl_cv_sources" ),
+                    "slsources" => array( "sl_sources" ),
+                    "slcvsrc" => array( "sl_cv_sources" ),
+                    "slcvsrcarch" => array( "sl_cv_sources_archive" ),
                     "SEEDLocal1_" => array( "SEEDLocal" ),
                     "SEEDMetaTable1_" => array( "SEEDMetaTable_StringBucket", "SEEDMetaTable_TablesLite", "SEEDMetaTable_TablesLite_Rows" ),
                     "SEEDPerms1_" => array( "SEEDPerms", "SEEDPerms_Classes" ),
                     "SEEDSession1_" => array( "SEEDSession_Users", "SEEDSession_Groups", "SEEDSession_UsersXGroups", "SEEDSession_Perms" ),
+                    "SEEDBasket" => array( "SEEDBasket_Baskets", "SEEDBasket_Products", "SEEDBasket_ProdExtra", "SEEDBasket_BP" ),
 );
 
 $raTables2 = array( "mbr" => array( "mbr_contacts" ),

@@ -531,7 +531,8 @@ function _doSSL()
 /****************
  */
 {
-    if( $_SERVER['HTTP_HOST'] == 'localhost' || $_SERVER['HTTP_HOST']=='heritageseeds.ca' ) return;              // can't do SSL on my development machine
+    if( $_SERVER['HTTP_HOST'] == 'localhost' || $_SERVER['HTTP_HOST']=='heritageseeds.ca' 
+                                             || $_SERVER['HTTP_HOST']=='pollinationcanada.ca' ) return;              // can't do SSL on my development machine
 
     if( $_SERVER['HTTPS'] != "on" ) {
         $ra = array();

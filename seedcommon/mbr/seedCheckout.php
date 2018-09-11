@@ -519,10 +519,10 @@ $s .= "<tr valign='top'><td colspan='2' class='mbro_boxheader'>Fundraising Dinne
 $sGarlicVarieties =
 "
 <style>#garlictable td {padding:5px}</style>
-<table id='garlictable' style='border: 1px solid #aaa;' border='0' cellspacing='10'>
+<table id='garlictable' style='border: 1px solid #aaa;margin-bottom:10px;' border='0' cellspacing='10'>
 <tbody style='font-size: 9pt;'>
 <tr>
-<td colspan='4'><strong>Varieties available:</strong></td>
+<td colspan='5'><strong>Varieties available:</strong></td>
 </tr>
 <tr>
 <td>Alison's</td>
@@ -534,44 +534,44 @@ $sGarlicVarieties =
 <tr>
 <td>Armenian Porcelain</td>
 <td>Central Siberian</td>
-<td>&nbsp;German Stiffneck</td>
+<td>German Stiffneck</td>
 <td>Lukak</td>
-<td><span style='color:#999;text-decoration:line-through'>Russian Giant</span></td>
+<td>Russian Giant</td>
 </tr>
 <tr>
 <td>Baba Franchuk's</td>
 <td>Chesnuk Red</td>
-<td>Khabar<br /></td>
+<td>Khabar</td>
 <td>Malpasse</td>
-<td>Shatilli<br /></td>
+<td>Shatilli</td>
 </tr>
 <tr>
 <td>Belarus</td>
 <td>Chiloe</td>
 <td>Kiev</td>
 <td>Mennonite</td>
-<td>Siberian<br /></td>
+<td>Siberian</td>
 </tr>
 <tr>
 <td>Beletic Croatian</td>
 <td>Fauquier</td>
 <td>Killarney</td>
 <td>Metechi</td>
-<td>Slovak<br /></td>
+<td>Slovak</td>
 </tr>
 <tr>
 <td>Bogatyr</td>
 <td>French Red</td>
-<td><span style='color:#999;text-decoration:line-through'>Lavigna</span></td>
+<td>Lavigna</td>
 <td>Music</td>
-<td>Wild Buff<br /></td>
+<td>Wild Buff</td>
 </tr>
 <tr>
 <td>Brown Tempest</td>
 <td>Gaia's Joy</td>
-<td><span style='color:#999;text-decoration:line-through'>Legacy</span></td>
+<td>Legacy</td>
 <td>Persian Star</td>
-<td>Yugoslavian<br /></td>
+<td>Yugoslavian</td>
 </tr>
 </tbody>
 </table>
@@ -707,15 +707,15 @@ $sGarlicVarieties =
                           "FR" => "Bulbilles d'ails disponibles" ),
 
             "Garlic-bulbils-instr"
-                => array( "EN" => "<p>Garlic bulbils are available for autumn 2017. These are not garlic bulbs! See the article in our "
+                => array( "EN" => "<p>Garlic bulbils are available for autumn 2018. These are not garlic bulbs! See our article "
                                  ."<a href='http://www.seeds.ca/d?n=web/ebulletin/2016-08-en/articles/garlic' target='_blank'>"
-                                 ."August 2016 e-bulletin</a> if you're not sure what bulbils are or what to do with them.</p>"
+                                 ."How to Grow Garlic from Bulbils</a> if you're not sure what bulbils are or what to do with them.</p>"
                                  ."<p>We will send 5 varieties for $15, with at least 10 bulbils of each variety. We cannot ensure "
                                  ."special requests but if you have favourites, please mention them in the Notes section below, and "
                                  ."we will try to include them.</p>"
                                  .$sGarlicVarieties,
 
-                          "FR" => "<p>Garlic bulbils are available for autumn 2017. These are not garlic bulbs! See the article in our "
+                          "FR" => "<p>Garlic bulbils are available for autumn 2018. These are not garlic bulbs! See the article in our "
                                  ."<a href='http://www.semences.ca/d?n=web/ebulletin/2016-08-fr/articles/ail' target='_blank'>"
                                  ."August 2016 e-bulletin</a> if you're not sure what bulbils are or what to do with them.</p>"
                                  ."<p>We will send 5 varieties for $15, with at least 10 bulbils of each variety. We cannot ensure "
