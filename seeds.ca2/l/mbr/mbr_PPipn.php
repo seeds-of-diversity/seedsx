@@ -88,13 +88,14 @@ class SoD_PP_IPN {
 
 $ipn = new SoD_PP_IPN();
 
-$ipn->Validate() or die;
+// Don't die if Validate fails. Don't die if response is not VERIFIED
+$ipn->Validate(); // or die;
 $ipn->mail( $ipn->response." response from PP verification.\n".$ipn->postedParms() );
 $ipn->log( $ipn->response." response from PP verification.\n".$ipn->postedParms() );
 
 if( $ipn->response != "VERIFIED" ) {
     $ipn->mail( $ipn->response." response from PP verification.\n".$ipn->postedParms() );
-    die;
+    //die;
 }
 
 
