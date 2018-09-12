@@ -380,7 +380,8 @@ $kfdb2->SetDebug(0);
                                     ."SELECT k,company,species,cultivar,organic,notes,{$kUpload} FROM seeds2.xlsupload" );
                     $s .= "<p>Copied ".$this->kfdb->Query1( "SELECT count(*) FROM $dbtable" )." rows to sl_tmp_cv_sources.</p>";
 
-                    $s .= SLSourceCV_Build::BuildAll( $this->kfdb, $dbtable );
+                    // bIncludeOldSources causes sl_sources._status to be ignored, so we will index companies that are out of business
+                    $s .= SLSourceCV_Build::BuildAll( $this->kfdb, $dbtable, array( 'bIncludeOldSources'=>true ) );
 
                     // Report
                     $raReport = SLSourceCV_Build::ReportTmpTable( $this->kfdb, $kUpload );
