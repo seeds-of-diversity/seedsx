@@ -34,7 +34,9 @@
  *     sCond              : verbatim condition
  */
 
-
+/********************************************
+    EVERYTHING TO THE CORRESPONDING NOTE IS IN sldb.php
+ */
 class sldb__base
 /***************
     Protected class to contain defs
@@ -464,6 +466,11 @@ class SLDB_Sources extends SLDB_Base
                 "slsources.log" );
     }
 }
+
+/********************************************
+    ALL OF THE ABOVE IS IN sldb.php
+ */
+
 
 
 class _sldb_base
@@ -1642,125 +1649,6 @@ CREATE TABLE sl_sources (
 );
 "
 );
-
-define("SEEDS_DB_TABLE_SL_CV_SOURCES",
-"
-CREATE TABLE sl_cv_sources (
-
-        _key        INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-        _created    DATETIME,
-        _created_by INTEGER,
-        _updated    DATETIME,
-        _updated_by INTEGER,
-        _status     INTEGER DEFAULT 0,
-
--- cv source data
-    fk_sl_sources   INTEGER NOT NULL DEFAULT 0,
-    fk_sl_pcv       INTEGER NOT NULL DEFAULT 0,
-    fk_sl_species   INTEGER NOT NULL DEFAULT 0,     -- used in rebuild-index to find fk_sl_pcv
-    osp             VARCHAR(200) NOT NULL DEFAULT '',
-    ocv             VARCHAR(200) NOT NULL DEFAULT '',
-    bOrganic        INTEGER NOT NULL DEFAULT 0,
-    year            INTEGER NOT NULL DEFAULT 0,
-    notes           VARCHAR(1000) NOT NULL DEFAULT '',  -- cycles back to the people who edit the data
-
--- workflow
-    tsVerified  VARCHAR(200) NULL,   -- was DATETIME but mysql won't allow '' as a default    YEAR(tsVerified) goes in csci_seeds_archive.year
-    bNeedVerify     INTEGER DEFAULT 1,
-    bNeedProof      INTEGER DEFAULT 1,
-
--- sound matching
-    sound_soundex   VARCHAR(100) NOT NULL DEFAULT '',
-    sound_metaphone VARCHAR(100) NOT NULL DEFAULT '',
-
-
-    index (fk_sl_sources),
-    index (fk_sl_pcv),
-    index (fk_sl_species), -- used in updates to find fk_sl_pcv
-    index (osp),           -- these two indexes are very important for the update process that tries to match names in sl_pcv
-    index (ocv),
-    index (sound_soundex),
-    index (sound_metaphone)
-);
-"
-);
-
-define("SEEDS_DB_TABLE_SL_CV_SOURCES_ARCHIVE",
-"
-CREATE TABLE sl_cv_sources_archive (
-
-        _key        INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-        _created    DATETIME,
-        _created_by INTEGER,
-        _updated    DATETIME,
-        _updated_by INTEGER,
-        _status     INTEGER DEFAULT 0,
-
-    sl_cv_sources_key INTEGER NOT NULL,              -- (sl_cv_sources_key, year) groups records for the same entry over multiple years
-
-    fk_sl_sources   INTEGER NOT NULL DEFAULT 0,
-    fk_sl_pcv       INTEGER NOT NULL DEFAULT 0,
-    fk_sl_species   INTEGER NOT NULL DEFAULT 0,     -- don't have to keep this when all names are in sl_pcv but maybe useful until then
-    osp             VARCHAR(200) NOT NULL DEFAULT '',
-    ocv             VARCHAR(200) NOT NULL DEFAULT '',
-    bOrganic        INTEGER NOT NULL DEFAULT 0,
-    year            INTEGER NOT NULL DEFAULT 0,
-    notes           TEXT,
-    op              CHAR NOT NULL,                  -- record the op that triggered this archive (update / year / delete)
-
-    index (fk_sl_sources),
-    index (fk_sl_pcv),
-    index (fk_sl_species),
-    index (osp),
-    index (ocv),
-    index (year)
-);
-"
-);
-
-
-class SLDB_Create
-{
-    const SEEDS_DB_TABLE_SL_TMP_CV_SOURCES = "
-CREATE TABLE seeds.sl_tmp_cv_sources (
-    -- These columns are required in the spreadsheet
-    -- osp and ocv are named this way to enable compatible code with SLSourceRosetta
-    k             integer not null default 0,            -- sl_cv_sources._key, preserved here for re-integration
-    company       varchar(200) not null default '',      -- must match sl_sources.name_en
-    osp           varchar(200) not null default '',      -- copy of sl_cv_sources.osp
-    ocv           varchar(200) not null default '',      -- copy of sl_cv_sources.ocv
-    organic       tinyint not null default 0,            -- copy of sl_cv_sources.bOrganic
-    year          integer not null default 0,
-    notes         text,
-
-    -- These columns are generated when the spreadsheet is uploaded
-    kUpload       integer not null,                      -- each upload has a unique number for grouping rows of that upload
-    _created      datetime,                              -- time when this row was uploaded - for garbage collection of orphaned uploads
-    _status       integer not null default 0,            -- mainly so we can apply queries written for sl_cv_sources
-
-    -- Computed after loading
-    fk_sl_sources integer default 0,                     -- validates integrity of (company)
-    fk_sl_species integer default 0,                     -- attempts to match (species) with a species identifier, but allows 0 so Rosetta can work on it
-    fk_sl_pcv     integer default 0,                     -- attempts to match (fk_sl_species,cultivar), but allows 0 so Rosetta can work on it
-    op            CHAR not null default ' ',             -- ' ' = not computed yet, 'N' = new, 'U' = update, 'D' = delete1, 'X' = delete2, 'Y' = year updated, '-' = no change
-
-    -- These are obsolete, probably
-    -- sp_old        varchar(200) not null default '',
-    -- var_old       varchar(200) not null default '',
-
-    -- Indexes
-    index (k),
-    index (osp(20)),
-    index (ocv(20)),
-    -- index (sp_old(20)),
-    -- index (var_old(20)),
-    index (fk_sl_sources),
-    index (fk_sl_species),
-    index (fk_sl_pcv),
-    index (kUpload)
-) CHARSET latin1;
-";
-}
 
 
 ?>

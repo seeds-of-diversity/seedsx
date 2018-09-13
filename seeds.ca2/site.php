@@ -32,6 +32,12 @@ $SEEDSessionAuthUI_Config
            );
 
 
+// credentials for your seeds database (assuming host==localhost)
+$SEEDKFDB1 = array( 'kfdbUserid' => SiteKFDB_DB_seeds1,
+                    'kfdbPassword' => SiteKFDB_USERID_seeds1,
+                    'kfdbDatabase' => SiteKFDB_PASSWORD_seeds1 );
+
+
 // put this in siteCommon? That would only be useful if other sites used drupal
 function Site_path_self()
 /************************
