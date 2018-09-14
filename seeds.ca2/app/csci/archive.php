@@ -29,10 +29,8 @@ echo SEEDCore_ArrayExpandRows( $ra, "<p>[[_key]] [[P_name]]</p>" );
 
 echo "<hr/";
 
-$oApp->kfdb->SetDebug(2);
 $o = new SLDBSources( $oApp, array( 'logdir'=>SITE_LOG_ROOT ) );
 $ra = $o->GetList( 'SRCCVxSRC_P', "SRCCV._key BETWEEN 14750 and 14760" );
 echo SEEDCore_ArrayExpandRows( $ra, "<p>[[_key]] [[osp]] [[ocv]] [[SRC_name_en]]</p>" );
-
 
 ?>
