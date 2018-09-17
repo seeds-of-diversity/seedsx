@@ -22,31 +22,35 @@ $oApp->kfdb->SetDebug(1);
 
 $oSrc = new SLDBSources( $oApp, array( 'logdir'=>SITE_LOG_ROOT ) );
 $raCompanies = $oSrc->GetList( "SRC",     "", array("iStatus"=>-1, "sSortCol"=>'SRC.name_en' ) );
-$raSpecies   = $oSrc->GetList( "SRCCVxS", "SRCCV.fk_sl_sources>='3'", array("sSortCol"=>'S.name_en' ) );
-
-
-
-$oApp->kfdb->SetDebug(0);
+$raSpecies   = $oSrc->GetList( "SRCCVxS", "SRCCV.fk_sl_sources>='3'", array('sGroupCols'=>'S_name_en,S__key',"sSortCol"=>'S.name_en' ) );
 
 
 $s = "";
 
-$s .= "<div class='container' style='border:1px solid #aaa;border-radius:5px;'>"
+$s .= "<form method='post'>"
+     ."<div class='container' style='border:1px solid #aaa;border-radius:5px;'>"
      ."<div class='row' style='padding:10px 0px'>"
-         ."<div class='col-md-3'>"
+         ."<div class='col-md-4'>"
              ."<div><select name='company'>"
-                 ."<option value='0'>-- Select a company --</option>"
+                 ."<option value='0'>-- All companies --</option>"
                  .SEEDCore_ArrayExpandRows( $raCompanies, "<option value='[[_key]]'>[[name_en]]</option>" )
                  ."</select>"
              ."</div>"
              ."<div style='font-size:8pt'>Choose one or both of these before searching</div>"
              ."<div><select name='species'>"
-                 ."<option value='0'>-- Select a species --</option>"
-                 .SEEDCore_ArrayExpandRows( $raSpecies, "<option value='[[_key]]'>[[S_name_en]]</option>" )
+                 ."<option value='0'>-- All species --</option>"
+                 .SEEDCore_ArrayExpandRows( $raSpecies, "<option value='[[S__key]]'>[[S_name_en]]</option>" )
                  ."</select>"
              ."</div>"
          ."</div>"
-     ."</div></div>";
+         ."<div class='col-md-6'>"
+             ."YEARS"
+         ."</div>"
+         ."<div class='col-md-2'>"
+             ."<input type='submit' value='Search'/>"
+         ."</div>"
+     ."</div></div>"
+     ."</form>";
 
 
 
