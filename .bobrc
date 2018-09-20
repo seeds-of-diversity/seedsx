@@ -6,4 +6,5 @@ alias lg='ls -R | awk -f ~/lr.awk | grep'
 alias du='du -h'
 alias svnst='svn status -u'
 alias svnd='svn diff -r head'
+alias a='php ~/seeds/scripts/a.php'
 
