@@ -297,6 +297,11 @@ $bNoStore = ( $p_action != 'Create' && $p_action != 'Update' );
                     $kfrRec->SetValue( 'eStatus', "READY" );
                     $kfrRec->PutDBRow();
                 }
+                // Remove the addresses from sExtra because they make a join of MSxMSR really really big
+                $kfr->UrlParmSet( 'sExtra', 'email_addresses', '' );
+                $kfr->UrlParmSet( 'sExtra', 'mbr_keys', '' );
+                $kfr->UrlParmSet( 'sExtra', 'bull_keys', '' );
+                $kfr->PutDBRow();
             }
         }
     }
