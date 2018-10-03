@@ -81,11 +81,39 @@ $raSp = $o->GetSpecies();
 
 $raYears = $oApp->kfdb->QueryRA( "SELECT year FROM seeds.sl_cv_sources_archive WHERE fk_sl_sources>='3' AND _status='0' GROUP BY 1 ORDER BY 1" );
 
-$s .= "<table>";
+$s .= "
+<style>
+.row0 { background-color:white; }
+.row1 { background-color:#eee; }
+td {border-right:1px solid #777;padding:2px 8px;font-size:9pt;}
+</style>
+";
+
+$s .= "<table class='srca_table'><tr><th>Primary<br/>Species<br/></th><th>Actual names<br/>matched</th><th>Years</th><th>2008</th><th>2010</th><th>2012</th><th>2014</th><th>2016</th><th>2017</th><th>2018</th></tr>";
+$r = 1;
 foreach( $raSp as $ra ) {
+    $r = intval(!$r);
+
     $name = $ra['kSp'] ? "{$ra['name']} ({$ra['kSp']})" : "<span style='color:orange'>{$ra['name']}</span>";
-    $s .= "<tr><td>$name</td>";
-    $s .= "<td>".(count($ra['raYears']) ? SEEDCore_MakeRangeStr($ra['raYears']) : "")."</td>";
+    $s .= "<tr class='row$r'><td style='font-size:11pt' valign='top'>$name</td>";
+    $sSpAlt = "";
+    if( $ra['kSp'] ) {
+        $raOsp = $oApp->kfdb->QueryRowsRA( "SELECT osp,year FROM sl_cv_sources_archive WHERE fk_sl_species='{$ra['kSp']}' GROUP BY osp,year" );
+        foreach( $raOsp as $r1 ) {
+            if( $r1['osp'] !== $ra['name'] )  $sSpAlt .= "{$r1['osp']} {$r1['year']}<br/>";
+        }
+    }
+    $s .= "<td valign='top' style='font-size:9pt'>$sSpAlt</td>";
+    $s .= "<td valign='top'>".(count($ra['raYears']) ? SEEDCore_MakeRangeStr($ra['raYears']) : "")."</td>";
+    foreach( array(2008,2010,2012,2014,2016,2017,2018) as $y ) {
+        $sCond = $ra['kSp'] ? "fk_sl_species='{$ra['kSp']}'" : "osp='{$ra['name']}'";
+        $nSrc = $oApp->kfdb->Query1( "SELECT count(distinct fk_sl_sources) FROM seeds.sl_cv_sources_archive WHERE $sCond AND fk_sl_sources>='3' AND year='$y'" );
+        $nCV  = $oApp->kfdb->Query1( "SELECT count(distinct ocv) FROM seeds.sl_cv_sources_archive WHERE $sCond AND fk_sl_sources>='3' AND year='$y'" );
+        $s .= "<td valign='top'>";
+        if( $nSrc )  $s .= "$nSrc companies<br/>";
+        if( $nCV )   $s .= "$nCV varieties<br/>";
+        $s .= "</td>";
+    }
     $s .= "</tr>";
 }
 $s .= "</table>";
@@ -113,17 +141,17 @@ class QSRCCVA
 
         // Get names where fk_sl_species is set. iStatus=-1 because some sl_sources will be "deleted"
         $raSp1 = $this->oSrc->GetList( "SRCCVAxSRC_S", "SRC._key>='3' AND S._key IS NOT NULL",
-                                       array('sGroupCols'=>'S_name_en,S__key,year','iStatus'=>-1 ) );
+                                       array('sGroupCols'=>'S_iname_en,S__key,year','iStatus'=>-1 ) );
         // Where fk_sl_species is zero
-        $raSp2 = $this->oSrc->GetList( "SRCCVA", "fk_sl_sources>='3' AND osp <> ''",
+        $raSp2 = $this->oSrc->GetList( "SRCCVA", "fk_sl_sources>='3' AND osp <> '' AND fk_sl_species='0'",
                                        array('sGroupCols'=>'osp,year') );
 
         foreach( $raSp1 as $ra ) {
-            // S_name_en and S__key should be correlated 1:1, but several rows can different years.
-            if( !isset( $raSpecies[$ra['S_name_en']] ) ) {
-                $raSpecies[$ra['S_name_en']] = array('kSp'=>$ra['S__key'],'name'=>$ra['S_name_en'],'raYears'=>array());
+            // S_name_en and S__key should be correlated 1:1, but several rows can be from different years.
+            if( !isset( $raSpecies[$ra['S_iname_en']] ) ) {
+                $raSpecies[$ra['S_iname_en']] = array('kSp'=>$ra['S__key'],'name'=>$ra['S_iname_en'],'raYears'=>array());
             }
-            $raSpecies[$ra['S_name_en']]['raYears'][$ra['year']] = true;
+            $raSpecies[$ra['S_iname_en']]['raYears'][$ra['year']] = true;
         }
         foreach( $raSp2 as $ra ) {
             // Several rows can be returned with the same osp but different years.
