@@ -11,6 +11,10 @@ include_once( SEEDCORE."console/console02.php" );
 include_once( SEEDLIB."sl/sldb.php" );
 
 
+require_once SEEDROOT.'/vendor/autoload.php';   // PhpOffice/PhpSpreadsheet
+
+
+
 $oApp = new SEEDAppConsole(
                 array_merge( $SEEDKFDB1,
                              array( 'sessPermsRequired' => array(),
@@ -77,6 +81,30 @@ if( $kSpecies ) {
 
 
 $o = new QSRCCVA( $oApp );
+
+
+if( SEEDInput_Str( 'cmd' ) == 'downloadsummary-csv' ) {
+    SLSrcCVArchiveSummaryCsv( $oApp );
+
+    exit;
+}
+if( SEEDInput_Str( 'cmd' ) == 'downloadsummary-xls' ) {
+    SLSrcCVArchiveSummaryXls( $oApp );
+
+    exit;
+}
+
+
+$s .= "<div><form action='{$_SERVER['PHP_SELF']}' method='post'>"
+     ."<input type='submit' value='Download Summary CSV'/>"
+     ."<input type='hidden' name='cmd' value='downloadsummary-csv'/>"
+     ."</form></div>";
+$s .= "<div><form action='{$_SERVER['PHP_SELF']}' method='post'>"
+     ."<input type='submit' value='Download Summary XLS'/>"
+     ."<input type='hidden' name='cmd' value='downloadsummary-xls'/>"
+     ."</form></div>";
+
+
 $raSp = $o->GetSpecies();
 
 $raYears = $oApp->kfdb->QueryRA( "SELECT year FROM seeds.sl_cv_sources_archive WHERE fk_sl_sources>='3' AND _status='0' GROUP BY 1 ORDER BY 1" );
@@ -187,5 +215,189 @@ $o = new SLDBSources( $oApp, array( 'logdir'=>SITE_LOG_ROOT ) );
 $ra = $o->GetList( 'SRCCVxSRC_P', "SRCCV._key BETWEEN 14750 and 14760" );
 echo SEEDCore_ArrayExpandRows( $ra, "<p>[[_key]] [[osp]] [[ocv]] [[SRC_name_en]]</p>" );
 */
+
+function SLSrcCVArchiveSummaryCsv( SEEDAppConsole $oApp )
+{
+    list($raSrc,$raSummary) = getArchiveSummary( $oApp );
+
+    header( "Content-Type:text/plain; charset=cp1252" );
+    header( "Content-Disposition: attachment;filename=\"seed-archive.csv\"" );
+
+    echo "species\tcultivar\tspecies_key\tcompany\tcompany_key\t2008\t2010\t2012\t2014\t2016\t2017\t2018\n";
+    foreach( $raSummary as $k => $ra ) {
+        list($sp,$cv,$kSp,$kSrc) = explode( '|', $k, 4 );
+        echo "$sp\t$cv\t$kSp\t{$raSrc[$kSrc]}\t$kSrc\t".@$ra['c2008']."\t".@$ra['c2010']."\t".@$ra['c2012']."\t".@$ra['c2014']."\t".@$ra['c2016']."\t".@$ra['c2017']."\t".@$ra['c2018']."\n";
+    }
+    return;
+}
+
+function SLSrcCVArchiveSummaryXls( SEEDAppConsole $oApp )
+{
+    list($raSrc,$raSummary) = getArchiveSummary( $oApp );
+
+    $oXls = new SEEDXlsWrite( array('filename'=>'seed-archive.xlsx') );
+    $oXls->WriteHeader( 0, array( 'species', 'cultivar', 'species_key', 'company', 'company_key',
+                                  '2008', '2010', '2012', '2014', '2016', '2017', '2018' ) );;
+
+    $row = 2;
+    foreach( $raSummary as $k => $ra ) {
+        list($sp,$cv,$kSp,$kSrc) = explode( '|', $k, 4 );
+        $oXls->WriteRow( 0, $row++, array( $sp, $cv, $kSp, $raSrc[$kSrc], $kSrc,
+                                           @$ra['c2008'], @$ra['c2010'], @$ra['c2012'], @$ra['c2014'], @$ra['c2016'], @$ra['c2017'], @$ra['c2018'] ) );
+//if( $row>100) break;
+    }
+    $oXls->OutputSpreadsheet();
+
+    return;
+}
+
+function getArchiveSummary( SEEDAppConsole $oApp )
+{
+    $raSrc = array();
+    $raSummary = array();
+
+//$oApp->kfdb->SetDebug(2);
+    $oSrc = new SLDBSources( $oApp );
+
+    // Make a map of kSrc=>sourcename
+    $kfr = $oSrc->GetKFRC( "SRC", "", array('iStatus'=>-1) );
+    while( $kfr->CursorFetch() ) {
+        $raSrc[$kfr->Key()] = $kfr->Value('name_en');
+    }
+    $kfr = null;
+
+    // Make a map of kSp=>speciesname
+    $raSp = array();
+    $kfr = $oSrc->GetKFRC( 'S', "", array() );
+    while( $kfr->CursorFetch() ) {
+        $raSp[$kfr->Key()] = $kfr->Value('iname_en');
+    }
+    $kfr = null;
+
+    // Assemble summary kSp|ocv|kSrc => array of years when that variety was available from that company
+//    $n = 0;
+    if( ($kfr = $oSrc->GetKFRC( "SRCCVA", "fk_sl_sources>='3' AND fk_sl_species<>'0'")) ) { //, array('iStatus'=>-1) )) ) { needed for join with SRC not used
+        while( $kfr->CursorFetch() ) {
+            //$raSummary[$raSp[$kfr->Value('fk_sl_species')].'|'.$kfr->Value('ocv')]['c'.$kfr->Value('year')] = $kfr->Value('fk_sl_sources');//$kfr->Value('SRC_name_en');
+            $raSummary[$raSp[$kfr->Value('fk_sl_species')].'|'.$kfr->Value('ocv').'|'.$kfr->Value('fk_sl_species').'|'.$kfr->Value('fk_sl_sources')]['c'.$kfr->Value('year')] = true;
+//            if( ++$n > 100 ) break;
+        }
+    }
+    ksort($raSummary);
+
+    return( array($raSrc,$raSummary) );
+}
+
+
+class SEEDXlsWrite
+{
+    private $oXls;
+    private $filename;
+
+    function __construct( $raParms = array() )
+    {
+        $nSheets = @$raParms['nSheets'] ?: 1;
+
+        // Initialize the spreadsheet with the right number of sheets (one is created by default)
+        $this->oXls = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        for( $i = 0; $i < $nSheets-1; ++$i ) {
+            $oXls->createSheet();
+        }
+
+        // Set document properties
+        $this->oXls->getProperties()->setCreator(@$raParms['creator'])
+            ->setLastModifiedBy(@$raParms['author'])
+            ->setTitle(@$raParms['title'])
+            ->setSubject(@$raParms['subject'])
+            ->setDescription(@$raParms['description'])
+            ->setKeywords(@$raParms['keywords'])
+            ->setCategory(@$raParms['category']);
+
+        $this->filename = @$raParms['filename'] ?: "spreadsheet.xlsx";
+    }
+
+    function OutputSpreadsheet()
+    {
+
+        // Set active sheet index to the first sheet, so Excel opens this as the first sheet
+        $this->oXls->setActiveSheetIndex(0);
+
+        // Redirect output to a client’s web browser (Xlsx)
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header("Content-Disposition: attachment;filename=\"{$this->filename}\"");
+        header('Cache-Control: max-age=0');
+        // If you're serving to IE 9, then the following may be needed
+        header('Cache-Control: max-age=1');
+
+        // If you're serving to IE over SSL, then the following may be needed
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
+        header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+        header('Pragma: public'); // HTTP/1.0
+
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($this->oXls, 'Xlsx');
+        $writer->save('php://output');
+    }
+
+    private function storeSheet( $oXls, $iSheet, $sSheetName, $raRows, $raCols )
+    {
+//        $c = 'A';
+ //       foreach( $raCols as $ra ) {
+  //          var_dump($c);
+   //     }exit;
+
+        $oSheet = $oXls->setActiveSheetIndex( $iSheet );
+        $oSheet->setTitle( $sSheetName );
+
+        // Set the headers in row 1
+        $c = 'A';
+        foreach( $raCols as $dbfield => $label ) {
+            $oSheet->setCellValue($c.'1', $label );
+            $c = chr(ord($c)+1);    // Change A to B, B to C, etc
+        }
+
+        // Put the data starting at row 2
+        $row = 2;
+        foreach( $raRows as $ra ) {
+            $col = 'A';
+            foreach( $raCols as $dbfield => $label ) {
+                $oSheet->setCellValue($col.$row, $ra[$dbfield] );
+                $col = chr(ord($col)+1);    // Change A to B, B to C, etc
+            }
+            ++$row;
+        }
+    }
+
+    function WriteHeader( $iSheet, $raCols )
+    /***************************************
+        Sheet numbers are origin-0, rows are origin-1
+     */
+    {
+        $oSheet = $this->oXls->setActiveSheetIndex( $iSheet );
+
+        // Set the headers in row 1
+        $c = 'A';
+        foreach( $raCols as $dbfield => $label ) {
+            $oSheet->setCellValue($c.'1', $label );
+            $c = chr(ord($c)+1);    // Change A to B, B to C, etc
+        }
+    }
+
+    function WriteRow( $iSheet, $iRow, $raCols )
+    /*******************************************
+        Sheet numbers are origin-0, rows are origin-1
+     */
+    {
+        $oSheet = $this->oXls->setActiveSheetIndex( $iSheet );
+
+        $col = 'A';
+        foreach( $raCols as $v ) {
+            $oSheet->setCellValue($col.$iRow, $v );
+            $col = chr(ord($col)+1);    // Change A to B, B to C, etc
+        }
+    }
+}
+
+
 
 ?>
