@@ -71,6 +71,7 @@ include_once( STDINC."SEEDTable.php" );
 include_once( STDINC."SEEDUIWidgets.php" );
 include_once( SEEDCOMMON."console/console01ui.php" );   // DownloadUpload
 include_once( SEEDCOMMON."sl/q/_QServerSourceCV.php" );
+include_once( SEEDLIB."sl/sldb.php" );
 
 define( 'DIR_SL_DOWNLOAD', "../../sl_download/" );
 
@@ -363,6 +364,9 @@ class SLSourceDownload
                     $s .= "<h3 class='DownloadBodyHeading'>Old CSCI loader</h3>";
 
                     $dbtable = "seeds.sl_tmp_cv_sources";
+                    if( !$this->kfdb->TableExists($dbtable) ) {
+                        $this->kfdb->Execute( SLDB_Create::SEEDS_DB_TABLE_SL_TMP_CV_SOURCES );
+                    }
 
                     // xlsupload is in seeds2. All other db access in this class is for db-seeds1 so the kfdb is for user-seeds1.
                     // Better to prefix all the tables and use user-seeds2.
@@ -389,7 +393,6 @@ $kfdb2->SetDebug(0);
                          ."<ul>".SEEDCore_ArrayExpandRows($raReport['raUnknownCompanies'], "<li>[[company]]</li>")."</ul>";
                     $s .= "<p>".count($raReport['raUnknownSpecies'])." species not known</p>"
                          ."<ul>".SEEDCore_ArrayExpandRows($raReport['raUnknownSpecies'], "<li>[[osp]]</li>")."</ul>";
-
                     break;
             }
         }
