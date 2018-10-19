@@ -41,7 +41,7 @@ class SLSourceSources
         $sOnClick = "location.replace(\"".$oComp->EncodeUrlLink(array('kCurrRow'=>$kfr->Key()))."\");";
         $s = "<TABLE width='100%' style='cursor: pointer' onclick='$sOnClick'>"
             ."<TR valign='top'>"
-            ."<TD bgcolor='".CLR_BG_editEN."' width='50%' >"
+            ."<TD bgcolor='".($kfr->Value('_status') ? '#fdd': CLR_BG_editEN)."' width='50%' >"
             .$this->oConsole->oSLSrcCommon->SourceItemDraw( $kfr, 'EN',
                     array(//"subst_name"=>"<A ".$oComp->EncodeUrlHREF(array('kCurrRow'=>$kfr->Key())).">[[name]]</A>",
                           "bEdit"=>true) )
