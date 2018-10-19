@@ -1020,7 +1020,8 @@ class _kfuiComponentWindow extends SEEDFormUIListWindow
         //echo $cond;
         //$this->oComp->kfrel->kfdb->SetDebug(2);
 
-
+// uncomment this to see deleted records - would be nice to have a parm
+//$this->oComp->raViewParms['iStatus'] = -1;
         /* Compute the View and the Window
          */
 //TODO: move this to a ListGetWindowRows() method, for datasource independence. Also have to support other uses of $oView below
