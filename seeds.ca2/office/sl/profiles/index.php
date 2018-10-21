@@ -95,10 +95,10 @@ $oComp->Start();
 $raList = array();
 
 
-if( ($iSortCol = $oUI->GetUIParm('sortdown')) ) {
+if( ($iSortCol = $oComp->GetUIParm('sortdown')) ) {
     $bSortDown = true;
 } else {
-    $iSortCol = $oUI->GetUIParm('sortup');
+    $iSortCol = $oComp->GetUIParm('sortup');
     $bSortDown = false;
 }
 switch( $iSortCol ) {
@@ -147,7 +147,7 @@ $raListParms = array( 'tableWidth' => "100%",
                       'nWindowSize' => count($raList),
                       //'fnRowTranslate' => array($this,'fnDrawListRowTranslate'),
                       'bUse_key' => true,
-                      'kCurr' => $oUI->Get_kCurr()
+                      'kCurr' => $oComp->Get_kCurr()
 );
 
 
@@ -166,13 +166,13 @@ if( $kVI ) {
     if( SEEDInput_Int('doForm') ) {
         // Show the form
         $sReport .= "<h3>Edit Record for $currSp : $currCv (#$kVI)</h3>"
-                   .$oCP->oProfilesReport->DrawVIForm( $kVI, $oUI );
+                   .$oCP->oProfilesReport->DrawVIForm( $kVI, $oComp );
     } else {
         // Show the summary
         $sReport .= "<div style='border-left:1px solid #ddd;border-bottom:1px solid #ddd'>"
                    ."<div style='float:left;margin-right:20px;'>"
                        ."<form method='post'>"
-                           .$oUI->HiddenFormUIParms( array('kCurr', 'sortup', 'sortdown') )
+                           .$oComp->HiddenFormUIParms( array('kCurr', 'sortup', 'sortdown') )
                            ."<input type='hidden' name='doForm' value='1'/>"
                            ."<input type='submit' value='Edit'/>"
                        ."</form>"
