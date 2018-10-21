@@ -36,6 +36,18 @@ $SEEDSessionAuthUI_Config = array( 'urlActivation'          => 'https://office.s
                                    'iActivationInitialGid1' => 2,                                 // Members
                                    'bEnableCreateAccount'   => false );                           // Random people can't create accounts here
 
+// credentials for your seeds database (assuming host==localhost)
+$SEEDKFDB1 = array( 'kfdbUserid' => SiteKFDB_USERID_seeds1,
+                    'kfdbPassword' => SiteKFDB_PASSWORD_seeds1,
+                    'kfdbDatabase' => SiteKFDB_DB_seeds1 );
+
+// credentials for your seeds database (assuming host==localhost)
+$SEEDKFDB2 = array( 'kfdbUserid' => SiteKFDB_USERID_seeds2,
+                    'kfdbPassword' => SiteKFDB_PASSWORD_seeds2,
+                    'kfdbDatabase' => SiteKFDB_DB_seeds2 );
+
+
+
 function Site_path_self()
 {
     return( "" );

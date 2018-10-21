@@ -13,12 +13,26 @@
 define("STD_isLocal", (($_SERVER["SERVER_NAME"] == "localhost") ? true : false));
 
 if( !defined("STDROOT") )  define( "STDROOT", "../../" );
+
 if( !defined("SEEDROOT") ) {
     // On typical prod systems the seeds directory is a sibling of std.php and the SITEROOT folder.
-    // On typical dev systems the seeds directory is a sibling of public_html which contains std.php and the SITEROOT folder.
-    // On atypical dev systems there might be another level within public_html, so the STD_isLocal case could test for dir_exists("seedcore")
-    define( "SEEDROOT", STD_isLocal ? (STDROOT."../../seeds/") : (STDROOT."seeds/") );
+    // On typical dev systems the seeds directory is a sibling of public_html which either contains
+    //      std.php and the SITEROOT folder, or it contains another level with std.php and the SITEROOT folder
+    if( !STD_isLocal ) {
+        define( "SEEDROOT", STDROOT."seeds/" );
+    } else {
+        // look for seedroot
+        if( file_exists( STDROOT."../seeds/seedcore" ) ) {
+            define( SEEDROOT, STDROOT."../seeds/" );
+        }
+        else if( file_exists( STDROOT."../../seeds/seedcore" ) ) {
+            define( SEEDROOT, STDROOT."../../seeds/" );
+        } else {
+            die( "std.php can't find seedroot" );
+        }
+    }
 }
+
 if( !defined("SITEROOT") )  define( "SITEROOT", "./" );
 
 /* full filesystem locations of STDROOT and the current script
