@@ -86,6 +86,10 @@ define("SEEDLIB", SEEDROOT."seedlib/");
 define("SEEDAPP", SEEDROOT."seedapp/");
 define("STDIMG",  SITEROOT."std/img");  // must be within Apache DocRoot
 
+if( !defined("W_CORE") ) {
+    define("W_CORE", (STD_isLocal ? (STDROOT."../wcore/")       // copy wcore as a sibling of seedsx (because it is shared by other sibling sites)
+                                  : (SITEROOT."wcore/") ) );    // copy wcore as a child of public_html
+}
 if( !defined("W_ROOT") ) {
     define("W_ROOT", (STD_isLocal ? (STDROOT."w/") : (SITEROOT."w/") ) );
 }
