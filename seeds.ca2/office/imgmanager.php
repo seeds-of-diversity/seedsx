@@ -11,7 +11,7 @@ $oApp = new SEEDAppConsole(
                            )
 );
 
-ImgManagerApp( $oApp, '/home/bob/junk/imgtest/' );
+ImgManagerApp( $oApp, '/home/bob/junk/imgtest/2017/02/' );
 
 
 ?>
