@@ -35,6 +35,10 @@ if( !defined("SEEDROOT") ) {
 
 if( !defined("SITEROOT") )  define( "SITEROOT", "./" );
 
+if( !defined("CONFIG_DIR") ) {
+    define( "CONFIG_DIR", STD_isLocal ? (STDROOT."../_config/") : (STDROOT."_config") );
+}
+
 /* full filesystem locations of STDROOT and the current script
  */
 define("STDROOT_REALDIR", realpath(dirname($_SERVER['SCRIPT_FILENAME'])."/".STDROOT)."/" );
