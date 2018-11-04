@@ -32,6 +32,12 @@ if( ($cmd = SEEDSafeGPC_GetStrPlain( "cmd" )) ) {
     }
 
     switch( $cmd ) {
+        case "msdSeedEditUpdate":
+            $raJX['raOut'] = $_REQUEST;
+
+            $raJX['bOk'] = true;
+            break;
+
         case "prodUnfill":
             $kfdb->Execute( "UPDATE seeds.SEEDBasket_BP SET eStatus='PAID' WHERE _key='$k'" );
             $raJX['bOk'] = true;
