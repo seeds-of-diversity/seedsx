@@ -46,6 +46,7 @@ function MbrSitePipeGetContactsRA2( $kfdb1, $id )
     } else {
         $raOut = $kfdb2->QueryRA( "SELECT * FROM seeds2.mbr_contacts WHERE email='".addslashes($id)."'" );
     }
+    if( !$raOut ) $raOut = array();
 
     goto done;
 

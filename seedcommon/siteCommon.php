@@ -6,6 +6,7 @@
  */
 
 include_once( STDINC."SEEDStd.php" );
+include_once( SEEDCORE."SEEDCore.php" );
 
 function SiteCommon_init( $raParms )
 {

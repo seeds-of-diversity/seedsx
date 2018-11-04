@@ -23,7 +23,7 @@ $raJX = array( 'bOk'=>false, 'sOut'=>"", 'sErr'=>"", 'raOut'=>array() );
 
 if( ($cmd = SEEDSafeGPC_GetStrPlain( "cmd" )) ) {
 
-    $raCmd = $oSB->Cmd( $cmd, $_REQUEST, true );
+    $raCmd = $oSB->Cmd( $cmd, $_REQUEST );
     if( $raCmd['bHandled'] ) {
         $raJX = array_merge( $raJX, $raCmd );
         $raJX['sOut'] = utf8_encode( $raJX['sOut'] );
@@ -32,6 +32,12 @@ if( ($cmd = SEEDSafeGPC_GetStrPlain( "cmd" )) ) {
     }
 
     switch( $cmd ) {
+        case "msdSeedEditUpdate":
+            $raJX['raOut'] = $_REQUEST;
+
+            $raJX['bOk'] = true;
+            break;
+
         case "prodUnfill":
             $kfdb->Execute( "UPDATE seeds.SEEDBasket_BP SET eStatus='PAID' WHERE _key='$k'" );
             $raJX['bOk'] = true;

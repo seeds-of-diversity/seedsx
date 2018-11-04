@@ -2,12 +2,11 @@
 
 /* Basket manager
  *
- * Copyright (c) 2016 Seeds of Diversity Canada
+ * Copyright (c) 2016-2018 Seeds of Diversity Canada
  */
 
 define( "SITEROOT", "../../" );
 include_once( SITEROOT."site2.php" );
-include_once( SEEDCORE."SEEDCore.php" );        // should include this in site.php?
 include_once( SEEDCORE."SEEDBasket.php" );
 include_once( SEEDAPP."basket/basketProductHandlers.php" );
 include_once( SEEDAPP."basket/basketProductHandlers_seeds.php" );
@@ -129,7 +128,8 @@ class mbrBasket_Products extends Console01_Worker1
         $sList .= "<div><form method='post'>Add a new $sSelect <input type='submit' value='Add'/></form></div>";
 
         // Draw the list
-        if( ($kfrcP = $this->oC->oSB->oDB->GetProductKFRC("")) ) {
+/*
+        if( ($kfrcP = $this->oC->oSB->oDB->GetProductKFRC("uid_seller='1'")) ) {
             while( $kfrcP->CursorFetch() ) {
                 $kP = $kfrcP->Key();
                 $bCurr = ($kCurrProd && $kfrcP->Key() == $kCurrProd);
@@ -139,6 +139,24 @@ class mbrBasket_Products extends Console01_Worker1
                          ."</div>";
             }
         }
+*/
+
+        $kfrcP = $this->oC->oSB->oDB->GetKFRC( "PxPE3", "product_type='seeds' AND uid_seller='1' "
+                                                   ."AND PE1.k='category' "
+                                                   ."AND PE2.k='species' "
+                                                   ."AND PE3.k='variety' ",
+                                                   array('sSortCol'=>'PE1_v,PE2_v,PE3_v') );
+        if( $kfrcP ) {
+            while( $kfrcP->CursorFetch() ) {
+                $kP = $kfrcP->Key();
+                $bCurr = ($kCurrProd && $kfrcP->Key() == $kCurrProd);
+                $sStyleCurr = $bCurr ? "border:2px solid blue;" : "";
+                $sList .= "<div id='msdSeed$kP' class='well msdSeedContainer' style='margin:5px'><div class='msdSeedText' style='padding:0px;$sStyleCurr'>"  // onclick='location.replace(\"?kP=$kP\")'>"
+                         .$this->oC->oSB->DrawProduct( $kfrcP, /*$bCurr*/true ? SEEDBasketProductHandler::DETAIL_ALL : SEEDBasketProductHandler::DETAIL_TINY )
+                         ."</div></div>";
+            }
+        }
+
 
         if( $sForm ) {
             $sForm = "<form method='post'>"
@@ -156,6 +174,64 @@ class mbrBasket_Products extends Console01_Worker1
 //$s .= $this->oC->oSB->DrawProductNewForm( 'donation' );
 //$s .= $this->oC->oSB->DrawProductNewForm( 'book' );
 //$s .= $this->oC->oSB->DrawProductNewForm( 'seeds' );
+$s .= <<<basketStyle
+<style>
+.msdSeedEdit { width:100%;display:none;margin-top:5px;padding-top:10px;border-top:1px dashed #888 }
+</style>
+basketStyle;
+
+$s .= <<<basketScript
+<script>
+var msdSeedContainerCurr = null;  // the current msdSeedContainer
+
+$(document).ready( function() {
+    $(".msdSeedText").click( function(e) {
+        // only one msdSeedContainer can be selected at a time
+        if( msdSeedContainerCurr != null ) return;
+
+        let id = $(this).parent().attr("id");
+        let k = 0;
+
+        if( id.substring(0,7) == 'msdSeed' && (k=parseInt(id.substring(7))) ) {
+            msdSeedContainerCurr = $(this).parent();
+
+            let msdSeedEdit = $("<div class='msdSeedEdit'><form ><nobr><input type='text' name='species'/><br/><br/><br/><br/><br/> <input type='text' name='variety'/>&nbsp;<input type='submit' value='Save'/> <button class='msdSeedEditCancel' type='button'>Cancel</button></nobr></form></div>");
+
+            // Add the form inside msdSeedContainer, after msdSeedText. It is initially non-displayed, but fadeIn shows it.
+            msdSeedContainerCurr.append(msdSeedEdit);
+            msdSeedEdit.fadeIn(500);
+
+            msdSeedEdit.find("form").submit( function(e) { e.preventDefault(); SeedEditSubmit(k); } );
+            msdSeedEdit.find(".msdSeedEditCancel").click( function(e) { e.preventDefault(); SeedEditCancel(); } );
+        }
+    });
+});
+
+function SeedEditSubmit(k)
+{
+    if( msdSeedContainerCurr == null ) return;
+
+    let p = "cmd=msdSeedEditUpdate&kS="+k+"&"+msdSeedContainerCurr.find('select, textarea, input').serialize();
+    //alert(p);
+
+    let oRet = SEEDJXSync( "http://localhost/~bob/seedsx/seeds.ca2/app/q/basketJX.php", p );
+console.log(oRet);
+    msdSeedContainerCurr.css({border:"1px solid blue"});
+
+    SeedEditCancel();
+}
+
+function SeedEditCancel()
+{
+    if( msdSeedContainerCurr == null ) return;
+
+    msdSeedEdit = msdSeedContainerCurr.find('.msdSeedEdit');
+    msdSeedEdit.fadeOut(500, function() { msdSeedEdit.remove(); } );     // wait for the fadeOut to complete before removing the msdSeedEdit
+    msdSeedContainerCurr = null;
+}
+
+</script>
+basketScript;
 
         return( $s );
     }
@@ -310,7 +386,7 @@ $raConsoleParms = array(
                                                           ) ) ),
     'bLogo' => true,
     'bBootstrap' => true,
-    'script_files' => array( W_ROOT."std/js/SEEDStd.js" )
+    'script_files' => array( W_ROOT."std/js/SEEDStd.js", W_CORE."js/SEEDCore.js" )
 );
 
 $oC = new MyBasketConsole( $kfdb, $sess, $raConsoleParms );

@@ -84,6 +84,7 @@ class SLCollectionAdmin extends Console01_Worker1
         if( $this->sess->IsLogin() && $this->kCurrCollection && $this->oColl->CanWriteCollection( $this->kCurrCollection ) ) {
             $raPills = array_merge( $raPills,
                                     array( 'newacc'   => array( 'Add new accession', ),
+                                           'newacc2'  => array( 'Add new accession 2', ),
                                            'splitinv' => array( 'Split/move a sample',  ),
                                            'dist'     => array( 'Distribute seeds',  ),
                                            'germ'     => array( 'Germination tests',  ),
@@ -111,6 +112,7 @@ class SLCollectionAdmin extends Console01_Worker1
             case 'dist':      $sBody = $this->screenDist();           break;
             case 'germ':      $sBody = $this->screenGerm();           break;
             case 'newacc':    $sBody = $this->screenNewAcc();         break;
+            case 'newacc2':   $sBody = $this->screenNewAcc2();        break;
             case 'editacc':   $sBody = $this->screenEditAcc();        break;
             case 'batch':     $sBody = $this->screenBatchProcess();   break;
 
@@ -120,7 +122,7 @@ class SLCollectionAdmin extends Console01_Worker1
         //$s .= $this->drawSearch();
 
         $s .= "<div class='container-fluid' style='margin:0px'>"
-                 .( !in_array($pMode, array('newacc','batch'))
+                 .( !in_array($pMode, array('newacc','newacc2','batch'))
                      ? ("<div class='row'>"
                            ."<div class='col-sm-5'>".$oSearchControl->ControlDraw()."</div>"
                            ."<div class='col-sm-7'>".$sDrawList."</div>"
@@ -156,6 +158,14 @@ class SLCollectionAdmin extends Console01_Worker1
             return( "<div class='alert-danger' style='width:30%;padding:10px'>Please select a collection</div>" );
         }
         return( $this->oAcc->DrawNewAccession() );
+    }
+
+    private function screenNewAcc2()
+    {
+        if( !$this->kCurrCollection ) {
+            return( "<div class='alert-danger' style='width:30%;padding:10px'>Please select a collection</div>" );
+        }
+        return( $this->oAcc->DrawNewAccession2() );
     }
 
     private function screenEditAcc()
