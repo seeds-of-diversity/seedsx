@@ -15,7 +15,7 @@ include_once( SEEDCOMMON."siteStart.php" );
 include_once( SEEDCOMMON."siteCommon.php" );
 
 SiteCommon_init( array(
-    "SITE_DB_DEF_FILE"  => (STDROOT."seeds1_def.php"),  // this file is unversioned - it contains installation-specific defs
+    "SITE_DB_DEF_FILE"  => (CONFIG_DIR."seeds_def1.php"),  // this file is unversioned - it contains installation-specific defs
     "SITE_LOG_ROOT"     => (STDROOT."seeds_log/"),
     "DOCREP_UPLOAD_DIR" => (STDROOT."docrep_upload1/"),
     "DOCREP_UPLOAD_REALDIR" => (STDROOT_REALDIR."docrep_upload1/"),
