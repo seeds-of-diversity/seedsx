@@ -21,7 +21,7 @@ if( !defined("SEEDROOT") ) {
     if( !STD_isLocal ) {
         define( "SEEDROOT", STDROOT."seeds/" );
     } else {
-        // look for seedroot
+        // look or seedroot
         if( file_exists( STDROOT."../seeds/seedcore" ) ) {
             define( SEEDROOT, STDROOT."../seeds/" );
         }
