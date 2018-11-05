@@ -21,7 +21,7 @@ if( !defined("SEEDROOT") ) {
     if( !STD_isLocal ) {
         define( "SEEDROOT", STDROOT."seeds/" );
     } else {
-        // look for seedroot
+        // look or seedroot
         if( file_exists( STDROOT."../seeds/seedcore" ) ) {
             define( SEEDROOT, STDROOT."../seeds/" );
         }
@@ -36,7 +36,8 @@ if( !defined("SEEDROOT") ) {
 if( !defined("SITEROOT") )  define( "SITEROOT", "./" );
 
 if( !defined("CONFIG_DIR") ) {
-    define( "CONFIG_DIR", STD_isLocal ? (STDROOT."../_config/") : (STDROOT."_config") );
+    // should be ~/_config on both dev and prod installations
+    define( "CONFIG_DIR", STD_isLocal ? (STDROOT."../../_config/") : (STDROOT."_config") );
 }
 
 /* full filesystem locations of STDROOT and the current script

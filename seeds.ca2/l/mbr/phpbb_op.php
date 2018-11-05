@@ -10,7 +10,7 @@
  */
 if( ($pCmd = $request->variable('seeds-admin','')) ) {
 
-    include( "../../seeds1_def.php" );
+    include( "../../_config/seeds_def1.php" );
     include( "../../seeds/Keyframe/KeyframeDB.php" );
     $kfdb = new KeyFrameDatabase( SiteKFDB_USERID, SiteKFDB_PASSWORD, SiteKFDB_HOST );
     $kfdb->Connect( "seeds" ) or die( "kfdb connection failed" );
