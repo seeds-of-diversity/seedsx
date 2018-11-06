@@ -11,18 +11,16 @@ if( !defined("SITEROOT") )  { define("SITEROOT", "../"); }
 define("STDROOT", SITEROOT."../");
 define("SEEDCOMMON", STDROOT."seedcommon/");    // application files shared by sites
 include_once( STDROOT."std.php" );
-include_once( SEEDCOMMON."siteStart.php" );
 include_once( SEEDCOMMON."siteCommon.php" );
 
 SiteCommon_init( array(
-    "SITE_DB_DEF_FILE"  => (CONFIG_DIR."seeds_def1.php"),  // this file is unversioned - it contains installation-specific defs
+    "SITE_DB_DEF_FILE"  => (CONFIG_DIR."seeds_def1.php"),  // this def is used by SEEDSetup and below
     "SITE_LOG_ROOT"     => (STDROOT."seeds_log/"),
     "DOCREP_UPLOAD_DIR" => (STDROOT."docrep_upload1/"),
     "DOCREP_UPLOAD_REALDIR" => (STDROOT_REALDIR."docrep_upload1/"),
     "SITE_LOGIN_ROOT"   => (SITEROOT."login/")
     ) );
-
-define( "Q_ROOT", STD_isLocal ? (SITEROOT."app/q/") : "https://seeds.ca/app/q/" );
+include_once( SITE_DB_DEF_FILE );  // cannot be included by the function above because variables within it would be local there instead of global
 
 $SEEDSessionAuthUI_Config
     = array( 'urlActivation'          => 'https://www.seeds.ca/login',   // link sent in Create Account activation email
@@ -30,12 +28,6 @@ $SEEDSessionAuthUI_Config
              'iActivationInitialGid1' => 3,                              // Public
              'bEnableCreateAccount'   => true /*false*/                  // Random people may create accounts
            );
-
-
-// credentials for your seeds database (assuming host==localhost)
-$SEEDKFDB1 = array( 'kfdbUserid' => SiteKFDB_USERID_seeds1,
-                    'kfdbPassword' => SiteKFDB_PASSWORD_seeds1,
-                    'kfdbDatabase' => SiteKFDB_DB_seeds1 );
 
 
 // put this in siteCommon? That would only be useful if other sites used drupal

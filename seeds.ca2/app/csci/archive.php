@@ -13,13 +13,9 @@ include_once( SEEDLIB."sl/sldb.php" );
 
 require_once SEEDROOT.'/vendor/autoload.php';   // PhpOffice/PhpSpreadsheet
 
-
-
-$oApp = new SEEDAppConsole(
-                array_merge( $SEEDKFDB1,
-                             array( 'sessPermsRequired' => array(),
-                                    'logdir' => SITE_LOG_ROOT )
-                           )
+$oApp = new SEEDAppConsole( $config_KFDB['seeds1']
+                            + array( 'sessPermsRequired' => array(),
+                                     'logdir' => SITE_LOG_ROOT )
 );
 
 $oApp->kfdb->SetDebug(1);
