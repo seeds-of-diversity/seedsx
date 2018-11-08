@@ -6,11 +6,9 @@ include_once( SEEDCORE."console/console02.php" );
 
 include_once( SEEDLIB."mail/SEEDMailer.php" );
 
-$oApp = new SEEDAppConsole(
-                array_merge( $SEEDKFDB1,
-                             array( 'sessPermsRequired' => array(),
-                                    'logdir' => SITE_LOG_ROOT )
-                           )
+$oApp = new SEEDAppConsole( $config_KFDB['seeds1']
+                            + array( 'sessPermsRequired' => array(),
+                                     'logdir' => SITE_LOG_ROOT )
 );
 
 $oMail = new SEEDMailerSetup( $oApp );

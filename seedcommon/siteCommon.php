@@ -7,19 +7,18 @@
 
 include_once( STDINC."SEEDStd.php" );
 include_once( SEEDCORE."SEEDCore.php" );
+include_once( SEEDCORE."SEEDApp.php" );
+include_once( SEEDCOMMON."siteStart.php" );
 
 function SiteCommon_init( $raParms )
 {
-    /* non-parameterized
-     */
     define( "SITEROOT_REAL", ($_SERVER['DOCUMENT_ROOT'].dirname($_SERVER['PHP_SELF'])."/".SITEROOT) );
-    define("SITEIMG", SITEROOT."img/");
-    define("SITEINC", SITEROOT."inc/");
+    define( "SITEIMG", SITEROOT."img/");
+    define( "SITEINC", SITEROOT."inc/");
+    define( "Q_ROOT", STD_isLocal ? (SITEROOT."app/q/") : "https://seeds.ca/app/q/" );
 
-    /* parameterized
-     */
-    define( "SITE_DB_DEF_FILE", $raParms['SITE_DB_DEF_FILE'] );
-    require_once( SITE_DB_DEF_FILE );
+
+    define( "SITE_DB_DEF_FILE", $raParms['SITE_DB_DEF_FILE'] );     // def is used by SEEDSetup but cannot include here because variables would be local to this function
 
     define( "SITE_LOG_ROOT",   $raParms['SITE_LOG_ROOT'] );
     define( "SITE_LOGIN_ROOT", $raParms['SITE_LOGIN_ROOT'] );
@@ -30,8 +29,6 @@ function SiteCommon_init( $raParms )
     define( "DOCREP_ICON_DIR",      W_ROOT."std/img/dr/" );  // location of icons for DocRepMgr
     define( "DOCREP_UPLOAD_DIR",    $raParms['DOCREP_UPLOAD_DIR'] );
     define( "DOCREP_UPLOAD_REALDIR",$raParms['DOCREP_UPLOAD_REALDIR'] );
-
-    include_once( SEEDAPP."SEEDApp.php" );
 }
 
 function New_SiteAppDB()
