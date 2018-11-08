@@ -18,7 +18,7 @@ define("SiteKFDB_PASSWORD_seeds1", "seeds");   // edit here
 
 define("SiteKFDB_HOST_seeds2",     "localhost");
 define("SiteKFDB_DB_seeds2",       "seeds2");
-define("SiteKFDB_USERID_seeds2",   "seeds2");
+define("SiteKFDB_USERID_seeds2",   "seeds");
 define("SiteKFDB_PASSWORD_seeds2", "seeds");  // edit here
 
 /*
