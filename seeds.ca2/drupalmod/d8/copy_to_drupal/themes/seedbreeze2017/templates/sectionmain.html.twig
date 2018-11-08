@@ -1,6 +1,19 @@
+{# sectionmain_html.twig
+
+   Page template for SeedBreeze
+#}
+
+
+{% if (language.getId() == 'en') %}
+    {% set langCode = 'en' %}
+{% else %}
+    {% set langCode = 'fr' %}
+{% endif %}
+
+
 <header role="banner" class="section-header">
   <div class="row">
-    <div class="logox         col-md-6 col-sm-6 col-xs-12"> <img src='https://seeds.ca/i/img/logo/logoA_h-en-750x.png' style='max-width:350px;width:100%'/> {# page.header #} </div>
+    <div class="logox         col-md-6 col-sm-6 col-xs-12"> <img src='https://seeds.ca/i/img/logo/logoA_h-{{langCode}}-750x.png' style='max-width:350px;width:100%'/> {# page.header #} </div>
     <div class="header-right col-md-6 col-sm-6 col-xs-12"> {{ page.header_right }} {% include 'sectionmenu.html.twig' %}</div>
   </div>
 </header>
