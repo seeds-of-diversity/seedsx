@@ -95,6 +95,7 @@ class SEEDBasketFulfilment
     }
 }
 
+
 class mbrBasket_Products extends Console01_Worker1
 {
     function __construct( MyBasketConsole $oC, KeyFrameDB $kfdb, SEEDSessionAccount $sess )
@@ -141,6 +142,11 @@ class mbrBasket_Products extends Console01_Worker1
         }
 */
 
+
+
+        $oProdHandler = $this->oC->oSB->GetProductHandler( "seeds" ) or die( "Seeds ProductHandler not defined" );
+
+        $raSeeds = array();
         $kfrcP = $this->oC->oSB->oDB->GetKFRC( "PxPE3", "product_type='seeds' AND uid_seller='1' "
                                                    ."AND PE1.k='category' "
                                                    ."AND PE2.k='species' "
@@ -151,9 +157,10 @@ class mbrBasket_Products extends Console01_Worker1
                 $kP = $kfrcP->Key();
                 $bCurr = ($kCurrProd && $kfrcP->Key() == $kCurrProd);
                 $sStyleCurr = $bCurr ? "border:2px solid blue;" : "";
-                $sList .= "<div id='msdSeed$kP' class='well msdSeedContainer' style='margin:5px'><div class='msdSeedText' style='padding:0px;$sStyleCurr'>"  // onclick='location.replace(\"?kP=$kP\")'>"
+                $sList .= "<div id='msdSeed$kP' class='well msdSeedContainer' style='margin:5px'><div class='msdSeedMsg'></div><div class='msdSeedText' style='padding:0px;$sStyleCurr'>"  // onclick='location.replace(\"?kP=$kP\")'>"
                          .$this->oC->oSB->DrawProduct( $kfrcP, /*$bCurr*/true ? SEEDBasketProductHandler::DETAIL_ALL : SEEDBasketProductHandler::DETAIL_TINY )
                          ."</div></div>";
+                $raSeeds[$kP] = $oProdHandler->GetProductValues( $kfrcP );
             }
         }
 
@@ -174,11 +181,46 @@ class mbrBasket_Products extends Console01_Worker1
 //$s .= $this->oC->oSB->DrawProductNewForm( 'donation' );
 //$s .= $this->oC->oSB->DrawProductNewForm( 'book' );
 //$s .= $this->oC->oSB->DrawProductNewForm( 'seeds' );
+
+$msdSeedEditForm = <<<msdSeedEditForm
+    <table><tr>
+        <td><input type='text' id='msdSeedEdit_species' class='msdSeedEdit_inputText' placeholder='Species e.g. LETTUCE'/></td><td>&nbsp;</td>
+    </tr><tr>
+        <td><input type='text' id='msdSeedEdit_variety' class='msdSeedEdit_inputText' placeholder='Variety e.g. Grand Rapids'/></td><td>&nbsp;</td>
+    </tr><tr>
+        <td><input type='text' id='msdSeedEdit_botname' class='msdSeedEdit_inputText' placeholder='botanical name (optional)'/></td><td>&nbsp;</td>
+    </tr><tr>
+        <td colspan='2'><textarea style='width:90%' rows='4' id='msdSeedEdit_description' placeholder='Describe the produce, the plant, how it grows, and its uses'></textarea></td>
+    </tr><tr>
+        <td><input type='text' id='msdSeedEdit_days_maturity' size='5'/>&nbsp;&nbsp;&nbsp;<input type='text' id='msdSeedEdit_days_maturity_seeds' size='5'/></td>
+        <td><div class='msdSeedEdit_instruction'><b>Days to maturity</b>: In the first box, estimate how many days after sowing/transplanting it takes for the produce to ripen for best eating. In the second box estimate the number of days until the seed is ripe to harvest. Leave blank if not applicable.</div></td>
+    </tr><tr>
+        <td><input type='text' id='msdSeedEdit_origin' class='msdSeedEdit_inputText'/></td>
+        <td><div class='msdSeedEdit_instruction'><b>Origin</b>: Record where you got the original seeds. e.g. another member, a seed company, a local Seedy Saturday.</div></td>
+    </tr><tr>
+        <td><select id='msdSeedEdit_quantity'><option value=''></option><option value='LQ'>Low Quantity</option><option value='PR'>Please Re-offer</option></select></td>
+        <td><div class='msdSeedEdit_instruction'><b>Quantity</b>: If you have a low quantity of seeds, or if you want to ask requestors to re-offer seeds, indicate that here.</div></td>
+    </tr><tr>
+        <td><select id='msdSeedEdit_eOffer'><option value='member'>All Members</option><option value='grower-member'>Only members who also list seeds</option><option value='public'>General public</option></select></td>
+        <td><p class='msdSeedEdit_instruction'><b>Who may request these seeds from you</b>: <span id='msdSeedEdit_eOffer_instructions'></span></p></td>
+    </tr><tr>
+        <td><nobr>$<input type='text' id='msdSeedEdit_price' class='msdSeedEdit_inputText'/></nobr></td>
+        <td><div class='msdSeedEdit_instruction'><b>Price</b>: We recommend $3.50 for seeds and $12.00 for roots and tubers. That is the default if you leave this field blank. Members who offer seeds (like you!) get an automatic discount of $1 per item.</div></td>
+    </tr></table>
+    <input type='submit' value='Save'/> <button class='msdSeedEditCancel' type='button'>Cancel</button>
+<br/>Category<br/>Year first listed
+msdSeedEditForm;
+$msdSeedEditForm = str_replace("\n","",$msdSeedEditForm);   // jquery doesn't like linefeeds in its selectors
+
 $s .= <<<basketStyle
 <style>
 .msdSeedEdit { width:100%;display:none;margin-top:5px;padding-top:10px;border-top:1px dashed #888 }
+.msdSeedEdit_inputText   { width:95%;margin:3px 0px }
+.msdSeedEdit_instruction { background-color:white;border:1px solid #aaa;margin:3px 0px 0px 30px;padding:3px }
 </style>
 basketStyle;
+
+$s .= "<script>var raSeeds = ".json_encode($raSeeds)."</script>";
 
 $s .= <<<basketScript
 <script>
@@ -189,16 +231,27 @@ $(document).ready( function() {
         // only one msdSeedContainer can be selected at a time
         if( msdSeedContainerCurr != null ) return;
 
+        $(".msdSeedContainer").css({border:"1px solid #e3e3e3"});
+        $(".msdSeedMsg").html("");
+
         let id = $(this).parent().attr("id");
         let k = 0;
 
-        if( id.substring(0,7) == 'msdSeed' && (k=parseInt(id.substring(7))) ) {
+        if( id.substring(0,7) == 'msdSeed' && (k=parseInt(id.substring(7))) ) { console.log(raSeeds[k]);
             msdSeedContainerCurr = $(this).parent();
+            msdSeedContainerCurr.css({border:"1px solid blue"});
 
-            let msdSeedEdit = $("<div class='msdSeedEdit'><form ><nobr><input type='text' name='species'/><br/><br/><br/><br/><br/> <input type='text' name='variety'/>&nbsp;<input type='submit' value='Save'/> <button class='msdSeedEditCancel' type='button'>Cancel</button></nobr></form></div>");
+            let msdSeedEdit = $("<div class='msdSeedEdit'><form>$msdSeedEditForm</form></div>");
 
             // Add the form inside msdSeedContainer, after msdSeedText. It is initially non-displayed, but fadeIn shows it.
             msdSeedContainerCurr.append(msdSeedEdit);
+
+            SeedEditSelectEOffer( msdSeedEdit );
+            msdSeedEdit.find('#msdSeedEdit_eOffer').change( function() { SeedEditSelectEOffer( msdSeedEdit ); } );
+
+            for( var i in raSeeds[k] ) {
+                msdSeedEdit.find('#msdSeedEdit_'+i).val(raSeeds[k][i]);
+            }
             msdSeedEdit.fadeIn(500);
 
             msdSeedEdit.find("form").submit( function(e) { e.preventDefault(); SeedEditSubmit(k); } );
@@ -206,6 +259,19 @@ $(document).ready( function() {
         }
     });
 });
+
+function SeedEditSelectEOffer( msdSeedEdit )
+{
+    switch( msdSeedEdit.find("#msdSeedEdit_eOffer").val() ) {
+        case 'member':
+        case 'grower-member':
+            msdSeedEdit.find('#msdSeedEdit_eOffer_instructions').html( "The name and description of these seeds will be visible to the public on the web-based Seed Directory, but only members will be able to see your contact information to request seeds." );
+            break;
+        case 'public':
+            msdSeedEdit.find('#msdSeedEdit_eOffer_instructions').html( "Anyone who visits the online Seed Directory will be able to request these seeds, whether or not they are a member of Seeds of Diversity. <b>Your name and contact information will be visible to the public.</b> The printed Seed Directory is still only available to members." );
+            break;
+     }
+}
 
 function SeedEditSubmit(k)
 {
@@ -215,19 +281,34 @@ function SeedEditSubmit(k)
     //alert(p);
 
     let oRet = SEEDJXSync( "http://localhost/~bob/seedsx/seeds.ca2/app/q/basketJX.php", p );
-console.log(oRet);
-    msdSeedContainerCurr.css({border:"1px solid blue"});
+    let ok = true; // oRet['bOk'];
 
-    SeedEditCancel();
+console.log(oRet);
+
+    SeedEditClose( ok );
+
+    return( ok );
 }
 
 function SeedEditCancel()
 {
+    SeedEditClose( false );
+}
+
+function SeedEditClose( ok )
+{
     if( msdSeedContainerCurr == null ) return;
 
     msdSeedEdit = msdSeedContainerCurr.find('.msdSeedEdit');
-    msdSeedEdit.fadeOut(500, function() { msdSeedEdit.remove(); } );     // wait for the fadeOut to complete before removing the msdSeedEdit
-    msdSeedContainerCurr = null;
+    msdSeedEdit.fadeOut(500, function() {
+            msdSeedEdit.remove();      // wait for the fadeOut to complete before removing the msdSeedEdit
+            if( ok ) {
+                // do this after fadeOut because it looks better afterward
+                msdSeedContainerCurr.find(".msdSeedMsg").html( "<div class='alert alert-success' style='font-size:10pt;margin-bottom:5px;padding:3px 10px;display:inline-block'>Saved</div>" );
+            }
+            // allow another block to be clicked
+            msdSeedContainerCurr = null;
+        } );
 }
 
 </script>
