@@ -3,11 +3,9 @@
 define("SITEROOT", "../../");
 include_once( SITEROOT."site2.php" );
 include_once( STDINC."SEEDForm.php" );
-include_once( STDINC."SEEDTable.php" );
+include_once( SEEDCORE."SEEDXLSX.php" );
 include_once( SEEDCOMMON."mbr/mbrOrder.php" );
 include_once( "_mbr_order_report.php" );
-
-header( "Content-Type:text/html; charset=ISO-8859-1" );
 
 // kfdb is seeds2 to segregate SEEDSession privileges there
 list($kfdb, $sess) = SiteStartSessionAccount( array("MBRORDER" => "R") );
@@ -59,14 +57,25 @@ if( SEEDInput_Str('cmd') == "xls" ) {
     }
 //exit;
 
-    SEEDTable_OutputXLSFromRARows( $raOut,
-                                   array( 'columns' => array('order','name','membership','donation','sladoption','books','misc'),
-                                          'filename'=>"deposit $sRangeNormal.xls",
-                                          'created_by'=>$sess->GetName(), 'title'=>"Deposit $sRangeNormal" ) );
+    $cols = array('order','name','membership','donation','sladoption','books','misc');
+    $oXls = new SEEDXlsWrite( array('filename'=>"deposit $sRangeNormal.xlsx") );
+    $oXls->WriteHeader( 0, $cols );
+
+    $row = 2;
+    foreach( $raOut as $ra ) {
+        $oXls->WriteRow( 0, $row++, array( $ra['order'], $ra['name'], $ra['membership'], $ra['donation'], $ra['sladoption'], $ra['books'], $ra['misc'] ) );
+    }
+    $oXls->OutputSpreadsheet();
+
+//    SEEDTable_OutputXLSFromRARows( $raOut,
+//                                   array( 'columns' => $cols,
+//                                          'filename'=>"deposit $sRangeNormal.xls",
+//                                          'created_by'=>$sess->GetName(), 'title'=>"Deposit $sRangeNormal" ) );
     exit;
 }
 
 showForm:
+
 
 $s .= "<h3>Deposits</h3>"
      ."<form method='post'>"
