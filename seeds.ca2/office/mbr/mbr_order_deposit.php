@@ -43,9 +43,16 @@ if( SEEDInput_Str('cmd') == "xls" ) {
 
         $ra['books'] = "";
         if( $raOrder['pubs'] ) {
-            //$raO['books'] = 0;    apparently "" += int is okay
+            $ra['books'] = 0;   // prevent non-numeric warning with +=
             foreach( $raOrder['pubs'] as $raPub ) {
                 $ra['books'] += $raPub[3];  // total price of n copies
+            }
+        }
+        $ra['seeds'] = "";
+        if( @$raOrder['seeds'] ) {
+            $ra['seeds'] = 0;   // prevent non-numeric warning with +=
+            foreach( $raOrder['seeds'] as $raSeeds ) {
+                $ra['seeds'] += $raSeeds['amount'];
             }
         }
 
@@ -55,15 +62,16 @@ if( SEEDInput_Str('cmd') == "xls" ) {
 
         $raOut[]= $ra;
     }
+//var_dump($raOut);
 //exit;
 
-    $cols = array('order','name','membership','donation','sladoption','books','misc');
+    $cols = array('order','name','membership','donation','sladoption','books','seeds','misc');
     $oXls = new SEEDXlsWrite( array('filename'=>"deposit $sRangeNormal.xlsx") );
     $oXls->WriteHeader( 0, $cols );
 
     $row = 2;
     foreach( $raOut as $ra ) {
-        $oXls->WriteRow( 0, $row++, array( $ra['order'], $ra['name'], $ra['membership'], $ra['donation'], $ra['sladoption'], $ra['books'], $ra['misc'] ) );
+        $oXls->WriteRow( 0, $row++, array( $ra['order'], $ra['name'], $ra['membership'], $ra['donation'], $ra['sladoption'], $ra['books'], $ra['seeds'], $ra['misc'] ) );
     }
     $oXls->OutputSpreadsheet();
 
