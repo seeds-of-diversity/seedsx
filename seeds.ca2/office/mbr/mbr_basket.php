@@ -184,27 +184,27 @@ class mbrBasket_Products extends Console01_Worker1
 
 $msdSeedEditForm = <<<msdSeedEditForm
     <table><tr>
-        <td><input type='text' id='msdSeedEdit_species' class='msdSeedEdit_inputText' placeholder='Species e.g. LETTUCE'/></td><td>&nbsp;</td>
+        <td><input type='text' id='msdSeedEdit_species' name='species' class='msdSeedEdit_inputText' placeholder='Species e.g. LETTUCE'/></td><td>&nbsp;</td>
     </tr><tr>
-        <td><input type='text' id='msdSeedEdit_variety' class='msdSeedEdit_inputText' placeholder='Variety e.g. Grand Rapids'/></td><td>&nbsp;</td>
+        <td><input type='text' id='msdSeedEdit_variety' name='variety' class='msdSeedEdit_inputText' placeholder='Variety e.g. Grand Rapids'/></td><td>&nbsp;</td>
     </tr><tr>
-        <td><input type='text' id='msdSeedEdit_botname' class='msdSeedEdit_inputText' placeholder='botanical name (optional)'/></td><td>&nbsp;</td>
+        <td><input type='text' id='msdSeedEdit_botname' name='botname' class='msdSeedEdit_inputText' placeholder='botanical name (optional)'/></td><td>&nbsp;</td>
     </tr><tr>
-        <td colspan='2'><textarea style='width:90%' rows='4' id='msdSeedEdit_description' placeholder='Describe the produce, the plant, how it grows, and its uses'></textarea></td>
+        <td colspan='2'><textarea style='width:100%' rows='4' id='msdSeedEdit_description' name='description' placeholder='Describe the produce, the plant, how it grows, and its uses'></textarea></td>
     </tr><tr>
-        <td><input type='text' id='msdSeedEdit_days_maturity' size='5'/>&nbsp;&nbsp;&nbsp;<input type='text' id='msdSeedEdit_days_maturity_seeds' size='5'/></td>
+        <td><input type='text' id='msdSeedEdit_days_maturity' name='days_maturity' size='5'/>&nbsp;&nbsp;&nbsp;<input type='text' id='msdSeedEdit_days_maturity_seeds' name='days_maturity_seeds' size='5'/></td>
         <td><div class='msdSeedEdit_instruction'><b>Days to maturity</b>: In the first box, estimate how many days after sowing/transplanting it takes for the produce to ripen for best eating. In the second box estimate the number of days until the seed is ripe to harvest. Leave blank if not applicable.</div></td>
     </tr><tr>
-        <td><input type='text' id='msdSeedEdit_origin' class='msdSeedEdit_inputText'/></td>
+        <td><input type='text' id='msdSeedEdit_origin' name='origin' class='msdSeedEdit_inputText'/></td>
         <td><div class='msdSeedEdit_instruction'><b>Origin</b>: Record where you got the original seeds. e.g. another member, a seed company, a local Seedy Saturday.</div></td>
     </tr><tr>
-        <td><select id='msdSeedEdit_quantity'><option value=''></option><option value='LQ'>Low Quantity</option><option value='PR'>Please Re-offer</option></select></td>
+        <td><select id='msdSeedEdit_quantity' name='quantity'><option value=''></option><option value='LQ'>Low Quantity</option><option value='PR'>Please Re-offer</option></select></td>
         <td><div class='msdSeedEdit_instruction'><b>Quantity</b>: If you have a low quantity of seeds, or if you want to ask requestors to re-offer seeds, indicate that here.</div></td>
     </tr><tr>
-        <td><select id='msdSeedEdit_eOffer'><option value='member'>All Members</option><option value='grower-member'>Only members who also list seeds</option><option value='public'>General public</option></select></td>
+        <td><select id='msdSeedEdit_eOffer' name='eOffer'><option value='member'>All Members</option><option value='grower-member'>Only members who also list seeds</option><option value='public'>General public</option></select></td>
         <td><p class='msdSeedEdit_instruction'><b>Who may request these seeds from you</b>: <span id='msdSeedEdit_eOffer_instructions'></span></p></td>
     </tr><tr>
-        <td><nobr>$<input type='text' id='msdSeedEdit_price' class='msdSeedEdit_inputText'/></nobr></td>
+        <td><nobr>$<input type='text' id='msdSeedEdit_price' name='price' class='msdSeedEdit_inputText'/></nobr></td>
         <td><div class='msdSeedEdit_instruction'><b>Price</b>: We recommend $3.50 for seeds and $12.00 for roots and tubers. That is the default if you leave this field blank. Members who offer seeds (like you!) get an automatic discount of $1 per item.</div></td>
     </tr></table>
     <input type='submit' value='Save'/> <button class='msdSeedEditCancel' type='button'>Cancel</button>
@@ -278,7 +278,7 @@ function SeedEditSubmit(k)
     if( msdSeedContainerCurr == null ) return;
 
     let p = "cmd=msdSeedEditUpdate&kS="+k+"&"+msdSeedContainerCurr.find('select, textarea, input').serialize();
-    //alert(p);
+    alert(p);
 
     let oRet = SEEDJXSync( "http://localhost/~bob/seedsx/seeds.ca2/app/q/basketJX.php", p );
     let ok = true; // oRet['bOk'];

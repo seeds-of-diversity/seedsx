@@ -1,7 +1,7 @@
 <?php
 
 /* Support for seeds1 MSD viewers and editors.
- * This could go in seedapp/seedexchange/ when it dependencies are there.
+ * This could go in seedlib/msd/ when its dependencies are there.
  */
 
 include_once( SEEDCOMMON."sl/sed/sedCommon.php" );

@@ -11,13 +11,20 @@ include_once( SEEDCORE."SEEDBasket.php" );
 include_once( SEEDAPP."basket/basketProductHandlers.php" );
 include_once( SEEDAPP."basket/basketProductHandlers_seeds.php" );
 include_once( SITEROOT."l/sl/msd.php" );
+include_once( SEEDLIB."msd/msdq.php" );
 
 list($kfdb, $sess, $lang) = SiteStartSessionAccountNoUI();     // you don't have to be logged in to use a basket
 
 $oW = new SEEDApp_Worker( $kfdb, $sess, $lang );
-$oSB = new MSDBasketCore( $oW );
+$oSB = new MSDBasketCore( $oW );    // rewrite MSDBasketCore so it extends MSDQ?
 
 //$kfdb->SetDebug(2);
+
+$oApp = new SEEDAppConsole( $config_KFDB['seeds1']
+                            + array( 'sessPermsRequired' => array(),
+                                     'logdir' => SITE_LOG_ROOT )
+);
+
 
 $raJX = array( 'bOk'=>false, 'sOut'=>"", 'sErr'=>"", 'raOut'=>array() );
 
@@ -31,13 +38,15 @@ if( ($cmd = SEEDSafeGPC_GetStrPlain( "cmd" )) ) {
         goto done;
     }
 
+    $oMSDQ = new MSDQServer( $oApp, array() );
+    $raQ = $oMSDQ->Cmd( $cmd, $_REQUEST );
+    if( $raQ['bHandled'] ) {
+        $raJX = $raQ;
+        goto done;
+    }
+
+
     switch( $cmd ) {
-        case "msdSeedEditUpdate":
-            $raJX['raOut'] = $_REQUEST;
-
-            $raJX['bOk'] = true;
-            break;
-
         case "prodUnfill":
             $kfdb->Execute( "UPDATE seeds.SEEDBasket_BP SET eStatus='PAID' WHERE _key='$k'" );
             $raJX['bOk'] = true;
