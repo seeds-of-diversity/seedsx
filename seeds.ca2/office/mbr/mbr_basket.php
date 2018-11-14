@@ -6,7 +6,7 @@
  */
 
 define( "SITEROOT", "../../" );
-include_once( SITEROOT."site2.php" );
+include_once( SITEROOT."site.php" );            // move app out of office
 include_once( SEEDCORE."SEEDBasket.php" );
 include_once( SEEDAPP."basket/basketProductHandlers.php" );
 include_once( SEEDAPP."basket/basketProductHandlers_seeds.php" );
@@ -277,13 +277,17 @@ function SeedEditSubmit(k)
 {
     if( msdSeedContainerCurr == null ) return;
 
-    let p = "cmd=msdSeedEditUpdate&kS="+k+"&"+msdSeedContainerCurr.find('select, textarea, input').serialize();
-    alert(p);
+    let p = "cmd=msdSeed--Update&kS="+k+"&"+msdSeedContainerCurr.find('select, textarea, input').serialize();
+    //alert(p);
 
     let oRet = SEEDJXSync( "http://localhost/~bob/seedsx/seeds.ca2/app/q/basketJX.php", p );
-    let ok = true; // oRet['bOk'];
+    let ok = oRet['bOk'];
 
 console.log(oRet);
+
+    if( ok ) {
+        msdSeedContainerCurr.find(".msdSeedText").html( oRet['sOut'] );
+    }
 
     SeedEditClose( ok );
 

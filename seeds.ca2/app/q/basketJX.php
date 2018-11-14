@@ -28,7 +28,7 @@ $oApp = new SEEDAppConsole( $config_KFDB['seeds1']
 
 $raJX = array( 'bOk'=>false, 'sOut'=>"", 'sErr'=>"", 'raOut'=>array() );
 
-if( ($cmd = SEEDSafeGPC_GetStrPlain( "cmd" )) ) {
+if( ($cmd = SEEDInput_Str( "cmd" )) ) {
 
     $raCmd = $oSB->Cmd( $cmd, $_REQUEST );
     if( $raCmd['bHandled'] ) {
@@ -38,7 +38,7 @@ if( ($cmd = SEEDSafeGPC_GetStrPlain( "cmd" )) ) {
         goto done;
     }
 
-    $oMSDQ = new MSDQServer( $oApp, array() );
+    $oMSDQ = new MSDQ( $oApp, array() );
     $raQ = $oMSDQ->Cmd( $cmd, $_REQUEST );
     if( $raQ['bHandled'] ) {
         $raJX = $raQ;
