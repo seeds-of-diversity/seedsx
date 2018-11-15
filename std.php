@@ -54,11 +54,9 @@ define("STD_SCRIPT_REALDIR", realpath(dirname($_SERVER['SCRIPT_FILENAME']))."/" 
 if( STD_isLocal ) {
     // this has to be updated if you use any other top-level site directories in development repository
     $url = '/unknown/';
-    foreach( array('seeds.ca', 'seeds.ca2', 'office') as $v ) {
-        if( ($n = strpos( $_SERVER['REQUEST_URI'], "/$v/" )) ) {
-            // get the url components up to the top-level site directory e.g. /~user/repo1/office/
-            $url = substr( $_SERVER['REQUEST_URI'], 0, $n )."/$v/";
-        }
+    if( ($n = strpos( $_SERVER['REQUEST_URI'], "/seeds.ca2/" )) ) {
+        // get the url components up to the site directory e.g. /~user/repo1/seeds.ca2/
+        $url = substr( $_SERVER['REQUEST_URI'], 0, $n )."/seeds.ca2/";
     }
     define("SITEROOT_URL", $url );
 } else {
