@@ -21,6 +21,11 @@ include_once( SEEDAPP."seedexchange/msdCommon.php" );
 // But $sess->IsLogin() will only be true if the user has sed=>R (i.e. they are a current member)
 list($kfdb, $sess, $lang) = SiteStartSessionAccountNoUI( array("sed" => "R") );
 
+$oApp = new SEEDAppConsole( $config_KFDB['seeds1']
+                            + array( 'sessPermsRequired' => array(),
+                                     'logdir' => SITE_LOG_ROOT )
+);
+
 class SEEDBasketStore
 {
     protected $oW;
@@ -61,11 +66,11 @@ class SEEDBasketStore
 class msdBasket extends SEEDBasketStore
 {
 
-    function __construct( KeyFrameDB $kfdb, SEEDSession $sess, $lang )
+    function __construct( KeyFrameDB $kfdb, SEEDSession $sess, SEEDAppConsole $oApp, $lang )
     {
         parent::__construct();
         $this->oW = new SEEDApp_Worker( $kfdb, $sess, $lang );
-        $this->oSB = new MSDBasketCore( $this->oW );
+        $this->oSB = new MSDBasketCore( $this->oW, $oApp );
         $this->oDraw = new MSDCommonDraw( $this->oSB );
 
         $raTmplParms = array(
@@ -343,7 +348,7 @@ class msdBasket extends SEEDBasketStore
 }
 
 
-$oMSD = new msdBasket( $kfdb, $sess, $lang );
+$oMSD = new msdBasket( $kfdb, $sess, $oApp, $lang );
 
 $sHead = "";
 

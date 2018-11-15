@@ -16,6 +16,11 @@ include_once( SEEDCOMMON."console/console01.php" );
 list($kfdb, $sess) = SiteStartSessionAccount( array("MBRORDER" => "R") );
 $bCanWrite = $sess->CanWrite('MBRORDER');
 
+$oApp = new SEEDAppConsole( $config_KFDB['seeds1']
+                            + array( 'sessPermsRequired' => array(),
+                                     'logdir' => SITE_LOG_ROOT )
+);
+
 class SEEDBasketFulfilment
 {
     private $oBasketDB;
@@ -408,19 +413,21 @@ class MyBasketConsole extends Console01
 {
     public $oW;
     public $oSB;
+    public $oApp;
 
-    function __construct( KeyFrameDB $kfdb, SEEDSessionAccount $sess, $raParms )
+    function __construct( KeyFrameDB $kfdb, SEEDSessionAccount $sess, SEEDAppConsole $oApp, $raParms )
     {
         parent::__construct( $kfdb, $sess, $raParms );
+        $this->oApp = $oApp;
 
-        $this->oSB = new SEEDBasketCore( $kfdb, $sess, SEEDBasketProducts_SoD::$raProductTypes, array('logdir'=>SITE_LOG_ROOT) );
+        $this->oSB = new SEEDBasketCore( $kfdb, $sess, $oApp, SEEDBasketProducts_SoD::$raProductTypes, array('logdir'=>SITE_LOG_ROOT) );
     }
 
     function TabSetInit( $tsid, $tabname )
     {
         if( $tsid == 'main' ) {
             switch( $tabname ) {
-                case "Products":    $this->oW = new mbrBasket_Products( $this, $this->kfdb, $this->sess ); break;
+                case "Products":    $this->oW = new mbrBasket_Products( $this, $this->kfdb, $this->sess, $this->oApp ); break;
                 case "Store":       $this->oW = new mbrBasket_Store( $this, $this->kfdb, $this->sess ); break;
                 case "Fulfilment":  $this->oW = new mbrBasket_Fulfilment( $this, $this->kfdb, $this->sess ); break;
             }
@@ -474,7 +481,7 @@ $raConsoleParms = array(
     'script_files' => array( W_ROOT."std/js/SEEDStd.js", W_CORE."js/SEEDCore.js" )
 );
 
-$oC = new MyBasketConsole( $kfdb, $sess, $raConsoleParms );
+$oC = new MyBasketConsole( $kfdb, $sess, $oApp, $raConsoleParms );
 
 echo $oC->DrawConsole( "[[TabSet: main]]" );
 

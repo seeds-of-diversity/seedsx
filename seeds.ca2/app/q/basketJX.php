@@ -16,7 +16,6 @@ include_once( SEEDLIB."msd/msdq.php" );
 list($kfdb, $sess, $lang) = SiteStartSessionAccountNoUI();     // you don't have to be logged in to use a basket
 
 $oW = new SEEDApp_Worker( $kfdb, $sess, $lang );
-$oSB = new MSDBasketCore( $oW );    // rewrite MSDBasketCore so it extends MSDQ?
 
 //$kfdb->SetDebug(2);
 
@@ -25,6 +24,7 @@ $oApp = new SEEDAppConsole( $config_KFDB['seeds1']
                                      'logdir' => SITE_LOG_ROOT )
 );
 
+$oSB = new MSDBasketCore( $oW, $oApp );    // rewrite MSDBasketCore so it extends MSDQ?
 
 $raJX = array( 'bOk'=>false, 'sOut'=>"", 'sErr'=>"", 'raOut'=>array() );
 
@@ -171,7 +171,7 @@ done:
 echo json_encode( $raJX );
 
 
-function drawMSDOrderInfo( SEEDBasketCore $oSB, KFRecord $kfrP )
+function drawMSDOrderInfo( SEEDBasketCore $oSB, KeyframeRecord $kfrP )
 {
     include_once( SITEROOT."l/sl/msd.php" );
     $oW = new SEEDApp_Worker( $oSB->oDB->kfdb, $oSB->sess, "EN" );  // someday this will be in oSB

@@ -32,12 +32,12 @@ class MSDBasketCore extends SEEDBasketCore
     public $oW;
     public $bIsMember;
 
-    function __construct( SEEDApp_Worker $oW ) {
+    function __construct( SEEDApp_Worker $oW, SEEDAppConsole $oApp ) {
         // make SEEDBasketCore take $oW, stop storing it in this derived class and start storing it in the base class
         $this->oW = $oW;
         $this->bIsMbrLogin = $oW->sess->CanRead("sed");   // only members get this perm; this implies IsLogin()
 
-        parent::__construct( $oW->kfdb, $oW->sess,
+        parent::__construct( $oW->kfdb, $oW->sess, $oApp,
                              //SEEDBasketProducts_SoD::$raProductTypes );
                              array( 'seeds'=>SEEDBasketProducts_SoD::$raProductTypes['seeds'] ),
                              array( 'fn_sellerNameFromUid' => array($this,"cb_SellerNameFromUid")),
