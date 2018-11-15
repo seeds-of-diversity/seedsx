@@ -242,7 +242,7 @@ $(document).ready( function() {
         let id = $(this).parent().attr("id");
         let k = 0;
 
-        if( id.substring(0,7) == 'msdSeed' && (k=parseInt(id.substring(7))) ) { console.log(raSeeds[k]);
+        if( id.substring(0,7) == 'msdSeed' && (k=parseInt(id.substring(7))) ) {
             msdSeedContainerCurr = $(this).parent();
             msdSeedContainerCurr.css({border:"1px solid blue"});
 
@@ -286,9 +286,8 @@ function SeedEditSubmit(k)
     //alert(p);
 
     let oRet = SEEDJXSync( "http://localhost/~bob/seedsx/seeds.ca2/app/q/basketJX.php", p );
+    //console.log(oRet);
     let ok = oRet['bOk'];
-
-console.log(oRet);
 
     if( ok ) {
         msdSeedContainerCurr.find(".msdSeedText").html( oRet['sOut'] );
