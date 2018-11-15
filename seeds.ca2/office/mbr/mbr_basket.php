@@ -12,6 +12,8 @@ include_once( SEEDAPP."basket/basketProductHandlers.php" );
 include_once( SEEDAPP."basket/basketProductHandlers_seeds.php" );
 include_once( STDINC."SEEDTemplateMaker.php" );
 include_once( SEEDCOMMON."console/console01.php" );
+include_once( SEEDLIB."msd/msdq.php" );
+
 
 list($kfdb, $sess) = SiteStartSessionAccount( array("MBRORDER" => "R") );
 $bCanWrite = $sess->CanWrite('MBRORDER');
@@ -150,21 +152,31 @@ class mbrBasket_Products extends Console01_Worker1
 
 
         $oProdHandler = $this->oC->oSB->GetProductHandler( "seeds" ) or die( "Seeds ProductHandler not defined" );
+        $oMSDQ = new MSDQ( $this->oC->oSB->oApp, array() );
+        $oMSDCore = new MSDCore( $this->oC->oSB->oApp, array() );
 
         $raSeeds = array();
-        $kfrcP = $this->oC->oSB->oDB->GetKFRC( "PxPE3", "product_type='seeds' AND uid_seller='1' "
-                                                   ."AND PE1.k='category' "
-                                                   ."AND PE2.k='species' "
-                                                   ."AND PE3.k='variety' ",
-                                                   array('sSortCol'=>'PE1_v,PE2_v,PE3_v') );
-        if( $kfrcP ) {
-            while( $kfrcP->CursorFetch() ) {
+//        $kfrcP = $this->oC->oSB->oDB->GetKFRC( "PxPE3", "product_type='seeds' AND uid_seller='1' "
+//                                                   ."AND PE1.k='category' "
+//                                                   ."AND PE2.k='species' "
+//                                                   ."AND PE3.k='variety' ",
+//                                                   array('sSortCol'=>'PE1_v,PE2_v,PE3_v') );
+        if( ($kfrcP = $oMSDCore->SeedCursorOpen( "uid_seller='1'" )) ) {
+            $category = "";
+            while( $oMSDCore->SeedCursorFetch( $kfrcP ) ) { // $kfrcP->CursorFetch() ) {
                 $kP = $kfrcP->Key();
                 $bCurr = ($kCurrProd && $kfrcP->Key() == $kCurrProd);
                 $sStyleCurr = $bCurr ? "border:2px solid blue;" : "";
-                $sList .= "<div id='msdSeed$kP' class='well msdSeedContainer' style='margin:5px'><div class='msdSeedMsg'></div><div class='msdSeedText' style='padding:0px;$sStyleCurr'>"  // onclick='location.replace(\"?kP=$kP\")'>"
-                         .$this->oC->oSB->DrawProduct( $kfrcP, /*$bCurr*/true ? SEEDBasketProductHandler::DETAIL_ALL : SEEDBasketProductHandler::DETAIL_TINY )
-                         ."</div></div>";
+                if( $category != $kfrcP->Value('PE1_v') ) {
+                    $category = $kfrcP->Value('PE1_v');
+                    $sList .= "<div><h2>".@$oMSDCore->GetCategories()[$category]['EN']."</h2></div>";
+                }
+                $sList .= "<div id='msdSeed$kP' class='well msdSeedContainer' style='margin:5px'>"
+                             ."<div class='msdSeedMsg'></div>"
+                             ."<div class='msdSeedText' style='padding:0px;$sStyleCurr'>"
+                                 .$this->oC->oSB->DrawProduct( $kfrcP, SEEDBasketProductHandler::DETAIL_ALL )
+                             ."</div>"
+                         ."</div>";
                 $raSeeds[$kP] = $oProdHandler->GetProductValues( $kfrcP );
             }
         }
@@ -193,7 +205,7 @@ $msdSeedEditForm = <<<msdSeedEditForm
     </tr><tr>
         <td><input type='text' id='msdSeedEdit_variety' name='variety' class='msdSeedEdit_inputText' placeholder='Variety e.g. Grand Rapids'/></td><td>&nbsp;</td>
     </tr><tr>
-        <td><input type='text' id='msdSeedEdit_botname' name='botname' class='msdSeedEdit_inputText' placeholder='botanical name (optional)'/></td><td>&nbsp;</td>
+        <td><input type='text' id='msdSeedEdit_bot_name' name='bot_name' class='msdSeedEdit_inputText' placeholder='botanical name (optional)'/></td><td>&nbsp;</td>
     </tr><tr>
         <td colspan='2'><textarea style='width:100%' rows='4' id='msdSeedEdit_description' name='description' placeholder='Describe the produce, the plant, how it grows, and its uses'></textarea></td>
     </tr><tr>
@@ -219,13 +231,23 @@ $msdSeedEditForm = str_replace("\n","",$msdSeedEditForm);   // jquery doesn't li
 
 $s .= <<<basketStyle
 <style>
+.msdSeedText_species { font-size:14pt; font-weight:bold; }
+.sed_seed_offer  { font-family: helvetica,arial,sans-serif;font-size:10pt; padding:2px; float:right; background-color:#fff; }
+.sed_seed_offer_member       { color: #484; border:2px solid #484 }
+.sed_seed_offer_growermember { color: #08f; border:2px solid #08f }
+.sed_seed_offer_public       { color: #f80; border:2px solid #f80 }
+.sed_seed_mc     { font-weight:bold;text-align:right }
+
 .msdSeedEdit { width:100%;display:none;margin-top:5px;padding-top:10px;border-top:1px dashed #888 }
 .msdSeedEdit_inputText   { width:95%;margin:3px 0px }
 .msdSeedEdit_instruction { background-color:white;border:1px solid #aaa;margin:3px 0px 0px 30px;padding:3px }
 </style>
 basketStyle;
 
-$s .= "<script>var raSeeds = ".json_encode($raSeeds)."</script>";
+$s .= "<script>
+       var raSeeds = ".json_encode($raSeeds).";
+       var qURL = '".SITEROOT_URL."app/q/';
+       </script>";
 
 $s .= <<<basketScript
 <script>
@@ -285,11 +307,15 @@ function SeedEditSubmit(k)
     let p = "cmd=msdSeed--Update&kS="+k+"&"+msdSeedContainerCurr.find('select, textarea, input').serialize();
     //alert(p);
 
-    let oRet = SEEDJXSync( "http://localhost/~bob/seedsx/seeds.ca2/app/q/basketJX.php", p );
-    //console.log(oRet);
+    let oRet = SEEDJXSync( qURL+"basketJX.php", p );
+    console.log(oRet);
     let ok = oRet['bOk'];
 
     if( ok ) {
+        // raOut contains the validated seed data as stored in the database - save that here so it appears if you open the form again
+        raSeeds[k]=oRet['raOut'];
+
+        // sOut contains the revised msdSeedText
         msdSeedContainerCurr.find(".msdSeedText").html( oRet['sOut'] );
     }
 
