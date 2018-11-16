@@ -3,7 +3,7 @@
 /*
  * Seed Directory member interface
  *
- * Copyright 2011-2016 Seeds of Diversity Canada
+ * Copyright 2011-2018 Seeds of Diversity Canada
  *
  * Gives the current user an interface to their own listings in the Member Seed Directory
  */
@@ -22,8 +22,18 @@ include( SITEROOT."site.php" );
 include_once( SEEDCOMMON."console/console01.php" );
 include_once( SEEDCOMMON."sl/sed/sedCommon.php" );
 include_once( SEEDCOMMON."mbr/mbrSitePipe.php" );
+include_once( SEEDCORE."SEEDBasket.php" );
+include_once( SEEDAPP."basket/basketProductHandlers_seeds.php" );
+include_once( SEEDAPP."seedexchange/msdedit.php" );
+
 
 list($kfdb, $sess, $lang) = SiteStartSessionAccount( array("sed" => "W") );
+
+$oApp = new SEEDAppConsole( $config_KFDB['seeds1']
+                            + array( 'sessPermsRequired' => array(),
+                                     'logdir' => SITE_LOG_ROOT )
+);
+
 
 header( "Content-type: text/html; charset=ISO-8859-1");    // this should be on all pages so accented chars look right (on Linux anyway)
 
@@ -215,16 +225,19 @@ class SEDMbrSeeds extends SEDSeedsWorker
 
 class MyConsole extends Console01
 {
+    public  $oApp;
     public  $oW;
     public  $oSed;
 
-    function __construct( SEDMbr $oSed, $raParms ) { $this->oSed = $oSed; parent::__construct( $oSed->kfdb, $oSed->sess, $raParms ); }
+    function __construct( SEDMbr $oSed, SEEDAppConsole $oApp, $raParms ) { $this->oSed = $oSed; $this->oApp = $oApp; parent::__construct( $oSed->kfdb, $oSed->sess, $raParms ); }
 
     function TabSetInit( $tsid, $tabname )
     {
         switch( $tabname ) {
             case 'Growers':  $this->oW = new SEDMbrGrower( $this, $this->kfdb, $this->sess );  break;
-            case 'Seeds':    $this->oW = new SEDMbrSeeds( $this, $this->kfdb, $this->sess );  break;
+            case 'Seeds':    $this->oSB = new SEEDBasketCore( $this->oApp->kfdb, $this->oApp->sess, $this->oApp,
+                                                              SEEDBasketProducts_SoD::$raProductTypes, array('logdir'=>SITE_LOG_ROOT) );  break;
+            case 'Seeds1':   $this->oW = new SEDMbrSeeds( $this, $this->kfdb, $this->sess );  break;
         }
     }
 
@@ -242,7 +255,8 @@ should be okay to open any tab
     {
         switch( $tabname ) {
             case 'Growers':  return( $this->oW->DrawGrowerControl() );
-            case 'Seeds':    return( $this->oW->DrawSeedsControl() );
+            case 'Seeds':    return( "" );
+            case 'Seeds1':   return( $this->oW->DrawSeedsControl() );
         }
         return( "" );
     }
@@ -251,7 +265,10 @@ should be okay to open any tab
     {
         switch( $tabname ) {
             case 'Growers':  return( $this->oW->DrawGrowerContent() );
-            case 'Seeds':    return( $this->oW->DrawSeedsContent() );
+            case 'Seeds':
+                $oMSDAppSeedEdit = new MSDAppSeedEdit( $this->oSB );
+                return( $oMSDAppSeedEdit->Draw() );
+            case 'Seeds1':   return( $this->oW->DrawSeedsContent() );
         }
         return( "" );
     }
@@ -271,11 +288,14 @@ $raConsoleParms = array(
 //                             array( 'href' => 'mbr_mailsend.php', 'label' => "Send 'READY'", 'target' => '_blank' ) ),
 
     'TABSETS' => array( "main" => array( 'tabs' => array( 'Growers' => array( 'label' => $oSed->S("Tab G") ),
-                                                          'Seeds'   => array( 'label' => $oSed->S("Tab S") ) ) ) ),
+                                                          'Seeds'   => array( 'label' => $oSed->S("Tab S") ),
+                                                          'Seeds1'  => array( 'label' => $oSed->S("Tab S") ) ) ) ),
     'lang' => $lang,
-    'EnableC01Form' => true
+    'EnableC01Form' => true,
+    'bBootstrap' => true,
+    'script_files' => array( W_ROOT."std/js/SEEDStd.js", W_CORE."js/SEEDCore.js" ),
 );
-$oC = new MyConsole( $oSed, $raConsoleParms );
+$oC = new MyConsole( $oSed, $oApp, $raConsoleParms );
 
 echo $oC->DrawConsole( $oSed->SEDStyle()."[[TabSet: main]]" );
 
