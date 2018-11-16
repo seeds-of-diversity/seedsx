@@ -199,7 +199,7 @@ class msdBasket extends SEEDBasketStore
                 $kfrP = $this->oSB->oDB->GetKFR( 'P', $kfrBP->Value('fk_SEEDBasket_Products') );
 
                 $s1 .= "<div style='width:100%;margin:20px auto;padding:10px;max-width:80%;border:0px;background-color:#fff'>"
-                      .$this->oSB->DrawProduct( $kfrP, SEEDBasketProductHandler::DETAIL_SUMMARY )
+                      .$this->oSB->DrawProduct( $kfrP, SEEDBasketProductHandler_SEEDS::DETAIL_VIEW_NO_SPECIES )
                       ."</div>";
 
             }
