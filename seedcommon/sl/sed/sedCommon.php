@@ -69,7 +69,7 @@ class SEDCommon extends SEDCommonDraw
 
             .".sed_type { }"
             .".sed_type h3 { font-family: helvetica,arial,sans-serif; }"
-            .".sed_seed { font-family: helvetica,arial,sans-serif;font-size:10pt; margin-bottom:15pt; }"
+            .".sed_seed {}" // font-family: helvetica,arial,sans-serif;font-size:10pt; margin-bottom:15pt; }"
             .".sed_seed_skip { color: #444; background-color:#ee9; }"
             .".sed_seed_delete { color: red; background-color:#fdf }"
             .".sed_seed_change { background-color: #99dd99 }"
@@ -688,6 +688,7 @@ class SedSeedConsole01Table extends Console01TableKFRCursor
 
 function poststore_mirror_seedbasket( KFRecord $kfrS )
 {
+return;
     /* When a sed_curr_seeds record changes, call here to mirror the record to SEEDBasket_Products
      */
     $kfdb = $kfrS->kfrel->kfdb;
