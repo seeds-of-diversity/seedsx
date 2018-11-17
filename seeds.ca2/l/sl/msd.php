@@ -64,21 +64,6 @@ class MSDBasketCore extends SEEDBasketCore
         }
         return( $sSeller );
     }
-
-    function GetKlugeTypeKeyFromName( $sType )
-    {
-        // this is a cheater way to pass a "species" value as a number
-        $k = $this->oDB->kfdb->Query1( "SELECT _key FROM seeds.SEEDBasket_ProdExtra WHERE k='species' AND v='".addslashes($sType)."'" );
-        return( $k );
-    }
-
-    function GetKlugeTypeNameFromKey( $kSp )
-    {
-        // this is a cheater way to pass a "species" value as a number
-        $k = $this->oDB->kfdb->Query1( "SELECT v FROM seeds.SEEDBasket_ProdExtra WHERE _key='$kSp'" );
-        return( $k );
-    }
-
 }
 
 ?>
