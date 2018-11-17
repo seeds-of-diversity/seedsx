@@ -3,7 +3,7 @@
 /*
  * Seed Directory public interface
  *
- * Copyright (c) 2017 Seeds of Diversity Canada
+ * Copyright (c) 2017-2018 Seeds of Diversity Canada
  *
  * Show the listings in the Member Seed Directory
  */
@@ -23,7 +23,8 @@ list($kfdb, $sess, $lang) = SiteStartSessionAccountNoUI( array("sed" => "R") );
 
 $oApp = new SEEDAppConsole( $config_KFDB['seeds1']
                             + array( 'sessPermsRequired' => array(),
-                                     'logdir' => SITE_LOG_ROOT )
+                                     'logdir' => SITE_LOG_ROOT,
+                                     'lang' => $lang )
 );
 
 class SEEDBasketStore

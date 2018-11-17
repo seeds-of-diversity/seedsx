@@ -31,7 +31,8 @@ list($kfdb, $sess, $lang) = SiteStartSessionAccount( array("sed" => "W") );
 
 $oApp = new SEEDAppConsole( $config_KFDB['seeds1']
                             + array( 'sessPermsRequired' => array(),
-                                     'logdir' => SITE_LOG_ROOT )
+                                     'logdir' => SITE_LOG_ROOT,
+                                     'lang' => $lang )
 );
 
 

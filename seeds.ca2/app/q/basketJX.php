@@ -21,7 +21,8 @@ $oW = new SEEDApp_Worker( $kfdb, $sess, $lang );
 
 $oApp = new SEEDAppConsole( $config_KFDB['seeds1']
                             + array( 'sessPermsRequired' => array(),
-                                     'logdir' => SITE_LOG_ROOT )
+                                     'logdir' => SITE_LOG_ROOT,
+                                     'lang' => $lang )
 );
 
 $oSB = new MSDBasketCore( $oW, $oApp );    // rewrite MSDBasketCore so it extends MSDQ?
@@ -139,13 +140,12 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
             break;
 
         case "msdVarietyListFromSpecies":
-            //include_once( "_QServerCollection.php" );
-            //$o = new QServerCollection( $this, array( ) );
-            //$rQ = $o->Cmd( $cmd, $parms );
+            include_once( SEEDLIB."msd/msdcore.php" );
+            $oMSDCore = new MSDCore( $oApp, array() );
 
             $kSp = SEEDInput_Int('kSp');
 
-            if( ($dbSp = addslashes($oSB->GetKlugeTypeNameFromKey($kSp))) ) {
+            if( ($dbSp = addslashes($oMSDCore->GetKlugeSpeciesNameFromKey($kSp))) ) {
 
 //$oSB->oDB->kfdb->SetDebug(2);
                 $raP = $oSB->oDB->GetList( "PxPE2",
@@ -155,7 +155,7 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
                 foreach( $raP as $ra ) {
                     $kfrP = $oSB->oDB->GetKFR( 'P', $ra['_key'] );
 
-                    $sP = $oSB->DrawProduct( $kfrP, SEEDBasketProductHandler::DETAIL_SUMMARY )
+                    $sP = $oSB->DrawProduct( $kfrP, SEEDBasketProductHandler_Seeds::DETAIL_VIEW_NO_SPECIES )
                          .drawMSDOrderInfo( $oSB, $kfrP );
 
                     $raJX['sOut'] .= utf8_encode( $sP );
