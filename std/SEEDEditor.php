@@ -98,7 +98,7 @@ class SEEDEditor
                                         .'justifyleft,justifycenter,justifyright,justifyfull,|,'
                                         .'styleselect,formatselect,|,iespell,fullscreen,print,help,|,spellchecker,cleanup,preview,code",'
                                 .'theme_advanced_buttons2 : '
-                                        .'"bullist,numlist,|,outdent,indent,|,link,unlink,anchor,image,|,advhr,|,sub,sup,|,charmap,|,tablecontrols",'
+                                        .'"bullist,numlist,|,outdent,indent,blockquote,|,link,unlink,anchor,image,|,advhr,|,sub,sup,|,charmap,|,tablecontrols",'
                                 .'theme_advanced_buttons3 : '
                                         .'"undo,redo,|,cut,copy,paste,pastetext,pasteword,|,search,replace,|,'
                                         .'removeformat,visualaid,",'
@@ -106,6 +106,10 @@ class SEEDEditor
                                 .'theme_advanced_toolbar_align : "left",'
                                 .'theme_advanced_statusbar_location : "bottom",'
                                 .'theme_advanced_resizing : true,'
+                                // these prevent references to https://seeds.ca/d?foo being replaced by ../d?foo which looks great during edit but very bad in an email  
+                                .'relative_urls: false,'
+                                .'convert_urls: false,'
+                                .'remove_script_host : false,'
                                 ;
             } else if( $eControls == 'advanced' ) {
                 $sTinyControls = 'theme : "advanced",'
@@ -131,6 +135,10 @@ class SEEDEditor
                                 .'theme_advanced_toolbar_align : "left",'
                                 .'theme_advanced_statusbar_location : "bottom",'
                                 .'theme_advanced_resizing : true,'
+                                // these prevent references to https://seeds.ca/d?foo being replaced by ../d?foo which looks great during edit but very bad in an email  
+                                .'relative_urls: false,'
+                                .'convert_urls: false,'
+                                .'remove_script_host : false,'
                                 ;
                 //plugins : "safari,spellchecker,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,imagemanager,filemanager",
             } else {
