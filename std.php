@@ -15,13 +15,16 @@ define("STD_isLocal", (($_SERVER["SERVER_NAME"] == "localhost") ? true : false))
 if( !defined("STDROOT") )  define( "STDROOT", "../../" );
 
 if( !defined("SEEDROOT") ) {
-    // On typical prod systems the seeds directory is a sibling of std.php and the SITEROOT folder.
+    // On typical prod systems the seeds directory is a sibling of std.php and the SITEROOT folder (which is public_html).
     // On typical dev systems the seeds directory is a sibling of public_html which either contains
     //      std.php and the SITEROOT folder, or it contains another level with std.php and the SITEROOT folder
     if( !STD_isLocal ) {
         define( "SEEDROOT", STDROOT."seeds/" );
+        if( !defined("W_CORE") ) {
+            define("W_CORE", SITEROOT."wcore/");    // copy wcore as a child of public_html
+        }
     } else {
-        // look or seedroot
+        // look for seedroot
         if( file_exists( STDROOT."../seeds/seedcore" ) ) {
             define( SEEDROOT, STDROOT."../seeds/" );
         }
@@ -29,6 +32,15 @@ if( !defined("SEEDROOT") ) {
             define( SEEDROOT, STDROOT."../../seeds/" );
         } else {
             die( "std.php can't find seedroot" );
+        }
+        // look for wcore
+        if( !defined("W_CORE") ) {
+            if( !file_exists($f = STDROOT."../wcore/") &&       // wcore is copied as a sibling of seedsx (possibly shared by other sibling sites)
+                !file_exists($f = STDROOT."../seeds/wcore/") )  // seeds is installed as a sibling of seedsx
+            {
+                die( "std.php can't find wcore" );
+            }
+            define( "W_CORE", $f );
         }
     }
 }
@@ -89,10 +101,6 @@ define("SEEDLIB", SEEDROOT."seedlib/");
 define("SEEDAPP", SEEDROOT."seedapp/");
 define("STDIMG",  SITEROOT."std/img");  // must be within Apache DocRoot
 
-if( !defined("W_CORE") ) {
-    define("W_CORE", (STD_isLocal ? (STDROOT."../wcore/")       // copy wcore as a sibling of seedsx (because it is shared by other sibling sites)
-                                  : (SITEROOT."wcore/") ) );    // copy wcore as a child of public_html
-}
 if( !defined("W_ROOT") ) {
     define("W_ROOT", (STD_isLocal ? (STDROOT."w/") : (SITEROOT."w/") ) );
 }
