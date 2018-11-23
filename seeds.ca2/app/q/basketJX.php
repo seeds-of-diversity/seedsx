@@ -173,9 +173,15 @@ echo json_encode( $raJX );
 
 function drawMSDOrderInfo( SEEDBasketCore $oSB, KeyframeRecord $kfrP )
 {
+    global $oApp;
+
     include_once( SITEROOT."l/sl/msd.php" );
     $oW = new SEEDApp_Worker( $oSB->oDB->kfdb, $oSB->sess, "EN" );  // someday this will be in oSB
     $oMSD = new MSDView( $oW );
+
+    include_once( SEEDLIB."msd/msdcore.php" );
+    $oMSDCore = new MSDCore( $oApp );
+    $bRequestable = $oMSDCore->IsRequestableByUser( $kfrP );
 
     $kP = $kfrP->Key();
     $kM = $kfrP->Value('uid_seller');
@@ -183,7 +189,7 @@ function drawMSDOrderInfo( SEEDBasketCore $oSB, KeyframeRecord $kfrP )
     $raPE = $oSB->oDB->GetProdExtraList( $kP );                 // prodExtra
     $kfrG = $oMSD->kfrelG->GetRecordFromDB( "mbr_id='$kM'" );   // sed_growers
 
-    if( ($bIAmAMember = $oSB->sess->CanRead("sed")) ) {
+    if( $bRequestable ) {
         $who = SEEDCore_ArrayExpand( $raM, "[[firstname]] [[lastname]] in [[city]] [[province]]" );
     } else {
         $who = SEEDCore_ArrayExpand( $raM, "a Seeds of Diversity member in [[province]]" );
@@ -194,19 +200,19 @@ function drawMSDOrderInfo( SEEDBasketCore $oSB, KeyframeRecord $kfrP )
 
     $sPayment = $oMSD->drawPaymentMethod( $kfrG );
     $sMbrCode = $kfrG->Value('mbr_code');
-    $sButton1Attr = $bIAmAMember && $bEnableAddToBasket ? "onclick='AddToBasket_Name($kP);'"
-                                                        : "disabled='disabled'";
-    $sButton2Attr = $bIAmAMember ? "onclick='msdShowSeedsFromGrower($kM,\"$sMbrCode\");'"
-                                 : "disabled='disabled'";
+    $sButton1Attr = $bRequestable && $bEnableAddToBasket ? "onclick='AddToBasket_Name($kP);'"
+                                                           : "disabled='disabled'";
+    $sButton2Attr = $bRequestable ? "onclick='msdShowSeedsFromGrower($kM,\"$sMbrCode\");'"
+                                    : "disabled='disabled'";
 
     $s = "<div style='display:none' class='msd-order-info msd-order-info-$kP'>"
          //   ."<div>"
                 .SEEDCore_ArrayExpand( $raPE, "<p><b>[[species]] - [[variety]]</b></p>" )
                 ."<p>This is offered by $who for $".$kfrP->Value('item_price')." in $sPayment.</p>"
-                .($bIAmAMember ? "": "<p>Members can login to request these seeds.</p>")
+                .($bRequestable ? "": "<p>Members can login to request these seeds.</p>")
                 ."<p><button $sButton1Attr>Add this request to your basket</button>&nbsp;&nbsp;&nbsp;"
                    ."<button $sButton2Attr>Show other seeds from this grower</button></p>"
-                .($bIAmAMember ? drawGrower( $kfrG ) : "")
+                .($bRequestable ? drawGrower( $kfrG ) : "")
          //   ."</div>"
         ."</div>";
 
