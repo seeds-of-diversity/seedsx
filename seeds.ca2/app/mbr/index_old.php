@@ -6,10 +6,6 @@
  *
  * Show the listings in the Member Seed Directory
  */
-header( "Location: /app/seedexchange" );
-
-
-die( "Coming soon" );
 
 define( "SITEROOT", "../../" );
 include( SITEROOT."site.php" );
