@@ -1,0 +1,7 @@
+RewriteEngine on
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} (.+)/$
+RewriteRule ^ %1 [R=301,L]
+
+RewriteRule msd-edit   msd-edit.php    [L,QSA]
+RewriteRule msd        msd.php         [L,QSA]
