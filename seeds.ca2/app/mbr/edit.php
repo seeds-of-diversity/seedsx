@@ -289,7 +289,7 @@ $raConsoleParms = array(
 //                             array( 'href' => 'mbr_mailsend.php', 'label' => "Send 'READY'", 'target' => '_blank' ) ),
 
     'TABSETS' => array( "main" => array( 'tabs' => array( 'Growers' => array( 'label' => $oSed->S("Tab G") ),
-                                                          'Seeds'   => array( 'label' => $oSed->S("Tab S") ),
+//                                                          'Seeds'   => array( 'label' => $oSed->S("Tab S") ),
                                                           'Seeds1'  => array( 'label' => $oSed->S("Tab S") ) ) ) ),
     'lang' => $lang,
     'EnableC01Form' => true,

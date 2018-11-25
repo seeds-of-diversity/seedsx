@@ -172,57 +172,6 @@ class SEDMbrGrower extends SEDGrowerWorker
     }
 }
 
-class SEDMbrSeeds extends SEDSeedsWorker
-{
-    function __construct( &$oC, &$kfdb, &$sess )
-    {
-        parent::__construct( $oC, $kfdb, $sess );
-    }
-
-    function DrawSeedsControl()
-    {
-        return( "" );//SeedsControl" );
-    }
-
-    function DrawSeedsContent()
-    {
-        $s = "";
-
-        $oSed = $this->oC->oSed;
-
-// kluge: same as in DrawGrowerContent to prevent access by people who don't have a grower record yet
-        $kfrG = $oSed->kfrelG->GetRecordFromDB( "mbr_id='".$oSed->sess->GetUID()."'" );
-        if( !$kfrG ) {
-            return( "Please register for the Member Seed Directory" );
-        }
-
-        $oKForm = $this->NewSeedForm();    // form with our DSPreStore
-
-        $oKForm->Update();
-
-        $this->oC->oSed->oConsoleTable = new SedSeedConsole01Table( $oSed, $oKForm );
-
-
-        $raDrawParms = array( 'bEdit' => true,
-                              // if a skip or delete was just processed, scroll there instead of to an open edit form
-                              'kScrollHere' => $this->oC->oSed->kKlugeProcessedASkipOrDelete,
-                              'bAllowDelete' => false,
-                              'sLabelNew' => $oSed->S('Add New Seed') );
-
-        // Kluge: if a new row was added by oKForm->Update, point the SEEDFormUI at it.
-        //        There should be some integration somewhere that makes this happen, or least makes it easier.
-        if( $oKForm->GetKey() ) { //&& $oKForm->GetKey() != $oTable->Get_kCurr() ) {
-            $raDrawParms['kCurr'] = $oKForm->GetKey();
-        }
-
-        if( ($kfrcS = $oSed->kfrelS->CreateRecordCursor( "mbr_id='".$oSed->sess->GetUID()."'", array("sSortCol"=>"category,type,variety"))) ) {
-            $s .= $this->oC->oSed->oConsoleTable->DrawTableKFRCursor( $kfrcS, $raDrawParms );
-        }
-
-        return( $s );
-    }
-}
-
 
 class MyConsole extends Console01
 {
@@ -238,7 +187,6 @@ class MyConsole extends Console01
             case 'Growers':  $this->oW = new SEDMbrGrower( $this, $this->kfdb, $this->sess );  break;
             case 'Seeds':    $this->oSB = new SEEDBasketCore( $this->oApp->kfdb, $this->oApp->sess, $this->oApp,
                                                               SEEDBasketProducts_SoD::$raProductTypes, array('logdir'=>SITE_LOG_ROOT) );  break;
-            case 'Seeds1':   $this->oW = new SEDMbrSeeds( $this, $this->kfdb, $this->sess );  break;
         }
     }
 
@@ -257,7 +205,6 @@ should be okay to open any tab
         switch( $tabname ) {
             case 'Growers':  return( $this->oW->DrawGrowerControl() );
             case 'Seeds':    return( "" );
-            case 'Seeds1':   return( $this->oW->DrawSeedsControl() );
         }
         return( "" );
     }
@@ -269,7 +216,6 @@ should be okay to open any tab
             case 'Seeds':
                 $oMSDAppSeedEdit = new MSDAppSeedEdit( $this->oSB );
                 return( $oMSDAppSeedEdit->Draw() );
-            case 'Seeds1':   return( $this->oW->DrawSeedsContent() );
         }
         return( "" );
     }
@@ -280,7 +226,7 @@ should be okay to open any tab
 
 
 $oSed = new SEDMbr( $kfdb, $sess, $lang );
-$oSed->update();
+//$oSed->update();
 
 $raConsoleParms = array(
     'HEADER' => $oSed->S("MSD title"),
@@ -289,10 +235,8 @@ $raConsoleParms = array(
 //                             array( 'href' => 'mbr_mailsend.php', 'label' => "Send 'READY'", 'target' => '_blank' ) ),
 
     'TABSETS' => array( "main" => array( 'tabs' => array( 'Growers' => array( 'label' => $oSed->S("Tab G") ),
-                                                          'Seeds'   => array( 'label' => $oSed->S("Tab S") ),
-                                                          'Seeds1'  => array( 'label' => $oSed->S("Tab S") ) ) ) ),
+                                                          'Seeds'   => array( 'label' => $oSed->S("Tab S") ) ) ) ),
     'lang' => $lang,
-    'EnableC01Form' => true,
     'bBootstrap' => true,
     'script_files' => array( W_ROOT."std/js/SEEDStd.js", W_CORE."js/SEEDCore.js" ),
 );
