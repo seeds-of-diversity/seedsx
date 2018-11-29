@@ -152,22 +152,13 @@ class Mbr3UpDonors
         $this->raDonorFR    = $this->kfdb->QueryRowsRA("SELECT * FROM seeds2.mbr_contacts WHERE $dGlobal AND $sCondDonorFR order by cast(donation as decimal),lastname,firstname" );
         $this->raNonDonorEN = $this->kfdb->QueryRowsRA("SELECT * FROM seeds2.mbr_contacts WHERE $dGlobal AND $sCondNonDonorMemberEN order by lastname,firstname" );
         $this->raNonDonorFR = $this->kfdb->QueryRowsRA("SELECT * FROM seeds2.mbr_contacts WHERE $dGlobal AND $sCondNonDonorMemberFR order by lastname,firstname" );
+        $this->raDonor    = $this->lang=='EN' ? $this->raDonorEN    : $this->raDonorFR;
+        $this->raNonDonor = $this->lang=='EN' ? $this->raNonDonorEN : $this->raNonDonorFR;
 
-        foreach( array( 'donorEN'    => array( 'cond'=>[$dYes, $lEN],        'order'=>"cast(donation as decimal),lastname,firstname"),
-                        'donorFR'    => array( 'cond'=>[$dYes, $lFR],        'order'=>"cast(donation as decimal),lastname,firstname"),
-                        'donor100EN' => array( 'cond'=>[$dYes, $lEN, $d100], 'order'=>"cast(donation as decimal),lastname,firstname"),
-                        'donor100FR' => array( 'cond'=>[$dYes, $lFR, $d100], 'order'=>"cast(donation as decimal),lastname,firstname"),
-                        'donor99EN'  => array( 'cond'=>[$dYes, $lEN, $d99],  'order'=>"cast(donation as decimal),lastname,firstname"),
-                        'donor99FR'  => array( 'cond'=>[$dYes, $lFR, $d99],  'order'=>"cast(donation as decimal),lastname,firstname"),
-                        'nonDonorEN' => array( 'cond'=>[$dNo,  $lEN],        'order'=>"lastname,firstname"),
-                        'nonDonorFR' => array( 'cond'=>[$dNo,  $lFR],        'order'=>"lastname,firstname") )
-                 as $k => $ra )
+        foreach( $this->getGroups() as $k => $ra )
         {
             $this->raData[$k] = $this->kfdb->QueryRowsRA("SELECT * FROM seeds2.mbr_contacts WHERE $dGlobal AND ".implode(' AND ',$ra['cond'])." order by {$ra['order']}" );
         }
-
-        $this->raDonor    = $this->lang=='EN' ? $this->raDonorEN    : $this->raDonorFR;
-        $this->raNonDonor = $this->lang=='EN' ? $this->raNonDonorEN : $this->raNonDonorFR;
 
         foreach( $this->raDonor as &$ra ) {
             $ra['SEEDPrint:addressblock'] = utf8_encode(MbrDrawAddressBlockFromRA( $ra ));
@@ -187,6 +178,21 @@ class Mbr3UpDonors
             ."<p>English: ".(count($this->raDonorEN)+count($this->raNonDonorEN))."</p>"
             ."<p>French: ".(count($this->raDonorFR)+count($this->raNonDonorFR))."</p>";
 
+        $raGroups = $this->getGroups();
+        $s .= "<table border='1'>";
+        foreach( [ ['donorEN','donor100EN','donor99EN'],['donorFR','donor100FR','donor99FR'],['nonDonorEN','nonDonorFR'] ]  as $raG ) {
+            $s .= "<tr>";
+            foreach( $raG as $k ) {
+                $s .= "<td valign='top'><h3>{$raGroups[$k]['title']}</h3><p>".count($this->raData[$k])."</p>".$this->drawButton( $k )."</td>";
+            }
+            $s .= "</tr>";
+        }
+        $s .= "</table>";
+
+
+
+
+
         $s .= "<h3>Donors</h3>"
              ."<table border='1'>"
              .SEEDCore_ArrayExpandRows( $this->raDonor, "<tr><td>[[firstname]] [[lastname]] [[company]]</td><td>[[donation]]</td><td>[[donation_date]]</td></tr>" )
@@ -197,6 +203,43 @@ class Mbr3UpDonors
              ."</table>";
 
          return( $s );
+    }
+
+    private function getGroups()
+    {
+        $yStart = $this->year - 2;              // include donors from two years ago
+        $yEnd = $this->year;                    // until this year
+        $dRecentThreshold = "{$yEnd}-07-01";
+
+        $lEN = "lang<>'F'";
+        $lFR = "lang='F'";
+        $dYes = "donation_date is not null AND year(donation_date)>='$yStart'";    // recent donors - null check is required for the NOT(expr)
+        $dNo = "NOT($dYes) AND year(expires)>='$yStart'";                          // recent members who are not donors
+        $dGlobal = "_status='0' AND country='Canada' AND "
+                  ."address IS NOT NULL AND address<>'' AND "   // address is blanked out if mail comes back RTS
+                  ."NOT bNoDonorAppeals AND "
+                  ."NOT(donation_date is not null AND donation_date>'$dRecentThreshold')";
+
+        $d100 = "donation is not null AND donation >= 100";
+        $d99  = "(donation is null OR donation < 100)";
+
+        $raGroups = array(
+            'donorEN'    => array( 'title'=>'Donors English',       'cond'=>[$dYes, $lEN],        'order'=>"cast(donation as decimal),lastname,firstname"),
+            'donorFR'    => array( 'title'=>'Donors French',        'cond'=>[$dYes, $lFR],        'order'=>"cast(donation as decimal),lastname,firstname"),
+            'donor100EN' => array( 'title'=>'Donors English $100+', 'cond'=>[$dYes, $lEN, $d100], 'order'=>"cast(donation as decimal),lastname,firstname"),
+            'donor100FR' => array( 'title'=>'Donors French $100+',  'cond'=>[$dYes, $lFR, $d100], 'order'=>"cast(donation as decimal),lastname,firstname"),
+            'donor99EN'  => array( 'title'=>'Donors English $99-',  'cond'=>[$dYes, $lEN, $d99],  'order'=>"cast(donation as decimal),lastname,firstname"),
+            'donor99FR'  => array( 'title'=>'Donors French $99-',   'cond'=>[$dYes, $lFR, $d99],  'order'=>"cast(donation as decimal),lastname,firstname"),
+            'nonDonorEN' => array( 'title'=>'Non-donors English',   'cond'=>[$dNo,  $lEN],        'order'=>"lastname,firstname"),
+            'nonDonorFR' => array( 'title'=>'Non-donors French',    'cond'=>[$dNo,  $lFR],        'order'=>"lastname,firstname")
+        );
+
+        return( $raGroups );
+    }
+
+    private function drawButton( $k )
+    {
+        return( "<form method='get' target='mbr3pdf'><input type='hidden' name='mode' value='$k'/><input type='submit' value='PDF'/></form>" );
     }
 
     function GetTemplate()
