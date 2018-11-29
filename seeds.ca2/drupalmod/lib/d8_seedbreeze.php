@@ -6,6 +6,16 @@ include_once( SEEDCOMMON."siteStart.php" );
 include_once( SEEDCOMMON."siteTemplate.php" );
 
 
+/*
+in preprocess_html in *.theme, this is how to add a D7-like nodeid identifier so css can act on specific pages
+
+if ($node = \Drupal::request()->attributes->get('node')) {
+    $variables['attributes']['class'][] = 'page-node-' . $node->id();
+}
+
+ */
+
+
 function D8SeedBreeze_PreprocessPage( &$vars )
 /*********************************************
     Called by the template before the page is processed
