@@ -11,10 +11,11 @@ include_once( SEEDCORE."SEEDPrint.php" );
 
 list($kfdb,$sess,$lang) = SiteStartSessionAccount( array( 'MBR'=>'R' ) );
 
-$o3UpDonors = new Mbr3UpDonors( $kfdb );
-$o3UpMbr    = new Mbr3UpMemberRenewals( $kfdb );
-$oPrint     = new SEEDPrint3UpHTML();
+$yCurr = SEEDInput_Int('year') ?: date('Y');
 
+$o3UpDonors = new Mbr3UpDonors( $kfdb, $yCurr );
+$o3UpMbr    = new Mbr3UpMemberRenewals( $kfdb, $yCurr );
+$oPrint     = new SEEDPrint3UpHTML();
 
 $sMod = SEEDInput_Smart( 'module', array( 'donor', 'member') );
 $o3Up = $sMod == 'donor' ? $o3UpDonors : $o3UpMbr;
@@ -64,14 +65,18 @@ class Mbr3UpDonors
 
     private $kfdb;
     private $lang = "EN";
+    private $year;
 
     private $raDonorEN, $raDonorFR, $raNonDonorEN, $raNonDonorFR;
 
     private $raDonor, $raNonDonor;
 
-    function __construct( KeyFrameDB $kfdb )
+    private $raData = array();
+
+    function __construct( KeyFrameDB $kfdb, $year )
     {
         $this->kfdb = $kfdb;
+        $this->year = $year;
     }
 
     function GetMode()  { return( $this->mode ); }
@@ -80,6 +85,8 @@ class Mbr3UpDonors
     {
         switch( $this->mode ) {
             case '3UpDonors':     return( $this->raDonor );
+            case '3UpDonors100':  return( $this->raDonor100 );
+            case '3UpDonors99':   return( $this->raDonor99 );
             case '3UpNonDonors':  return( $this->raNonDonor );
         }
     }
@@ -89,7 +96,9 @@ class Mbr3UpDonors
         $s = "<form>"
             ."<select name='mode'>"
                 ."<option value='details'>details</option>"
-                ."<option value='3UpDonors'>Donor slips</option>"
+                ."<option value='3UpDonors'>Donor slips (all)</option>"
+                ."<option value='3UpDonors100'>Donor slips 100+</option>"
+                ."<option value='3UpDonors99'>Donor slips 99-</option>"
                 ."<option value='3UpNonDonors'>Non-donor slips</option>"
             ."</select>"
             ."<br/><br/>"
@@ -107,7 +116,7 @@ class Mbr3UpDonors
 
     function Load()
     {
-        $this->mode = SEEDInput_Smart( 'mode', array( '', 'details', '3UpDonors', '3UpNonDonors' ) );
+        $this->mode = SEEDInput_Smart( 'mode', array( '', 'details', '3UpDonors', '3UpDonors100', '3UpDonors99', '3UpNonDonors' ) );
         $this->lang = SEEDInput_Smart( 'lang', array( 'EN', 'FR') );
 
         if( $this->mode == 'details' ) {
@@ -118,24 +127,44 @@ class Mbr3UpDonors
 // so you can always say Thanks for your donation of `donation` in year(`donation_date`)" and mean the total for that year.
 // And you can limit the list to `donation_date` < (date() - some reasonable margin of the recent past)
 
+        $yStart = $this->year - 2;              // include donors from two years ago
+        $yEnd = $this->year;                    // until this year
+        $dRecentThreshold = "{$yEnd}-07-01";
+
         $lEN = "lang<>'F'";
         $lFR = "lang='F'";
-        $dYes = "donation_date is not null AND year(donation_date)>='2015'";    // recent donors - null check is required for the NOT(expr)
-        $dNo = "NOT($dYes) AND year(expires)>='2015'";                          // recent members who are not donors
+        $dYes = "donation_date is not null AND year(donation_date)>='$yStart'";    // recent donors - null check is required for the NOT(expr)
+        $dNo = "NOT($dYes) AND year(expires)>='$yStart'";                          // recent members who are not donors
         $dGlobal = "_status='0' AND country='Canada' AND "
                   ."address IS NOT NULL AND address<>'' AND "   // address is blanked out if mail comes back RTS
                   ."NOT bNoDonorAppeals AND "
-                  ."NOT(donation_date is not null AND donation_date>'2017-07-01')";
+                  ."NOT(donation_date is not null AND donation_date>'$dRecentThreshold')";
+
+        $d100 = "donation is not null AND donation >= 100";
+        $d99  = "(donation is null OR donation < 100)";
 
         $sCondDonorEN = "$dYes AND $lEN";
         $sCondDonorFR = "$dYes AND $lFR";
         $sCondNonDonorMemberEN = "$dNo AND $lEN";
         $sCondNonDonorMemberFR = "$dNo AND $lFR";
 
-        $this->raDonorEN    = $this->kfdb->QueryRowsRA("SELECT * FROM seeds2.mbr_contacts WHERE $dGlobal AND $sCondDonorEN order by cast( donation as decimal),lastname,firstname" );
+        $this->raDonorEN    = $this->kfdb->QueryRowsRA("SELECT * FROM seeds2.mbr_contacts WHERE $dGlobal AND $sCondDonorEN order by cast(donation as decimal),lastname,firstname" );
         $this->raDonorFR    = $this->kfdb->QueryRowsRA("SELECT * FROM seeds2.mbr_contacts WHERE $dGlobal AND $sCondDonorFR order by cast(donation as decimal),lastname,firstname" );
         $this->raNonDonorEN = $this->kfdb->QueryRowsRA("SELECT * FROM seeds2.mbr_contacts WHERE $dGlobal AND $sCondNonDonorMemberEN order by lastname,firstname" );
         $this->raNonDonorFR = $this->kfdb->QueryRowsRA("SELECT * FROM seeds2.mbr_contacts WHERE $dGlobal AND $sCondNonDonorMemberFR order by lastname,firstname" );
+
+        foreach( array( 'donorEN'    => array( 'cond'=>[$dYes, $lEN],        'order'=>"cast(donation as decimal),lastname,firstname"),
+                        'donorFR'    => array( 'cond'=>[$dYes, $lFR],        'order'=>"cast(donation as decimal),lastname,firstname"),
+                        'donor100EN' => array( 'cond'=>[$dYes, $lEN, $d100], 'order'=>"cast(donation as decimal),lastname,firstname"),
+                        'donor100FR' => array( 'cond'=>[$dYes, $lFR, $d100], 'order'=>"cast(donation as decimal),lastname,firstname"),
+                        'donor99EN'  => array( 'cond'=>[$dYes, $lEN, $d99],  'order'=>"cast(donation as decimal),lastname,firstname"),
+                        'donor99FR'  => array( 'cond'=>[$dYes, $lFR, $d99],  'order'=>"cast(donation as decimal),lastname,firstname"),
+                        'nonDonorEN' => array( 'cond'=>[$dNo,  $lEN],        'order'=>"lastname,firstname"),
+                        'nonDonorFR' => array( 'cond'=>[$dNo,  $lFR],        'order'=>"lastname,firstname") )
+                 as $k => $ra )
+        {
+            $this->raData[$k] = $this->kfdb->QueryRowsRA("SELECT * FROM seeds2.mbr_contacts WHERE $dGlobal AND ".implode(' AND ',$ra['cond'])." order by {$ra['order']}" );
+        }
 
         $this->raDonor    = $this->lang=='EN' ? $this->raDonorEN    : $this->raDonorFR;
         $this->raNonDonor = $this->lang=='EN' ? $this->raNonDonorEN : $this->raNonDonorFR;
@@ -150,10 +179,10 @@ class Mbr3UpDonors
 
     function ShowDetails()
     {
-        $s = "<p>Donors English: ".count($this->raDonorEN)."</p>"
-            ."<p>Donors French: ".count($this->raDonorFR)."</p>"
-            ."<p>Non-donor Members English: ".count($this->raNonDonorEN)."</p>"
-            ."<p>Non-donor Members French: ".count($this->raNonDonorFR)."</p>"
+        $s = "<p>Donors English: ".count($this->raDonorEN)." / ".count($this->raData['donorEN'])." - $100/$99 = ".count($this->raData['donor100EN'])."/".count($this->raData['donor99EN'])."</p>"
+            ."<p>Donors French: ".count($this->raDonorFR)." / ".count($this->raData['donorFR'])." - $100/$99 = ".count($this->raData['donor100FR'])."/".count($this->raData['donor99FR'])."</p>"
+            ."<p>Non-donor Members English: ".count($this->raNonDonorEN)." / ".count($this->raData['nonDonorEN'])."</p>"
+            ."<p>Non-donor Members French: ".count($this->raNonDonorFR)." / ".count($this->raData['nonDonorFR'])."</p>"
             ."<p>&nbsp</p>"
             ."<p>English: ".(count($this->raDonorEN)+count($this->raNonDonorEN))."</p>"
             ."<p>French: ".(count($this->raDonorFR)+count($this->raNonDonorFR))."</p>";
@@ -193,7 +222,7 @@ $sEmail       = $lang=='EN' ? "Email": "Courriel";
 $sPhone       = $lang=='EN' ? "Phone": "T&eacute;l&eacute;phone";
 $sMember      = $lang=='EN' ? "Member" : "Membre";
 
-$sFooter      = $lang=='EN' ? "Seeds of Diversity is a registered charitable organization. We provide receipts for donations of $20 and over. Our charitable registration number is 89650 8150 RR0001."
+$sFooter      = $lang=='EN' ? "Seeds of Diversity is a registered charitable organization. We provide receipts for donations of $20 and over. Our charitable registration number is 89650 8157 RR0001."
                             : "Les Semences du patrimoine sont un organisme de bienfaisance enregistr&eacute;. Nous faisons parvenir un re&ccedil;u &agrave; fins d'imp&ocirc;t pour tous les dons de 20 $ et plus. Notre num&eacute;ro d'enregistrement est 89650 8157 RR0001";
 
 //<img style='float:right;width:0.75in' src='http://seeds.ca/i/img/logo/logoA_v-en-bw-300x.png'/>
@@ -231,12 +260,14 @@ class Mbr3UpMemberRenewals
     private $mode = "";
 
     private $kfdb;
+    private $year;
 
     private $raMbr, $raMbrEN, $raMbrFR;
 
-    function __construct( KeyFrameDB $kfdb )
+    function __construct( KeyFrameDB $kfdb, $year )
     {
         $this->kfdb = $kfdb;
+        $this->year = $year;
     }
 
     function GetMode()  { return( $this->mode ); }
@@ -346,7 +377,7 @@ $sEmail       = $lang=='EN' ? "Email": "Courriel";
 $sPhone       = $lang=='EN' ? "Phone": "T&eacute;l&eacute;phone";
 $sMember      = $lang=='EN' ? "Member" : "Membre";
 
-$sFooter      = $lang=='EN' ? "Seeds of Diversity is a registered charitable organization. We provide receipts for donations of $20 and over. Our charitable registration number is 89650 8150 RR0001."
+$sFooter      = $lang=='EN' ? "Seeds of Diversity is a registered charitable organization. We provide receipts for donations of $20 and over. Our charitable registration number is 89650 8157 RR0001."
                             : "Les Semences du patrimoine sont un organisme de bienfaisance enregistr&eacute;. Nous faisons parvenir un re&ccedil;u &agrave; fins d'imp&ocirc;t pour tous les dons de 20 $ et plus. Notre num&eacute;ro d'enregistrement est 89650 8157 RR0001";
 
 //<img style='float:right;width:0.75in' src='http://seeds.ca/i/img/logo/logoA_v-en-bw-300x.png'/>
