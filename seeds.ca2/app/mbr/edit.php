@@ -16,6 +16,7 @@
 //    I want my seed list to be exactly the same as last year.
 // the problem is with people who logged in but didn't change anything - are they thinking, or do they want the list to remain the same?
 
+header("Location: https://seeds.ca/app/mbr/msd-edit");
 
 define( "SITEROOT", "../../" );
 include( SITEROOT."site.php" );
