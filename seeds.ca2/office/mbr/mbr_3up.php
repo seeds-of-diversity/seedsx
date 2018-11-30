@@ -252,8 +252,10 @@ $sFooter      = $lang=='EN' ? "Seeds of Diversity is a registered charitable org
                             : "Les Semences du patrimoine sont un organisme de bienfaisance enregistr&eacute;. Nous faisons parvenir un re&ccedil;u &agrave; fins d'imp&ocirc;t pour tous les dons de 20 $ et plus. Notre num&eacute;ro d'enregistrement est 89650 8157 RR0001";
 
 //<img style='float:right;width:0.75in' src='http://seeds.ca/i/img/logo/logoA_v-en-bw-300x.png'/>
+
+// 2018-11 changed right: from 0.125in to 0.175in because some printers seem to have 4mm unprintable
 $s = "
-<img style='position:absolute;top:0.125in;right:0.125in;width:0.75in' src='http://seeds.ca/i/img/logo/logoA_v-".($lang=='EN' ? "en":"fr")."-bw-300x.png'/>
+<img style='position:absolute;top:0.125in;right:0.175in;width:0.75in' src='http://seeds.ca/i/img/logo/logoA_v-".($lang=='EN' ? "en":"fr")."-bw-300x.png'/>
 <div class='s_title'>$sTitle</div>
 <div class='s_form'>
   <table>
@@ -261,7 +263,7 @@ $s = "
   <tr><td>&#9744; $sWantMonthly</td><td>&#9744; $10</td><td>&#9744; $20</td><td colspan='2'>&#9744; $sOther <span style='text-decoration: underline; white-space: pre;'>           </span></td></tr>
   </table>
 </div>
-<div class='s_right' style='position:absolute;right:0.125in;top:1.125in;width:4.25in'>
+<div class='s_right' style='position:absolute;right:0.175in;top:1.125in;width:4.25in'>
   $sRight
   <div style='border:1px solid #aaa;background-color:#f4f4f4;margin-left:0.75in;padding:0.125in'>
     <div>$sAddrChanged</div>
