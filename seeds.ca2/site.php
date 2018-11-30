@@ -38,9 +38,21 @@ function Site_path_self()
  */
 {
     if( function_exists('base_path') && ($path = @base_path()) ) {
-        if( substr( $path, -5 ) == 'swww/' )  $path = substr( $path, 0, -5 );
+        if( function_exists('drupal_get_path_alias') ) {
+            // drupal 7
+            if( substr( $path, -5 ) == 'swww/' )  $path = substr( $path, 0, -5 );
 
-        $path .= drupal_get_path_alias();
+            $path .= drupal_get_path_alias();
+        } else {
+//remove this when we rebase to seeds.ca/
+              // $path has a trailing-/ and page has a leading-/
+//            if( substr( $path, -9 ) == '/sw8/web/' )  $path = substr( $path, 0, -9 );
+if( substr( $path, -1 ) == '/' )  $path = substr( $path, 0, -1 );
+
+            $current_path = \Drupal::service('path.current')->getPath();
+            $page = \Drupal::service('path.alias_manager')->getAliasByPath($current_path);            
+            $path = $path.$page;
+        }
     } else {
 // this is unsafe because page requests can look like seeds.ca/foo/index.php/"><script>alert(1);</script><span class="
 // also "" is not always desired because it propagates GET parms
