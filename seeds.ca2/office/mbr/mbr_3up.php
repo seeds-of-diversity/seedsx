@@ -24,22 +24,16 @@ $o3Up->Load();
 
 $mode = $o3Up->GetMode();
 
-if( $mode == '' || $mode == 'details' ) {
+$sHead = $sBody = "";
+if( $mode == '' ) {
     /* Show the options form
      */
-    $s = "<table><tr>"
+    $sBody = "<table><tr>"
             ."<td valign='top'><h2>Donations</h2>".$o3UpDonors->OptionsForm()."</td>"
             ."<td valign='top'><h2>Membership Renewals</h2>".$o3UpMbr->OptionsForm()."</td>"
-            ."</tr></table>";
-
-    if( $mode == 'details' ) {
-        $s .= $o3Up->ShowDetails();
-    }
-
-    echo $s;
-
-    exit;
-}
+            ."</tr></table>"
+            .$o3Up->ShowDetails();
+} else {
 
 /*
 <div class='s_credit' style='position:absolute;right:0;top:1.25in;width:3.5in'>
@@ -51,13 +45,17 @@ if( $mode == '' || $mode == 'details' ) {
 </div>
  */
 
-$sTmpl = $o3Up->GetTemplate();
-$raRows = $o3Up->GetRows();
-$oPrint->Do3Up( $raRows, $sTmpl );
+    $sTmpl = $o3Up->GetTemplate();
+    $raRows = $o3Up->GetRows();
+    $oPrint->Do3Up( $raRows, $sTmpl );
 
-$raConsoleParms = array( 'bBootstrap'=>false );   // we want to control the CSS completely, thanks anyway Bootstrap
+    $sHead = $oPrint->GetHead();
+    $sBody = $oPrint->GetBody();
+}
 
-echo Console01Static::HTMLPage( $oPrint->GetBody(), $oPrint->GetHead(), "EN", $raConsoleParms );
+
+echo Console01Static::HTMLPage( $sBody, $sHead, "EN", array( 'bBootstrap' => false,    // we want to control the CSS completely, thanks anyway Bootstrap
+                                                             'sCharset'=>'iso8859' ) );
 
 class Mbr3UpDonors
 {
@@ -83,32 +81,14 @@ class Mbr3UpDonors
 
     function GetRows()
     {
-        switch( $this->mode ) {
-            case '3UpDonors':     return( $this->raDonor );
-            case '3UpDonors100':  return( $this->raDonor100 );
-            case '3UpDonors99':   return( $this->raDonor99 );
-            case '3UpNonDonors':  return( $this->raNonDonor );
-        }
+        return( $this->mode && isset($this->raData[$this->mode]) ? $this->raData[$this->mode] : array() );
     }
 
     function OptionsForm()
     {
         $s = "<form>"
-            ."<select name='mode'>"
-                ."<option value='details'>details</option>"
-                ."<option value='3UpDonors'>Donor slips (all)</option>"
-                ."<option value='3UpDonors100'>Donor slips 100+</option>"
-                ."<option value='3UpDonors99'>Donor slips 99-</option>"
-                ."<option value='3UpNonDonors'>Non-donor slips</option>"
-            ."</select>"
-            ."<br/><br/>"
-            ."<select name='lang'>"
-                ."<option value='EN'>English</option>"
-                ."<option value='FR'>French</option>"
-            ."</select>"
-            ."<br/><br/>"
             ."<input type='hidden' name='module' value='donor'/>"
-            ."<input type='submit'/>"
+            ."<input type='submit' value='Show Donors'/>"
             ."</form>";
 
         return( $s );
@@ -116,11 +96,11 @@ class Mbr3UpDonors
 
     function Load()
     {
-        $this->mode = SEEDInput_Smart( 'mode', array( '', 'details', '3UpDonors', '3UpDonors100', '3UpDonors99', '3UpNonDonors' ) );
-        $this->lang = SEEDInput_Smart( 'lang', array( 'EN', 'FR') );
+        $this->mode = SEEDInput_Smart( 'mode', array( '', 'donorEN','donor100EN','donor99EN','donorFR','donor100FR','donor99FR','nonDonorEN','nonDonorFR' ) );
+        $this->lang = substr( $this->mode, -2 ) ?: 'EN';
 
         if( $this->mode == 'details' ) {
-            $this->kfdb->SetDebug(2);
+            //$this->kfdb->SetDebug(2);
         }
 
 // donation_date is the most recent, `donation` is the total donations for year(donation_date)
@@ -158,13 +138,11 @@ class Mbr3UpDonors
         foreach( $this->getGroups() as $k => $ra )
         {
             $this->raData[$k] = $this->kfdb->QueryRowsRA("SELECT * FROM seeds2.mbr_contacts WHERE $dGlobal AND ".implode(' AND ',$ra['cond'])." order by {$ra['order']}" );
-        }
-
-        foreach( $this->raDonor as &$ra ) {
-            $ra['SEEDPrint:addressblock'] = utf8_encode(MbrDrawAddressBlockFromRA( $ra ));
-        }
-        foreach( $this->raNonDonor as &$ra ) {
-            $ra['SEEDPrint:addressblock'] = utf8_encode(MbrDrawAddressBlockFromRA( $ra ));
+            // now for each row in the result, insert the address block in the row
+            $ra1 = array();
+            foreach( $this->raData[$k] as &$ra1 ) {
+                $ra1['SEEDPrint:addressblock'] = utf8_encode(MbrDrawAddressBlockFromRA( $ra1 ));
+            }
         }
     }
 
@@ -183,7 +161,11 @@ class Mbr3UpDonors
         foreach( [ ['donorEN','donor100EN','donor99EN'],['donorFR','donor100FR','donor99FR'],['nonDonorEN','nonDonorFR'] ]  as $raG ) {
             $s .= "<tr>";
             foreach( $raG as $k ) {
-                $s .= "<td valign='top'><h3>{$raGroups[$k]['title']}</h3><p>".count($this->raData[$k])."</p>".$this->drawButton( $k )."</td>";
+                $s .= "<td valign='top'><h3>{$raGroups[$k]['title']}</h3>"
+                     ."<p>".count($this->raData[$k])."</p>"
+                     .$this->drawButton( $k )
+                     ."<p style='font-size:9pt'>".implode( "<br/>", $raGroups[$k]['cond'])."</p>"
+                     ."</td>";
             }
             $s .= "</tr>";
         }
@@ -191,15 +173,16 @@ class Mbr3UpDonors
 
 
 
+        $sLine = "<tr><td>[[firstname]] [[lastname]] [[company]]</td><td>[[donation]]</td><td>[[donation_date]]</td></tr>";
 
-
-        $s .= "<h3>Donors</h3>"
-             ."<table border='1'>"
-             .SEEDCore_ArrayExpandRows( $this->raDonor, "<tr><td>[[firstname]] [[lastname]] [[company]]</td><td>[[donation]]</td><td>[[donation_date]]</td></tr>" )
-             ."</table>"
-             ."<h3>Non-Donors</h3>"
-             ."<table border='1'>"
-             .SEEDCore_ArrayExpandRows( $this->raNonDonor, "<tr><td>[[firstname]] [[lastname]] [[company]]</td><td>[[donation]]</td><td>[[donation_date]]</td></tr>" )
+        $s .= "<h3>Donors English</h3>"
+             ."<table border='1'>".SEEDCore_ArrayExpandRows( $this->raData['donorEN'], $sLine )."</table>"
+             ."<h3>Donors French</h3>"
+             ."<table border='1'>".SEEDCore_ArrayExpandRows( $this->raData['donorFR'], $sLine )."</table>"
+             ."<h3>Non-Donors English</h3>"
+             ."<table border='1'>".SEEDCore_ArrayExpandRows( $this->raData['nonDonorEN'], $sLine )."</table>"
+             ."<h3>Non-Donors French</h3>"
+             ."<table border='1'>".SEEDCore_ArrayExpandRows( $this->raData['nonDonorFR'], $sLine )."</table>"
              ."</table>";
 
          return( $s );
@@ -224,12 +207,12 @@ class Mbr3UpDonors
         $d99  = "(donation is null OR donation < 100)";
 
         $raGroups = array(
-            'donorEN'    => array( 'title'=>'Donors English',       'cond'=>[$dYes, $lEN],        'order'=>"cast(donation as decimal),lastname,firstname"),
-            'donorFR'    => array( 'title'=>'Donors French',        'cond'=>[$dYes, $lFR],        'order'=>"cast(donation as decimal),lastname,firstname"),
-            'donor100EN' => array( 'title'=>'Donors English $100+', 'cond'=>[$dYes, $lEN, $d100], 'order'=>"cast(donation as decimal),lastname,firstname"),
-            'donor100FR' => array( 'title'=>'Donors French $100+',  'cond'=>[$dYes, $lFR, $d100], 'order'=>"cast(donation as decimal),lastname,firstname"),
-            'donor99EN'  => array( 'title'=>'Donors English $99-',  'cond'=>[$dYes, $lEN, $d99],  'order'=>"cast(donation as decimal),lastname,firstname"),
-            'donor99FR'  => array( 'title'=>'Donors French $99-',   'cond'=>[$dYes, $lFR, $d99],  'order'=>"cast(donation as decimal),lastname,firstname"),
+            'donorEN'    => array( 'title'=>'Donors English',       'cond'=>[$dYes, $lEN],        'order'=>"cast(donation as decimal) desc,lastname,firstname"),
+            'donorFR'    => array( 'title'=>'Donors French',        'cond'=>[$dYes, $lFR],        'order'=>"cast(donation as decimal) desc,lastname,firstname"),
+            'donor100EN' => array( 'title'=>'Donors English $100+', 'cond'=>[$dYes, $lEN, $d100], 'order'=>"cast(donation as decimal) desc,lastname,firstname"),
+            'donor100FR' => array( 'title'=>'Donors French $100+',  'cond'=>[$dYes, $lFR, $d100], 'order'=>"cast(donation as decimal) desc,lastname,firstname"),
+            'donor99EN'  => array( 'title'=>'Donors English $99-',  'cond'=>[$dYes, $lEN, $d99],  'order'=>"cast(donation as decimal) desc,lastname,firstname"),
+            'donor99FR'  => array( 'title'=>'Donors French $99-',   'cond'=>[$dYes, $lFR, $d99],  'order'=>"cast(donation as decimal) desc,lastname,firstname"),
             'nonDonorEN' => array( 'title'=>'Non-donors English',   'cond'=>[$dNo,  $lEN],        'order'=>"lastname,firstname"),
             'nonDonorFR' => array( 'title'=>'Non-donors French',    'cond'=>[$dNo,  $lFR],        'order'=>"lastname,firstname")
         );
@@ -253,10 +236,10 @@ $sWantMonthly = $lang=='EN' ? "I want to make a monthly donation of" : "Je d&eac
 $sOther       = $lang=='EN' ? "Other" : "Autre";
 
 $sRight       = $lang=='EN' ? "<p>Your charitable donation this year will help save hundreds of rare plant varieties next year.
-  Seeds of Diversity will use your donation to find seeds that need rescuing, and organize seed savers across the country to grow them in 2018.</p>
+  Seeds of Diversity will use your donation to find seeds that need rescuing, and organize seed savers across the country to grow them in 2019.</p>
   <p>You can also make your donation online at <b><u>www.seeds.ca/donate</u></b>.</p>"
                             : "<p>Votre don de charit&eacute; de cette ann&eacute;e aidera &agrave; sauver des centaines de vari&eacute;t&eacute;s rares l'an prochain.
-  Semences du patrimoine utilisera votre don pour trouver des semences qui ont besoin d'&ecirc;tre secourues, et pour trouver des conservateurs de semences &agrave; travers le Canada afin de les cultiver en 2018.</p>
+  Semences du patrimoine utilisera votre don pour trouver des semences qui ont besoin d'&ecirc;tre secourues, et pour trouver des conservateurs de semences &agrave; travers le Canada afin de les cultiver en 2019.</p>
   <p>Vous pouvez &eacute;galement faire un don en ligne au <b><u>www.semences.ca/don</u></b>.</p>";
 
 $sAddrChanged = $lang=='EN' ? "Has your address or contact information changed?"
