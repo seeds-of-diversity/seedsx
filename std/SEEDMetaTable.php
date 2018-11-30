@@ -1,5 +1,7 @@
 <?php
 
+include( SEEDCORE."SEEDMetaTable.php" );    // some of this file has been moved here - move the rest
+
 /* SEEDMetaTable
  *
  * Copyright (c) 2011-2015 Seeds of Diversity Canada
@@ -20,31 +22,6 @@
  *     3) SEEDMetaTable_StringBucket : a place to store strings, keyed by (namespace,key)
  *            sometimes you just want a place to throw random stuff
  */
-
-
-/****************************************************************************
- * StringBucket
- */
-define("SEEDMETATABLE_DB_TABLE_SEEDMETATABLE_STRINGBUCKET",
-"
-CREATE TABLE SEEDMetaTable_StringBucket (
-    # This is a place to throw random stuff, keyed by (ns,k)
-
-        _key        INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-        _created    DATETIME,
-        _created_by INTEGER,
-        _updated    DATETIME,
-        _updated_by INTEGER,
-        _status     INTEGER DEFAULT 0,
-
-    ns                      VARCHAR(200) NOT NULL,    -- namespace
-    k                       VARCHAR(200) NOT NULL,    -- key
-    v                       TEXT NOT NULL,            -- value
-
-    INDEX (ns(20),k(20))
-);
-"
-);
 
 /****************************************************************************
  * TablesLite
@@ -187,49 +164,6 @@ CREATE TABLE SEEDMetaTable_Fields (
 );
 "
 );
-
-
-class SEEDMetaTable_StringBucket
-{
-    var $kfdb;
-    var $uid;
-
-    function __construct( KeyFrameDB $kfdb, $uid = 0 )
-    {
-        $this->kfdb = $kfdb;
-        $this->uid = $uid;
-    }
-
-    function GetStr( $ns, $k )
-    {
-        $ns = addslashes($ns);
-        $k = addslashes($k);
-        $v = $this->kfdb->Query1("SELECT v FROM SEEDMetaTable_StringBucket WHERE ns='$ns' AND k='$k'");
-        return( $v );
-    }
-
-    function PutStr( $ns, $k, $v )
-    {
-        $ns = addslashes($ns);
-        $k = addslashes($k);
-        $v = addslashes($v);
-        $kBucket = $this->kfdb->Query1("SELECT _key FROM SEEDMetaTable_StringBucket WHERE ns='$ns' AND k='$k'");
-        if( $kBucket ) {
-            $this->kfdb->Execute("UPDATE SEEDMetaTable_StringBucket SET v='$v',_updated=NOW(),_updated_by='{$this->uid}' WHERE ns='$ns' AND k='$k'");
-        } else {
-            $this->kfdb->Execute("INSERT INTO SEEDMetaTable_StringBucket (_created,_updated,_created_by,_updated_by,ns,k,v) "
-                                ."VALUES (NOW(),NOW(),{$this->uid},{$this->uid},'$ns','$k','$v')" );
-        }
-    }
-
-    function DeleteStr( $ns, $k )
-    {
-        $ns = addslashes($ns);
-        $k = addslashes($k);
-        $this->kfdb->Execute("DELETE FROM SEEDMetaTable_StringBucket WHERE ns='$ns' AND k='$k'");
-    }
-}
-
 
 class SEEDMetaTable_TablesLite
 /*****************************
@@ -464,7 +398,7 @@ function SEEDMetaTable_Setup( $oSetup, &$sReport, $bCreate = false )
  */
 {
     $sReport = "";
-    return( $oSetup->SetupTable( "SEEDMetaTable_StringBucket",    SEEDMETATABLE_DB_TABLE_SEEDMETATABLE_STRINGBUCKET,    $bCreate, $sReport ) &&
+    return( $oSetup->SetupTable( "SEEDMetaTable_StringBucket",    SEEDMetaTable_StringBucket::SqlCreate,    $bCreate, $sReport ) &&
             $oSetup->SetupTable( "SEEDMetaTable_TablesLite",      SEEDMETATABLE_DB_TABLE_SEEDMETATABLE_TABLESLITE,      $bCreate, $sReport ) &&
             $oSetup->SetupTable( "SEEDMetaTable_TablesLite_Rows", SEEDMETATABLE_DB_TABLE_SEEDMETATABLE_TABLESLITE_ROWS, $bCreate, $sReport ) );
 }
