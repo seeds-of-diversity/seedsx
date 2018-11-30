@@ -140,8 +140,8 @@ class Mbr3UpDonors
             $this->raData[$k] = $this->kfdb->QueryRowsRA("SELECT * FROM seeds2.mbr_contacts WHERE $dGlobal AND ".implode(' AND ',$ra['cond'])." order by {$ra['order']}" );
             // now for each row in the result, insert the address block in the row
             $ra1 = array();
-            foreach( $this->raData[$k] as &$ra1 ) {
-                $ra1['SEEDPrint:addressblock'] = utf8_encode(MbrDrawAddressBlockFromRA( $ra1 ));
+            foreach( $this->raData[$k] as $k1=>$ra1 ) {
+                $this->raData[$k][$k1]['SEEDPrint:addressblock'] = utf8_encode(MbrDrawAddressBlockFromRA( $ra1 ));
             }
         }
     }
