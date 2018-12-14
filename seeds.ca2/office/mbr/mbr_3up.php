@@ -55,7 +55,7 @@ if( $mode == '' ) {
 
 
 echo Console01Static::HTMLPage( $sBody, $sHead, "EN", array( 'bBootstrap' => false,    // we want to control the CSS completely, thanks anyway Bootstrap
-                                                             'sCharset'=>'iso8859' ) );
+                                                             'sCharset'=>'utf8' ) );
 
 class Mbr3UpDonors
 {
@@ -249,7 +249,7 @@ $sPhone       = $lang=='EN' ? "Phone": "T&eacute;l&eacute;phone";
 $sMember      = $lang=='EN' ? "Member" : "Membre";
 
 $sFooter      = $lang=='EN' ? "Seeds of Diversity is a registered charitable organization. We provide receipts for donations of $20 and over. Our charitable registration number is 89650 8157 RR0001."
-                            : "Les Semences du patrimoine sont un organisme de bienfaisance enregistr&eacute;. Nous faisons parvenir un re&ccedil;u &agrave; fins d'imp&ocirc;t pour tous les dons de 20 $ et plus. Notre num&eacute;ro d'enregistrement est 89650 8157 RR0001";
+                            : "Les Semences du patrimoine sont un organisme de bienfaisance enregistr&eacute;. Nous faisons parvenir un re&ccedil;u &agrave; fins d'imp&ocirc;t pour tous les dons de 20 $ et plus.<br/>Notre num&eacute;ro d'enregistrement est 89650 8157 RR0001";
 
 //<img style='float:right;width:0.75in' src='http://seeds.ca/i/img/logo/logoA_v-en-bw-300x.png'/>
 
@@ -406,7 +406,7 @@ $sPhone       = $lang=='EN' ? "Phone": "T&eacute;l&eacute;phone";
 $sMember      = $lang=='EN' ? "Member" : "Membre";
 
 $sFooter      = $lang=='EN' ? "Seeds of Diversity is a registered charitable organization. We provide receipts for donations of $20 and over. Our charitable registration number is 89650 8157 RR0001."
-                            : "Les Semences du patrimoine sont un organisme de bienfaisance enregistr&eacute;. Nous faisons parvenir un re&ccedil;u &agrave; fins d'imp&ocirc;t pour tous les dons de 20 $ et plus. Notre num&eacute;ro d'enregistrement est 89650 8157 RR0001";
+                            : "Les Semences du patrimoine sont un organisme de bienfaisance enregistr&eacute;. Nous faisons parvenir un re&ccedil;u &agrave; fins d'imp&ocirc;t pour tous les dons de 20 $ et plus.<br/>Notre num&eacute;ro d'enregistrement est 89650 8157 RR0001";
 
 //<img style='float:right;width:0.75in' src='http://seeds.ca/i/img/logo/logoA_v-en-bw-300x.png'/>
 $sTmpl = $sLocalStyle."
