@@ -4,15 +4,15 @@ if( !defined("SITEROOT") )  define("SITEROOT", "../../");
 include_once( SITEROOT."site.php" );
 
 $s = "
-<div id='consolePage0'>
-<form onsubmit='oCP.PageSubmit();return false;'>
+<div id='consolePageStart' class='consolePage'>
+<form>
 <p>Question 1: What's your name?</p>
 <input type='text' class='cpvar_name'/>
 <input type='submit' value='Next'/>
 </form></div>
 
-<div id='consolePage1' style='display:none'>
-<form onsubmit='oCP.PageSubmit();return false;'>
+<div id='consolePage1' class='consolePage' style='display:none'>
+<form>
 <div>Your name is <span class='cpvar_name'></span></div>
 <p>Question 2: Who's your cat?</p>
 <input type='text' class='cpvar_cat'/>
@@ -20,8 +20,8 @@ $s = "
 </form>
 </div>
 
-<div id='consolePage2' style='display:none'>
-<form onsubmit='oCP.PageSubmit();return false;'>
+<div id='consolePage2' class='consolePage' style='display:none'>
+<form>
 <p>Confirm</p>
 <div>Your name is <span class='cpvar_name'></span></div>
 <div>Your cat is <span class='cpvar_cat'></span></div>
@@ -36,45 +36,23 @@ $s .= "
 <script>
 var config = {
         pages: {
-            0: {
+            Start: {
+                 model: 'LoadStore',
                  fnPre: function() {},
                  fnPost: function() {
-                     let name = oCP.FormVal( 0, 'name' );
-                     let p = 0;
-
-                     if( name != '' ) {
-                         //oCP.SetVar('name',name);
-                         oCP.StoreVars(0);
-                         p = 1;
-                     }
-
-                     return( p );
+                     return( oCP.FormVal('name') != '' ? 1 : '' );
                  }
                },
             1: {
-                 fnPre: function() {
-                     oCP.LoadVars(1);
-                     //$('#consolePage1 .cpvar_name').html(oCP.GetVar('name'));
-                 },
+                 model: 'LoadStore',
+                 fnPre: function() {},
                  fnPost: function() {
-                     let cat = oCP.FormVal( 1, 'cat' ); //$('#consolePage1 .cpvar_cat').val();
-                     let p = 1;
-
-                     if( cat != '' ) {
-                         //oCP.SetVar('cat',cat);
-                         oCP.StoreVars(1);
-                         p = 2;
-                     }
-
-                     return( p );
+                     return( oCP.FormVal('cat') != '' ? 2 : '' );
                  }
                },
             2: {
-                 fnPre: function() {
-                     oCP.LoadVars(2);
-                     //$('#consolePage2 .cpvar_name').html(oCP.GetVar('name'));
-                     //$('#consolePage2 .cpvar_cat').html(oCP.GetVar('cat'));
-                 },
+                 model: 'LoadStore',
+                 fnPre: function() {},
                  fnPost: function() {
                      finalReport();
                      return( 2 );
@@ -84,6 +62,7 @@ var config = {
 };
 
 var oCP = new ConsolePage( config );
+oCP.Ready();
 
 function finalReport()
 {
