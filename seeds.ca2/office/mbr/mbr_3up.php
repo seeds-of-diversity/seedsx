@@ -26,7 +26,8 @@ $sHead = $sBody = "";
 if( $mode == '' ) {
     /* Show the options form
      */
-    $sBody = "<table><tr>"
+    $sBody = "<h4>Use 24lb paper for slips because it's easier to avoid picking up two at a time.</h4>"
+            ."<table><tr>"
             ."<td valign='top'><h2>Donations</h2>".$o3UpDonors->OptionsForm()."</td>"
             ."<td valign='top'><h2>Membership Renewals</h2>".$o3UpMbr->OptionsForm()."</td>"
             ."</tr></table>"
