@@ -12,6 +12,55 @@ insert into sl_sources (
 from rl_companies where _disabled=0;
 
 
+// COPY sl_sources to xlsupload
+
+create table seeds2.xlsupload (
+k integer,
+_deleted integer,
+name text,
+addr text,
+city text,
+prov text,
+country text,
+postcode text,
+phone text,
+email text,
+web text,
+desc_en text,
+desc_fr text,
+year_est integer,
+score_quality char(1),
+score_locality char(1),
+score_bulk char(1),
+score_diversity integer,
+score_capacity integer,
+latitude decimal(12,7),
+longitude decimal(12,7) );
+
+insert into seeds2.xlsupload select
+_key,
+_status,
+name_en,
+addr_en,
+city,
+prov,
+country,
+postcode,
+phone,
+email,
+web,
+desc_en,
+desc_fr,
+year_est,
+score_quality,
+score_locality,
+score_bulk,
+score_diversity,
+score_capacity,
+latitude,
+longitude
+from sl_sources;
+
  */
 
 /*
