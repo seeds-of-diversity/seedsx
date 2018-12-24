@@ -239,6 +239,7 @@ $raConsoleParms = array(
     'lang' => $lang,
     'bBootstrap' => true,
     'script_files' => array( W_ROOT."std/js/SEEDStd.js", W_CORE."js/SEEDCore.js" ),
+    'sCharset' => 'utf-8'
 );
 $oC = new MyConsole( $oSed, $oApp, $raConsoleParms );
 

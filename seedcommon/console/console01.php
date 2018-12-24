@@ -235,7 +235,7 @@ $this->sess->VarSet( "console01".$this->sConsoleName."TF".substr($k,6), SEEDSafe
         /* Assemble the html output
          */
         $s = self::HTMLPage( $sBody, $sHead, $this->lang, array( 'bBootstrap' => $this->bBootstrap,
-                                                                 'sCharset' => "ISO-8859-1",    // lots of console apps use iso8859 data
+                                                                 'sCharset' => @$this->raParms['sCharset'] ?: "ISO-8859-1",    // lots of console apps use iso8859 data
                                                                  'sBodyAttr' => "onLoad='console01_onload()'"
                                                                ) );
 
