@@ -87,6 +87,7 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
 //$oSB->oDB->kfdb->SetDebug(2);
             if( ($kfrP = $oSB->oDB->GetKFRC( "PxPE3",
                                              "product_type='seeds' AND "
+                                            ."eStatus='ACTIVE' AND "
                                             ."PE1.k='species' AND "
                                             ."PE2.k='variety' AND "
                                             ."PE3.k='description' AND "
@@ -125,7 +126,10 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
 
             // get seeds from kG, also get the species and variety for sorting
             $raP = $oSB->oDB->GetList( "PxPE2",
-                                       "uid_seller='$kG' AND product_type='seeds' AND PE1.k='species' AND PE2.k='variety'",
+                                       "product_type='seeds' AND "
+                                      ."eStatus='ACTIVE' AND "
+                                      ."uid_seller='$kG' AND "
+                                      ."PE1.k='species' AND PE2.k='variety'",
                                        array('sSortCol'=>'PE1_v,PE2_v') );
 
             foreach( $raP as $ra ) {
@@ -149,7 +153,9 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
 
 //$oSB->oDB->kfdb->SetDebug(2);
                 $raP = $oSB->oDB->GetList( "PxPE2",
-                                           "product_type='seeds' AND PE1.k='species' AND PE1.v='$dbSp' AND PE2.k='variety'",
+                                           "product_type='seeds' AND "
+                                          ."eStatus='ACTIVE' AND "
+                                          ."PE1.k='species' AND PE1.v='$dbSp' AND PE2.k='variety'",
                                            array('sSortCol'=>'PE2_v') );
 //$oSB->oDB->kfdb->SetDebug(0);
                 foreach( $raP as $ra ) {
