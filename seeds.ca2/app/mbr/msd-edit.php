@@ -215,7 +215,7 @@ should be okay to open any tab
             case 'Growers':  return( $this->oW->DrawGrowerContent() );
             case 'Seeds':
                 $oMSDAppSeedEdit = new MSDAppSeedEdit( $this->oSB );
-                return( $oMSDAppSeedEdit->Draw() );
+                return( iconv( 'utf8', 'cp1252', $oMSDAppSeedEdit->Draw() ) );
         }
         return( "" );
     }
