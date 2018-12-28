@@ -3,7 +3,7 @@
 /*
  * Seed Directory member interface
  *
- * Copyright 2011-2018 Seeds of Diversity Canada
+ * Copyright 2011-2019 Seeds of Diversity Canada
  *
  * Gives the current user an interface to their own listings in the Member Seed Directory
  */
@@ -25,7 +25,7 @@ include_once( SEEDCOMMON."mbr/mbrSitePipe.php" );
 include_once( SEEDCORE."SEEDBasket.php" );
 include_once( SEEDAPP."basket/basketProductHandlers_seeds.php" );
 include_once( SEEDAPP."seedexchange/msdedit.php" );
-
+include_once( SEEDLIB."msd/msdlib.php" );
 
 list($kfdb, $sess, $lang) = SiteStartSessionAccount( array("sed" => "W") );
 
@@ -35,8 +35,6 @@ $oApp = new SEEDAppConsole( $config_KFDB['seeds1']
                                      'lang' => $lang )
 );
 
-
-header( "Content-type: text/html; charset=ISO-8859-1");    // this should be on all pages so accented chars look right (on Linux anyway)
 
 //var_dump($_SESSION);
 //echo "<BR/><BR/>";
@@ -179,7 +177,20 @@ class MyConsole extends Console01
     public  $oW;
     public  $oSed;
 
-    function __construct( SEDMbr $oSed, SEEDAppConsole $oApp, $raParms ) { $this->oSed = $oSed; $this->oApp = $oApp; parent::__construct( $oSed->kfdb, $oSed->sess, $raParms ); }
+    private $kCurrGrower;
+    private $oMSDLib;
+
+    function __construct( SEDMbr $oSed, SEEDAppConsole $oApp, $raParms )
+    {
+        $this->oSed = $oSed;
+        $this->oApp = $oApp;
+        parent::__construct( $oSed->kfdb, $oSed->sess, $raParms );
+
+        $this->oMSDLib = new MSDLib( $oApp );
+
+        $this->kCurrGrower = $this->oMSDLib->PermOfficeW() ? SEEDInput_Smart( 'selectGrower', array($this->oApp->sess->GetUID() ) )
+                                                           : $this->oApp->sess->GetUID();
+    }
 
     function TabSetInit( $tsid, $tabname )
     {
@@ -204,7 +215,7 @@ should be okay to open any tab
     {
         switch( $tabname ) {
             case 'Growers':  return( $this->oW->DrawGrowerControl() );
-            case 'Seeds':    return( "" );
+            case 'Seeds':    return( $this->oMSDLib->PermOfficeW() ? $this->growerSelect() : "" );
         }
         return( "" );
     }
@@ -215,14 +226,30 @@ should be okay to open any tab
             case 'Growers':  return( $this->oW->DrawGrowerContent() );
             case 'Seeds':
                 $oMSDAppSeedEdit = new MSDAppSeedEdit( $this->oSB );
-                return( iconv( 'utf8', 'cp1252', $oMSDAppSeedEdit->Draw() ) );
+                return( $oMSDAppSeedEdit->Draw( $this->kCurrGrower ) );
         }
         return( "" );
     }
+
+    private function growerSelect()
+    {
+        $raG = $this->oApp->kfdb->QueryRowsRA1( "SELECT mbr_id FROM seeds.sed_curr_growers WHERE _status='0'" );
+        $raG2 = array( '-- Grower --' => 0 );
+        foreach( $raG as $kMbr ) {
+            $ra = $this->oApp->kfdb->QueryRA( "SELECT firstname,lastname,company FROM seeds2.mbr_contacts WHERE _key='$kMbr'" );
+            if( !($name = trim($ra['firstname'].' '.$ra['lastname'])) ) {
+                if( !($name = $ra['company']) ) {
+                    continue;
+                }
+            }
+            $name = utf8_encode(trim($name));
+            $raG2["$name ($kMbr)"] = $kMbr;
+        }
+        ksort($raG2);
+        $oForm = new SEEDCoreForm( 'Plain' );
+        return( "<form method='post'>".$oForm->Select( 'selectGrower', $raG2, "", array('selected'=>$this->kCurrGrower, 'attrs'=>"onChange='submit();'") )."</form>" );
+    }
 }
-
-
-
 
 
 $oSed = new SEDMbr( $kfdb, $sess, $lang );
