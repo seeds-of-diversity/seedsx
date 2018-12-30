@@ -148,6 +148,7 @@ class SEDMbrGrower extends SEDGrowerWorker
 
         $s = "<TABLE cellpadding='0' cellspacing='0' border='0'><TR valign='top'>"
             ."<TD width='50%'>"
+            ."<h3>".$kfrG->value('mbr_code')." : ".$this->oC->GetGrowerName($kGrower)."</h3>"
             ."<P>".$oSed->S('Grower block heading')."</P>"
             ."<DIV class='sed_grower' ".($oKForm->oDS->Value('bDone') ? "style='color:green;background:#cdc;'" : "").">"
             .$oSed->drawGrowerBlock( $kfrG )
@@ -235,6 +236,15 @@ should be okay to open any tab
                 return( $oMSDAppSeedEdit->Draw( $this->kCurrGrower ) );
         }
         return( "" );
+    }
+
+    function GetGrowerName( $kGrower )
+    {
+        $ra = $this->oApp->kfdb->QueryRA( "SELECT firstname,lastname,company FROM seeds2.mbr_contacts WHERE _key='$kGrower'" );
+        if( !($name = trim($ra['firstname'].' '.$ra['lastname'])) ) {
+            $name = $ra['company'];
+        }
+        return( $name );
     }
 
     private function growerSelect()
