@@ -206,6 +206,7 @@ class Mbr3UpDonors
         $d100 = "donation is not null AND donation >= 100";
         $d99  = "(donation is null OR donation < 100)";
 
+//dGlobal should be in all these conditions
         $raGroups = array(
             'donorEN'    => array( 'title'=>'Donors English',       'cond'=>[$dYes, $lEN],        'order'=>"cast(donation as decimal) desc,lastname,firstname"),
             'donorFR'    => array( 'title'=>'Donors French',        'cond'=>[$dYes, $lFR],        'order'=>"cast(donation as decimal) desc,lastname,firstname"),
