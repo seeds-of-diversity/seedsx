@@ -2,7 +2,7 @@
 
 /* Collection Management for micro-seedbanks
  *
- * Copyright (c) 2014-2017 Seeds of Diversity Canada
+ * Copyright (c) 2014-2018   Seeds of Diversity Canada
  *
  */
 
@@ -35,7 +35,7 @@ $raConsoleParms = array(
     //                  ))),
     'css_files' => array( "seedcollection.css" ),
     'script_files' => array( W_ROOT."std/js/SEEDStd.js", W_ROOT."std/js/SEEDFormUI.js",
-                             W_ROOT."std/js/SEEDStd.js", W_ROOT."std/js/SEEDPopover.js"),
+                             W_CORE.'js/console02.js', W_ROOT."std/js/SEEDPopover.js"),
 
     'bBootstrap' => true,
     'bLogo' => true

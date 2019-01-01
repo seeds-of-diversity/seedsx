@@ -40,6 +40,8 @@ class SLCollectionAdmin extends Console01_Worker1
 
     private $errMsg = "";
 
+    public $oTmpl;
+
     function __construct( Console01 $oC, KeyFrameDB $kfdb, SEEDSession $sess )
     {
         parent::__construct( $oC, $kfdb, $sess );
@@ -56,6 +58,14 @@ class SLCollectionAdmin extends Console01_Worker1
         $this->oColl = new SLCollectionCollection( $this );
 
         $this->IsAdmin = $sess->TestPermRA( array( array('SLCollection' => 'A'), array('SL' => 'A') ) );
+
+        $raTmplParms = array(
+            'fTemplates' => array( SEEDAPP."templates/mycollection.html" ),
+            'sFormCid'   => 'Plain',
+            //'raResolvers'=> array( array( 'fn'=>array($this,'ResolveTag'), 'raParms'=>array() ) ),
+            'vars'       => array()
+        );
+        $this->oTmpl = SEEDTemplateMaker( $raTmplParms );
     }
 
     function Init( $kCollection )

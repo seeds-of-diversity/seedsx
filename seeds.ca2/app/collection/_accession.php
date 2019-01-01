@@ -141,6 +141,9 @@ $raParms = array();
     {
         $s = "";
 
+        $s .= $this->oSCA->oTmpl->ExpandTmpl( 'mycollForms', array() );
+
+
 // $this already has a Console01, maybe it can be a Console01KFUI?
 $raParms = array();
 
@@ -148,17 +151,12 @@ $raParms = array();
             $this->oFormA->SetKFR($kfr);
         }
 
-        $s .= "<div class='consolePage0'>"
-                 ."Form 1"
-             ."</div>"
-        ;
-
         $sLeft = "<table border='0' cellpadding='0' width='90%' style='position:relative' class='SFUAC_Anchor'>"
              .$this->oFormA->HiddenKey()
              .$this->oFormA->ExpandForm(
                 "" // nobody needs the accession key so don't confuse us by showing it  ($kAcc ? "||| Accession # || [[Value:_key]]" : "")
                ."||| Cultivar       || <span id='cultivarText' style='font-size:9pt'>[[Value:P_psp]] : [[Value:P_name]] ([[Value:P__key]])</span> "
-                                     ."[[dummy_pcv | size:10 class:SFU_AutoComplete | placeholder='Search']] "
+                                     ."[[dummy_pcv | size:10 class:SFU_AutoComplete2 | placeholder='Search']] "
                                      ."[[hidden:fk_sl_pcv]]"
                                      ."<select class='SFUAC_Select'></select>"
                ."||| Original Name  || [[oname | width:100%]]"
