@@ -39,7 +39,8 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
         goto done;
     }
 
-    $oMSDQ = new MSDQ( $oApp, array() );
+    // By convention, $_REQUEST parms that start with 'config_' go to the constructor, and the rest go to Cmd()
+    $oMSDQ = new MSDQ( $oApp, $_REQUEST );
     $raQ = $oMSDQ->Cmd( $cmd, $_REQUEST );
     if( $raQ['bHandled'] ) {
         $raJX = $raQ;
@@ -87,6 +88,7 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
 //$oSB->oDB->kfdb->SetDebug(2);
             if( ($kfrP = $oSB->oDB->GetKFRC( "PxPE3",
                                              "product_type='seeds' AND "
+                                            ."eStatus='ACTIVE' AND "
                                             ."PE1.k='species' AND "
                                             ."PE2.k='variety' AND "
                                             ."PE3.k='description' AND "
@@ -111,6 +113,7 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
                     $raJX['sOut'] .= $oSB->DrawProduct( $kfrP, SEEDBasketProductHandler::DETAIL_ALL )
                                     .drawMSDOrderInfo( $oSB, $kfrP );
                 }
+// might be double-encoding now
                 $raJX['sOut'] = utf8_encode( $raJX['sOut'] );
                 $raJX['bOk'] = true;
             }
@@ -125,7 +128,10 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
 
             // get seeds from kG, also get the species and variety for sorting
             $raP = $oSB->oDB->GetList( "PxPE2",
-                                       "uid_seller='$kG' AND product_type='seeds' AND PE1.k='species' AND PE2.k='variety'",
+                                       "product_type='seeds' AND "
+                                      ."eStatus='ACTIVE' AND "
+                                      ."uid_seller='$kG' AND "
+                                      ."PE1.k='species' AND PE2.k='variety'",
                                        array('sSortCol'=>'PE1_v,PE2_v') );
 
             foreach( $raP as $ra ) {
@@ -134,6 +140,7 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
                 $sP = $oSB->DrawProduct( $kfrP, SEEDBasketProductHandler::DETAIL_ALL )
                      .drawMSDOrderInfo( $oSB, $kfrP );
 
+// might be double-encoding now
                 $raJX['sOut'] .= utf8_encode( $sP );
                 $raJX['bOk'] = true;
             }
@@ -149,7 +156,9 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
 
 //$oSB->oDB->kfdb->SetDebug(2);
                 $raP = $oSB->oDB->GetList( "PxPE2",
-                                           "product_type='seeds' AND PE1.k='species' AND PE1.v='$dbSp' AND PE2.k='variety'",
+                                           "product_type='seeds' AND "
+                                          ."eStatus='ACTIVE' AND "
+                                          ."PE1.k='species' AND PE1.v='$dbSp' AND PE2.k='variety'",
                                            array('sSortCol'=>'PE2_v') );
 //$oSB->oDB->kfdb->SetDebug(0);
                 foreach( $raP as $ra ) {
@@ -158,6 +167,7 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
                     $sP = $oSB->DrawProduct( $kfrP, SEEDBasketProductHandler_Seeds::DETAIL_VIEW_NO_SPECIES )
                          .drawMSDOrderInfo( $oSB, $kfrP );
 
+// might be double-encoding now
                     $raJX['sOut'] .= utf8_encode( $sP );
                     $raJX['bOk'] = true;
                 }
