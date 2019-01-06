@@ -143,6 +143,8 @@ $raParms = array();
 
         $s .= $this->oSCA->oTmpl->ExpandTmpl( 'mycollForms', array() );
 
+        goto done;
+
 
 // $this already has a Console01, maybe it can be a Console01KFUI?
 $raParms = array();
@@ -212,6 +214,7 @@ $raParms = array();
              ."<input type='hidden' name='pMode' value='editacc'/>"    // newacc goes to editacc
              ."</form>";
 
+done:
         return( $s );
     }
 
