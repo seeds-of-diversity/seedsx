@@ -214,6 +214,10 @@ while( $kfr->CursorFetch() ) {
 // kluge to make the simple case easier to differentiate from the printed-directory membership
 $sSummary = str_replace( "One Year Membership with on-line Seed Directory", "One Year Membership", $sSummary );
 
+    $ra = SEEDCore_ParmsURL2RA( $kfr->value('sExtra') );
+    $to = @$ra['mbrid'] ?: $kfr->value('mail_email');
+    $sOnClick =  "window.open(\"../int/emailme.php?to=$to\",\"_blank\",\"width=900,height=800,scrollbars=yes\")";
+
     $s .= "<tr>"
           // Order #
          ."<td valign='top'>"
@@ -235,6 +239,7 @@ $sSummary = str_replace( "One Year Membership with on-line Seed Directory", "One
          ."<br/>"
          ."<br/>"
          .$kfr->Expand( "[[mail_phone]]<br/>[[mail_email]]" )
+         ."<div><a href='#' onclick='$sOnClick'>Send Email</a></div>"
          ."</td>"
           // Language / eBulletin
          ."<td valign='top'>"
