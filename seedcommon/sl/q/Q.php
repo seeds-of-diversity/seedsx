@@ -51,7 +51,13 @@ class Q
 
         if( substr( $cmd, 0, 10 ) == 'collection' ) {
             include_once( "_QServerCollection.php" );
-            $o = new QServerCollection( $this, array( ) );
+            global $config_KFDB;
+            $oApp = new SEEDAppSessionAccount( $config_KFDB['seeds1']
+                            + array( 'sessPermsRequired' => array(),
+                                     'logdir' => SITE_LOG_ROOT,
+                                     'lang' => 'EN' )
+            );
+            $o = new QServerCollection( $this, $oApp, array( ) );
             $rQ = $o->Cmd( $cmd, $parms );
         }
 

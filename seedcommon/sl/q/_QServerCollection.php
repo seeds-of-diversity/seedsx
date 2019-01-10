@@ -2,27 +2,36 @@
 
 /* _QServerCollection
  *
- * Copyright 2016-2017 Seeds of Diversity Canada
+ * Copyright 2016-2019 Seeds of Diversity Canada
  *
  * Serve queries about sl_collection, sl_accession, sl_inventory
  */
 
-include_once( SEEDCOMMON."sl/sl_db.php" );
+include_once( SEEDLIB."sl/sldb.php" );
 
 class QServerCollection
 {
     private $oQ;
     private $oSLDB;
 
-    function __construct( Q $oQ, $raParms = array() )
+    function __construct( Q $oQ, SEEDAppSessionAccount $oApp, $raParms = array() )
     {
         $this->oQ = $oQ;
-        $this->oSLDB = new SLDB_Collection( $oQ->kfdb, $oQ->sess->GetUID() );
+        $this->oSLDB = new SLDBCollection( $oApp, array() );
     }
 
     function Cmd( $cmd, $parms )
     {
         $rQ = $this->oQ->GetEmptyRQ();
+
+        // cmds containing -- require write access (at a minimum - cmd might have other more stringent requirements too)
+        if( strpos( $cmd, "-" ) !== false && !$this->oQ->sess->TestPerm( 'SLCollection', 'R' ) ) {
+            $rQ['sErr'] = "Command requires Seed Collection read permission";
+
+// also check per-collection read permission
+
+            goto done;
+        }
 
         // cmds containing -- require write access (at a minimum - cmd might have other more stringent requirements too)
         if( strpos( $cmd, "--" ) !== false && !$this->oQ->sess->TestPerm( 'SLCollection', 'W' ) ) {
@@ -34,6 +43,9 @@ class QServerCollection
         }
 
         switch( strtolower($cmd) ) {
+            case 'collection-getinv':
+                list($rQ['bOk'],$rQ['raOut'],$rQ['sErr']) = $this->getInv($parms);
+                break;
             case 'collection--add':
                 list($kInvNew,$rQ['sErr']) = $this->collectionAdd($parms);
                 if( $kInvNew ) { $rQ['bOk'] = true; $rQ['raOut'][0] = $kInvNew; }
@@ -44,6 +56,46 @@ class QServerCollection
 
         done:
         return( $rQ );
+    }
+
+    function getInv( $parms )
+    /************************
+        Return a IxAxCxPxS record for the given inventory item.
+
+        1) kInv          = inventory _key
+        2) kColl + nInv  = collection _key and inv_number
+     */
+    {
+        $bOk = false;
+        $raOut = array();
+        $sErr = "";
+
+        $kInv  = intval(@$parms['kInv']);
+        $kColl = intval(@$parms['kColl']);
+        $nInv  = intval(@$parms['nInv']);
+
+        if( $kInv ) {
+            $cond = "_key='$kInv'";
+        } else if( $kColl && $nInv ) {
+            $cond = "(I.fk_sl_collection='$kColl' AND I.inv_number='$nInv')";
+        } else {
+            $sErr = "incomplete parameters";
+            goto done;
+        }
+
+        if( ($kfr = $this->oSLDB->GetKFRCond( "IxAxPxS", $cond )) ) {
+            // add more as you need them
+            $raOut['I__key'] = $kfr->Key();
+            $raOut['I_inv_number'] = $kfr->Value('inv_number');
+            $raOut['P__key'] = $kfr->Value('P__key');
+            $raOut['P_name'] = $this->oQ->QCharset( $kfr->Value('P_name') );
+            $raOut['S_name_en'] = $this->oQ->QCharset( $kfr->Value('S_name_en') );
+
+            $bOk = true;
+        }
+
+        done:
+        return( array($bOk,$raOut,$sErr) );
     }
 
     function collectionAdd( $parms )
