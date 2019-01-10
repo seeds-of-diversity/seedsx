@@ -43,12 +43,11 @@ class QServerCollection
         }
 
         switch( strtolower($cmd) ) {
-            case 'collection-getinv':
-                list($rQ['bOk'],$rQ['raOut'],$rQ['sErr']) = $this->getInv($parms);
+            case 'collection-getlot':
+                list($rQ['bOk'],$rQ['raOut'],$rQ['sErr']) = $this->getLot($parms);
                 break;
-            case 'collection--add':
-                list($kInvNew,$rQ['sErr']) = $this->collectionAdd($parms);
-                if( $kInvNew ) { $rQ['bOk'] = true; $rQ['raOut'][0] = $kInvNew; }
+            case 'collection--addlot':
+                list($rQ['bOk'],$rQ['raOut'],$rQ['sErr']) = $this->addLot($parms);
                 break;
             default:
                 break;
@@ -58,8 +57,8 @@ class QServerCollection
         return( $rQ );
     }
 
-    function getInv( $parms )
-    /************************
+    private function getLot( $parms )
+    /********************************
         Return a IxAxCxPxS record for the given inventory item.
 
         1) kInv          = inventory _key
@@ -98,23 +97,24 @@ class QServerCollection
         return( array($bOk,$raOut,$sErr) );
     }
 
-    function collectionAdd( $parms )
-    /*******************************
-        Add a new Inventory and Accession record.
+    private function addLot( $parms )
+    /********************************
+        Add a new Accession and some number of Inventory records (at least one).
+        Since accession processing is sometimes done in a few steps, the minimal information to retrieve nLot1, {nLot2, ... } is:
+            kColl, kPCV, g1, {g2, ...}
+        Others e.g. locations should be added later.
 
         This does not add an Inv to an existing Acc because there is no access control on Acc (only on Coll which is independent
         of Acc). Therefore there is no way to prevent ajax users from specifying any random Acc they want.
-        Instead, users add Inv to their Coll, a new Acc is created for every new Inv, and owners of Inv can then split them.
-
-Maybe it would be convenient for $parms to support an array of new Inv, all for the same new Acc, but for now it's just as easy to
-use Inv splitting.
+        Instead, users add Inv to their Coll and a new Acc is created.
+        It is also possible to place a total amount of seeds in one Inv and then split it (which preserves the Acc for every new Inv).
 
         Parms:
             kColl           : collection (required)
-            kInv            : normally zero, but optional forced value of inventory key (must not already exist)
+            nLot            : normally not provided, but optional forced value of Lot number (must not already exist)
             {Acc-data}      : see below
-            g               : grams
-            loc             : location
+            g1, {g2, ... }  : grams
+            loc1, {loc2 ...}: location
             parent_inv      : parent inventory number (with collection number or prefix if not from this collection e.g. CC-IIII)
             dCreation       : date inventoried or split
             bDeAcc          : why you'd create a deaccessioned inventory sample we can't guess, but you can if you want to
@@ -130,10 +130,11 @@ use Inv splitting.
      */
     {
         $ok = false;
+        $raRet = array();
         $sErr = "";
 
         $kColl = intval(@$parms['kColl']);
-        $kInv = intval(@$parms['kInv']);
+        $nLot = intval(@$parms['nLot']);
 
         if( !($dCreation = @$parms['dCreation']) ) {
             $dCreation = date('Y-m-d');
@@ -158,31 +159,41 @@ $bCanWrite = true;
         list($kfrA,$sErr) = $this->addAcc( $parms );
         if( !$kfrA ) goto done;
 
-
-        /* If kInv is being forced, ensure it doesn't already exist (remember kInv is inv_number not _key)
+// Should be nLot1, nLot2, ... so can force more than one Lot at a time (in the same Acc)
+        /* If nLot is being forced, ensure it doesn't already exist
          */
-        if( $kInv && ($kfrI = $this->oSLDB->GetKFRCond( "I", "fk_sl_collection='$kColl' AND inv_number='$kInv'" )) ) {
-            $sErr = "Inventory $kInv already exists";
+        if( $nLot && ($kfrI = $this->oSLDB->GetKFRCond( "I", "fk_sl_collection='$kColl' AND inv_number='$nLot'" )) ) {
+            $sErr = "Lot $nLot already exists";
             goto done;
         }
 
-        if( !($kfrI = $this->oSLDB->GetKFRel( "I" )->CreateRecord()) ) goto done;
+//kluge to make mycollection work for now
+        foreach( ['g1','g2'] as $v ) {
+            if( !($g = @$parms[$v]) )  continue;
 
-        $kfrI->SetValue( 'fk_sl_collection', $kColl );
-        $kfrI->SetValue( 'fk_sl_accession', $kfrA->Key() );
-        $kfrI->SetValue( 'inv_number', $kfrC->Value('inv_counter') );
-        $this->oQ->kfdb->Execute( "UPDATE sl_collection SET inv_counter=inv_counter+1 WHERE _key='$kColl'" );
-        $kfrI->SetValue( 'g_weight', @$parms['g'] );
-        $kfrI->SetValue( 'location', @$parms['location'] );
-// this doesn't mean anything because it can be from another collection
-// $kfrI->SetValue( 'parent_kInv', $parms['parent_kInv'] );
-        $kfrI->SetValue( 'bDeAcc', intval(@$parms['bDeAcc']) );
-        $kfr->SetValue( 'dCreation', $dCreation );
-        $kfr->PutDBRow();
-        $kInvNew = $kfr->Key();
+            if( !($kfrI = $this->oSLDB->GetKFRel( "I" )->CreateRecord()) ) goto done;
+
+            $kfrI->SetValue( 'fk_sl_collection', $kColl );
+            $kfrI->SetValue( 'fk_sl_accession', $kfrA->Key() );
+            if( $nLot ) {
+                $kfrI->SetValue( 'inv_number', $nLot );
+            } else {
+                $kfrI->SetValue( 'inv_number', $kfrC->Value('inv_counter') );
+                $this->oQ->kfdb->Execute( "UPDATE sl_collection SET inv_counter=inv_counter+1 WHERE _key='$kColl'" );
+            }
+            $kfrI->SetValue( 'g_weight', $g );
+            $kfrI->SetValue( 'location', @$parms['location'] );
+            $kfrI->SetValue( 'bDeAcc', intval(@$parms['bDeAcc']) );
+            $kfrI->SetValue( 'dCreation', $dCreation );
+            $kfrI->PutDBRow();
+            if( $v=='g1' ) $raRet['nLot1'] = $kfrI->Key();
+            if( $v=='g2' ) $raRet['nLot2'] = $kfrI->Key();
+        }
+
+        $ok = true;
 
         done:
-        return( array($kInvNew,$sErr) );
+        return( array($ok,$raRet,$sErr) );
     }
 
     private function addAcc( $parms )
@@ -222,7 +233,7 @@ $bCanWrite = true;
             goto done;
         }
 
-        $kfrA->SetValue( 'parent_acc', @$parms['kAccParent'] );
+        $kfrA->SetValue( 'parent_inv', @$parms['parent_inv'] );
         $kfrA->SetValue( 'parent_src', @$parms['sParentSrc'] );
         $kfrA->SetValue( 'batch_id',   @$parms['sBatch'] );
         $kfrA->SetValue( 'spec',       @$parms['sSpec'] );
