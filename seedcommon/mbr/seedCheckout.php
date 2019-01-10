@@ -522,55 +522,72 @@ $sGarlicVarieties =
 <table id='garlictable' style='border: 1px solid #aaa;margin-bottom:10px;' border='0' cellspacing='10'>
 <tbody style='font-size: 9pt;'>
 <tr>
-<td colspan='5'><strong>Varieties available:</strong></td>
+<td colspan='6'><strong>Varieties available / Les vari&eacute;t&eacute;s disponibles</strong>
 </tr>
 <tr>
 <td>Alison's</td>
 <td>California Late</td>
-<td>German Red</td>
-<td>Leningrad</td>
-<td>Purple Glazer</td>
+<td>Fauquier</td>
+<td>Killarney<br /></td>
+<td>Mennonite<br /></td>
+<td>Red Rezan</td>
 </tr>
 <tr>
 <td>Armenian Porcelain</td>
-<td>Central Siberian</td>
-<td>German Stiffneck</td>
-<td>Lukak</td>
+<td>Cedar Creek</td>
+<td>French Red<br /></td>
+<td>Korean Purple</td>
+<td>Metechi<br /></td>
 <td>Russian Giant</td>
 </tr>
 <tr>
 <td>Baba Franchuk's</td>
-<td>Chesnuk Red</td>
-<td>Khabar</td>
-<td>Malpasse</td>
-<td>Shatilli</td>
+<td>Central Siberian<br /></td>
+<td>Gaia's Joy<br /></td>
+<td>Lavigna<br /></td>
+<td>Music<br /></td>
+<td>Shatilli<br /></td>
 </tr>
 <tr>
 <td>Belarus</td>
-<td>Chiloe</td>
-<td>Kiev</td>
-<td>Mennonite</td>
-<td>Siberian</td>
+<td>Chesnuk Red</td>
+<td>Georgian Crystal<br /></td>
+<td>Legacy<br /></td>
+<td>Persian Star<br /></td>
+<td>Siberian<br /></td>
 </tr>
 <tr>
-<td>Beletic Croatian</td>
-<td>Fauquier</td>
-<td>Killarney</td>
-<td>Metechi</td>
-<td>Slovak</td>
+<td>
+<p>Beletic Croatian</p>
+</td>
+<td>Chet's Italian</td>
+<td>German Red<br /></td>
+<td>Leningrad<br /></td>
+<td>Portugal Azores 1</td>
+<td>Sicilian</td>
 </tr>
 <tr>
 <td>Bogatyr</td>
-<td>French Red</td>
-<td>Lavigna</td>
-<td>Music</td>
-<td>Wild Buff</td>
+<td>Chiloe</td>
+<td>German Stiffneck<br /></td>
+<td>Lukak<br /></td>
+<td>Purple Glazer<br /></td>
+<td>Slovak<br /></td>
+</tr>
+<tr>
+<td>Brown Rose</td>
+<td>Chinese 1</td>
+<td>Khabar</td>
+<td>Malpasse<br /></td>
+<td>Racey</td>
+<td>Wild Buff<br /></td>
 </tr>
 <tr>
 <td>Brown Tempest</td>
-<td>Gaia's Joy</td>
-<td>Legacy</td>
-<td>Persian Star</td>
+<td>Chinese 2</td>
+<td>Kiev</td>
+<td>Mediterranean</td>
+<td>Railway Creek</td>
 <td>Yugoslavian</td>
 </tr>
 </tbody>
@@ -715,17 +732,21 @@ $sGarlicVarieties =
                                  ."we will try to include them.</p>"
                                  .$sGarlicVarieties,
 
-                          "FR" => "<p>Garlic bulbils are available for autumn 2018. These are not garlic bulbs! See the article in our "
+                          "FR" => "<p>Nous offrons 48 vari&eacute;t&eacute;s de bulbilles d'ail pour la plantation d&egrave;s cet automne! "
+                                 ."Attention, ce sont des bulbilles et non pas de gros ca&iuml;eu auquel vous &ecirc;tes habitu&eacute;, "
+                                 ."mais le tout petit bulbe qui pousse dans la fleur &agrave; la cime des plantes.</p>"
+                                 ."<p>Consultez notre article "
                                  ."<a href='http://www.semences.ca/d?n=web/ebulletin/2016-08-fr/articles/ail' target='_blank'>"
-                                 ."August 2016 e-bulletin</a> if you're not sure what bulbils are or what to do with them.</p>"
-                                 ."<p>We will send 5 varieties for $15, with at least 10 bulbils of each variety. We cannot ensure "
-                                 ."special requests but if you have favourites, please mention them in the Notes section below, and "
-                                 ."we will try to include them.</p>"
+                                 ."La culture des bulbilles d'ail</a> de l'ebulletin Ao&ucirc;t 2006.</p>"
+                                 ."<p>Nous enverrons au moins 10 de bulbilles de 5 vari&eacute;t&eacute;s diff&eacute;rentes pour 15$ frais de poste inclus. "
+                                 ."Nous ne serons peut-&ecirc;tre pas en mesure d'offrir des vari&eacute;t&eacute;s sur demande, mais si vous connaissez "
+                                 ."votre vari&eacute;t&eacute; pr&eacute;f&eacute;r&eacute;e, n'h&eacute;sitez pas &agrave; la demander et nous ferons "
+                                 ."tout notre possible pour vous la procurer.</p>"
                                  .$sGarlicVarieties,
                         ),
             "Please send samples of garlic bulbils for $15"
                 => array( "EN" => "Please send samples of garlic bulbils for $15",
-                          "FR" => "Please send samples of garlic bulbils for $15" ),
+                          "FR" => "$15 &nbsp;&nbsp;Envoyez 5 &eacute;chantillons diff&eacute;rentes des bulbilles d'ails" ),
 
 
 
