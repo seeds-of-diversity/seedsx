@@ -141,7 +141,7 @@ $raParms = array();
     {
         $s = "";
 
-        $s .= $this->oSCA->oTmpl->ExpandTmpl( 'mycollForms', array() );
+        $s .= $this->oSCA->oTmpl->ExpandTmpl( 'mycollForms', array('qURL'=> SITEROOT_URL."app/q/") );
 
         return( $s );
     }
