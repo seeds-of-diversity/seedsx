@@ -25,7 +25,14 @@ class QServerCollection
         $rQ = $this->oQ->GetEmptyRQ();
 
         // cmds containing -- require write access (at a minimum - cmd might have other more stringent requirements too)
-        if( strpos( $cmd, "-" ) !== false && !$this->oQ->sess->TestPerm( 'SLCollection', 'R' ) ) {
+        // cmds containing - require write access (at a minimum - cmd might have other more stringent requirements too)
+        if( strpos( $cmd, "--" ) !== false && !$this->oQ->sess->TestPerm( 'SLCollection', 'W' ) ) {
+            $rQ['sErr'] = "Command requires Seed Collection write permission";
+
+// also check per-collection write permission
+
+            goto done;
+        } else if( strpos( $cmd, "-" ) !== false && !$this->oQ->sess->TestPerm( 'SLCollection', 'R' ) ) {
             $rQ['sErr'] = "Command requires Seed Collection read permission";
 
 // also check per-collection read permission
@@ -33,14 +40,6 @@ class QServerCollection
             goto done;
         }
 
-        // cmds containing -- require write access (at a minimum - cmd might have other more stringent requirements too)
-        if( strpos( $cmd, "--" ) !== false && !$this->oQ->sess->TestPerm( 'SLCollection', 'W' ) ) {
-            $rQ['sErr'] = "Command requires Seed Collection write permission";
-
-// also check per-collection write permission
-
-            goto done;
-        }
 
         switch( strtolower($cmd) ) {
             case 'collection-getlot':
@@ -48,6 +47,9 @@ class QServerCollection
                 break;
             case 'collection--addlot':
                 list($rQ['bOk'],$rQ['raOut'],$rQ['sErr']) = $this->addLot($parms);
+                break;
+            case 'collection--reservelot':
+                list($rQ['bOk'],$rQ['raOut'],$rQ['sErr']) = $this->reserveLot($parms);
                 break;
             default:
                 break;
@@ -110,14 +112,14 @@ class QServerCollection
         It is also possible to place a total amount of seeds in one Inv and then split it (which preserves the Acc for every new Inv).
 
         Parms:
-            kColl           : collection (required)
-            nLot            : normally not provided, but optional forced value of Lot number (must not already exist)
-            {Acc-data}      : see below
-            g1, {g2, ... }  : grams
-            loc1, {loc2 ...}: location
-            parent_inv      : parent inventory number (with collection number or prefix if not from this collection e.g. CC-IIII)
-            dCreation       : date inventoried or split
-            bDeAcc          : why you'd create a deaccessioned inventory sample we can't guess, but you can if you want to
+            kColl              : collection (required)
+            nLot1, {nLot2 ...} : normally not provided, but optional forced value of Lot number (must not already exist)
+            {Acc-data}         : see below
+            g1, {g2, ... }     : grams
+            loc1, {loc2 ...}   : location
+            parent_inv         : parent inventory number (with collection number or prefix if not from this collection e.g. CC-IIII)
+            dCreation          : date inventoried or split
+            bDeAcc             : why you'd create a deaccessioned inventory sample we can't guess, but you can if you want to
 
         Acc-data must include one of the following:
             kPCV
@@ -134,11 +136,6 @@ class QServerCollection
         $sErr = "";
 
         $kColl = intval(@$parms['kColl']);
-        $nLot = intval(@$parms['nLot']);
-
-        if( !($dCreation = @$parms['dCreation']) ) {
-            $dCreation = date('Y-m-d');
-        }
 
         /* Check existence and write access to Collection
          */
@@ -154,18 +151,16 @@ $bCanWrite = true;
         }
 
 
+        if( !($dCreation = @$parms['dCreation']) ) {
+            $dCreation = date('Y-m-d');
+        }
+
+
         /* Create the Accession
          */
         list($kfrA,$sErr) = $this->addAcc( $parms );
         if( !$kfrA ) goto done;
 
-// Should be nLot1, nLot2, ... so can force more than one Lot at a time (in the same Acc)
-        /* If nLot is being forced, ensure it doesn't already exist
-         */
-        if( $nLot && ($kfrI = $this->oSLDB->GetKFRCond( "I", "fk_sl_collection='$kColl' AND inv_number='$nLot'" )) ) {
-            $sErr = "Lot $nLot already exists";
-            goto done;
-        }
 
 //kluge to make mycollection work for now
         foreach( ['g1','g2'] as $v ) {
@@ -175,19 +170,29 @@ $bCanWrite = true;
 
             $kfrI->SetValue( 'fk_sl_collection', $kColl );
             $kfrI->SetValue( 'fk_sl_accession', $kfrA->Key() );
+
+            if( $v=='g1' ) { $nLot = @$parms['nLot1']; $loc = @$parms['loc1']; }
+            if( $v=='g2' ) { $nLot = @$parms['nLot2']; $loc = @$parms['loc2']; }
             if( $nLot ) {
+                /* If nLot is being forced, ensure it doesn't already exist
+                 */
+                if( ($kfrTest = $this->oSLDB->GetKFRCond( "I", "fk_sl_collection='$kColl' AND inv_number='$nLot'" )) ) {
+                    $sErr = "Lot $nLot already exists";
+                    goto done;
+                }
                 $kfrI->SetValue( 'inv_number', $nLot );
             } else {
+                $kfrC = $this->oSLDB->GetKFR( "C", $kColl );    // have to reload the second time through the loop
                 $kfrI->SetValue( 'inv_number', $kfrC->Value('inv_counter') );
                 $this->oQ->kfdb->Execute( "UPDATE sl_collection SET inv_counter=inv_counter+1 WHERE _key='$kColl'" );
             }
             $kfrI->SetValue( 'g_weight', $g );
-            $kfrI->SetValue( 'location', @$parms['location'] );
+            $kfrI->SetValue( 'location', $loc ); //@$parms['location'] );
             $kfrI->SetValue( 'bDeAcc', intval(@$parms['bDeAcc']) );
             $kfrI->SetValue( 'dCreation', $dCreation );
             $kfrI->PutDBRow();
-            if( $v=='g1' ) $raRet['nLot1'] = $kfrI->Key();
-            if( $v=='g2' ) $raRet['nLot2'] = $kfrI->Key();
+            if( $v=='g1' ) { $raRet['nLot1'] = $kfrI->Value('inv_number'); $raRet['kInv1'] = $kfrI->Key(); }
+            if( $v=='g2' ) { $raRet['nLot2'] = $kfrI->Value('inv_number'); $raRet['kInv2'] = $kfrI->Key(); }
         }
 
         $ok = true;
@@ -220,7 +225,7 @@ $bCanWrite = true;
 
         if( $kPCV ) {
             $kfrA->SetValue( 'fk_sl_pcv', $kPCV );
-// TODO: oname should contain a copy of pcv.name
+            $kfrA->SetValue( 'oname', $ocv );
         } else if( $kSp && $ocv ) {
 // TODO: kSp?
             $kfrA->SetValue( 'oname', $ocv );
@@ -233,7 +238,7 @@ $bCanWrite = true;
             goto done;
         }
 
-        $kfrA->SetValue( 'parent_inv', @$parms['parent_inv'] );
+        $kfrA->SetValue( 'parent_acc', @$parms['parent_inv'] );   // rename db field to parent_inv
         $kfrA->SetValue( 'parent_src', @$parms['sParentSrc'] );
         $kfrA->SetValue( 'batch_id',   @$parms['sBatch'] );
         $kfrA->SetValue( 'spec',       @$parms['sSpec'] );
@@ -241,7 +246,7 @@ $bCanWrite = true;
 
         $kfrA->SetValue( 'x_d_harvest',  @$parms['dHarvest'] );
         $kfrA->SetValue( 'x_d_received', @$parms['dReceived'] );
-        $kfrA->SetValue( 'x_member',     @$parms['sSource'] );
+        $kfrA->SetValue( 'x_member',     @$parms['supplier'] );
 
         $kfrA->PutDBRow();
 
@@ -249,6 +254,46 @@ $bCanWrite = true;
         return( array($kfrA, $sErr) );
     }
 
+
+    private function reserveLot( $parms )
+    /************************************
+        Increment the inv_counter to reserve some lot numbers and return those numbers
+
+        Parms:
+            kColl : collection (required)
+            n     :  number of lot numbers to reserve
+     */
+    {
+        $ok = false;
+        $raOut = array();
+        $sErr = "";
+
+        if( !($kColl = intval(@$parms['kColl'])) || !($n = intval(@$parms['n'])) )  goto done;
+
+        if( !($kfrC = $this->oSLDB->GetKFR( "C", $kColl )) ) {
+            $sErr = "Collection $kColl not found";  // or it was zero
+            goto done;
+        }
+// TODO: test write access on collection
+$bCanWrite = true;
+        if( !$bCanWrite ) {
+            $sErr = "Collection $kColl does not allow write access";
+            goto done;
+        }
+
+        $nLot = $kfrC->Value('inv_counter');
+        $this->oQ->kfdb->Execute( "UPDATE sl_collection SET inv_counter=inv_counter+$n WHERE _key='$kColl'" );
+
+        for( $i = 1; $i <= $n; ++$i ) {
+            $raOut["nLot$i"] = $nLot;
+            ++$nLot;
+        }
+
+        $ok = true;
+
+        done:
+        return(array($ok,$raOut,$sErr));
+    }
 }
 
 ?>
