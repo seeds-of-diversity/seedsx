@@ -1,0 +1,35 @@
+To Create:
+
+# get drupal using composer
+cd ~/public_html
+mkdir sw8
+~/composer/composer.phar create-project drupal-composer/drupal-project:8.x-dev sw8 --stability dev --no-interaction
+
+# get breeze and bootstrap - breeze has bootstrap as a dependency so just let it get the version that it wants
+cd ~/public_html/sw8
+~/composer/composer.phar require drupal/breeze:^1.11
+
+#copy our themes and modules - might have to adjust relative links to SITEROOT - install via admin menu
+cd ~/public_html/sw8
+mkdir web/sites/all
+cp -R ../drupalmod/d8/copy_to_drupal/modules web/sites/all
+cp -R ../drupalmod/d8/copy_to_drupal/themes web/sites/all
+
+#database installed in seeds3.drupal8_*
+
+#multilingual
+# In Extend add 4 core modules in the Multilingual section
+# In Configuration->Regional->Languages add French as a language
+# In Languages there is a tab called Detection - choose URL->"Domain" seeds.ca and semences.ca
+# In Conf->Regional->Content-language there are Custom Language Settings - check Content, Custom block, Custom menu link - check the basic page, etc, probably uncheck Promoted to front page and Sticky at top of lists (for Basic page)
+# In Blocks there is a Language Switcher block that you can place somewhere
+
+
+# Multi-level menus: only the top level of a menu will be shown by default. The non-intuitive way to enable submenus is Structure->Block layout->find the menu->Configure->increase menu levels (default 1)
+
+# to Update:
+cd ~/public_html/sw8
+~/composer/composer.phar update
+
+
+
