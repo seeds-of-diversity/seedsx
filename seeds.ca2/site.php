@@ -50,7 +50,7 @@ function Site_path_self()
 if( substr( $path, -1 ) == '/' )  $path = substr( $path, 0, -1 );
 
             $current_path = \Drupal::service('path.current')->getPath();
-            $page = \Drupal::service('path.alias_manager')->getAliasByPath($current_path);            
+            $page = \Drupal::service('path.alias_manager')->getAliasByPath($current_path);
             $path = $path.$page;
         }
     } else {
@@ -63,5 +63,16 @@ if( substr( $path, -1 ) == '/' )  $path = substr( $path, 0, -1 );
     return( $path );
 }
 
+function SiteApp( $raConfig = array() )
+{
+    global $config_KFDB;
 
-?>
+    $lang = @$raConfig['lang'] ?: 'EN';
+    $perms = @$raConfig['sessPermsRequired'] ?: array();
+
+    $oApp = new SEEDAppConsole( $config_KFDB['seeds1']
+                                + array( 'sessPermsRequired' => $perms,
+                                         'logdir' => SITE_LOG_ROOT,
+                                         'lang' => $lang ) );
+    return( $oApp );
+}
