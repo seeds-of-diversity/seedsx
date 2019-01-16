@@ -1,5 +1,7 @@
 <?php
-
+    error_reporting(E_ALL | E_STRICT);
+    ini_set('display_errors', 1);
+    ini_set('html_errors', 1);
 define( "SITEROOT", "../../" );
 include_once( SITEROOT."site.php" );
 include_once( SEEDCORE."SEEDCoreForm.php" );
@@ -25,10 +27,11 @@ $oForm->Update();
 $oSLDB = new SLDBCollection( $oApp );
 
 if( (!$oForm->Value('cvName') || !$oForm->Value('desc')) && $oForm->Value('kLot') ) {
-    $kfrLot = $oSLDB->GetKFR( 'IxAxPxS', $oForm->Value('kLot') );
-    if( !$oForm->Value('cvName') ) $oForm->SetValue( 'cvName', $kfrLot->Value('P_name') );
-
-    if( !$oForm->Value('desc') ) $oForm->SetValue( 'desc', $kfrLot->Value('S_label_desc') );
+    if( ($kfrLot = $oSLDB->GetKFRCond( 'IxAxPxS', "fk_sl_collection='1' AND inv_number='".$oForm->Value('kLot')."'" )) ) {
+        if( !$oForm->Value('cvName') ) $oForm->SetValue( 'cvName', $kfrLot->Value('P_name') );
+    
+        if( !$oForm->Value('desc') ) $oForm->SetValue( 'desc', $kfrLot->Value('S_label_desc') );
+    }
 }
 
 if( !$oForm->Value('nLabels') )  $oForm->SetValue( 'nLabels', 30 );
