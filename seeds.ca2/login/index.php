@@ -55,9 +55,8 @@ $raLoginDef = array(
         ) ),
     array( "Member Seed Directory", "Catalogue de semences",
            array(
-               array( ($lang == 'EN' ? "app/mbr/seed-directory.php" : "app/mbr/catalogue-semences.php"),
-                      "PUBLIC",         "Member Seed Directory listings", "Catalogue de semences" ),
-               array( "app/mbr/edit.php",  "W sed",         "Edit my Seed Directory Listings" ),
+               array( "app/seedexchange",        "PUBLIC",        "Member Seed Directory listings", "Catalogue de semences" ),
+               array( "app/mbr/edit.php",        "W sed",         "Edit my Seed Directory Listings" ),
         ) ),
 
     array( "My Seed Collection", "My Seed Collection",
