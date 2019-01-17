@@ -63,7 +63,7 @@ if( substr( $path, -1 ) == '/' )  $path = substr( $path, 0, -1 );
     return( $path );
 }
 
-function SiteApp( $raConfig = array() )
+function SiteAppConsole( $raConfig = array() )
 {
     global $config_KFDB;
 

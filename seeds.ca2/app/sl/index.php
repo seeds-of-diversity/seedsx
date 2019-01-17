@@ -9,7 +9,7 @@ include_once( SEEDLIB."sl/sldb.php" );
 
 require SEEDROOT."vendor/autoload.php";     // FPDF
 
-$oApp = SiteApp();  // no perms required for labels but might need perms for further functionality
+$oApp = SiteAppConsole();  // no perms required for labels but might need perms for further functionality
 
 $oForm = new SEEDCoreForm( 'A' );
 $oForm->Update();
