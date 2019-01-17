@@ -11,14 +11,15 @@ include_once( "_sl_admin_adoption.php" );
 
 // Access to the application is given if any of the tabs are accessible
 // Inaccessible tabs are Ghosted
-$raPerms = array( 'Reports'       => array('SL'=>'R'),
-                  'Accessions'    => array('SL-do-not-use-this-tab'=>'W'),
-                  'Adoptions'     => array('SLAdopt'=>'W'),
-                  'Adoptions2'    => array('SLAdopt'=>'W'),
-                  'Cultivars'     => array('SL-do-not-use-this-tab'=>'W'),
-                  'Species'       => array('SL-do-not-use-this-tab'=>'W'),
-                  //'Germination'   => array('SL'=>'W'),
-                  'admin'         => array('SL-not-implemented'=>'A')
+$raPerms = array( 'Reports'       => array('R SL'),
+                  'Accessions'    => array('W SL-do-not-use-this-tab'),
+                  'Adoptions'     => array('W SLAdopt'),
+                  'Adoptions2'    => array('W SLAdopt'),
+                  'Cultivars'     => array('W SL-do-not-use-this-tab'),
+                  'Species'       => array('W SL-do-not-use-this-tab'),
+                  //'Germination'   => array('W SL'),
+                  'admin'         => array('A SL-not-implemented'),
+                                  '|'   // the above are disjunctions for application access
 );
 
 

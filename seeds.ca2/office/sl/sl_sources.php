@@ -84,7 +84,7 @@ include_once( "_sl_source_edit.php" );
 include_once( "_sl_source_rosetta.php" );
 include_once(SEEDCOMMON."sl/sl_sources_common.php");
 
-list($kfdb2, $sess) = SiteStartSessionAccount( array( array("SLSources" => "W"), array("SL"=>"A") ) );  // SLSources-W OR SL-A
+list($kfdb2, $sess) = SiteStartSessionAccount( [ "W SLSources", "A SL", "|" ] );  // SLSources-W OR SL-A
 $kfdb1 = SiteKFDB( SiteKFDB_DB_seeds1 ) or die( "Cannot connect to database" );
 
 //$kfrel = new KeyFrameRelation( $kfdb, $kfreldef_CVSources, 0 );

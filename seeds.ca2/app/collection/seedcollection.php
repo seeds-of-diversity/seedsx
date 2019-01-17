@@ -57,7 +57,7 @@ class SLCollectionAdmin extends Console01_Worker1
         $this->oGerm = new SLCollectionGermination( $this );
         $this->oColl = new SLCollectionCollection( $this );
 
-        $this->IsAdmin = $sess->TestPermRA( array( array('SLCollection' => 'A'), array('SL' => 'A') ) );
+        $this->IsAdmin = $sess->TestPermRA( ['A SLCollection', 'A SL', '|'] );  // either or
 
         $raTmplParms = array(
             'fTemplates' => array( SEEDAPP."templates/mycollection.html" ),
