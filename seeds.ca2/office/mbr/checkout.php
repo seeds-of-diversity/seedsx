@@ -7,7 +7,7 @@ include_once( SEEDCOMMON."console/console01.php" );
 
 define( "MbrOrderCheckoutOffice", 1 );
 
-list($kfdb2, $sess) = SiteStartSessionAccount( array( "MBRORDER" => "W" ) );
+list($kfdb2, $sess) = SiteStartSessionAccount( array( "W MBRORDER" ) );
 $kfdb1 = SiteKFDB( SiteKFDB_DB_seeds1 ) or die( "Cannot connect to database" );
 
 //echo DrawMbr( $kfdb1 );    oddly enough this re-creates a kfdb for the default db
