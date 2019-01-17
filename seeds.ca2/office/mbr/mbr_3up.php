@@ -7,7 +7,7 @@ include_once( SEEDCOMMON."mbr/mbrCommon.php" );
 include_once( SEEDCORE."SEEDPrint.php" );
 
 
-list($kfdb,$sess,$lang) = SiteStartSessionAccount( array( 'MBR'=>'R' ) );
+list($kfdb,$sess,$lang) = SiteStartSessionAccount( array( 'R MBR' ) );
 
 $yCurr = SEEDInput_Int('year') ?: date('Y');
 

@@ -4,7 +4,7 @@ if( !defined("SITEROOT") )  define("SITEROOT", "../../");
 include_once( SITEROOT."site2.php" );
 include_once( SEEDAPP."EmailMeApp.php" );
 
-$oApp = new SEEDAppConsole( $config_KFDB['seeds2'] + [ 'sessPermsRequired' => array('MBR'=>'R'),
+$oApp = new SEEDAppConsole( $config_KFDB['seeds2'] + [ 'sessPermsRequired' => array('R MBR'),
                                                        'logdir' => SITE_LOG_ROOT ]
 );
 

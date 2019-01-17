@@ -12,7 +12,7 @@ include_once( STDINC."SEEDForm.php" );
 include_once( SEEDCOMMON."console/console01.php" );
 include_once( "_mbr.php" );
 
-list($kfdb, $sess) = SiteStartSessionAccount( array("MBRMAIL" => "R") );  // and "BULLETIN"=>"R"
+list($kfdb, $sess) = SiteStartSessionAccount( array("R MBRMAIL") );  // and "BULLETIN"=>"R"
 
 $kfrelMbr = MbrContacts::KfrelBase( $kfdb, $sess->GetUID() );
 

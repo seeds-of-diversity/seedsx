@@ -15,11 +15,11 @@ include_once( SEEDCOMMON."console/console01.php" );
 include_once( SEEDAPP."seedexchange/msdedit.php" );
 
 
-list($kfdb, $sess) = SiteStartSessionAccount( array("MBRORDER" => "R") );
+list($kfdb, $sess) = SiteStartSessionAccount( array("R MBRORDER") );
 $bCanWrite = $sess->CanWrite('MBRORDER');
 
 $oApp = new SEEDAppConsole( $config_KFDB['seeds1']
-                            + array( 'sessPermsRequired' => array(),
+                            + array( 'sessPermsRequired' => ['R MBRORDER'],
                                      'logdir' => SITE_LOG_ROOT )
 );
 

@@ -17,7 +17,7 @@ include_once( SEEDCOMMON."console/console01kfui.php" );
 // DB is seeds2 : authentication is done on seeds2.SEEDSession_Users, all table references are to seeds.ev_events
 // This works on www8 because seeds2 user can see seeds and seeds2 databases.
 // This works on www12 because seeds2_def.php connects the single user that can see all databases
-list($kfdb, $sess, $dummyLang) = SiteStartSessionAccount( array( "events" => "W" ) );
+list($kfdb, $sess, $dummyLang) = SiteStartSessionAccount( array( "W events" ) );
 
 header( "Content-type: text/html; charset=ISO-8859-1");
 

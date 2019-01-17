@@ -11,7 +11,7 @@ include_once( "_mbr_order_report.php" );
 header( "Content-Type:text/html; charset=ISO-8859-1" );
 
 // kfdb is seeds2 to segregate SEEDSession privileges there
-list($kfdb, $sess) = SiteStartSessionAccount( array("MBRORDER" => "R") );
+list($kfdb, $sess) = SiteStartSessionAccount( array("R MBRORDER") );
 $bCanWrite = $sess->CanWrite('MBRORDER');
 
 $oMOR = new MbrOrderReport( new SEEDApp_Worker( $kfdb, $sess, 'EN' ) );
