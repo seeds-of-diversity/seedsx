@@ -2,7 +2,7 @@
 
 /* Collection Management for micro-seedbanks
  *
- * Copyright (c) 2014-2018   Seeds of Diversity Canada
+ * Copyright (c) 2014-2019   Seeds of Diversity Canada
  *
  */
 
@@ -17,11 +17,7 @@ include_once( SEEDCOMMON."sl/sl_db.php" );
 include_once( "seedcollection.php" );
 include_once( "controls.php" );
 
-
-// Access to the application is given if any of the tabs are accessible
-// Inaccessible tabs are Ghosted
-$raPerms = array( array('SLCollection' => 'W'), array('SL' => 'A') );   // SLCollection:W or SL:A
-list($kfdb, $sess, $lang) = SiteStartSessionAccountNoUI( $raPerms );
+list($kfdb, $sess, $lang) = SiteStartSessionAccountNoUI( [ 'W SLCollection', 'A SL', '|' ] );  // SLCollection:W or SL:A
 
 //var_dump($_REQUEST);
 //$kfdb->SetDebug(1);
