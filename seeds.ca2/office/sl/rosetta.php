@@ -20,11 +20,12 @@ include_once( SEEDCOMMON."sl/sl_db_admin.php" );    // get stats on referenced s
 
 // Access to the application is given if any of the tabs are accessible
 // Inaccessible tabs are Ghosted
-$raPerms = array( 'Cultivars'    => array('SL'=>'W'),
-                  'Species'      => array('SLRosetta'=>'W'),
-                  'CultivarsSyn' => array('SL'=>'W'),
-                  'SpeciesSyn'   => array('SL'=>'W'),
-                  'Admin'        => array('SLRosetta'=>'A'),
+$raPerms = array( 'Cultivars'    => array('W SL'),
+                  'Species'      => array('W SLRosetta'),
+                  'CultivarsSyn' => array('W SL'),
+                  'SpeciesSyn'   => array('W SL'),
+                  'Admin'        => array('A SLRosetta'),
+                                    '|'   // the above are disjunctions for application access
 );
 list($kfdb, $sess) = SiteStartSessionAccount( $raPerms );
 

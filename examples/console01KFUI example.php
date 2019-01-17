@@ -9,9 +9,11 @@ include_once( SEEDCOMMON."console/console01kfui.php" );
 
 // Access to the application is given if any of the tabs are accessible
 // Inaccessible tabs are Ghosted
-$raPerms = array( 'Users'    => array('MBR'=>'R'),    // you probably have this perm
-                  'Public'   => array(),              // no perms needed
-                  'Ghost'    => array('DOES-NOT-EXIST'=>'W') );
+$raPerms = array( 'Users'    => ['R MBR'],    // you probably have this perm
+                  'Public'   => [],           // no perms needed
+                  'Ghost'    => ['W DOES-NOT-EXIST'],
+                               '|'   // the above are disjunctions for application access
+);
 
 list($kfdb2, $sess) = SiteStartSessionAccount( $raPerms );
 $kfdb1 = SiteKFDB( SiteKFDB_DB_seeds1 ) or die( "Cannot connect to database" );

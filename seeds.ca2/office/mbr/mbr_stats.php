@@ -6,7 +6,7 @@ include_once( SITEROOT."site2.php" );
 //include_once( STDINC."KeyFrame/KFUIAppSimple.php" );
 include_once( "_mbr.php" );
 
-list($kfdb, $sess) = SiteStartSessionAccount( array("MBR" => "R") );
+list($kfdb, $sess) = SiteStartSessionAccount( array("R MBR") );
 //$bReadonly = !($sess->CanWrite( "MBR" ));
 //$kfdb->KFDB_SetDebug(2);
 

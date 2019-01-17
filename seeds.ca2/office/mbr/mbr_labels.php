@@ -2,7 +2,7 @@
 
 // Weirdest thing: other apps send parms like addorder=12345; when POST those parms appear in the url like get, so script is used to clean that up.
 // Somehow _REQUEST is empty if you do that. Using GET from other apps and script to clean it up.
- 
+
 
 /* Label maker for Contacts and Orders
 
@@ -27,7 +27,7 @@ define( "SITEROOT", "../../" );
 include_once( SITEROOT."site2.php" );
 include_once( SEEDCOMMON."mbr/mbrCommon.php" ); // MbrDrawAddressBlock
 
-list($kfdb,$sess,$lang) = SiteStartSessionAccount( array( 'MBR'=>'R', 'MBRORDER'=>'R') );   // both are required because both are revealed
+list($kfdb,$sess,$lang) = SiteStartSessionAccount( ['R MBR', '&', 'R MBRORDER'] );   // both are required because both are revealed
 
 if( @$_REQUEST['cmd'] == 'pdf' )  goto drawPDF_Labels;
 
