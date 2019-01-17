@@ -2,7 +2,7 @@
 define( "SITEROOT", "./" );
 include( "site.php" );
 
-SiteStartSessionAccount( array('DocRepMgr'=>'A') );     // this has nothing to do with DocRep but it means you're somebody
+SiteStartSessionAccount( array('A DocRepMgr') );     // this has nothing to do with DocRep but it means you're somebody
 
 
 $x = null;

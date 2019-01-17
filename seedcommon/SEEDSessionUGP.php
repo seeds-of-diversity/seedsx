@@ -25,7 +25,7 @@ include_once( SEEDCOMMON."console/console01kfui.php" );
 //var_dump($_SESSION);
 
 
-list($kfdb, $sess, $dummyLang) = SiteStartSessionAccount( array("SEEDSessionUGP"=>"A") );
+list($kfdb, $sess, $dummyLang) = SiteStartSessionAccount( ['A SEEDSessionUGP'] );
 $kfdb->SetDebug(1);
 
 class MyConsole extends Console01KFUI

@@ -45,7 +45,7 @@ include_once( SEEDCOMMON."console/console01kfui.php" );
 include_once( STDINC."SEEDEditor.php" );
 
 
-list($kfdb, $sess, $dummyLang) = SiteStartSessionAccount( array("Traductions" => "W") );
+list($kfdb, $sess, $dummyLang) = SiteStartSessionAccount( array("W Traductions") );
 
 
 if( STD_isLocal && ($nsKill = @$_REQUEST['killkill_localonly']) ) {

@@ -11,7 +11,7 @@ include_once( SEEDCOMMON."sl/sl_db.php" );
 //include_once( STDINC."KeyFrame/KFRTable.php" );
 include_once( STDINC."SEEDTable.php" );
 
-list($kfdb2, $sess) = SiteStartSessionAccount( array("SL" => "R") );
+list($kfdb2, $sess) = SiteStartSessionAccount( array("R SL") );
 $kfdb1 = SiteKFDB( SiteKFDB_DB_seeds1 ) or die( "Cannot connect to database" );
 
 
