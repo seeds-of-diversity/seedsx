@@ -7,7 +7,7 @@ include_once( SEEDCOMMON."console/console01.php" );
 include_once( SEEDCOMMON."googleAPI.php" );
 include( "_maps.php" );
 
-list($kfdb, $sess, $lang) = SiteStartSessionAccount( array('BautaMap'=>'W') );
+list($kfdb, $sess, $lang) = SiteStartSessionAccount( ['W BautaMap'] );
 
 $oMap = new BautaMap( $kfdb );
 

@@ -16,7 +16,7 @@ if( @$_REQUEST['mode'] == 'diff' ) {
 }
 
 // Serve the maxVer version of the document
-list($kfdb, $sess, $lang) = SiteStartSessionAccount( array("DocRepMgr"=>"R") );
+list($kfdb, $sess, $lang) = SiteStartSessionAccount( array("R DocRepMgr") );
 DocServeDoc( $kfdb, $sess, "" );    // flag == maxver
 
 ?>
