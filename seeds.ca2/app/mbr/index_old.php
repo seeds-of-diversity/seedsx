@@ -14,7 +14,7 @@ include_once( SEEDCOMMON."sl/sed/sedCommon.php" );
 include_once( SEEDCOMMON."sitePipeCommon.php" );
 
 // Don't ask to login here, and allow the page to be viewed if no login
-list($kfdb, $sess, $lang) = SiteStartSessionAccountNoUI( array("sed" => "R") );
+list($kfdb, $sess, $lang) = SiteStartSessionAccountNoUI( ["R sed"] );
 
 //$kfdb->SetDebug(2);
 //var_dump($_REQUEST);

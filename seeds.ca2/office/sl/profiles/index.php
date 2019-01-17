@@ -13,7 +13,7 @@ include_once( SEEDCORE."SEEDUI.php" );
 include_once( "profiles.php" );
 
 $oApp = new SEEDAppConsole( array( 'kfdbUserid' => SiteKFDB_USERID, 'kfdbPassword' => SiteKFDB_PASSWORD, 'kfdbDatabase' => SiteKFDB_DB,
-                                   'sessPermsRequired' => array( 'slProfilesOffice' => 'W'),
+                                   'sessPermsRequired' => array( 'W slProfilesOffice'),
                                    'logdir' => SITE_LOG_ROOT ) );
 if( !$oApp->sess->IsLogin() )  header( "Location: ../../login/" );
 

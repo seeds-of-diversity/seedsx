@@ -34,7 +34,7 @@ include_once( SEEDCOMMON."console/console01.php" );
 /* kfdb  is seeds  (sed_seeds, sed_growers are here for HPD; sed_curr_seeds, sed_curr_growers are here for member update)
  * kfdb2 is seeds2
  */
-list($kfdb2, $sess, $dummyLang) = SiteStartSessionAccount( array("sedadmin" => "W") );
+list($kfdb2, $sess, $dummyLang) = SiteStartSessionAccount( ["W sedadmin"] );
 $kfdb = SiteKFDB( SiteKFDB_DB_seeds1 ) or die( "Cannot connect to database" );
 
 $kfdb->SetDebug(1);

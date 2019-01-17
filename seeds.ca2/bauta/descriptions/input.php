@@ -19,7 +19,7 @@ include_once( SEEDCOMMON."console/console01.php" );
 include_once( "descInput.php" );
 
 // require a login to exist, but you don't need SLDesc perms
-list($kfdb,$sess,$lang) = SiteStartSessionAccount( array(/*'SLDesc'=>'W'*/) ) or die( "Cannot connect to database" );
+list($kfdb,$sess,$lang) = SiteStartSessionAccount( array(/*'W SLDesc'*/) ) or die( "Cannot connect to database" );
 
 
 //var_dump($_REQUEST);

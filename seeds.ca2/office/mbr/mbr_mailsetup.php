@@ -15,7 +15,7 @@ include_once( SEEDCOMMON."console/console01.php" );
 include_once( SEEDCOMMON."doc/docUtil.php" );
 include_once( "_mbr_mail.php" );
 
-list($kfdb2,$sess) = SiteStartSessionAccount(array('MBRMAIL'=>'W'));
+list($kfdb2,$sess) = SiteStartSessionAccount(array('W MBRMAIL'));
 $kfdb1 = SiteKFDB( SiteKFDB_DB_seeds1 ) or die( "Cannot connect to database" );
 
 //$kfdb2->SetDebug(2);
