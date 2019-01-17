@@ -8,7 +8,7 @@ include_once( SEEDCOMMON."mbr/mbrOrder.php" );
 include_once( "_mbr_order_report.php" );
 
 // kfdb is seeds2 to segregate SEEDSession privileges there
-list($kfdb, $sess) = SiteStartSessionAccount( array("MBRORDER" => "R") );
+list($kfdb, $sess) = SiteStartSessionAccount( array("R MBRORDER") );
 $bCanWrite = $sess->CanWrite('MBRORDER');
 
 $s = "";

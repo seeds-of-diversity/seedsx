@@ -27,7 +27,7 @@ include_once( SEEDAPP."basket/basketProductHandlers_seeds.php" );
 include_once( SEEDAPP."seedexchange/msdedit.php" );
 include_once( SEEDLIB."msd/msdlib.php" );
 
-list($kfdb, $sess, $lang) = SiteStartSessionAccount( array("sed" => "W") );
+list($kfdb, $sess, $lang) = SiteStartSessionAccount( ["W sed"] );
 
 $oApp = new SEEDAppConsole( $config_KFDB['seeds1']
                             + array( 'sessPermsRequired' => array(),

@@ -6,7 +6,7 @@ include_once( STDINC."SEEDLocal.php" );
 include_once( SEEDCOMMON."mbr/mbrOrder.php" );
 include_once( SEEDCOMMON."mbr/mbrCommon.php" );
 
-list($kfdb, $sess) = SiteStartSessionAccount( array("MBRORDER" => "R") );
+list($kfdb, $sess) = SiteStartSessionAccount( array("R MBRORDER") );
 $kfdb->SetDebug(1);
 
 $oStats = new MbrOrderStats( $kfdb );

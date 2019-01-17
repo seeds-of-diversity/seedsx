@@ -30,7 +30,7 @@ include_once( "_mbr_upload.php" );
 
 //$mbr_cols = "num,code,firstname,lastname,company,department,address,city,province,country,postcode,phone,phone_ext,status,startdate,expires,bCurrent,renewed,language,mailing,referral,lastrenew,email";
 
-list($kfdb,$sess) = SiteStartSessionAccount( array("MBR"=>"A") );
+list($kfdb,$sess) = SiteStartSessionAccount( array("A MBR") );
 
 $oUpload = new MbrUpload();
 
