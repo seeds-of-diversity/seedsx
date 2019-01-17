@@ -25,10 +25,12 @@ include_once( "_mbr_mail.php" );
 define( "MBRCONTACTS_TABNAME_BULLETIN", "Bulletin" );    // so per-tab TabSetGetSVA knows its name
 
 
-$raPerms = array( 'Contacts' => array('MBR'=>'R'),
-                  'Summary'   => array('MBR'=>'A'),
-                  'Logins'   => array('MBR'=>'A'),
-                  MBRCONTACTS_TABNAME_BULLETIN => array('BULL'=>'W') );
+$raPerms = array( 'Contacts'                   => array('R MBR'),
+                  'Summary'                    => array('A MBR'),
+                  'Logins'                     => array('A MBR'),
+                  MBRCONTACTS_TABNAME_BULLETIN => array('W BULL'),
+                                                  '|'   // the above are disjunctions for application access
+);
 
 list($kfdb2, $sess) = SiteStartSessionAccount( $raPerms );
 $kfdb1 = SiteKFDB( SiteKFDB_DB_seeds1 ) or die( "Cannot connect to database" );

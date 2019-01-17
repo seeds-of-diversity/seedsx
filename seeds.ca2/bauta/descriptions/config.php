@@ -20,10 +20,11 @@ include_once( SEEDCOMMON."sl/q/_QServerDesc.php" );
 
 // Access to the application is given if any of the tabs are accessible
 // Inaccessible tabs are Ghosted
-$raPerms = array( 'Descriptors'=> array('SLDesc'=>'A'),
-                  'Multiple'   => array('SLDesc'=>'A'),
-                  'Forms'      => array('SLDesc'=>'A'),
-                  'Forms2'     => array('SLDesc'=>'A'),
+$raPerms = array( 'Descriptors'=> array('A SLDesc'),
+                  'Multiple'   => array('A SLDesc'),
+                  'Forms'      => array('A SLDesc'),
+                  'Forms2'     => array('A SLDesc'),
+                                  '|'   // the above are disjunctions for application access
 );
 list($kfdb, $sess, $lang) = SiteStartSessionAccount( $raPerms );
 
