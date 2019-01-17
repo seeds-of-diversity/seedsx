@@ -6,7 +6,7 @@
 include_once( "../site.php" );
 include_once( SEEDCOMMON."siteStart.php" );
 
-list($kfdb, $sess, $lang) = SiteStartSessionAccount( array("SEEDSessionUGP"=>"A") );
+list($kfdb, $sess, $lang) = SiteStartSessionAccount( ["A SEEDSessionUGP"] );
 
 if( ($u = SEEDSafeGPC_GetStrPlain('u')) ) {
     if( $sess->LoginAsUser( $u ) ) {
