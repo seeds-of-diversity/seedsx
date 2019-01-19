@@ -152,7 +152,7 @@ class mbrBasket_Products extends Console01_Worker1
         }
 */
 
-        $s = $this->oMSDAppSeedEdit->Draw();
+        $s = $this->oMSDAppSeedEdit->Draw( $this->sess->GetUID() );
 
         return( $s );
     }
