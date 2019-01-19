@@ -8,7 +8,8 @@
  */
 
 // includes are based from the drupal directory
-include_once( "../../std.php" );
+if( !defined("SITEROOT") ) define( "SITEROOT", "../" );     // probably already set when seeds.module runs but who knows
+include_once( SITEROOT."site_config.php" );                 // actually seeds.module probably already ran site.php too
 include_once( "../drupalmod/lib/theme-seeds2014/page-tpl.php" );
 
 ?>

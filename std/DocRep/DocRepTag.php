@@ -30,13 +30,9 @@ class DocRepTagHandler
 
         $s1 = ($sFlag == 'PUB' ? "docpub.php" : "doc.php");
         if( STD_isLocal ) {
-            $sServe = STDROOT
-                     .($eDB == 'office' ? "office" : "seeds.ca2")
-                     ."/d/$s1";
+            $sServe = SITEROOT.($eDB=='office' ? "office/" : "")."d/$s1";
         } else {
-            $sServe = 'http://'     //($sFlag == 'PUB' ? 'http://' : 'https://')
-                     .($eDB == 'office' ? "office.seeds.ca" : "www.seeds.ca")
-                     ."/d/$s1";
+            $sServe = 'https://www.seeds.ca/'.($eDB=='office' ? "office/" : "")."d/$s1";
         }
 
 // These are defined in the SEEDTagBasicResolver

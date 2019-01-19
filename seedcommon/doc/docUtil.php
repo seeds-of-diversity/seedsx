@@ -57,10 +57,10 @@ class DocRepWiki_Site extends DocRepWiki
         $raParms = $raDRWParms; // copy to not overwrite caller's array
 
         // Depending on the situation, serve local links and images from:
-        //     STDROOT/seeds.ca/int/doc/doc.php
-        //     STDROOT/seeds.ca/int/doc/docpub.php
-        //     STDROOT/office/int/doc/doc.php
-        //     STDROOT/office/int/doc/docpub.php
+        //     /seeds.ca/int/doc/doc.php
+        //     /seeds.ca/int/doc/docpub.php
+        //     /office/int/doc/doc.php
+        //     /office/int/doc/docpub.php
         // (these last four must be stated independently of the browser address because some apps e.g. mbr_mail
         //  can refer to links & imgs on other servers and other ssl states)
         //     https://office.seeds.ca/int/doc/doc.php
@@ -70,13 +70,9 @@ class DocRepWiki_Site extends DocRepWiki
 
         $s1 = ($sFlag == 'PUB' ? "docpub.php" : "doc.php");
         if( STD_isLocal ) {
-            $sServe = STDROOT
-                     .($eDB == 'office' ? "office" : "seeds.ca")
-                     ."/int/doc/$s1";
+            $sServe = SITEROOT.($eDB=='office' ? "office/" : "")."d/$s1";
         } else {
-            $sServe = 'http://'     //($sFlag == 'PUB' ? 'http://' : 'https://')
-                     .($eDB == 'office' ? "office.seeds.ca" : "www.seeds.ca")
-                     ."/int/doc/$s1";
+            $sServe = 'https://www.seeds.ca/'.($eDB=='office' ? "office/" : "")."d/$s1";
         }
 
         if( !@$raParms['php_serve_link'] ) $raParms['php_serve_link'] = $sServe;

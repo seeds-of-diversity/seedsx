@@ -1,6 +1,6 @@
 <?php
 // Although this code is stored in seeds.ca/swww/sites/all/modules/custom/seeds, it appears to have file scope of seeds.ca/drupal
-define( "SITEROOT", "../" );
+if( !defined("SITEROOT") ) define( "SITEROOT", "../" );
 include_once( SITEROOT."site.php" );
 include_once( SITEROOT."drupalmod/lib/dmod_seeds.php" );
 
