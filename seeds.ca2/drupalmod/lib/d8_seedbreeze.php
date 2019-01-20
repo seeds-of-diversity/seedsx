@@ -134,6 +134,15 @@ class DrupalModTagHandler
         $pathSelf = \Drupal\Core\Url::fromRoute('<current>')->toString();
 
         switch( $contentName ) {
+            case 'homeimg':
+                $img = $raTag['raParms'][1];
+                $sWidth = substr($img,0,3)=='img' ? "width:85%;height:110%" : "width:85%";
+
+                if( substr($img,0,4) != 'http' ) $img = "https://seeds.ca/d?n=".$img;
+                $s = "<div class='col-xs-12 col-sm-6 col col-md-4 col-lg-3' style='text-align:center'>"
+                    ."<img src='$img' style='$sWidth'/><p style='font-weight:bold;font-size:large'>{$raTag['raParms'][2]}</p>"
+                    ."</div>";
+                break;
             case 'helloworld':
                 $s = "Hello World!";
                 break;
