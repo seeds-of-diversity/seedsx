@@ -67,7 +67,7 @@ function Site_Log( $filename, $s )
 /*********************************
  */
 {
-    if( $fp = fopen( STDROOT."seeds_log/".$filename, "a" ) ) { // this is the same as SITE_LOG_ROOT, I think
+    if( $fp = fopen( SITE_LOG_ROOT.$filename, "a" ) ) {
         fputs( $fp, $s."\n" );
         fclose( $fp );
     }

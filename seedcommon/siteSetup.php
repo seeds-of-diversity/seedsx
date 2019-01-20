@@ -124,7 +124,7 @@ class SiteSetupClass {
         if( file_exists( $fnameDef ) ) {
             $this->s_okay( "SITE_DB_DEF_FILE exists: $fnameDef" );
         } else {
-            $fnameSample = STDROOT_REALDIR."seeds_def_sample.php";
+            $fnameSample = SEEDSX_ROOT_REALDIR."seeds_def_sample.php";
             //echo "Sample file: $fnameSample<BR/>Def file: $fnameDef<BR/>";
 
             $s = "SITE_DB_DEF_FILE did not exist: '".SITE_DB_DEF_FILE."'. ";
@@ -132,7 +132,7 @@ class SiteSetupClass {
                 if( copy( $fnameSample, $fnameDef ) ) {
                     $s .= "Successfully created $fnameDef -- you must edit it now to contain your db parms.";
                 } else {
-                    $s .= "Tried to copy it from $fnameSample but the copy failed! Make sure the web server has write permission on the STDROOT directory.";
+                    $s .= "Tried to copy it from $fnameSample but the copy failed! Make sure the web server has write permission on the SEEDSX_ROOT directory.";
                 }
             }
             $this->s_error( $s );
@@ -272,9 +272,9 @@ $this->sOut .= "<P>Be sure to cp -R {W_ROOT} ~/public_html/w  -- production serv
         if( $sSite == "office" ) {
             /* Create upload/download directories
              */
-            $this->dir_create( NULL, STDROOT."mbrmdb" );
-            $this->dir_create( NULL, STDROOT."sl_download" );
-            $this->dir_create( NULL, STDROOT."sl_download/npgs" );
+            $this->dir_create( NULL, SEEDSX_ROOT."mbrmdb" );
+            $this->dir_create( NULL, SEEDSX_ROOT."sl_download" );
+            $this->dir_create( NULL, SEEDSX_ROOT."sl_download/npgs" );
 
             $s = "";
 

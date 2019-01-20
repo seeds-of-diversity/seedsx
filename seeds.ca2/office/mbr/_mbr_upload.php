@@ -1,6 +1,6 @@
 <?php
 
-define( "DIR_MBRMDB", STDROOT_REALDIR."mbrmdb/" );
+define( "DIR_MBRMDB", SEEDSX_ROOT_REALDIR."mbrmdb/" );
 define( "REALPATH_MDB_FILE", DIR_MBRMDB."up.mdb" );
 define( "DBT_MBR_TMP_UPLOAD", "mbr_tmp_mdb_upload" );
 

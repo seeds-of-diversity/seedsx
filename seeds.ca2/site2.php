@@ -4,17 +4,17 @@ if( $_SERVER['PHP_SELF'] == "/site2.php" ) exit;  // don't let anyone look at th
 
 
 if( !defined("SITEROOT") )  { define("SITEROOT", "../"); }
+include_once( "site_config.php" );
 
-define("STDROOT", SITEROOT."../");
-define("SEEDCOMMON", STDROOT."seedcommon/");    // application files shared by sites
-include_once( STDROOT."std.php" );
+
+define("SEEDCOMMON", SEEDSX_ROOT."seedcommon/");    // application files shared by sites
 include_once( SEEDCOMMON."siteCommon.php" );
 
 SiteCommon_init( array(
     "SITE_DB_DEF_FILE"  => (CONFIG_DIR."seeds_def2.php"),  // this def is used by SEEDSetup and below
-    "SITE_LOG_ROOT"     => (STDROOT."seeds_log/"),
-    "DOCREP_UPLOAD_DIR" => (STDROOT."docrep_upload2/"),
-    "DOCREP_UPLOAD_REALDIR" => (STDROOT_REALDIR."docrep_upload2/"),
+    "SITE_LOG_ROOT"     => (SEEDSX_ROOT."seeds_log/"),
+    "DOCREP_UPLOAD_DIR" => (SEEDSX_ROOT."docrep_upload2/"),
+    "DOCREP_UPLOAD_REALDIR" => (SEEDSX_ROOT_REALDIR."docrep_upload2/"),
     "SITE_LOGIN_ROOT"   => (SITEROOT."office/login/")
     ) );
 include_once( SITE_DB_DEF_FILE );  // cannot be included by the function above because variables within it would be local there instead of global
