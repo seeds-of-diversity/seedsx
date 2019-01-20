@@ -53,7 +53,7 @@ if( !defined("SEEDROOT") ) {
 
 if( !defined("CONFIG_DIR") ) {
     // should be ~/_config on both dev and prod installations
-    define( "CONFIG_DIR", STD_isLocal ? (SEEDSX_ROOT."../../_config/") : (SEEDSX_ROOT."_config") );
+    define( "CONFIG_DIR", STD_isLocal ? (SEEDSX_ROOT."../../_config/") : (SEEDSX_ROOT."_config/") );
 }
 
 /* full filesystem locations of SEEDSX_ROOT and the current script
