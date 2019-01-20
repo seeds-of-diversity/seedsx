@@ -36,7 +36,7 @@ include_once( STDINC."DocRep/DocRepApp02.php" );
 
 /* Allow readers to see the application; doc access controlled by SEEDPerms
  */
-list($kfdb, $sess) = SiteStartSessionAccount( array("DocRepMgr"=>"R") );
+list($kfdb, $sess) = SiteStartSessionAccount( array("R DocRepMgr") );
 //$kfdb->SetDebug(2);
 //var_dump($_REQUEST);
 //var_dump($_SESSION);
