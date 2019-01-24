@@ -57,6 +57,10 @@ CREATE TABLE IF NOT EXISTS ev_events (
     attendance  INTEGER,
     notes_priv  TEXT,                                   # internal notes
 
+    vol_kMbr    INTEGER NOT NULL DEFAULT 0,             # our main volunteer there
+    vol_notes   TEXT,                                   # materials to send and notes about volunteer/event
+    vol_dSent   VARCHAR(20),                            # YYYY-MM-DD when materials sent ('' == not sent yet, anything else means no need to send)
+
     INDEX (date_start),
     INDEX (province)
 );
@@ -381,7 +385,11 @@ class EV_Events {
                                                               array("col"=>"url_more",    "type"=>"S"),
                                                               array("col"=>"latlong",     "type"=>"S"),
                                                               array("col"=>"attendance",  "type"=>"I"),
-                                                              array("col"=>"notes_priv",  "type"=>"I") ) ) ) );
+                                                              array("col"=>"notes_priv",  "type"=>"S"),
+                                                              array("col"=>"vol_kMbr",    "type"=>"I"),
+                                                              array("col"=>"vol_notes",   "type"=>"S"),
+                                                              array("col"=>"vol_dSent",   "type"=>"S"),
+                                           ) ) ) );
 
         $this->kfrel = new KeyFrameRelation( $kfdb, $def, $uid,
                                              array( 'logfile' => SITE_LOG_ROOT."events.log" ) );

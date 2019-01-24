@@ -32,6 +32,7 @@ $raConsoleParms = array(
     'HEADER' => "Seeds of Diversity Events List",
     'CONSOLE_NAME' => "Events",
     'bBootstrap' => true,
+    'script_files' => [W_CORE."js/SEEDCore.js", W_CORE."js/SFUTextComplete.js"]
 );
 $raCompParms = array(
     'Label'    => "Event",
@@ -211,6 +212,7 @@ function EV2_formDraw( $oForm )
     //$oForm->raParms['bBootstrap'] = true;
     global $SiteUtilRaProvinces1;
     global $oEv;
+    global $kfdb;
 
     if( ($kEv = $oForm->GetKey()) ) {
         if( ($kfr = $oEv->GetKfrelEvents()->GetRecordFromDBKey( $kEv )) ) {
@@ -222,6 +224,10 @@ function EV2_formDraw( $oForm )
         $sPreviewText = "Preview will go here";
     }
 
+    if( ($kVol = $oForm->Value('vol_kMbr')) ) {
+        // a volunteer is assigned to this event
+        $raMbrVol = $kfdb->QueryRA( "SELECT * FROM seeds2.mbr_contacts WHERE _key='$kVol'" );
+    }
 
     $s = "<div class='container'>"
 
@@ -270,6 +276,26 @@ function EV2_formDraw( $oForm )
             ."<label>(French)</label><br/>"
             .$oForm->TextArea( 'details_fr', "", 60, 8, array('attrs'=>"wrap='soft'") )."<br/>"
 
+            ."<br/><hr/>"
+
+            // Volunteer coordination
+            ."<div class='well' style='position:relative'>"     // specify position because SFU_TextComplete puts the <select> relative to first "positioned" ancestor
+            ."<h3>Volunteer Coordination</h3>"
+            ."<label>Our main volunteer there</label><br/>"
+
+            //[[text:dummy_kMbr | size:10 class:SFU_TextComplete | placeholder='Search']]
+            //[[hidden:vol_kMbr]]
+            ."<span id='vol-label'>".(@$raMbrVol['_key'] ? "{$raMbrVol['firstname']} {$raMbrVol['lastname']} in {$raMbrVol['city']} ({$raMbrVol['_key']})" : "")."</span>"
+            ."&nbsp;&nbsp;"
+            .$oForm->Text( 'dummy_kMbr', '', ['size'=>10,'class'=>'SFU_TextComplete','attrs'=>"placeholder='Search'"] )
+            .$oForm->Hidden( 'vol_kMbr' )
+            ."<br/>"
+            ."<label>Materials to ship and notes</label><br/>"
+            .$oForm->TextArea( 'vol_notes', "", 60, 8, array('attrs'=>"wrap='soft'") )."<br/>"
+            ."<label>Date materials mailed (YYYY-MM-DD or N/A)</label><br/>"
+            .$oForm->Text( 'vol_dSent' )."<br/>"
+            ."</div>"
+
             ."<br/><br/>"
             ."<input type='submit' value='Save'/>"
 
@@ -302,6 +328,59 @@ function EV2_formDraw( $oForm )
 //    notes_priv  TEXT,                                   # internal notes
 
         ."</div>";  // container
+
+    $s .= EV2_volSearchJS();
+
+    return( $s );
+}
+
+
+function EV2_volSearchJS()
+{
+    $urlQ = SITEROOT_URL."app/q/q2.php";    // same as q/index.php but authenticates on seeds2
+
+    $s = <<<volSearchJS
+<script>
+var urlQ = "$urlQ";
+var cp1_pcvSearch = [];
+SFU_TextCompleteVars['sfAp_dummy_kMbr'] = {
+    'fnFillSelect' :
+            function( sSearch ) {
+                let raRet = [];
+
+                let jxData = { qcmd    : 'mbr-search',
+                               lang    : "EN",
+                               sSearch : sSearch
+                             };
+                let o = SEEDJXSync( urlQ, jxData );console.log(o);
+                if( !o || !o['bOk'] || !o['raOut'] ) {
+                    alert( "Sorry there is a server problem" );
+                } else {
+                    //var bOk = o['bOk'];
+                    //var sOut = o['sOut'];
+                    for( let i = 0; i < o['raOut'].length; ++i ) {
+                        r = o['raOut'][i];
+                        raRet[i] = { val: r['_key'],
+                                     label: r['firstname']+" "+r['lastname']+" ("+r['_key']+")" };
+                    }
+                    cp1_pcvSearch = o['raOut'];   // save this so we can look it up in fnSelectChoose
+                }
+                return( raRet );
+            },
+    'fnSelectChoose' :
+            function( val ) {
+                for( let i = 0; i < cp1_pcvSearch.length; ++i ) {
+                    let r = cp1_pcvSearch[i];
+                    if( r['_key'] == val ) {
+                        $("#vol-label").html( r['firstname']+" "+r['lastname']+" ("+r['_key']+")"+" in "+r['city'] );
+                        $("#sfAp_vol_kMbr").val( r['_key'] );
+                        break;
+                    }
+                }
+            }
+};
+</script>
+volSearchJS;
 
     return( $s );
 }
