@@ -69,7 +69,7 @@ class SLAdminReports
     {
         $s = "";
 
-        $Q = new Q( $this->oW->kfdb, $this->oW->sess );
+        $Q = new Q( $this->oW->kfdb, $this->oW->sess, null );  // oApp null for now
         $rQ = $Q->Cmd( 'collreport-cultivarsummary', array('kCollection'=>1) );
 
         if( $rQ['bOk'] ) {
@@ -98,7 +98,7 @@ class SLAdminReports
     {
         $s = "";
 
-        $Q = new Q( $this->oW->kfdb, $this->oW->sess );
+        $Q = new Q( $this->oW->kfdb, $this->oW->sess, null );    // oApp null for now
         $rQ = $Q->Cmd( 'collreport-adoptedsummary', array('kCollection'=>1) );
 
         if( $rQ['bOk'] ) {
@@ -127,7 +127,7 @@ class SLAdminReports
     {
         $s = "";
 
-        $Q = new Q( $this->oW->kfdb, $this->oW->sess );
+        $Q = new Q( $this->oW->kfdb, $this->oW->sess, null );   //oApp null for now
         $rQ = $Q->Cmd( 'collreport-germsummary', array('kCollection'=>1) );
 
         if( $rQ['bOk'] ) {

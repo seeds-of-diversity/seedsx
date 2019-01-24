@@ -2,13 +2,15 @@
 
 class Q
 {
+    public $oApp;
     public $kfdb;
     public $sess;
     public $raParms;
     public $bUTF8 = false;
 
-    function __construct( KeyFrameDB $kfdb, SEEDSessionAccount $sess, $raParms = array() )
+    function __construct( KeyFrameDB $kfdb, SEEDSessionAccount $sess, SEEDAppSessionAccount $oApp, $raParms = array() )
     {
+        $this->oApp = $oApp;
         $this->kfdb = $kfdb;
         $this->sess = $sess;
         $this->raParms = $raParms;
@@ -64,6 +66,12 @@ class Q
         if( substr( $cmd, 0, 10 ) == 'collreport' ) {
             include_once( "_QServerCollectionReport.php" );
             $o = new QServerCollectionReport( $this, array( ) );
+            $rQ = $o->Cmd( $cmd, $parms );
+        }
+
+        if( SEEDCore_StartsWith( $cmd, 'mbr' ) ) {
+            include_once( SEEDLIB."mbr/QServerMbr.php" );
+            $o = new QServerMbr( $this->oApp, array() );
             $rQ = $o->Cmd( $cmd, $parms );
         }
 

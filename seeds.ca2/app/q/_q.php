@@ -12,6 +12,7 @@ include_once( "../../bauta/q/QServer.php" );    // deprecate
  *                 &other-cmd-specific-parms
  */
 
+$oApp = SiteAppConsole( ['db'=>Q_DB] );     // either seeds1 or seeds2 depending on which you are logged into (use index.php or q2.php from your ajax)
 
 if( ($cmd = SEEDSafeGPC_GetStrPlain('qcmd')) || /* deprecate */ ($cmd = SEEDSafeGPC_GetStrPlain('cmd')) ) {
     $raQParms = array();
@@ -22,7 +23,7 @@ if( ($cmd = SEEDSafeGPC_GetStrPlain('qcmd')) || /* deprecate */ ($cmd = SEEDSafe
     }
 
     list($kfdb,$sess,$lang) = SiteStartSessionAccountNoUI();
-    $oQ = new Q( $kfdb, $sess, array('lang' => $lang) );
+    $oQ = new Q( $kfdb, $sess, $oApp, array('lang' => $lang) );
 
     // the charset returned by this query will always be utf8, unless this is reversed below
     $oQ->bUTF8 = true;
