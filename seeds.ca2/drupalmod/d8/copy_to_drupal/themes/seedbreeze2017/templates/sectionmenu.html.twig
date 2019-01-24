@@ -42,20 +42,35 @@
 .sectionmenu_imgcol { padding:0px 4px; }
 </style>
 
+{% if( langCode=='en') %}
+    {% set blueLink   = '//seeds.ca/diversity' %}
+    {% set yellowLink = '//seeds.ca/pollination' %}
+    {% set brownLink  = '//seeds.ca/organic-seeds' %}
+    {% set magentaLink = '//seeds.ca/heritage' %}
+{% else %}
+    {% set blueLink   = '//semences.ca/diversite' %}
+    {% set yellowLink = '//semences.ca/pollinisation' %}
+    {% set brownLink  = '//semences.ca/semences-biologiques' %}
+    {% set magentaLink = '//semences.ca/patrimoine' %}
+{% endif %}
+
+// use {{base_path}}
+{% set imageDir = '/sw8/web/sites/all/themes/seedbreeze2017/images/' %}
+
 <div class='visible-sm-block visible-md-block visible-lg-block' 
      style='width:50%;margin-left:auto;margin-right:0px;'>
   <div class='row'>
-    <div class='col-sm-3 sectionmenu_imgcol'><image src='http://seeds.ca/sites/all/themes/seeds2014bootstrap/seeds2014/seeds2014img/01_blue.png' class='sectionmenu_img'/></div>
-    <div class='col-sm-3 sectionmenu_imgcol'><image src='http://seeds.ca/sites/all/themes/seeds2014bootstrap/seeds2014/seeds2014img/01_yellow.png' class='sectionmenu_img'/></div>
-    <div class='col-sm-3 sectionmenu_imgcol'><image src='http://seeds.ca/sites/all/themes/seeds2014bootstrap/seeds2014/seeds2014img/01_brown.png' class='sectionmenu_img'/></div>
-    <div class='col-sm-3 sectionmenu_imgcol'><image src='http://seeds.ca/sites/all/themes/seeds2014bootstrap/seeds2014/seeds2014img/01_magenta.png' class='sectionmenu_img'/></div>
+    <div class='col-sm-3 sectionmenu_imgcol'><a href='{{blueLink}}'><image src='{{imageDir}}01_blue.png' class='sectionmenu_img'/></a></div>
+    <div class='col-sm-3 sectionmenu_imgcol'><a href='{{yellowLink}}'><image src='{{imageDir}}01_yellow.png' class='sectionmenu_img'/></a></div>
+    <div class='col-sm-3 sectionmenu_imgcol'><a href='{{brownLink}}'><image src='{{imageDir}}01_brown.png' class='sectionmenu_img'/></a></div>
+    <div class='col-sm-3 sectionmenu_imgcol'><a href='{{magentaLink}}'><image src='{{imageDir}}01_magenta.png' class='sectionmenu_img'/></a></div>
   </div>
 </div>
 <div class='visible-xs-block' style='width:100%'>
   <div class='row'>
-    <div class='col-xs-3 sectionmenu_imgcol'><image src='http://seeds.ca/sites/all/themes/seeds2014bootstrap/seeds2014/seeds2014img/01_blue.png' class='sectionmenu_img'/></div>
-    <div class='col-xs-3 sectionmenu_imgcol'><image src='http://seeds.ca/sites/all/themes/seeds2014bootstrap/seeds2014/seeds2014img/01_yellow.png' class='sectionmenu_img'/></div>
-    <div class='col-xs-3 sectionmenu_imgcol'><image src='http://seeds.ca/sites/all/themes/seeds2014bootstrap/seeds2014/seeds2014img/01_brown.png' class='sectionmenu_img'/></div>
-    <div class='col-xs-3 sectionmenu_imgcol'><image src='http://seeds.ca/sites/all/themes/seeds2014bootstrap/seeds2014/seeds2014img/01_magenta.png' class='sectionmenu_img'/></div>
+    <div class='col-xs-3 sectionmenu_imgcol'><a href='{{blueLink}}'><image src='{{imageDir}}01_blue.png' class='sectionmenu_img'/></a></div>
+    <div class='col-xs-3 sectionmenu_imgcol'><a href='{{yellowLink}}'><image src='{{imageDir}}01_yellow.png' class='sectionmenu_img'/></a></div>
+    <div class='col-xs-3 sectionmenu_imgcol'><a href='{{brownLink}}'><image src='{{imageDir}}01_brown.png' class='sectionmenu_img'/></a></div>
+    <div class='col-xs-3 sectionmenu_imgcol'><a href='{{magentaLink}}'><image src='{{imageDir}}01_magenta.png' class='sectionmenu_img'/></a></div>
   </div>
 </div>
