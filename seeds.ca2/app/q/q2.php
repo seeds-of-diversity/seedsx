@@ -7,6 +7,7 @@
 define( "SITEROOT", "../../" );
 include_once( SITEROOT."site2.php" );
 
+define( "Q_DB", 'seeds2' );
 include( "_q.php" );
 
 ?>
