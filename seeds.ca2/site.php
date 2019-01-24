@@ -63,16 +63,3 @@ if( substr( $path, -1 ) == '/' )  $path = substr( $path, 0, -1 );
     return( $path );
 }
 
-function SiteAppConsole( $raConfig = array() )
-{
-    global $config_KFDB;
-
-    $lang = @$raConfig['lang'] ?: 'EN';
-    $perms = @$raConfig['sessPermsRequired'] ?: array();
-
-    $oApp = new SEEDAppConsole( $config_KFDB['seeds1']
-                                + array( 'sessPermsRequired' => $perms,
-                                         'logdir' => SITE_LOG_ROOT,
-                                         'lang' => $lang ) );
-    return( $oApp );
-}

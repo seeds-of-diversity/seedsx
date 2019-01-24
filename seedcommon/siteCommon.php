@@ -88,4 +88,19 @@ function Site_UrlQ()
     }
 }
 
-?>
+
+function SiteAppConsole( $raConfig = array() )
+{
+    global $config_KFDB;
+
+    $db = @$raConfig['db'] ?: 'seeds1';
+    $lang = @$raConfig['lang'] ?: 'EN';
+    $perms = @$raConfig['sessPermsRequired'] ?: array();
+
+    $oApp = new SEEDAppConsole( $config_KFDB[$db]
+                                + array( 'sessPermsRequired' => $perms,
+                                         'logdir' => SITE_LOG_ROOT,
+                                         'lang' => $lang ) );
+    return( $oApp );
+}
+
