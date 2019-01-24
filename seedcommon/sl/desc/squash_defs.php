@@ -53,7 +53,7 @@ static public $raDefsSquash = array(
 
 
 //Fruit
-'squash_GRIN_b__UNIFORMITY'=> array( 'l_EPotatoN' => "Uniform plants",
+'squash_GRIN_b__UNIFORMITY'=> array( 'l_EN' => "Uniform plants",
 									 'q_EN' => "Do the plants and fruit appear to be uniform?"),
 
 'squash_GRIN_m__FRUITCOLOR'=> array( 'l_EN' => "Harvest main colour",

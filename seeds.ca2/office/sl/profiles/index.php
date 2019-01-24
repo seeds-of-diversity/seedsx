@@ -12,10 +12,11 @@ include_once( SEEDCORE."SEEDGrid.php" );
 include_once( SEEDCORE."SEEDUI.php" );
 include_once( "profiles.php" );
 
-$oApp = new SEEDAppConsole( array( 'kfdbUserid' => SiteKFDB_USERID, 'kfdbPassword' => SiteKFDB_PASSWORD, 'kfdbDatabase' => SiteKFDB_DB,
-                                   'sessPermsRequired' => array( 'W slProfilesOffice'),
-                                   'logdir' => SITE_LOG_ROOT ) );
-if( !$oApp->sess->IsLogin() )  header( "Location: ../../login/" );
+//$oApp = SiteAppConsole( ['sessPermsRequired' => ['W slProfilesOffice'] ] );
+$oApp = new SEEDAppConsole( $config_KFDB['seeds2']
+                            + array( 'sessPermsRequired' => array('W slProfilesOffice'),
+                                     'logdir' => SITE_LOG_ROOT ) );
+if( !$oApp->sess->IsLogin() )  //header( "Location: ../../login/" );
 
 //var_dump($_REQUEST);
 $oApp->kfdb->SetDebug(1);
