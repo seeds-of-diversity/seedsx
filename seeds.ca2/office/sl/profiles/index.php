@@ -86,6 +86,7 @@ $currSp = $currCv = "";
 $oUI = new SEEDUI();
 $oComp = new SEEDUIComponent( $oUI );
 $oComp->Update();
+if( $kVI ) $oComp->Set_kCurr( $kVI );   // initialize the list to the right row e.g. if we just created a new row
 
 $oList = new SEEDUIWidget_List( $oComp );
 $oSrch = new SEEDUIWidget_SearchControl( $oComp, array('filters'=> array('First Name'=>'firstname','Last Name'=>'lastname')) );
