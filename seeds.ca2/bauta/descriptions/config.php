@@ -468,7 +468,7 @@ $oDescDB_Cfg = new SLDescDB_Cfg( $kfdb, $sess->GetUID() );
     }
 
     if( false ) {
-        $oQ = new Q( $kfdb, $sess, array() );
+        $oQ = new Q( $kfdb, $sess, null, array() );  // oApp null for now
         $oQD = new QServerDesc( $oQ );
 
         // write to db

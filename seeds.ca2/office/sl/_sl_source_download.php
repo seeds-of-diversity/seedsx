@@ -298,7 +298,7 @@ class SLSourceDownload
             switch( $pMode ) {
                 case 'companies':
                     $oForm = new SEEDForm( 'Plain' );
-                    $oQ = new Q( $this->oW->kfdb, $this->oW->sess, array() );
+                    $oQ = new Q( $this->oW->kfdb, $this->oW->sess, null, array() );
                     $oSLSrc = new QServerSourceCV( $oQ, array() );
                     $raSrc = $oSLSrc->GetSources();
                     $raOpts = array( " -- All Companies -- " => 0 );

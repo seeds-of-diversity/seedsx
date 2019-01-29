@@ -22,7 +22,7 @@ class SLSourceEdit extends Console01_Worker
         $this->oSVA = $oC->TabSetGetSVA( 'main', 'Edit' );
         $this->oSLDBSrc = new SLDB_Sources( $this->kfdb, $this->sess->GetUID() );
 
-        $oQ = new Q( $this->kfdb, $this->sess, array() );
+        $oQ = new Q( $this->kfdb, $this->sess, null, array() );
         $this->oQSLSrc = new QServerSourceCV( $oQ, array() );
     }
 

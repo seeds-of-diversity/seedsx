@@ -8,7 +8,9 @@ class Q
     public $raParms;
     public $bUTF8 = false;
 
-    function __construct( KeyFrameDB $kfdb, SEEDSessionAccount $sess, SEEDAppSessionAccount $oApp, $raParms = array() )
+    function __construct( KeyFrameDB $kfdb, SEEDSessionAccount $sess,
+                          SEEDAppSessionAccount $oApp = null,       // can be null for now if cmd doesn't use oApp
+                          $raParms = array() )
     {
         $this->oApp = $oApp;
         $this->kfdb = $kfdb;

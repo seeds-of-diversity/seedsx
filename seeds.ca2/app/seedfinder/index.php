@@ -52,7 +52,7 @@ $sHead .= "
     </style>";
 
 
-$oQ = new Q( $kfdb, $sess, array() );
+$oQ = new Q( $kfdb, $sess, null, array() );     // oApp null for now
 
 $oRosetta = new QServerRosetta( $kfdb );    // change arg to $oQ
 

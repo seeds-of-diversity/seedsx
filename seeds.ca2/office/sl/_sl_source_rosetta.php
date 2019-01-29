@@ -29,7 +29,7 @@ class SLSourceRosetta extends Console01_Worker
         $this->getPSDefs();
         $this->oPS = new SEEDProblemSolverUI( $this->raPSDefs, array( 'kfdb'=>$this->kfdb, 'SPSTest'=>$this->oSVA->VarGet('SPSTest') ) );
 
-        $oQ = new Q( $this->kfdb, $this->sess, array() );
+        $oQ = new Q( $this->kfdb, $this->sess, null, array() );
         $this->oQRosetta = new QServerPCV( $oQ, array() );
     }
 
