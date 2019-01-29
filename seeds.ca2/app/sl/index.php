@@ -103,17 +103,18 @@ class MyPDF_Label extends PDF_Label
         }
     }
 
-    function AddLabel2( $xMargin = 0 )
+    function AddLabel2( $xPadding = 0, $yPadding = 0 )
     {
         // This is the second part of Add_Label, which positions the fpdf x/y at the top-left of the current label
-        $_PosX = $this->_Margin_Left + $this->_COUNTX*($this->_Width+$this->_X_Space) + $this->_Padding + $xMargin;
-        $_PosY = $this->_Margin_Top + $this->_COUNTY*($this->_Height+$this->_Y_Space) + $this->_Padding;
+        $_PosX = $this->_Margin_Left + $this->_COUNTX*($this->_Width+$this->_X_Space) + $this->_Padding + $xPadding;
+        $_PosY = $this->_Margin_Top + $this->_COUNTY*($this->_Height+$this->_Y_Space) + $this->_Padding + $yPadding;
         $this->SetXY($_PosX, $_PosY);
     }
 
     function AddLabel3( $text, $xMargin = 0 )
     {
-        // This is the third part of Add_Label, which writes text to the current x/y
+        // This is the third part of Add_Label, which writes text to the current x/y.
+        // xMargin is used to make the available text width narrower since _Width is the whole width of the label.
         $this->MultiCell($this->_Width - $this->_Padding - $xMargin, $this->_Line_Height, $text, 0, 'L');
     }
 }
@@ -134,18 +135,34 @@ if( ($n = intval($oForm->Value('offset'))) ) {
 for( $i = 0; $i < intval($oForm->Value('nLabels')); ++$i ) {
     $cvName = $oForm->Value('cvName').(($kLot = $oForm->Value('kLot')) ? " ($kLot)" : "");
     $desc = $oForm->Value('desc');
-    $leftMargin = 17;
+    $xMarginText = 18;   // x position of cvname and description (beside logo)
+    $yMarginText = 2;    // y position of cvname and description (beside logo)
+    $yMarginWWW = 18;    // y position of www text (below logo)
+    $fontsizeText = 8;
+    $fontsizeWWW = 7;
+
+    // move to the next label
     $pdf->AddLabel1();
-    $pdf->AddLabel2( $leftMargin );
-    $pdf->SetFont( '', 'B', 8 );
-    $pdf->AddLabel3( "\n".$cvName, $leftMargin );
-    $pdf->SetFont( '', '', 8 );
-    $pdf->AddLabel2( $leftMargin );
-    $pdf->AddLabel3( "\n\n".$desc, $leftMargin );
 
-    $pdf->AddLabel2( 0 );
-    $pdf->Image( SITEROOT."i/img/logo/logoA_v-en-300.jpg", $pdf->GetX(), $pdf->GetY(), 17.14, 22.85 );  // image is 300x400
+    // set position to the top-left and draw the logo
+    $pdf->AddLabel2( 0, 0 );
+    $pdf->Image( SITEROOT."i/img/logo/logoA_v-en-300.jpg", $pdf->GetX(), $pdf->GetY(), 17.14, 17.14 );  // image is 300x300
 
+    // set position to the bottom-left and write the web site in bold
+    $pdf->AddLabel2( 0, $yMarginWWW );
+    $pdf->SetFont( '', 'B', $fontsizeWWW );
+    $pdf->AddLabel3( "www.seeds.ca", 0 );
+
+    // set position to the top with left padding for the logo, and write the cvname in bold
+    $pdf->AddLabel2( $xMarginText, $yMarginText );
+    $pdf->SetFont( '', 'B', $fontsizeText );
+    $pdf->AddLabel3( $cvName, $xMarginText );
+
+    // set position to the top-left with additional left padding for the logo and one line of top padding for the cvname,
+    // and write the description
+    $pdf->SetFont( '', '', $fontsizeText );
+    $pdf->AddLabel2( $xMarginText, $yMarginText );
+    $pdf->AddLabel3( "\n".$desc, $xMarginText );
 }
 
 $pdf->Output();
