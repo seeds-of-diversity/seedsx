@@ -31,6 +31,7 @@ $iYear = SEEDSafeGPC_GetInt("EVfltYear");
 $raConsoleParms = array(
     'HEADER' => "Seeds of Diversity Events List",
     'CONSOLE_NAME' => "Events",
+    'HEADER_LINKS' => array( ['label'=>'Volunteers', 'href'=>'ev_volunteers.php', 'target'=>'_blank'] ),
     'bBootstrap' => true,
     'script_files' => [W_CORE."js/SEEDCore.js", W_CORE."js/SFUTextComplete.js"]
 );
