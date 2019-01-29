@@ -16,7 +16,7 @@ include_once( "profiles.php" );
 $oApp = new SEEDAppConsole( $config_KFDB['seeds2']
                             + array( 'sessPermsRequired' => array('W slProfilesOffice'),
                                      'logdir' => SITE_LOG_ROOT ) );
-if( !$oApp->sess->IsLogin() )  //header( "Location: ../../login/" );
+if( !$oApp->sess->IsLogin() )  header( "Location: ../../login/" );
 
 //var_dump($_REQUEST);
 $oApp->kfdb->SetDebug(1);
