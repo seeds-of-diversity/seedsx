@@ -6,19 +6,39 @@ include_once( SEEDCORE."console/console02.php" );
 
 include_once( SEEDLIB."mail/SEEDMailer.php" );
 
-$oApp = new SEEDAppConsole( $config_KFDB['seeds1']
-                            + array( 'sessPermsRequired' => array(),
+
+$consoleConfig = [
+        'consoleSkin' => 'green',
+        'TABSETS' => ['main'=> ['tabs' => [ 'pending' => ['label'=>'Pending'],
+                                            'sent'    => ['label'=>'Sent'   ],
+                                            'ghost'   => ['label'=>'Ghost'  ]
+                                          ],
+                                // this doubles as sessPermsRequired and console::TabSetPermissions
+                                'perms' =>[ 'pending' => [],
+                                            'sent'    => [],
+                                            'ghost'   => ['A notyou'],
+                                            '|'  // allows screen-login even if some tabs are ghosted
+                                          ],
+] ] ];
+
+
+
+$oApp = new SEEDAppConsole( $config_KFDB['seeds2']
+                            + array( 'sessPermsRequired' => $consoleConfig['TABSETS']['main']['perms'],
+                                     'consoleConfig' => $consoleConfig,
                                      'logdir' => SITE_LOG_ROOT )
 );
+
+if( !$oApp->sess->IsLogin() ) die( "Login first" );
 
 $oMail = new SEEDMailerSetup( $oApp );
 
 $sMailTable = "";
 $sPreview = "";
-$sControls = ""; // $oConsole->TabSetDraw( "right" )
+$sControls = "[[TabSet:main]]"; // $oConsole->TabSetDraw( "right" )
 
 
-$s = "<table border='0' cellspacing='0' cellpadding='10' width='100%'><tr>"
+$s = "<table cellspacing='0' cellpadding='10' style='width:100%;border:1px solid #888'><tr>"
     ."<td valign='top'>"
         ."<form method='post' action='${_SERVER['PHP_SELF']}'>"
         //.SEEDForm_Hidden( "p_kMail", $oMS->kMail )
@@ -31,6 +51,11 @@ $s = "<table border='0' cellspacing='0' cellpadding='10' width='100%'><tr>"
     ."</td>"
     ."</tr></table>";
 
-echo Console02Static::HTMLPage( utf8_encode($s), "", 'EN', array() );   // sCharset defaults to utf8
+
+
+$s = $oApp->oC->DrawConsole( $s );
+
+
+echo Console02Static::HTMLPage( utf8_encode($s), "", 'EN', array( 'consoleSkin'=>'green') );   // sCharset defaults to utf8
 
 ?>
