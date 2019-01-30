@@ -12,7 +12,7 @@ $year = intval(date("Y",time()+3600*24*60));
 
 $oEv = new EV_Events( $kfdb, $sess->GetUID() );
 
-$raEvents = $oEv->GetKfrelEvents()->GetRecordSetRA( "YEAR(date_start)>='$year'", ['sSortCol'=>'date_start'] );
+$raEvents = $oEv->GetKfrelEvents()->GetRecordSetRA( "YEAR(date_start)>='$year' AND type IN ('SS','EV')", ['sSortCol'=>'date_start'] );
 
 $s = "<table border='1' cellpadding='3'>"
     ."<tr><th>Date</th><th>City</th><th>Volunteer</th><th>Materials</th><th>Sent</th></tr>";
@@ -33,7 +33,7 @@ foreach( $raEvents as $ra ) {
                 "<tr>"
                ."<td>[[date_start]]</td>"
                ."<td>[[city]], [[province]]</td>"
-               ."<td>$sMbrName ($kMbr) $sMbrLabel</td>"
+               ."<td><span style='white-space:nowrap'>$sMbrName&nbsp;($kMbr)&nbsp;$sMbrLabel</span></td>"
                ."<td style='font-size:9pt'>[[vol_notes]]</td>"
                ."<td>[[vol_dSent]]</td>"
                ."</tr>"
