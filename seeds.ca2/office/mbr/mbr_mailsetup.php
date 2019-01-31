@@ -2,7 +2,7 @@
 
 /* mbr_mailsetup.php
  *
- * Copyright 2010-2017 Seeds of Diversity Canada
+ * Copyright 2010-2019 Seeds of Diversity Canada
  *
  * Prepare mail to be sent to members / donors / subscribers.
  * Use mbr_mailsend to send the mail.
