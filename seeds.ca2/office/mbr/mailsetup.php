@@ -38,7 +38,7 @@ $consoleConfig = [
                                       ],
                             // this doubles as sessPermsRequired and console::TabSetPermissions
                             'perms' =>[ 'mailitem' => [],
-                                        'text'     => [],
+                                        'text'     => ['PUBLIC'],
                                         'controls' => [],
                                         'delete'   => [],
                                       ]
@@ -51,11 +51,10 @@ $consoleConfig = [
 
 $oApp = new SEEDAppConsole( $config_KFDB['seeds2']
                             + array( 'sessPermsRequired' => $consoleConfig['TABSETS']['main']['perms'],
+                                     'sessUIConfig' => ['bTmpActivate'=>true, 'bLoginNotRequired'=>true],
                                      'consoleConfig' => $consoleConfig,
                                      'logdir' => SITE_LOG_ROOT )
 );
-
-if( !$oApp->sess->IsLogin() ) die( "Login first" );
 
 $oMail = new SEEDMailerSetup( $oApp );
 
