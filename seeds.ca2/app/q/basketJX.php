@@ -110,11 +110,11 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
                 }
 
                 while( $nLimit-- && $kfrP->CursorFetch() ) {
+                    // DrawProduct always returns utf8 now - construct MSDQ with $raConfig['config_bUTF8']=false to get cp1252.
+                    // So just utf8_encode the order info
                     $raJX['sOut'] .= $oSB->DrawProduct( $kfrP, SEEDBasketProductHandler::DETAIL_ALL )
-                                    .drawMSDOrderInfo( $oSB, $kfrP );
+                                    .utf8_encode(drawMSDOrderInfo( $oSB, $kfrP ));
                 }
-// might be double-encoding now
-                $raJX['sOut'] = utf8_encode( $raJX['sOut'] );
                 $raJX['bOk'] = true;
             }
             break;
@@ -137,11 +137,10 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
             foreach( $raP as $ra ) {
                 $kfrP = $oSB->oDB->GetKFR( 'P', $ra['_key'] );
 
-                $sP = $oSB->DrawProduct( $kfrP, SEEDBasketProductHandler::DETAIL_ALL )
-                     .drawMSDOrderInfo( $oSB, $kfrP );
-
-// might be double-encoding now
-                $raJX['sOut'] .= utf8_encode( $sP );
+                // DrawProduct always returns utf8 now - construct MSDQ with $raConfig['config_bUTF8']=false to get cp1252.
+                // So just utf8_encode the order info
+                $raJX['sOut'] .= $oSB->DrawProduct( $kfrP, SEEDBasketProductHandler::DETAIL_ALL )
+                                .utf8_encode(drawMSDOrderInfo( $oSB, $kfrP ));
                 $raJX['bOk'] = true;
             }
             break;
@@ -164,11 +163,10 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
                 foreach( $raP as $ra ) {
                     $kfrP = $oSB->oDB->GetKFR( 'P', $ra['_key'] );
 
-                    $sP = $oSB->DrawProduct( $kfrP, SEEDBasketProductHandler_Seeds::DETAIL_VIEW_NO_SPECIES )
-                         .drawMSDOrderInfo( $oSB, $kfrP );
-
-// might be double-encoding now
-                    $raJX['sOut'] .= utf8_encode( $sP );
+                    // DrawProduct always returns utf8 now - construct MSDQ with $raConfig['config_bUTF8']=false to get cp1252.
+                    // So just utf8_encode the order info
+                    $raJX['sOut'] .= $oSB->DrawProduct( $kfrP, SEEDBasketProductHandler_Seeds::DETAIL_VIEW_NO_SPECIES )
+                                    .utf8_encode(drawMSDOrderInfo( $oSB, $kfrP ));
                     $raJX['bOk'] = true;
                 }
             }

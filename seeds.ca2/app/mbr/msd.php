@@ -3,7 +3,7 @@
 /*
  * Seed Directory public interface
  *
- * Copyright (c) 2017-2018 Seeds of Diversity Canada
+ * Copyright (c) 2017-2019 Seeds of Diversity Canada
  *
  * Show the listings in the Member Seed Directory
  */
@@ -20,9 +20,9 @@ include_once( SEEDAPP."seedexchange/msdCommon.php" );
 // Don't ask to login here, and allow the page to be viewed if no login.
 // But $sess->IsLogin() will only be true if the user has sed=>R (i.e. they are a current member)
 list($kfdb, $sess, $lang) = SiteStartSessionAccountNoUI( ["R sed"] );
-
 $oApp = new SEEDAppConsole( $config_KFDB['seeds1']
-                            + array( 'sessPermsRequired' => array(),
+                            + array( 'sessPermsRequired' => ['R sed'],
+                                     'sessUIConfig' => ['bLoginNotRequired'=>true],
                                      'logdir' => SITE_LOG_ROOT,
                                      'lang' => $lang )
 );
@@ -106,14 +106,11 @@ class msdBasket extends SEEDBasketStore
 
     function Draw()
     {
-        $qApp = (STD_isLocal ? "../../app/"
-                             : ("https://".$_SERVER['HTTP_HOST']."/app/") );    // use the current server name to avoid CORS problem in ajax
-
         $raParms = array(
                 'lang' => $this->oW->lang,
                 'bMbrLogin'=> $this->oSB->bIsMbrLogin,
                 'siteroot' => SITEROOT,
-                'qUrl'    => $qApp."q/basketJX.php",
+                'qUrl'    => Site_QRoot()."basketJX.php",
                 'sessionRealname' => $this->oW->sess->GetRealname(),
                 'sessionNameUID' => $this->oW->sess->GetHTTPNameUID(),
                 'sessionNamePWD' => $this->oW->sess->GetHTTPNamePWD(),
