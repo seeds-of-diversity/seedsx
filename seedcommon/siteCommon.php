@@ -15,7 +15,7 @@ function SiteCommon_init( $raParms )
     define( "SITEROOT_REAL", ($_SERVER['DOCUMENT_ROOT'].dirname($_SERVER['PHP_SELF'])."/".SITEROOT) );
     define( "SITEIMG", SITEROOT."img/");
     define( "SITEINC", SITEROOT."inc/");
-    define( "Q_ROOT", STD_isLocal ? (SITEROOT."app/q/") : "https://seeds.ca/app/q/" );
+    define( "Q_ROOT", Site_QRoot() );
 
 
     define( "SITE_DB_DEF_FILE", $raParms['SITE_DB_DEF_FILE'] );     // def is used by SEEDSetup but cannot include here because variables would be local to this function
@@ -69,8 +69,8 @@ function site_define_lang( $lang = "" )
 }
 
 
-function Site_UrlQ()
-/*******************
+function Site_QRoot()
+/********************
     The url that the current site should use to access QServer.
 
     Q should always be accessed with https on sites that support it, because it tries to establish a SEEDSessionAccount
@@ -80,12 +80,19 @@ function Site_UrlQ()
     if( STD_isLocal ) {
         return( "http://".$_SERVER['SERVER_NAME'].SITEROOT_URL
                ."../seeds.ca2/"    // get to the right place from any site
-               ."app/q/index.php" );
+               ."app/q/" );
     } else {
         // This works if your ajax is from www.seeds.ca, but not if it's from a different domain (see CORS).
         // If you fake out the CORS you'll still have to set the prefix to http/https depending on what SEEDSessionAccount::doSSL needs.
-        return( "https://www.seeds.ca/app/q/index.php" );
+        return( "https://www.seeds.ca/app/q/" );
     }
+}
+
+function Site_UrlQ( $file = "index.php" )
+/****************************************
+ */
+{
+    return( Site_QRoot().$file );
 }
 
 
