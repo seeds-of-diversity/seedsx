@@ -102,6 +102,7 @@ function D8SeedsModule_NodeView( array &$build, \Drupal\Core\Entity\EntityInterf
     $oTmpl = $oMaster->GetTmpl();
 
     $build['body'][0]['#text'] = $oTmpl->ExpandStr( $build['body'][0]['#text'] );
+    $build['body'][0]['#cache']['max-age'] = 0;
 }
 
 
@@ -135,13 +136,29 @@ class DrupalModTagHandler
 
         switch( $contentName ) {
             case 'homeimg':
-                $img = $raTag['raParms'][1];
-                $sWidth = substr($img,0,3)=='img' ? "width:85%;height:110%" : "width:85%";
+            case 'homeimg_v':
+                $img = @$raTag['raParms'][1];
+                $caption = @$raTag['raParms'][2];
+                $link = @$raTag['raParms'][3];
+                $sWidth = "width:85%";
 
-                if( substr($img,0,4) != 'http' ) $img = "https://seeds.ca/d?n=".$img;
-                $s = "<div class='col-xs-12 col-sm-6 col col-md-4 col-lg-3' style='text-align:center'>"
-                    ."<img src='$img' style='$sWidth'/><p style='font-weight:bold;font-size:large'>{$raTag['raParms'][2]}</p>"
-                    ."</div>";
+                // homeimg_v is for images only, vertically centered.  vertical-align is not allowed for bootstrap's settings for display and float
+                $styleVert = $contentName=='homeimg_v' ? "display:inline-block;float:none;vertical-align:middle" : ""; 
+                
+                if( substr($img,0,4) != 'http' && substr($img,0,1) != '/' ) $img = "//seeds.ca/d?n=".$img;
+
+                if( $contentName == 'homeimg_v' ) {
+                    $s = "<div class='col-xs-12 col-sm-6 col col-md-4 col-lg-3' style='text-align:center;$styleVert'>"
+                            ."<a href='$link' style='text-decoration:none;border:none'><img src='$img' style='$sWidth;border-radius:5px'/></a>"
+                        ."</div>"; 
+                } else {
+                    $s = "<div class='col-xs-12 col-sm-6 col col-md-4 col-lg-3' style='text-align:center'>"
+                        ."<div style='width:100%;padding-top:130%;position:relative;'>"
+                        ."<div style='position:absolute;top:0;bottom:0;left:0;right:0;'>"
+                            ."<a href='$link' style='text-decoration:none;border:none'><img src='$img' style='$sWidth;border-radius:5px'/></a>"
+                            ."<p style='font-weight:bold;font-size:large;padding-top:10px'><a href='$link' style='text-decoration:none'>$caption</a></p>"
+                        ."</div></div></div>";
+                }
                 break;
             case 'helloworld':
                 $s = "Hello World!";
