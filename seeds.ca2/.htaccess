@@ -83,8 +83,10 @@ Redirect       /revue-publicite          "http://www.seeds.ca/d?n=mag/Semences-d
 Redirect       /revue_publicites         "http://www.seeds.ca/d?n=mag/Semences-du-patrimoine-revue-publicites-2017.pdf"
 Redirect       /revue-publicites         "http://www.seeds.ca/d?n=mag/Semences-du-patrimoine-revue-publicites-2017.pdf"
 
-Redirect       /seed-directory           http://www.seeds.ca/app/seedexchange
-Redirect       /catalogue-semences       http://www.semences.ca/app/seedexchange
+Redirect       /seedexchange             http://www.seeds.ca/app/mbr/msd
+Redirect       /app/seedexchange         http://www.seeds.ca/app/mbr/msd
+Redirect       /seed-directory           http://www.seeds.ca/app/mbr/msd
+Redirect       /catalogue-semences       http://www.semences.ca/app/mbr/msd
 
 Redirect       /bautagrowouts            http://www.seedsecurity.ca/en/118-seed-grow-outs
 Redirect       /cropnotes                http://www.seedsecurity.ca/en/118-seed-grow-outs
