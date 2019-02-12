@@ -27,6 +27,10 @@ $oApp = new SEEDAppConsole( $config_KFDB['seeds1']
                                      'lang' => $lang )
 );
 
+// Implement Post-Redirect-Get paradigm.
+SEEDPRG();
+
+
 class SEEDBasketStore
 {
     protected $oW;
