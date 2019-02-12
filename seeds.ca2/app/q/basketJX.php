@@ -112,7 +112,7 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
                 while( $nLimit-- && $kfrP->CursorFetch() ) {
                     // DrawProduct always returns utf8 now - construct MSDQ with $raConfig['config_bUTF8']=false to get cp1252.
                     // So just utf8_encode the order info
-                    $raJX['sOut'] .= $oSB->DrawProduct( $kfrP, SEEDBasketProductHandler::DETAIL_ALL )
+                    $raJX['sOut'] .= utf8_encode($oSB->DrawProduct( $kfrP, SEEDBasketProductHandler::DETAIL_ALL ))
                                     .utf8_encode(drawMSDOrderInfo( $oSB, $kfrP ));
                 }
                 $raJX['bOk'] = true;
@@ -139,7 +139,7 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
 
                 // DrawProduct always returns utf8 now - construct MSDQ with $raConfig['config_bUTF8']=false to get cp1252.
                 // So just utf8_encode the order info
-                $raJX['sOut'] .= $oSB->DrawProduct( $kfrP, SEEDBasketProductHandler::DETAIL_ALL )
+                $raJX['sOut'] .= utf8_encode($oSB->DrawProduct( $kfrP, SEEDBasketProductHandler::DETAIL_ALL ))
                                 .utf8_encode(drawMSDOrderInfo( $oSB, $kfrP ));
                 $raJX['bOk'] = true;
             }
@@ -165,7 +165,7 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
 
                     // DrawProduct always returns utf8 now - construct MSDQ with $raConfig['config_bUTF8']=false to get cp1252.
                     // So just utf8_encode the order info
-                    $raJX['sOut'] .= $oSB->DrawProduct( $kfrP, SEEDBasketProductHandler_Seeds::DETAIL_VIEW_NO_SPECIES )
+                    $raJX['sOut'] .= utf8_encode($oSB->DrawProduct( $kfrP, SEEDBasketProductHandler_Seeds::DETAIL_VIEW_NO_SPECIES ))
                                     .utf8_encode(drawMSDOrderInfo( $oSB, $kfrP ));
                     $raJX['bOk'] = true;
                 }

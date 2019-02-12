@@ -40,8 +40,8 @@ class MSDBasketCore extends SEEDBasketCore
         parent::__construct( $oW->kfdb, $oW->sess, $oApp,
                              //SEEDBasketProducts_SoD::$raProductTypes );
                              array( 'seeds'=>SEEDBasketProducts_SoD::$raProductTypes['seeds'] ),
-                             array( 'fn_sellerNameFromUid' => array($this,"cb_SellerNameFromUid")),
-                             array( 'logdir'=>SITE_LOG_ROOT ) );
+                             array( 'fn_sellerNameFromUid' => array($this,"cb_SellerNameFromUid"),
+                                    'logdir'=>SITE_LOG_ROOT ) );
     }
 
     function cb_SellerNameFromUid( $uidSeller )
@@ -49,7 +49,7 @@ class MSDBasketCore extends SEEDBasketCore
         SEEDBasketCore uses this to draw the name of a seller
      */
     {
-        $ra = $this->oW->kfdb->QueryRA( "SELECT * FROM seeds.SEEDSessionUsers WHERE _key='$uidSeller'" );
+        $ra = $this->oW->kfdb->QueryRA( "SELECT * FROM seeds.SEEDSession_Users WHERE _key='$uidSeller'" );
         if( !($sSeller = @$ra['realname']) ) {
 //kluge, not in seedapp
             include_once( SEEDCOMMON."mbr/mbrSitePipe.php" );
