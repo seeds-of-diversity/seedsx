@@ -25,6 +25,16 @@ $oApp = new SEEDAppConsole( $config_KFDB['seeds1']
                                      'lang' => $lang )
 );
 
+/*
+This might solve the issue where http://seeds.ca cannot use http://www.seeds.ca as the ajax domain
+
+// Allow any domain to make ajax requests - see CORS
+// Note that this is even necessary for http://www.seeds.ca to access https://www.seeds.ca/.../q because the
+// CORS access control policy is per (scheme|domain|port)
+header( "Access-Control-Allow-Origin: *" );
+
+*/
+
 $oSB = new MSDBasketCore( $oW, $oApp );    // rewrite MSDBasketCore so it extends MSDQ?
 
 $raJX = array( 'bOk'=>false, 'sOut'=>"", 'sErr'=>"", 'raOut'=>array() );
