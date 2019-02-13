@@ -2,7 +2,7 @@
 
 /* Basket manager
  *
- * Copyright (c) 2016-2018 Seeds of Diversity Canada
+ * Copyright (c) 2016-2019 Seeds of Diversity Canada
  */
 
 define( "SITEROOT", "../../" );
@@ -146,7 +146,7 @@ class mbrBasket_Products extends Console01_Worker1
                 $bCurr = ($kCurrProd && $kfrcP->Key() == $kCurrProd);
                 $sStyleCurr = $bCurr ? "border:2px solid blue;" : "";
                 $sList .= "<div class='well' style='padding:5px;margin:5px;$sStyleCurr' onclick='location.replace(\"?kP=$kP\")' ".($bCurr ? "style='border:1px solid #333'" : "").">"
-                         .$this->oC->oSB->DrawProduct( $kfrcP, $bCurr ? SEEDBasketProductHandler::DETAIL_ALL : SEEDBasketProductHandler::DETAIL_TINY )
+                         .$this->oC->oSB->DrawProduct( $kfrcP, $bCurr ? SEEDBasketProductHandler::DETAIL_ALL : SEEDBasketProductHandler::DETAIL_TINY, ['bUTF8'=>false] )
                          ."</div>";
             }
         }
