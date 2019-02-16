@@ -30,7 +30,7 @@ include_once( SEEDLIB."msd/msdlib.php" );
 list($kfdb, $sess, $lang) = SiteStartSessionAccount( ["W sed"] );
 
 $oApp = new SEEDAppConsole( $config_KFDB['seeds1']
-                            + array( 'sessPermsRequired' => array(),
+                            + array( 'sessPermsRequired' => array(["W sed"]),
                                      'logdir' => SITE_LOG_ROOT,
                                      'lang' => $lang )
 );
@@ -183,6 +183,7 @@ class MyConsole extends Console01
     public  $oSed;
 
     private $kCurrGrower;
+    private $kCurrSpecies;
     public $oMSDLib;
 
     function __construct( SEDMbr $oSed, SEEDAppConsole $oApp, $raParms )
@@ -193,10 +194,15 @@ class MyConsole extends Console01
 
         $this->oMSDLib = new MSDLib( $oApp );
 
-        $this->kCurrGrower = $this->oMSDLib->PermOfficeW() ? $this->oSVA->SmartGPC( 'selectGrower', array($this->oApp->sess->GetUID()) )
-                                                           : $this->oApp->sess->GetUID();
+        if( $this->oMSDLib->PermOfficeW() ) {
+            $this->oSed->bOffice = true;
 
-        if( $this->oMSDLib->PermOfficeW() )  $this->oSed->bOffice = true;
+            $this->kCurrGrower = $this->oSVA->SmartGPC( 'selectGrower', array($this->oApp->sess->GetUID()) );
+            $this->kCurrSpecies = intval($this->oSVA->SmartGPC( 'selectSpecies', array() ));
+        } else {
+            $this->kCurrGrower = $this->oApp->sess->GetUID();
+            $this->kCurrSpecies = 0;   // all species
+        }
     }
 
     function TabSetInit( $tsid, $tabname )
@@ -220,11 +226,25 @@ should be okay to open any tab
 */
     function TabSetControlDraw( $tsid, $tabname )
     {
+        $s = "";
+
+        if( !$this->oMSDLib->PermOfficeW() ) goto done;
+
         switch( $tabname ) {
-            case 'Growers':  return( $this->oMSDLib->PermOfficeW() ? $this->growerSelect() : "" );
-            case 'Seeds':    return( $this->oMSDLib->PermOfficeW() ? $this->growerSelect() : "" );
+            case 'Growers':
+                $s = $this->growerSelect();
+                break;
+            case 'Seeds':
+                $s = $this->growerSelect();
+                if( $this->kCurrSpecies ) {
+                    $s .= "<div style='margin-top:10px'><strong>Showing ".$this->oMSDLib->GetSpeciesNameFromKey($this->kCurrSpecies)."</strong>"
+                         ." <a href='{$_SERVER['PHP_SELF']}?selectSpecies=0'><button type='button'>Cancel</button></div>";
+                }
+                break;
         }
-        return( "" );
+
+        done:
+        return( $s );
     }
 
     function TabSetContentDraw( $tsid, $tabname )
@@ -233,7 +253,7 @@ should be okay to open any tab
             case 'Growers':  return( $this->oW->DrawGrowerContent( $this->kCurrGrower ) );
             case 'Seeds':
                 $oMSDAppSeedEdit = new MSDAppSeedEdit( $this->oSB );
-                return( $oMSDAppSeedEdit->Draw( $this->kCurrGrower ) );
+                return( $oMSDAppSeedEdit->Draw( $this->kCurrGrower, $this->kCurrSpecies ) );
         }
         return( "" );
     }
