@@ -197,8 +197,8 @@ class MyConsole extends Console01
         if( $this->oMSDLib->PermOfficeW() ) {
             $this->oSed->bOffice = true;
 
-            $this->kCurrGrower = $this->oSVA->SmartGPC( 'selectGrower', array($this->oApp->sess->GetUID()) );
-            $this->kCurrSpecies = intval($this->oSVA->SmartGPC( 'selectSpecies', array() ));
+            $this->kCurrGrower = $this->oSVA->SmartGPC( 'selectGrower', array(0) );
+            $this->kCurrSpecies = intval($this->oSVA->SmartGPC( 'selectSpecies', array(0) ));
         } else {
             $this->kCurrGrower = $this->oApp->sess->GetUID();
             $this->kCurrSpecies = 0;   // all species
@@ -270,7 +270,7 @@ should be okay to open any tab
     private function growerSelect()
     {
         $raG = $this->oApp->kfdb->QueryRowsRA1( "SELECT mbr_id FROM seeds.sed_curr_growers WHERE _status='0'" );
-        $raG2 = array( '-- Grower --' => 0 );
+        $raG2 = array( '-- All Growers --' => 0 );
         foreach( $raG as $kMbr ) {
             $ra = $this->oApp->kfdb->QueryRA( "SELECT firstname,lastname,company FROM seeds2.mbr_contacts WHERE _key='$kMbr'" );
             if( !($name = trim($ra['firstname'].' '.$ra['lastname'])) ) {

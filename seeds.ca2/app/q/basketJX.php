@@ -84,9 +84,7 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
             break;
 
         case "msdSearch":
-            //include_once( "_QServerCollection.php" );
-            //$o = new QServerCollection( $this, array( ) );
-            //$rQ = $o->Cmd( $cmd, $parms );
+// Can probably use MSDQ::msdSeedList-GetData with an added srch parameter to do this fetch. No because it doesn't join on description like below (it joins on category instead)
 
             $dbSrch = addslashes(SEEDInput_Str( "srch" ));
 
