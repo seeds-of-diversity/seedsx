@@ -146,30 +146,71 @@ class SEDMbrGrower extends SEDGrowerWorker
 //necessary?
         $oKForm->SetKFR( $kfrG );
 
-        $s = "<TABLE cellpadding='0' cellspacing='0' border='0'><TR valign='top'>"
-            ."<TD width='50%'>"
-            ."<h3>".$kfrG->value('mbr_code')." : ".$this->oC->GetGrowerName($kGrower)."</h3>"
-            ."<P>".$oSed->S('Grower block heading')."</P>"
-            ."<DIV class='sed_grower' ".($oKForm->oDS->Value('bDone') ? "style='color:green;background:#cdc;'" : "").">"
-            .$oSed->drawGrowerBlock( $kfrG )
-            ."</DIV>"
-            .($oKForm->oDS->Value('bDone') ? "<P style='font-size:16pt;margin-top:20px;'>Done! Thank you!</P>" : "")
-            ."<P><A href='${_SERVER['PHP_SELF']}?gdone=".$kGrower."'>"
-                .($oKForm->oDS->Value('bDone')
-                     ? "Click here if you're not really done"
-                     : $oSed->S("Click here when you are done"))
-            ."</A></P>"
-            ."</TD>"
-            ."<TD>"
-            ."<FORM method='post' action='${_SERVER['PHP_SELF']}'>"
-            // N.B. DSPreStore prevents cross-user hacks
-          .$oKForm->HiddenKey()
-          ."<DIV style='border:1px solid black; margin:10px; padding:10px'>"  // console01 does this style in the office app
-          .$oSed->drawGrowerForm( $oKForm )
-          ."</DIV>"
-          ."</FORM>"
-          ."</TD>"
-          ."</TR></TABLE>";
+        $sLeft = "<h3>".$kfrG->value('mbr_code')." : ".$this->oC->GetGrowerName($kGrower)."</h3>"
+                ."<p>".$oSed->S('Grower block heading')."</p>"
+                ."<div class='sed_grower' ".($oKForm->oDS->Value('bDone') ? "style='color:green;background:#cdc;'" : "").">"
+                .$oSed->drawGrowerBlock( $kfrG )
+                ."</div>"
+                .($oKForm->oDS->Value('bDone') ? "<p style='font-size:16pt;margin-top:20px;'>Done! Thank you!</p>" : "")
+                ."<p><a href='${_SERVER['PHP_SELF']}?gdone=".$kGrower."'>"
+                    .($oKForm->oDS->Value('bDone')
+                        ? "Click here if you're not really done"
+                        : $oSed->S("Click here when you are done"))
+                ."</a></p>"
+                .($this->oC->oSed->bOffice ? $this->drawGrowerOfficeSummary( $kfrG ) : "");
+
+        $sRight = "<form method='post' action='${_SERVER['PHP_SELF']}'>"
+                  // N.B. DSPreStore prevents cross-user hacks
+                 .$oKForm->HiddenKey()
+                 ."<div style='border:1px solid black; margin:10px; padding:10px'>"
+                 .$oSed->drawGrowerForm( $oKForm )
+                 ."</div>"
+                 ."</form>";
+
+
+        $s = "<div class='container-fluid><div class='row'>"
+            ."<div class='col-lg-6'>$sLeft</div>"
+            ."<div class='col-lg-6'>$sRight</div>"
+            ."</div></div>";
+
+        return( $s );
+    }
+
+    private function drawGrowerOfficeSummary( KFRecord $kfrG )
+    {
+        $kGrower = $kfrG->Value('mbr_id');
+
+        // Grower record
+        $dGUpdated = substr( $kfrG->Value('_updated'), 0, 10 );
+        $kGUpdatedBy = $kfrG->Value('_updated_by');
+
+        // Seed records
+        $ra = $this->oC->oApp->kfdb->QueryRA(
+                "SELECT _updated,_updated_by FROM
+                     (
+                     (SELECT _updated,_updated_by FROM seeds.SEEDBasket_Products
+                         WHERE product_type='seeds' AND
+                               uid_seller='$kGrower' ORDER BY _updated DESC LIMIT 1)
+                     UNION
+                     (SELECT PE._updated,PE._updated_by FROM seeds.SEEDBasket_ProdExtra PE,seeds.SEEDBasket_Products P
+                         WHERE P.product_type='seeds' AND
+                               P.uid_seller='$kGrower' AND P._key=PE.fk_SEEDBasket_Products ORDER BY 1 DESC LIMIT 1)
+                     ) as A
+                 ORDER BY 1 DESC LIMIT 1" );
+        $dSUpdated = @$ra['_updated'];
+        $kSUpdatedBy = @$ra['_updated_by'];
+
+        $nSActive = $this->oC->oApp->kfdb->Query1( "SELECT count(*) FROM seeds.SEEDBasket_Products
+                                                    WHERE product_type='seeds' AND uid_seller='$kGrower' AND eStatus='ACTIVE'" );
+
+        $dMbrExpiry = $this->oC->oApp->kfdb->Query1( "SELECT expires FROM seeds2.mbr_contacts WHERE _key='$kGrower'" );
+
+        $s = "<div style='border:1px solid black; margin:10px; padding:10px'>"
+            ."<p>Seeds active: $nSActive</p>"
+            ."<p>Membership expiry: $dMbrExpiry</p>"
+            ."<p>Last grower record change: $dGUpdated by $kGUpdatedBy</p>"
+            ."<p>Last seed record change: $dSUpdated by $kSUpdatedBy</p>"
+            ."</div>";
 
         return( $s );
     }
