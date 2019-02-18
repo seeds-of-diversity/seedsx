@@ -142,6 +142,18 @@ class SEDMbrGrower extends SEDGrowerWorker
                 die( "<P style='color:red'>Update didn't work.  Please email this message to Bob:</P>".$kfrG->kfrel->kfdb->GetErrMsg() );
             }
         }
+        if( ($k = SEEDSafeGPC_GetInt( 'gskip' )) && $k == $kGrower ) {
+            $kfrG->SetValue( 'bSkip', !$kfrG->value('bSkip') );
+            if( !$kfrG->PutDBRow() ) {
+                die( "<P style='color:red'>Update didn't work.  Please email this message to Bob:</P>".$kfrG->kfrel->kfdb->GetErrMsg() );
+            }
+        }
+        if( ($k = SEEDSafeGPC_GetInt( 'gdelete' )) && $k == $kGrower ) {
+            $kfrG->SetValue( 'bDelete', !$kfrG->value('bDelete') );
+            if( !$kfrG->PutDBRow() ) {
+                die( "<P style='color:red'>Update didn't work.  Please email this message to Bob:</P>".$kfrG->kfrel->kfdb->GetErrMsg() );
+            }
+        }
 
 //necessary?
         $oKForm->SetKFR( $kfrG );
@@ -205,11 +217,22 @@ class SEDMbrGrower extends SEDGrowerWorker
 
         $dMbrExpiry = $this->oC->oApp->kfdb->Query1( "SELECT expires FROM seeds2.mbr_contacts WHERE _key='$kGrower'" );
 
+        $sSkip = $kfrG->Value('bSkip')
+                    ? ("<div style='background-color:#ee9'><span style='font-size:12pt'>Skipped</span>"
+                      ." <a href='{$_SERVER['PHP_SELF']}?gskip=$kGrower'>Unskip this grower</a></div>")
+                    : ("<div><a href='{$_SERVER['PHP_SELF']}?gskip=$kGrower'>Skip this grower</a></div>");
+        $sDel = $kfrG->Value('bDelete')
+                    ? ("<div style='background-color:#fdf'><span style='font-size:12pt'>Deleted</span>"
+                      ." <a href='{$_SERVER['PHP_SELF']}?gdelete=$kGrower'>UnDelete this grower</a></div>")
+                    : ("<div><a href='{$_SERVER['PHP_SELF']}?gdelete=$kGrower'>Delete this grower</a></div>");
+
         $s = "<div style='border:1px solid black; margin:10px; padding:10px'>"
             ."<p>Seeds active: $nSActive</p>"
             ."<p>Membership expiry: $dMbrExpiry</p>"
             ."<p>Last grower record change: $dGUpdated by $kGUpdatedBy</p>"
             ."<p>Last seed record change: $dSUpdated by $kSUpdatedBy</p>"
+            .$sSkip
+            .$sDel
             ."</div>";
 
         return( $s );
