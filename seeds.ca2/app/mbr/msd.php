@@ -114,7 +114,7 @@ class msdBasket extends SEEDBasketStore
                 'lang' => $this->oW->lang,
                 'bMbrLogin'=> $this->oSB->bIsMbrLogin,
                 'siteroot' => SITEROOT,
-                'qUrl'    => Site_QRoot()."basketJX.php",
+                'qUrl'    => Site_UrlQ('basketJX.php'),
                 'sessionRealname' => $this->oW->sess->GetRealname(),
                 'sessionNameUID' => $this->oW->sess->GetHTTPNameUID(),
                 'sessionNamePWD' => $this->oW->sess->GetHTTPNamePWD(),

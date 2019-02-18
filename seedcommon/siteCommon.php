@@ -15,7 +15,6 @@ function SiteCommon_init( $raParms )
     define( "SITEROOT_REAL", ($_SERVER['DOCUMENT_ROOT'].dirname($_SERVER['PHP_SELF'])."/".SITEROOT) );
     define( "SITEIMG", SITEROOT."img/");
     define( "SITEINC", SITEROOT."inc/");
-    define( "Q_ROOT", Site_QRoot() );
 
 
     define( "SITE_DB_DEF_FILE", $raParms['SITE_DB_DEF_FILE'] );     // def is used by SEEDSetup but cannot include here because variables would be local to this function
@@ -82,9 +81,9 @@ function Site_QRoot()
                ."../seeds.ca2/"    // get to the right place from any site
                ."app/q/" );
     } else {
-        // This works if your ajax is from www.seeds.ca, but not if it's from a different domain (see CORS).
-        // If you fake out the CORS you'll still have to set the prefix to http/https depending on what SEEDSessionAccount::doSSL needs.
-        return( "https://www.seeds.ca/app/q/" );
+        // This should work regardless of your domain (seeds.ca vs www.seeds.ca) and your mode (http vs https)
+        // as long as your js is on a seeds.ca source
+        return( "/app/q/" );
     }
 }
 
