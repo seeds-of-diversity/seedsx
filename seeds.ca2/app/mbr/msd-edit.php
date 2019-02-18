@@ -78,6 +78,33 @@ class SEDMbrGrower extends SEDGrowerWorker
         parent::__construct( $oC, $kfdb, $sess );
     }
 
+    function UpdateGrower( $kCurrGrower )
+    {
+        // Do this in TabSetInit so the list is correct in TabSetControlDraw
+
+        $kfrG = $this->oC->oSed->kfrelG->GetRecordFromDB( "mbr_id='$kCurrGrower'" );
+
+        if( ($k = SEEDSafeGPC_GetInt( 'gdone' )) && $k == $kCurrGrower ) {
+            $kfrG->SetValue( 'bDone', !$kfrG->value('bDone') );
+            $kfrG->SetValue( 'bDoneMbr', $kfrG->value('bDone') );  // make this match bDone
+            if( !$kfrG->PutDBRow() ) {
+                die( "<P style='color:red'>Update didn't work.  Please email this message to Bob:</P>".$kfrG->kfrel->kfdb->GetErrMsg() );
+            }
+        }
+        if( ($k = SEEDSafeGPC_GetInt( 'gskip' )) && $k == $kCurrGrower ) {
+            $kfrG->SetValue( 'bSkip', !$kfrG->value('bSkip') );
+            if( !$kfrG->PutDBRow() ) {
+                die( "<P style='color:red'>Update didn't work.  Please email this message to Bob:</P>".$kfrG->kfrel->kfdb->GetErrMsg() );
+            }
+        }
+        if( ($k = SEEDSafeGPC_GetInt( 'gdelete' )) && $k == $kCurrGrower ) {
+            $kfrG->SetValue( 'bDelete', !$kfrG->value('bDelete') );
+            if( !$kfrG->PutDBRow() ) {
+                die( "<P style='color:red'>Update didn't work.  Please email this message to Bob:</P>".$kfrG->kfrel->kfdb->GetErrMsg() );
+            }
+        }
+    }
+
     function DrawGrowerControl()
     {
         return( "" ); //GrowerControl" );
@@ -96,8 +123,6 @@ class SEDMbrGrower extends SEDGrowerWorker
  * The mbr_id is passed through http, but DSPreStore checks that it is the same as $sess->GetUID() to prevent cross-user hacks.
  */
         $oKForm->Update();
-
-
 
         $kfrG = $oSed->kfrelG->GetRecordFromDB( "mbr_id='$kGrower'" );
         if( !$kfrG ) {
@@ -132,27 +157,6 @@ class SEDMbrGrower extends SEDGrowerWorker
           ."</FORM>";
 
             return( $s );
-        }
-
-
-        if( ($k = SEEDSafeGPC_GetInt( 'gdone' )) && $k == $kGrower ) {
-            $kfrG->SetValue( 'bDone', !$kfrG->value('bDone') );
-            $kfrG->SetValue( 'bDoneMbr', $kfrG->value('bDone') );  // make this match bDone
-            if( !$kfrG->PutDBRow() ) {
-                die( "<P style='color:red'>Update didn't work.  Please email this message to Bob:</P>".$kfrG->kfrel->kfdb->GetErrMsg() );
-            }
-        }
-        if( ($k = SEEDSafeGPC_GetInt( 'gskip' )) && $k == $kGrower ) {
-            $kfrG->SetValue( 'bSkip', !$kfrG->value('bSkip') );
-            if( !$kfrG->PutDBRow() ) {
-                die( "<P style='color:red'>Update didn't work.  Please email this message to Bob:</P>".$kfrG->kfrel->kfdb->GetErrMsg() );
-            }
-        }
-        if( ($k = SEEDSafeGPC_GetInt( 'gdelete' )) && $k == $kGrower ) {
-            $kfrG->SetValue( 'bDelete', !$kfrG->value('bDelete') );
-            if( !$kfrG->PutDBRow() ) {
-                die( "<P style='color:red'>Update didn't work.  Please email this message to Bob:</P>".$kfrG->kfrel->kfdb->GetErrMsg() );
-            }
         }
 
 //necessary?
@@ -201,11 +205,11 @@ class SEDMbrGrower extends SEDGrowerWorker
                 "SELECT _updated,_updated_by FROM
                      (
                      (SELECT _updated,_updated_by FROM seeds.SEEDBasket_Products
-                         WHERE product_type='seeds' AND
+                         WHERE product_type='seeds' AND _status='0' AND
                                uid_seller='$kGrower' ORDER BY _updated DESC LIMIT 1)
                      UNION
                      (SELECT PE._updated,PE._updated_by FROM seeds.SEEDBasket_ProdExtra PE,seeds.SEEDBasket_Products P
-                         WHERE P.product_type='seeds' AND
+                         WHERE P.product_type='seeds' AND _status='0' AND
                                P.uid_seller='$kGrower' AND P._key=PE.fk_SEEDBasket_Products ORDER BY 1 DESC LIMIT 1)
                      ) as A
                  ORDER BY 1 DESC LIMIT 1" );
@@ -213,7 +217,8 @@ class SEDMbrGrower extends SEDGrowerWorker
         $kSUpdatedBy = @$ra['_updated_by'];
 
         $nSActive = $this->oC->oApp->kfdb->Query1( "SELECT count(*) FROM seeds.SEEDBasket_Products
-                                                    WHERE product_type='seeds' AND uid_seller='$kGrower' AND eStatus='ACTIVE'" );
+                                                    WHERE product_type='seeds' AND _status='0' AND
+                                                          uid_seller='$kGrower' AND eStatus='ACTIVE'" );
 
         $dMbrExpiry = $this->oC->oApp->kfdb->Query1( "SELECT expires FROM seeds2.mbr_contacts WHERE _key='$kGrower'" );
 
@@ -272,7 +277,10 @@ class MyConsole extends Console01
     function TabSetInit( $tsid, $tabname )
     {
         switch( $tabname ) {
-            case 'Growers':  $this->oW = new SEDMbrGrower( $this, $this->kfdb, $this->sess );  break;
+            case 'Growers':
+                $this->oW = new SEDMbrGrower( $this, $this->kfdb, $this->sess );
+                $this->oW->UpdateGrower( $this->kCurrGrower );
+                break;
             case 'Seeds':    $this->oSB = new SEEDBasketCore( $this->oApp->kfdb, $this->oApp->sess, $this->oApp,
                                                               SEEDBasketProducts_SoD::$raProductTypes, array('logdir'=>SITE_LOG_ROOT) );  break;
         }
@@ -333,17 +341,21 @@ should be okay to open any tab
 
     private function growerSelect()
     {
-        $raG = $this->oApp->kfdb->QueryRowsRA1( "SELECT mbr_id FROM seeds.sed_curr_growers WHERE _status='0'" );
+        $raG = $this->oApp->kfdb->QueryRowsRA( "SELECT mbr_id,bSkip,bDelete,bDone FROM seeds.sed_curr_growers WHERE _status='0'" );
         $raG2 = array( '-- All Growers --' => 0 );
-        foreach( $raG as $kMbr ) {
-            $ra = $this->oApp->kfdb->QueryRA( "SELECT firstname,lastname,company FROM seeds2.mbr_contacts WHERE _key='$kMbr'" );
-            if( !($name = trim($ra['firstname'].' '.$ra['lastname'])) ) {
-                if( !($name = $ra['company']) ) {
-                    continue;
-                }
-            }
+        foreach( $raG as $ra ) {
+            $kMbr = $ra['mbr_id'];
+            $bSkip = $ra['bSkip'];
+            $bDelete = $ra['bDelete'];
+            $bDone = $ra['bDone'];
+
+            $name = $this->GetGrowerName( $kMbr )
+                   ." ($kMbr)"
+                   .($bDone ? " - Done" : "")
+                   .($bSkip ? " - Skipped" : "")
+                   .($bDelete ? " - Deleted" : "");
             if( $this->TabSetGetCurrentTab( 'main' ) != 'Growers' )  $name = utf8_encode(trim($name));
-            $raG2["$name ($kMbr)"] = $kMbr;
+            $raG2[$name] = $kMbr;
         }
         ksort($raG2);
         $oForm = new SEEDCoreForm( 'Plain' );
