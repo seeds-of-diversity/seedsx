@@ -74,7 +74,7 @@ class SLAdminReports
 
         if( $rQ['bOk'] ) {
             $s .= "<div><h3 style='display:inline-block;margin-right:3em;'>Summary of All Varieties</h3>"
-                      ."<a style='display:inline-block' href='".Q_ROOT."q2.php?qcmd=collreport-cultivarsummary&kCollection=1&qfmt=xls' target='_blank'><img src='".W_ROOT."std/img/dr/xls.png' height='25'/></a>"
+                      ."<a style='display:inline-block' href='".Site_UrlQ('q2.php')."?qcmd=collreport-cultivarsummary&kCollection=1&qfmt=xls' target='_blank'><img src='".W_ROOT."std/img/dr/xls.png' height='25'/></a>"
                  ."</div>"
 
                  ."<table cellpadding='5'>"
@@ -103,7 +103,7 @@ class SLAdminReports
 
         if( $rQ['bOk'] ) {
             $s .= "<div><h3 style='display:inline-block;margin-right:3em;'>Summary of Adopted Varieties</h3>"
-                      ."<a style='display:inline-block' href='".Q_ROOT."q2.php?qcmd=collreport-adoptedsummary&kCollection=1&qfmt=xls' target='_blank'><img src='".W_ROOT."std/img/dr/xls.png' height='25'/></a>"
+                      ."<a style='display:inline-block' href='".Site_UrlQ('q2.php')."?qcmd=collreport-adoptedsummary&kCollection=1&qfmt=xls' target='_blank'><img src='".W_ROOT."std/img/dr/xls.png' height='25'/></a>"
                  ."</div>"
 
                  ."<table cellpadding='5'>"
@@ -132,7 +132,7 @@ class SLAdminReports
 
         if( $rQ['bOk'] ) {
             $s .= "<div><h3 style='display:inline-block;margin-right:3em;'>Germination Tests</h3>"
-                      ."<a style='display:inline-block' href='".Q_ROOT."q2.php?qcmd=collreport-germsummary&kCollection=1&qfmt=xls' target='_blank'><img src='".W_ROOT."std/img/dr/xls.png' height='25'/></a>"
+                      ."<a style='display:inline-block' href='".Site_UrlQ('q2.php')."?qcmd=collreport-germsummary&kCollection=1&qfmt=xls' target='_blank'><img src='".W_ROOT."std/img/dr/xls.png' height='25'/></a>"
                  ."</div>"
 
                  ."<table cellpadding='5'>"
