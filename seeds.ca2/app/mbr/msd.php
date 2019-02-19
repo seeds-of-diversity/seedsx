@@ -82,7 +82,7 @@ class msdBasket extends SEEDBasketStore
             'fTemplates' => array( SEEDAPP."templates/msd.html" ),
             'sFormCid'   => 'Plain',
             'raResolvers'=> array( array( 'fn'=>array($this,'ResolveTag'), 'raParms'=>array() ) ),
-            'vars'       => array()
+            'raVars'      => array( 'msdYear'=> date('Y') )
         );
         $this->oTmpl = SEEDTemplateMaker( $raTmplParms );
 
@@ -206,7 +206,7 @@ class msdBasket extends SEEDBasketStore
 
             }
 
-            $s2 = "<a href='index.php?kG=$uidSeller' target='_blank' style='text-decoration:none;'>"
+            $s2 = "<a href='".Site_path_self()."?kG=$uidSeller' target='_blank' style='text-decoration:none;'>"
                  ."<div style='margin-left:30px;background:#eee;border:1px solid #aaa;padding:10px;text-align:center;width:120px;height:160px;'>"
                      ."Click here to print your Seed Request Form"
                      ."<br/><br/><img src='//seeds.ca/i/img/logo/logoA-300x.png' width='60' height='54'/>"
