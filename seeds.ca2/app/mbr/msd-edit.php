@@ -201,6 +201,7 @@ class SEDMbrGrower extends SEDGrowerWorker
         $kGUpdatedBy = $kfrG->Value('_updated_by');
 
         // Seed records
+/*
         $ra = $this->oC->oApp->kfdb->QueryRA(
                 "SELECT _updated,_updated_by FROM
                      (
@@ -215,6 +216,8 @@ class SEDMbrGrower extends SEDGrowerWorker
                  ORDER BY 1 DESC LIMIT 1" );
         $dSUpdated = @$ra['_updated'];
         $kSUpdatedBy = @$ra['_updated_by'];
+*/
+        list($kP_dummy,$dSUpdated,$kSUpdatedBy) = $this->oC->oSB->oDB->ProductLastUpdated( "P.product_type='seeds' AND P.uid_seller='$kGrower'" );
 
         $nSActive = $this->oC->oApp->kfdb->Query1( "SELECT count(*) FROM seeds.SEEDBasket_Products
                                                     WHERE product_type='seeds' AND _status='0' AND
@@ -254,6 +257,7 @@ class MyConsole extends Console01
     private $kCurrGrower;
     private $kCurrSpecies;
     public $oMSDLib;
+    public $oSB;
 
     function __construct( SEDMbr $oSed, SEEDAppConsole $oApp, $raParms )
     {
@@ -261,6 +265,8 @@ class MyConsole extends Console01
         $this->oApp = $oApp;
         parent::__construct( $oSed->kfdb, $oSed->sess, $raParms );
 
+        $this->oSB = new SEEDBasketCore( $this->oApp->kfdb, $this->oApp->sess, $this->oApp,
+                                         SEEDBasketProducts_SoD::$raProductTypes, array('logdir'=>SITE_LOG_ROOT) );
         $this->oMSDLib = new MSDLib( $oApp );
 
         if( $this->oMSDLib->PermOfficeW() ) {
@@ -281,8 +287,8 @@ class MyConsole extends Console01
                 $this->oW = new SEDMbrGrower( $this, $this->kfdb, $this->sess );
                 $this->oW->UpdateGrower( $this->kCurrGrower );
                 break;
-            case 'Seeds':    $this->oSB = new SEEDBasketCore( $this->oApp->kfdb, $this->oApp->sess, $this->oApp,
-                                                              SEEDBasketProducts_SoD::$raProductTypes, array('logdir'=>SITE_LOG_ROOT) );  break;
+            case 'Seeds':
+                break;
         }
     }
 
