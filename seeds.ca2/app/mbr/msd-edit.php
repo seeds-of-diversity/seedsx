@@ -292,16 +292,18 @@ class MyConsole extends Console01
         }
     }
 
-/*
-should be okay to open any tab
     function TabSetPermission( $tsid, $tabname )
     {
-        if( $tsid == 'main' ) {
-            return( $this->oSed->sess->TestPerm( 'sed', 'W' ) ? 1 : 0 );
+        switch( $tabname ) {
+            case 'Growers':
+            case 'Seeds':
+                return( 1 );
+            case 'Office':
+                return( $this->oMSDLib->PermOfficeW() ? 1 : 0 );
         }
         return( 0 );
     }
-*/
+
     function TabSetControlDraw( $tsid, $tabname )
     {
         $s = "";
@@ -328,10 +330,13 @@ should be okay to open any tab
     function TabSetContentDraw( $tsid, $tabname )
     {
         switch( $tabname ) {
-            case 'Growers':  return( $this->oW->DrawGrowerContent( $this->kCurrGrower ) );
+            case 'Growers':
+                return( $this->oW->DrawGrowerContent( $this->kCurrGrower ) );
             case 'Seeds':
                 $oMSDAppSeedEdit = new MSDAppSeedEdit( $this->oSB );
                 return( $oMSDAppSeedEdit->Draw( $this->kCurrGrower, $this->kCurrSpecies ) );
+            case 'Office':
+                return( $this->officeTabDraw() );
         }
         return( "" );
     }
@@ -367,6 +372,27 @@ should be okay to open any tab
         $oForm = new SEEDCoreForm( 'Plain' );
         return( "<form method='post'>".$oForm->Select( 'selectGrower', $raG2, "", array('selected'=>$this->kCurrGrower, 'attrs'=>"onChange='submit();'") )."</form>" );
     }
+
+    private function officeTabDraw()
+    {
+        $s = "";
+
+        $s .= "<p>Grower list for printed directory</p>";
+        $s .= "<p>Seeds list for printed directory</p>";
+
+        if( $this->oMSDLib->PermAdmin() ) {
+            $s .= $this->oMSDLib->AdminNormalizeStuff();
+$this->oApp->kfdb->SetDebug(2);
+            $s .= "<h4>Integrity Tests</h4>";
+            $s .= $this->oMSDLib->AdminIntegrityTests();
+
+            $s .= "<h4>Workflow Tests</h4>";
+            $s .= $this->oMSDLib->AdminWorkflowTests();
+
+        }
+
+        return( $s );
+    }
 }
 
 
@@ -380,7 +406,8 @@ $raConsoleParms = array(
 //                             array( 'href' => 'mbr_mailsend.php', 'label' => "Send 'READY'", 'target' => '_blank' ) ),
 
     'TABSETS' => array( "main" => array( 'tabs' => array( 'Growers' => array( 'label' => $oSed->S("Tab G") ),
-                                                          'Seeds'   => array( 'label' => $oSed->S("Tab S") ) ) ) ),
+                                                          'Seeds'   => array( 'label' => $oSed->S("Tab S") ),
+                                                          'Office'  => array( 'label' => "Office" ) ) ) ),
     'lang' => $lang,
     'bBootstrap' => true,
     'script_files' => array( W_ROOT."std/js/SEEDStd.js", W_CORE."js/SEEDCore.js" ),
