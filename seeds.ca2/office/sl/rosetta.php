@@ -13,7 +13,7 @@ if( !defined("SITEROOT") )  define("SITEROOT", "../../");
  */
 include_once( SITEROOT."site.php" );
 
-include_once( STDINC."SEEDProblemSolver.php" );
+include_once( SEEDCORE."SEEDProblemSolver.php" );
 include_once( SEEDCOMMON."console/console01kfui.php" );
 include_once( SEEDCOMMON."sl/sl_db.php" );
 include_once( SEEDCOMMON."sl/sl_db_admin.php" );    // get stats on referenced sp and cv
