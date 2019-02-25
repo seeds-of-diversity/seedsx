@@ -377,26 +377,34 @@ class MyConsole extends Console01
     {
         $s = "";
 
+        include_once( SEEDLIB."msd/msdlibIntegrity.php" );
+        //$oReport = new MSDLibReport( $this->oMSDLib );
+
         $s .= "<p>Grower list for printed directory</p>";
         $s .= "<p>Seeds list for printed directory</p>";
 
         if( $this->oMSDLib->PermAdmin() ) {
             $s .= $this->oMSDLib->AdminNormalizeStuff();
 
-            $s .= "<h3>Integrity Tests</h3>";
-            $s .= $this->oMSDLib->AdminIntegrityTests();
+            $s .= "<h3><a href='{$_SERVER['PHP_SELF']}?doIntegrityTests=1'>Do Integrity Tests</a></h3>";
 
-            $s .= "<h3>Workflow Tests</h3>";
-            $s .= $this->oMSDLib->AdminWorkflowTests();
+            if( SEEDInput_Int('doIntegrityTests') ) {
+                include_once( SEEDLIB."msd/msdlibIntegrity.php" );
+                $oIntegrity = new MSDLibIntegrity( $this->oMSDLib );
 
-            $s .= "<h3>Data Tests</h3>";
-            $s .= $this->oMSDLib->AdminDataTests();
+                $sTest = "<h3>Integrity Tests</h3>"
+                        .$oIntegrity->AdminIntegrityTests()
+                        ."<h3>Workflow Tests</h3>"
+                        .$oIntegrity->AdminWorkflowTests()
+                        ."<h3>Data Tests</h3>"
+                        .$oIntegrity->AdminDataTests();
 
-$this->oApp->kfdb->SetDebug(2);
-            $s .= "<h3>Content Tests</h3>";
-            $s .= $this->oMSDLib->AdminContentTests();
+                $sTest .="<h3>Content Tests</h3>"
+                        .$oIntegrity->AdminContentTests();
+
+                $s .= "<div class='well'>$sTest</div>";
+            }
         }
-
         return( $s );
     }
 }
