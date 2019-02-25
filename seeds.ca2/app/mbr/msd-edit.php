@@ -389,6 +389,8 @@ $this->oApp->kfdb->SetDebug(2);
             $s .= "<h4>Workflow Tests</h4>";
             $s .= $this->oMSDLib->AdminWorkflowTests();
 
+            $s .= "<h4>Data Tests</h4>";
+            $s .= $this->oMSDLib->AdminDataTests();
         }
 
         return( $s );
