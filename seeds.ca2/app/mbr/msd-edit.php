@@ -377,34 +377,35 @@ class MyConsole extends Console01
     {
         $s = "";
 
-        include_once( SEEDLIB."msd/msdlibIntegrity.php" );
-        //$oReport = new MSDLibReport( $this->oMSDLib );
+        if( !$this->oMSDLib->PermOfficeW() )  goto done;
 
-        $s .= "<p>Grower list for printed directory</p>";
-        $s .= "<p>Seeds list for printed directory</p>";
+        $s .= "<h4><strong><a href='{$_SERVER['PHP_SELF']}?doReport=JanGrowers' target='_blank'>Grower list for printed directory</a></strong></h4>";
+        $s .= "<h4><strong><a href='{$_SERVER['PHP_SELF']}?doReport=JanSeeds' target='_blank'>Seeds list for printed directory</a></strong></h4>";
 
         if( $this->oMSDLib->PermAdmin() ) {
             $s .= $this->oMSDLib->AdminNormalizeStuff();
 
-            $s .= "<h3><a href='{$_SERVER['PHP_SELF']}?doIntegrityTests=1'>Do Integrity Tests</a></h3>";
+            $s .= "<h4><strong><a href='{$_SERVER['PHP_SELF']}?doIntegrityTests=1'>Do Integrity Tests</a></strong></h4>";
 
             if( SEEDInput_Int('doIntegrityTests') ) {
                 include_once( SEEDLIB."msd/msdlibIntegrity.php" );
                 $oIntegrity = new MSDLibIntegrity( $this->oMSDLib );
 
-                $sTest = "<h3>Integrity Tests</h3>"
+                $sTest = "<h4><strong>Integrity Tests</strong></h4>"
                         .$oIntegrity->AdminIntegrityTests()
-                        ."<h3>Workflow Tests</h3>"
+                        ."<h4><strong>Workflow Tests</strong></h4>"
                         .$oIntegrity->AdminWorkflowTests()
-                        ."<h3>Data Tests</h3>"
+                        ."<h4><strong>Data Tests</strong></h4>"
                         .$oIntegrity->AdminDataTests();
 
-                $sTest .="<h3>Content Tests</h3>"
+                $sTest .="<h4><strong>Content Tests</strong></h4>"
                         .$oIntegrity->AdminContentTests();
 
                 $s .= "<div class='well'>$sTest</div>";
             }
         }
+
+        done:
         return( $s );
     }
 }
@@ -429,8 +430,18 @@ $raConsoleParms = array(
 );
 $oC = new MyConsole( $oSed, $oApp, $raConsoleParms );
 
-if( $oC->TabSetGetCurrentTab( 'main' ) == 'Growers' ) {
+if( in_array($oC->TabSetGetCurrentTab('main'), ['Growers','Office'] ) ) {
     $oC->SetConfig( array( 'sCharset' => 'cp1252' ) );
+}
+
+// Output reports in this window with no console.
+// MSDLibReport sets header(charset) based on the format of report
+$oMSDLib = new MSDLib( $oApp );     // MSDLib could be passed into MyConsole because one is constructed there.
+if( $oMSDLib->PermOfficeW() && SEEDInput_Str('doReport') ) {
+    include_once( SEEDLIB."msd/msdlibReport.php" );
+    $oReport = new MSDLibReport( $oMSDLib );
+    echo $oReport->Report();
+    exit;
 }
 
 echo $oC->DrawConsole( $oSed->SEDStyle()."[[TabSet: main]]" );
