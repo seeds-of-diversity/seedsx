@@ -382,15 +382,19 @@ class MyConsole extends Console01
 
         if( $this->oMSDLib->PermAdmin() ) {
             $s .= $this->oMSDLib->AdminNormalizeStuff();
-$this->oApp->kfdb->SetDebug(2);
-            $s .= "<h4>Integrity Tests</h4>";
+
+            $s .= "<h3>Integrity Tests</h3>";
             $s .= $this->oMSDLib->AdminIntegrityTests();
 
-            $s .= "<h4>Workflow Tests</h4>";
+            $s .= "<h3>Workflow Tests</h3>";
             $s .= $this->oMSDLib->AdminWorkflowTests();
 
-            $s .= "<h4>Data Tests</h4>";
+            $s .= "<h3>Data Tests</h3>";
             $s .= $this->oMSDLib->AdminDataTests();
+
+$this->oApp->kfdb->SetDebug(2);
+            $s .= "<h3>Content Tests</h3>";
+            $s .= $this->oMSDLib->AdminContentTests();
         }
 
         return( $s );
