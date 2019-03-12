@@ -50,6 +50,17 @@ if( ($jx = @$_REQUEST['jx']) ) {
         }
     }
 
+    if( $jx == 'drawTicket' ) {
+        if( ($id = intval(@$_REQUEST['id'])) ) {
+            if( !($kfr = $kfrel->GetRecordFromDBKey( $id )) ) { $rQ['sErr'] = "Couldn't load $id"; goto jxDone; }
+
+            $oMbrOrder = new MbrOrder( $kfdb, "EN", $id );
+            $rQ['sOut'] = $oMbrOrder->DrawTicket();
+
+            $rQ['bOk'] = true;
+        }
+    }
+
     jxDone:
     echo json_encode($rQ);
     exit;
@@ -226,6 +237,7 @@ $sSummary = str_replace( "One Year Membership with on-line Seed Directory", "One
          ."<div><form action='http://seeds.ca/office/mbr/mbr_labels.php' target='MbrLabels' method='get'>"
              ."<input type='hidden' name='orderadd' value='".$kfr->Key()."'/><input type='submit' value='Add to Label Maker'/>"
          ."</form></div>"
+         .$kfr->Expand( "<div class='mbrOrderShowTicket' data-kOrder='[[_key]]' data-expanded='0'><a href='#'>Show Ticket</a></div>" )
          ."</td>"
           // Name
          ."<td valign='top' $style>"
@@ -264,6 +276,40 @@ $sSummary = str_replace( "One Year Membership with on-line Seed Directory", "One
          ."</tr>";
 }
 $s .= "</table>";
+
+
+
+
+$s .= <<<MbrOrderScript
+<script>
+$(document).ready( function() {
+    $('.mbrOrderShowTicket').click( function () {
+        let k = $(this).attr( 'data-kOrder' );
+        let e = $(this);
+        let x = $(this).attr( 'data-expanded' );
+
+        if( FormValInt(x) ) {
+            $(this).html( "Show Ticket" );
+            $(this).attr( 'data-expanded', 0 );
+        } else {
+            $.get( 'mbr_order.php',
+                   "jx=drawTicket&id="+k,
+                   function (data) {
+                       let d = SEEDJX_ParseJSON( data );
+                       //console.log(d);
+                       if( d['bOk'] ) {
+                           e.html( d['sOut'] );
+                           e.attr( 'data-expanded', 1 );
+                       }
+                   } );
+        }
+    });
+});
+
+function     FormValInt( k )   { return( parseInt(k) || 0 ); }
+
+</script>
+MbrOrderScript;
 
 echo Console01Static::HTMLPage( $s, "", 'EN', array( 'sCharset'=>'cp1252', 'bBodyMargin'=>true,
                                                      'raScriptFiles' => array( W_ROOT."std/js/SEEDStd.js" )
