@@ -113,6 +113,7 @@ if( ($row = $oMOR->pRow) ) {
                 break;
             case "Add Note":
                 $bUpdate = true;
+                break;
 
             case "changeStatusToPaid":
                 $kfr->SetValue( 'eStatus', MBRORDER_STATUS_PAID );
@@ -283,10 +284,12 @@ $s .= "</table>";
 $s .= <<<MbrOrderScript
 <script>
 $(document).ready( function() {
-    $('.mbrOrderShowTicket').click( function () {
+    $('.mbrOrderShowTicket').click( function (e) {
+        let t = $(this);
         let k = $(this).attr( 'data-kOrder' );
-        let e = $(this);
         let x = $(this).attr( 'data-expanded' );
+
+        e.preventDefault();
 
         if( FormValInt(x) ) {
             $(this).html( "Show Ticket" );
@@ -298,8 +301,8 @@ $(document).ready( function() {
                        let d = SEEDJX_ParseJSON( data );
                        //console.log(d);
                        if( d['bOk'] ) {
-                           e.html( d['sOut'] );
-                           e.attr( 'data-expanded', 1 );
+                           t.html( d['sOut'] );
+                           t.attr( 'data-expanded', 1 );
                        }
                    } );
         }
