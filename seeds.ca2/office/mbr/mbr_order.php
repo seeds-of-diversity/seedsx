@@ -223,8 +223,9 @@ while( $kfr->CursorFetch() ) {
     }
 
     $sSummary = $oOrder->conciseSummary( $kfr->Key() );     // this also computes $oOrder->raOrder for details
-// kluge to make the simple case easier to differentiate from the printed-directory membership
+// kluge to make the membership labels easier to differentiate
 $sSummary = str_replace( "One Year Membership with on-line Seed Directory", "One Year Membership", $sSummary );
+$sSummary = str_replace( "One Year Membership with printed and on-line Seed Directory", "One Year Membership with printed Seed Directory", $sSummary );
 
     $ra = SEEDCore_ParmsURL2RA( $kfr->value('sExtra') );
     $to = @$ra['mbrid'] ?: $kfr->value('mail_email');
