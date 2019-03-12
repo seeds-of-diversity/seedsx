@@ -625,7 +625,7 @@ if( $kOrder ) $this->setKOrder( $kOrder );
 
         /* Publications
          */
-        if( count($this->raOrder['pubs']) ) {
+        if( @$this->raOrder['pubs'] && count($this->raOrder['pubs']) ) {
             /* No lookups or calculations are allowed here, to centralize all logic in computeOrder()
              */
             $s .= $this->ticketSectionHead( "", "Publications" );
@@ -664,7 +664,7 @@ if( $kOrder ) $this->setKOrder( $kOrder );
         }
 */
 
-        if( count(@$this->raOrder['seeds']) ) {
+        if( @$this->raOrder['seeds'] && count($this->raOrder['seeds']) ) {
             foreach( $this->raOrder['seeds'] as $ra ) {
                 if( $ra['k'] == 'bulbils' ) {
                     $s .= "<TR><TD colspan='2'>Garlic Bulbils</TD><TD>".$this->dollar($ra['amount'])."</TD></TR>";
@@ -675,14 +675,14 @@ if( $kOrder ) $this->setKOrder( $kOrder );
         }
 
 
-        if( count(@$this->raOrder['registration']) ) {
+        if( @$this->raOrder['registration'] && count($this->raOrder['registration']) ) {
             $s .= "<TR><TH colspan='3'>".$this->oL->S('Registration')."</TH></TR>";
             foreach( $this->raOrder['registration'] as $ra ) {
                 $s .= "<TR><TD colspan='2'>".$ra['full']."</TD><TD>".$this->dollar($ra['amount'])."</TD><TR>";
             }
         }
 
-        if( count(@$this->raOrder['special']) ) {
+        if( @$this->raOrder['special'] && count($this->raOrder['special']) ) {
             foreach( $this->raOrder['special'] as $k => $v ) {
                 if( $k == 'nametag' ) {
                     $s .= "<TR><TD colspan='2'>Name tag: $v</TD></TD>&nbsp;</TD></TR>";
