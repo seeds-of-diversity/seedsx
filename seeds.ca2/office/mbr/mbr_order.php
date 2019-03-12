@@ -231,6 +231,8 @@ $sSummary = str_replace( "One Year Membership with printed and on-line Seed Dire
     $to = @$ra['mbrid'] ?: $kfr->value('mail_email');
     $sOnClick =  "window.open(\"../int/emailme.php?to=$to\",\"_blank\",\"width=900,height=800,scrollbars=yes\")";
 
+    $kMbr = @$ra['mbrid'] ?: 0;
+
     $s .= "<tr>"
           // Order #
          ."<td valign='top'>"
@@ -245,6 +247,7 @@ $sSummary = str_replace( "One Year Membership with printed and on-line Seed Dire
          ."<td valign='top' $style>"
          .$kfr->Expand( "[[mail_firstname]] [[mail_lastname]]<br/>[[mail_company]]<br/>" )
          .$kfr->ExpandIfNotEmpty( 'pp_name', "([[]] on credit card)<br/>" )
+         .($kMbr ? "<br/>Member $kMbr" : "")
          ."</td>"
           // Address / Phone Email
          ."<td valign='top'>"

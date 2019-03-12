@@ -468,8 +468,7 @@ if( $kOrder ) $this->setKOrder( $kOrder );
 
     function conciseSummary( $kOrder = 0 )
     /*************************************
-     * Though this is probably only used by the order report, the code is centralized here to facilitate
-     * adding new items
+     * Though this is only used by the order report, the code is centralized here to facilitate adding new items
      */
     {
         $s = "";
@@ -477,9 +476,9 @@ if( $kOrder ) $this->setKOrder( $kOrder );
         $this->setKOrder( $kOrder );
         $this->computeOrder();
 
-        if( ($v = @$this->raOrder['mbrid']) ) {
-            $s .= "Member # $v<br/>";
-        }
+//        if( ($v = @$this->raOrder['mbrid']) ) {
+//            $s .= "Member # $v<br/>";
+//        }
         if( ($v = @$this->raOrder['mbr']) ) {
             $s .= $this->raMbrTypes[$v]['EN']."<BR/>";
         }
