@@ -2,7 +2,7 @@
 /*
  * docUtil
  *
- * Copyright 2009-2018 Seeds of Diversity Canada
+ * Copyright 2009-2019 Seeds of Diversity Canada
  *
  * Functions to simplify DocRep applications
  */
@@ -160,6 +160,8 @@ function serveDoc( $kfdb, $uid, $flag )
                 break;
         }
 
+        // There could be an oDoc metadata specifying utf8 to override this
+        header( "Content-Type: text/html; charset=cp1252" );
         echo $sDoc;
     } else {
         // Serve a binary file
