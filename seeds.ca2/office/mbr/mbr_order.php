@@ -233,7 +233,7 @@ $sSummary = str_replace( "One Year Membership with printed and on-line Seed Dire
 
     $kMbr = @$ra['mbrid'] ?: 0;
 
-    $s .= "<tr>"
+    $s .= "<tr data-kOrder=''>"
           // Order #
          ."<td valign='top'>"
          .$kfr->Expand( "<a href='".$_SERVER['PHP_SELF']."?row=[[_key]]'>[[_key]]</a>" )
@@ -256,7 +256,7 @@ $sSummary = str_replace( "One Year Membership with printed and on-line Seed Dire
          ."<br/>"
          ."<br/>"
          .$kfr->Expand( "[[mail_phone]]<br/>[[mail_email]]" )
-         ."<div><a href='#' onclick='$sOnClick'>Send Email</a></div>"
+         ."<div><a style='cursor:pointer' onclick='$sOnClick'>Send Email</a></div>"
          ."</td>"
           // Language / eBulletin
          ."<td valign='top'>"
