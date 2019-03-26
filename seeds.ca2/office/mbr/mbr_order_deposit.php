@@ -5,7 +5,6 @@ include_once( SITEROOT."site2.php" );
 include_once( STDINC."SEEDForm.php" );
 include_once( SEEDCORE."SEEDXLSX.php" );
 include_once( SEEDCOMMON."mbr/mbrOrder.php" );
-include_once( "_mbr_order_report.php" );
 
 // kfdb is seeds2 to segregate SEEDSession privileges there
 list($kfdb, $sess) = SiteStartSessionAccount( array("R MBRORDER") );

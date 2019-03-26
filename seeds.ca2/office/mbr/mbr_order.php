@@ -16,7 +16,6 @@ $bCanWrite = $sess->CanWrite('MBRORDER');
 $oApp = SiteAppConsole( ['db'=>'seeds2', 'sessPermsRequired'=>['R MBRORDER'] ] );
 
 
-
 define( "MBR_ADMIN", "1" ); // DrawTicket shows all the internal stuff
 
 $oUI = new SodOrderFulfilUI( $oApp );
