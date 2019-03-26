@@ -55,10 +55,12 @@ if( ($jx = @$_REQUEST['jx']) ) {
                 if( !($kfr = $oUI->KfrelOrder()->GetRecordFromDBKey( $id )) ) { $rQ['sErr'] = "Couldn't load $id"; goto jxDone; }
 
                 $oMbrOrder = new MbrOrder( $kfdb, "EN", $id );
-                $rQ['sOut'] = $oMbrOrder->DrawTicket();
+                $rQ['sOut'] = utf8_encode($oMbrOrder->DrawTicket());
                 $rQ['bOk'] = true;
-        }
-        break;
+
+                header( "Content-Type:text/html; charset=utf8" );
+            }
+            break;
     }
 
     jxDone:
