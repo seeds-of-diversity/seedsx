@@ -190,20 +190,11 @@ if( $kfr ) {
 
 /* Fetch table of orders
  */
-$s .= "<h3>".($oUI->fltStatus==MBRORDER_STATUS_FILLED ? "Filled" :
-             ($oUI->fltStatus==MBRORDER_STATUS_CANCELLED ? "Cancelled" : "Pending"))
-     ." Orders</h3>";
+list($fltLabel,$fltCond,$fltSortDown) = $oUI->GetFilterDetails();
 
-if( $oUI->fltStatus ) {
-    // Filled or Cancelled
-    $cond = "(eStatus='".$oUI->fltStatus."') AND ".getYearCond( $oUI->fltYear );
-    $bSortDown = true;
-} else {
-    // Pending (New or Paid) - show the pending items from all years (don't want to miss any)
-    $cond = "(eStatus<>'".MBRORDER_STATUS_FILLED."' AND eStatus<>'".MBRORDER_STATUS_CANCELLED."')";
-    $bSortDown = false;
-}
-$kfr = $kfrel->CreateRecordCursor( $cond, array('sSortCol'=>'_key','bSortDown'=>$bSortDown) );
+$s .= "<h3>$fltLabel Orders</h3>";
+
+$kfr = $kfrel->CreateRecordCursor( $fltCond, array('sSortCol'=>'_key','bSortDown'=>$fltSortDown) );
 
 
 /* Draw table of orders
@@ -232,16 +223,6 @@ $s .= "</table>";
 echo Console01Static::HTMLPage( $s, "", 'EN', array( 'sCharset'=>'cp1252', 'bBodyMargin'=>true,
                                                      'raScriptFiles' => array( W_ROOT."std/js/SEEDStd.js" )
 ) );
-
-
-function getYearCond( $y )
-{
-    if( !$y )  return( "1=1" );
-
-    if( $y <= 2010 )  return( "year(_created) <= '2010'" );
-
-    return( "year(_created)='$y'" );
-}
 
 
 ?>
