@@ -19,7 +19,7 @@
 // The "fixes" at top of soft integ check should go in the seditUpdate and geditUpdate.  e.g. force upper case, trim names, set current year.
 // Leave them in the integ check too, so the whole database gets "fixed" now and then.
 
-
+die("With apologies, office Seed Exchange editing is offline for a few days. Individuals can still edit their listings themselves.");
 
 /* Seed Directory Admin interface
  *
