@@ -70,14 +70,26 @@ if( SEEDInput_Str('cmd') == "xls" ) {
 
     $row = 2;
     foreach( $raOut as $ra ) {
-        $oXls->WriteRow( 0, $row++, array( $ra['order'], $ra['name'], $ra['membership'], $ra['donation'], $ra['sladoption'], $ra['books'], $ra['seeds'], $ra['misc'] ) );
+        $oXls->WriteRow( 0, $row, array( $ra['order'], $ra['name'], $ra['membership'], $ra['donation'],
+                                           $ra['sladoption'], $ra['books'], $ra['seeds'], $ra['misc'], "", "=sum(C$row:H$row)" ) );
+        // bold the total on right
+        $oXls->SetCellStyle( 0, $row, 'J', ['font'=>['bold'=>true]] );
+
+        $row++;
+    }
+
+    // compute the totals at the bottom
+    $row++;
+    $rowMinus2 = $row - 2;
+    $oXls->WriteRow( 0, $row, array( "", "", "=sum(C2:C$rowMinus2)", "=sum(D2:D$rowMinus2)", "=sum(E2:E$rowMinus2)", "=sum(F2:F$rowMinus2)",
+                                             "=sum(G2:G$rowMinus2)", "=sum(H2:H$rowMinus2)", "", "=sum(J2:J$rowMinus2)" ) );
+
+    // bold the totals on the bottom
+    foreach( ['C','D','E','F','G','H','J'] as $c ) {
+        $oXls->SetCellStyle( 0, $row, $c, ['font'=>['bold'=>true]] );
     }
     $oXls->OutputSpreadsheet();
 
-//    SEEDTable_OutputXLSFromRARows( $raOut,
-//                                   array( 'columns' => $cols,
-//                                          'filename'=>"deposit $sRangeNormal.xls",
-//                                          'created_by'=>$sess->GetName(), 'title'=>"Deposit $sRangeNormal" ) );
     exit;
 }
 
