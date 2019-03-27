@@ -45,10 +45,11 @@ $raCompParms = array(
                          array( "label"=>"Location", "colalias"=>"location",   "w"=>200),
                          //array( "label"=>"Alt Date", "colalias"=>"date_alt",   "w"=>100),
                          array( "label"=>"Time",     "colalias"=>"time",       "w"=>100),
+                         array( "label"=>"Volunteer", "colalias"=>"vol_kMbr", "w"=>100  ),
     ),
     'ListSize' => 10,
     'fnListFilter'    => "EV2_listFilter",
-    'fnListTranslate' => "EV2_listTranslate",
+    'fnListRowTranslate' => "EV2_listTranslate",
     'fnFormDraw'      => "EV2_formDraw",
     'raSEEDFormParms' => array('DSParms'=>array('fn_DSPreStore'=>'EV2_DSPreStore')),
 );
@@ -158,9 +159,13 @@ function EV2_listFilter()
     }
 }
 
-function EV2_listTranslate()
+function EV2_listTranslate( $kfr )
 {
-
+    $ra = $kfr->ValuesRA();
+    if( ($kMbr = $ra['vol_kMbr']) ) {
+        $ra['vol_kMbr'] = $kfr->kfrel->kfdb->Query1( "SELECT concat(firstname,' ',lastname,' in ',city) FROM seeds2.mbr_contacts WHERE _key='$kMbr'" );
+    }
+    return( $ra );
 }
 
 function EV2_DSPreStore( $oDS )
