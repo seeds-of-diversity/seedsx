@@ -338,20 +338,27 @@ class Mbr3UpMemberRenewals
             $this->kfdb->SetDebug(2);
         }
 
+        $yLastYear   = $this->year - 1;
+        $yBeforeThat = $this->year - 2;
+
         $lEN = "lang<>'F'";
         $lFR = "lang='F'";
         $dGlobal = "_status='0' AND country='Canada' AND "
                   ."address IS NOT NULL AND address<>'' AND "   // address is blanked out if mail comes back RTS
                   ."NOT bNoDonorAppeals AND "                   // they probably see this as the same thing
-                  ."expires IS NOT NULL AND year(expires) IN (2016,2017)";
+                  ."expires IS NOT NULL AND year(expires) IN ($yLastYear,$yBeforeThat)";
 
         $this->raMbrEN = $this->kfdb->QueryRowsRA("SELECT * FROM seeds2.mbr_contacts WHERE $dGlobal AND $lEN order by lastname,firstname" );
         $this->raMbrFR = $this->kfdb->QueryRowsRA("SELECT * FROM seeds2.mbr_contacts WHERE $dGlobal AND $lFR order by lastname,firstname" );
 
-        $this->raMbr   = $this->lang=='EN' ? $this->raMbrEN : $this->raMbrFR;
+        if( $this->mode == '3Up' ) {
+            $this->raMbr   = $this->lang=='EN' ? $this->raMbrEN : $this->raMbrFR;
 
-        foreach( $this->raMbr as &$ra ) {
-            $ra['SEEDPrint:addressblock'] = utf8_encode(MbrDrawAddressBlockFromRA( $ra ));
+            foreach( $this->raMbr as &$ra ) {
+                $ra['SEEDPrint:addressblock'] = utf8_encode(MbrDrawAddressBlockFromRA( $ra ));
+            }
+        } else {
+            echo "<p>".count($this->raMbrEN)." English, ".count($this->raMbrFR)." French</p>";
         }
     }
 
