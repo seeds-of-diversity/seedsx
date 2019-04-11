@@ -2,7 +2,7 @@
 
 /* RosettaSEED entry point
  *
- * Copyright (c) 2014-2018 Seeds of Diversity Canada
+ * Copyright (c) 2014-2019 Seeds of Diversity Canada
  *
  */
 
@@ -156,8 +156,18 @@ $oDS->SetValue( 'psp', $psp );
 
     function CultivarsPreDelete( KFRecord $kfr )
     {
-        $this->ErrMsg( "Oh no" );
-        return( true );
+        $ok = false;
+
+        // don't share oStats object with FormDraw because it caches its information, which possibly changes during update/delete
+        $oStats = new SLDB_Admin_Stats( $this->kfdb );
+        $raRef = $oStats->GetReferencesToPCV( $kfr->Key() );
+        if( $raRef['nTotal'] ) {
+            $this->ErrMsg( "Can't delete this cultivar because it's referenced in the Seed Library or a Source Record" );
+        } else {
+            $this->UserMsg( $kfr->Expand( "Deleted [[psp]] : [[name]]" ) );
+            $ok = true;
+        }
+        return( $ok );
     }
 
     private function drawStats( $ra )
