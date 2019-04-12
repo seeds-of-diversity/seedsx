@@ -208,6 +208,8 @@ $oDS->SetValue( 'psp', $psp );
             ."(psp is ".$oForm->Text( "psp", "", array('readonly'=>true) ).")"
             ."</td></tr>"
             ."<tr>".$oForm->TextTD( "name", "Name" )."</tr>"
+            ."<tr><td colspan='2'><label>Description for seed packets (write what you would put in a seed catalogue)</label></td></tr>"
+            ."<tr>".$oForm->TextAreaTD( "packetLabel", "" )."</tr>"
             ."<tr>".$oForm->TextAreaTD( "notes", "Notes" )."</tr>"
             ."</table>"
             ."<input type='submit' value='Save'>";
