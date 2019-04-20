@@ -157,6 +157,7 @@ class sldb__base
                        array( "col"=>"psp",                 "type"=>"S" ),
                        array( "col"=>"name",                "type"=>"S" ),
                        array( "col"=>"t",                   "type"=>"I" ),
+                       array( "col"=>"packetLabel",         "type"=>"S" ),
                        array( "col"=>"notes",               "type"=>"S" ) )
                 // sound_* are not here because they're only used during rebuild-index and associated manual steps
               );
@@ -1545,6 +1546,7 @@ CREATE TABLE IF NOT EXISTS sl_pcv (
     psp             VARCHAR(200) NOT NULL DEFAULT '',
     name            VARCHAR(200) NOT NULL DEFAULT '',
     t               INTEGER NOT NULL DEFAULT 0,   -- reasons name is here 0=manual,1=manual-src-rosetta,2=auto-src-rosetta
+    packetLabel     TEXT,
     notes           TEXT,
 
     sound_soundex   VARCHAR(100) NOT NULL DEFAULT '',
