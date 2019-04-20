@@ -44,6 +44,7 @@ $consoleConfig = [
                                       ]
                            ]
     ],
+    'urlLogin'=>'../login/',
 
     'consoleSkin' => 'green',
 ];
@@ -51,7 +52,7 @@ $consoleConfig = [
 
 $oApp = new SEEDAppConsole( $config_KFDB['seeds2']
                             + array( 'sessPermsRequired' => $consoleConfig['TABSETS']['main']['perms'],
-                                     'sessUIConfig' => ['bTmpActivate'=>true, 'bLoginNotRequired'=>true],
+                                     'sessUIConfig' => ['bTmpActivate'=>true, 'bLoginNotRequired'=>false, 'fTemplates'=>[SEEDAPP.'templates/seeds_sessionaccount.html'] ],
                                      'consoleConfig' => $consoleConfig,
                                      'logdir' => SITE_LOG_ROOT )
 );
@@ -92,6 +93,16 @@ class MyConsole02TabSet extends Console02TabSet
     function TabSet_right_mailitem_ContentDraw()
     {
         return( "<div style='padding:20px'>Bar</div>" );
+    }
+
+    function TabSet_right_text_ControlDraw()
+    {
+        return( "<div style='padding:20px'>AAA</div>" );
+    }
+
+    function TabSet_right_text_ContentDraw()
+    {
+        return( "<div style='padding:20px'>BBB</div>" );
     }
 }
 
