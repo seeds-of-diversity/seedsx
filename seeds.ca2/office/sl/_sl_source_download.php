@@ -1553,7 +1553,7 @@ $this->oW->kfdb->Execute( SLDB_Create::SEEDS_DB_TABLE_SL_TMP_CV_SOURCES );
 
         if( !$this->kUpload ) goto done;
 
-        $bIndexed = $this->oW->kfdb->Query1( "SELECT count(*) FROM {$this->tmpTable} WHERE kUpload='{$this->kUpload}' AND op<>' ' LIMIT 1" );
+        $bIndexed = $this->oW->kfdb->Query1( "SELECT count(*) FROM {$this->tmpTable} WHERE kUpload='{$this->kUpload}' AND op<>' '" );
 
         /* Index the tmp table if there are no ops computed yet
          */
@@ -1632,7 +1632,7 @@ $this->oW->kfdb->Execute( SLDB_Create::SEEDS_DB_TABLE_SL_TMP_CV_SOURCES );
                             ? "SRCCV.fk_sl_sources >= '3'"
                             // if replacing specific companies then delete missing rows from those companies only
                             : ("SRCCV.fk_sl_sources IN (SELECT distinct(fk_sl_sources) FROM {$this->tmpTable} "
-                                                      ."WHERE kUpload='$kUpload' AND fk_sl_sources<>'0')")) );
+                                                      ."WHERE kUpload='{$this->kUpload}' AND fk_sl_sources<>'0')")) );
             }
         }
 
