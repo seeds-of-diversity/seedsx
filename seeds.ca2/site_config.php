@@ -24,6 +24,7 @@ if( !defined("SEEDROOT") ) {
         if( !defined("W_CORE") ) {
             define("W_CORE", SITEROOT."wcore/");
         }
+        define( "W_CORE_URL", W_CORE );
     } else {
         // On typical development systems the seeds and seedsx directories are siblings at public_html/seeds and public_html/seedsx
         // SITEROOT is public_html/seedsx/seeds.ca2
@@ -46,6 +47,7 @@ if( !defined("SEEDROOT") ) {
                 die( "site_config.php can't find wcore" );
             }
             define( "W_CORE", $f );
+            define( "W_CORE_URL", $f );
         }
     }
 }
