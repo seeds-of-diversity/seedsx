@@ -1,6 +1,6 @@
 <?php
 
-if( !defined("SITEROOT") ) define( "SITEROOT", DRUPAL_ROOT."/../" );    // because seedbreeze.theme also does this
+if( !defined("SITEROOT") ) define( "SITEROOT", DRUPAL_ROOT."/../../" );    // because seedbreeze.theme also does this
 include_once( SITEROOT."site.php" );
 include_once( SITEROOT."drupalmod/lib/d8_seedbreeze.php" );
 
