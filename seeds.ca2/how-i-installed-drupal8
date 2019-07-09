@@ -45,6 +45,7 @@ $config['system.logging']['error_level'] = 'verbose';
 # to Update:
 cd ~/public_html/sw8
 ~/composer/composer.phar update
-
+./vendor/drush/drush/drush updatedb
+./vendor/drush/drush/drush cache-rebuild
 
 
