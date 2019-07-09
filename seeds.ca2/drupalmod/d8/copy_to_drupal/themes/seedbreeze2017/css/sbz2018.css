@@ -1,2 +1,10 @@
 /* SeedBreeze CSS
+
+   Undo some breeze things I don't like.
+   font-size 14px instead of 12px
+   list-style-type circle instead of none (but not where ul is used in menus)
+   list-style-position inside instead of outside (because there's a circle now)
  */
+
+body { font-size:14px; }
+ul li:not(.dropdown) { list-style-type:circle; list-style-position:inside; }

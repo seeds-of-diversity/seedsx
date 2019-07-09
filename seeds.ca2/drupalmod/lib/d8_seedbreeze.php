@@ -130,32 +130,82 @@ class DrupalModTagHandler
         $bHandled = true;
 
         $contentName = $raTag['target'];
-        $lang = strtolower(@$raTag['1'])=='fr' ? "FR" : "EN";
+        $lang = strtolower(@$raTag['raParms']['1'])=='fr' ? "FR" : "EN";  // only defined this way for some tags
 
         $pathSelf = \Drupal\Core\Url::fromRoute('<current>')->toString();
 
         switch( $contentName ) {
             case 'homeimg':
             case 'homeimg_v':
+            case 'homeimgA':
+            case 'homeimgB':
+            case 'homeimgC':
+            case 'homeimgV':
                 $img = @$raTag['raParms'][1];
                 $caption = @$raTag['raParms'][2];
                 $link = @$raTag['raParms'][3];
                 $sWidth = "width:85%";
 
                 // homeimg_v is for images only, vertically centered.  vertical-align is not allowed for bootstrap's settings for display and float
-                $styleVert = $contentName=='homeimg_v' ? "display:inline-block;float:none;vertical-align:middle" : ""; 
+                $styleVert = $contentName=='homeimg_v1' ? "display:inline-block;float:none;vertical-align:middle" : ""; 
                 
                 if( substr($img,0,4) != 'http' && substr($img,0,1) != '/' ) $img = "//seeds.ca/d?n=".$img;
 
                 if( $contentName == 'homeimg_v' ) {
-                    $s = "<div class='col-xs-12 col-sm-6 col col-md-4 col-lg-3' style='text-align:center;$styleVert'>"
-                            ."<a href='$link' style='text-decoration:none;border:none'><img src='$img' style='$sWidth;border-radius:5px'/></a>"
+                    $s = "<div class='col-xs-12 col-sm-6 col-md-4 col-lg-3' style='text-align:center;'>"
+                            ."<div style='display:inline-block;vertical-align:middle;float:none;'>"
+                            ."<a href='$link' style='text-decoration:none;border:none'><img src='$img' style='$sWidth;border-radius:5px;object-fit:contain'/></a>"
+                            ."</div>"
                         ."</div>"; 
+                } else if( $contentName == 'homeimgA' ) {
+                    // Make a 4x3 div inside the bootstrap grid div.
+                    // Position the image inside. Shrink it 90% to make nicer whitespace, and because of that move it to the right 5% to center it.
+                    $s = "<div class='col-xs-12 col-sm-6 col-md-4 col-lg-3' style='text-align:center;'>"
+                            ."<div style='width:100%;padding-top:75%;position:relative;'>"
+                                ."<a href='$link' style='text-decoration:none;border:none'>"
+                                ."<img src='$img' style='position:absolute;top:0;left:5%;width:90%;height:90%;border-radius:5px;object-fit:cover' />"
+                                ."</a>"
+                            ."</div>"
+                            ."<p style='font-weight:bold;font-size:large;margin-top:0px'><a href='$link' style='text-decoration:none'>$caption</a></p>"
+                        ."</div>"; 
+                } else if( $contentName == 'homeimgB' ) {
+                    // Make a 8.5x11 div inside the bootstrap grid div.
+                    // Position the image inside. Shrink it 90% to make nicer whitespace, and because of that move it to the right 5% to center it.
+                    $s = "<div class='col-xs-12 col-sm-6 col-md-4 col-lg-3' style='text-align:center;'>"
+                            ."<div style='width:100%;padding-top:130%;position:relative;'>"
+                                ."<a href='$link' style='text-decoration:none;border:none'>"
+                                ."<img src='$img' style='position:absolute;top:0;left:5%;width:90%;height:90%;border-radius:5px;object-fit:cover' />"
+                                ."</a>"
+                            ."</div>"
+                            ."<p style='font-weight:bold;font-size:large;margin-top:-20px'><a href='$link' style='text-decoration:none'>$caption</a></p>"
+                        ."</div>"; 
+                } else if( $contentName == 'homeimgC' ) {
+                    // Make a 1x1 div inside the bootstrap grid div.
+                    // Position the image inside. Shrink it 90% to make nicer whitespace, and because of that move it to the right 5% to center it.
+                    $s = "<div class='col-xs-12 col-sm-6 col-md-4 col-lg-3' style='text-align:center;'>"
+                            ."<div style='width:100%;padding-top:100%;position:relative;'>"
+                                ."<a href='$link' style='text-decoration:none;border:none'>"
+                                ."<img src='$img' style='position:absolute;top:0;left:5%;width:90%;height:90%;border-radius:5px;object-fit:cover' />"
+                                ."</a>"
+                            ."</div>"
+                            ."<p style='font-weight:bold;font-size:large;margin-top:-20px'><a href='$link' style='text-decoration:none'>$caption</a></p>"
+                        ."</div>"; 
+                } else if( $contentName == 'homeimgV' ) {
+                    // For vertically centering images.
+                    // Make a 1x1 div inside the bootstrap grid div.
+                    // Scale the image to fit in the div, centered horizontally and vertically.
+                    $s = "<div class='col-xs-12 col-sm-6 col-md-4 col-lg-3' style='text-align:center'>"
+                            ."<div style='width:100%;padding-top:100%;position:relative;'>"
+                                ."<a href='$link' style='text-decoration:none;border:none'>"
+                                ."<img src='$img' style='position:absolute;top:0;left:5%;width:90%;height:90%;border-radius:5px;object-fit:contain' />"
+                                ."</a>"
+                            ."</div>"
+                        ."</div>";
                 } else {
-                    $s = "<div class='col-xs-12 col-sm-6 col col-md-4 col-lg-3' style='text-align:center'>"
+                    $s = "<div class='col-xs-12 col-sm-6 col-md-4 col-lg-3' style='text-align:center'>"
                         ."<div style='width:100%;padding-top:130%;position:relative;'>"
                         ."<div style='position:absolute;top:0;bottom:0;left:0;right:0;'>"
-                            ."<a href='$link' style='text-decoration:none;border:none'><img src='$img' style='$sWidth;border-radius:5px'/></a>"
+                            ."<a href='$link' style='text-decoration:none;border:none'><img src='$img' style='$sWidth;border-radius:5px;'/></a>"
                             ."<p style='font-weight:bold;font-size:large;padding-top:10px'><a href='$link' style='text-decoration:none'>$caption</a></p>"
                         ."</div></div></div>";
                 }
