@@ -135,12 +135,14 @@ class DrupalModTagHandler
         $pathSelf = \Drupal\Core\Url::fromRoute('<current>')->toString();
 
         switch( $contentName ) {
-            case 'homeimg':
-            case 'homeimg_v':
-            case 'homeimgA':
-            case 'homeimgB':
-            case 'homeimgC':
-            case 'homeimgV':
+            case 'homeimg':       // deprecated 3x4 image with caption
+            case 'homeimg_v':     // deprecated image only, vertically centered
+            case 'homeimgA':      // 4x3 image with caption
+            case 'homeimgA1':     //    object-fit: contain instead of cover
+            case 'homeimgB':      // 8.5x11 image with caption
+            case 'homeimgB1':     //    object-fit: contain instead of cover
+            case 'homeimgC':      // 1x1 image with caption
+            case 'homeimgV':      // 1x1 image only, vertically centered
                 $img = @$raTag['raParms'][1];
                 $caption = @$raTag['raParms'][2];
                 $link = @$raTag['raParms'][3];
@@ -151,64 +153,61 @@ class DrupalModTagHandler
                 
                 if( substr($img,0,4) != 'http' && substr($img,0,1) != '/' ) $img = "//seeds.ca/d?n=".$img;
 
+                $sObjectFit = "cover";
+                $sCaptionMarginTop = "0px";
+                switch( $contentName ) {
+                    case 'homeimgA':
+                    case 'homeimgA1':
+                        // Make a 4x3 div inside the bootstrap grid div.
+                        // Position the image inside. Shrink it 90% to make nicer whitespace, and because of that move it to the right 5% to center it.
+                        $sPaddingTop = "75%";
+                        if( $contentName == 'homeimgA1' )  $sObjectFit = "contain";
+                        break;
+                    case 'homeimgB':
+                    case 'homeimgB1':
+                        // Make a 8.5x11 div inside the bootstrap grid div.
+                        // Position the image inside. Shrink it 90% to make nicer whitespace, and because of that move it to the right 5% to center it.
+                        $sPaddingTop = "130%";
+                        $sCaptionMarginTop = "-20px";  // close a gap above the caption
+                        if( $contentName == 'homeimgB1' )  $sObjectFit = "contain";
+                        break;
+                    case 'homeimgC':
+                        // Make a 1x1 div inside the bootstrap grid div.
+                        // Position the image inside. Shrink it 90% to make nicer whitespace, and because of that move it to the right 5% to center it.
+                        $sPaddingTop = "100%";
+                        $sCaptionMarginTop = "-20px";  // close a gap above the caption
+                        break;
+                    case 'homeimgV':
+                        // For vertically centering images.
+                        // Make a 1x1 div inside the bootstrap grid div.
+                        // Scale the image to fit in the div, centered horizontally and vertically.
+                        $sPaddingTop = "100%";
+                        $sObjectFit = "contain";
+                        break;
+               
+                }
+                $s = "<div style='width:100%;padding-top:$sPaddingTop;position:relative;'>"
+                        ."<a href='$link' style='text-decoration:none;border:none'>"
+                        ."<img src='$img' style='position:absolute;top:0;left:5%;width:90%;height:90%;border-radius:5px;object-fit:$sObjectFit' />"
+                        ."</a>"
+                    ."</div>";
+                if( $caption ) {
+                    $s .= "<p style='font-weight:bold;font-size:large;margin-top:$sCaptionMarginTop'><a href='$link' style='text-decoration:none'>$caption</a></p>";
+                }
+
                 if( $contentName == 'homeimg_v' ) {
-                    $s = "<div class='col-xs-12 col-sm-6 col-md-4 col-lg-3' style='text-align:center;'>"
-                            ."<div style='display:inline-block;vertical-align:middle;float:none;'>"
+                     $s = "<div style='display:inline-block;vertical-align:middle;float:none;'>"
                             ."<a href='$link' style='text-decoration:none;border:none'><img src='$img' style='$sWidth;border-radius:5px;object-fit:contain'/></a>"
-                            ."</div>"
-                        ."</div>"; 
-                } else if( $contentName == 'homeimgA' ) {
-                    // Make a 4x3 div inside the bootstrap grid div.
-                    // Position the image inside. Shrink it 90% to make nicer whitespace, and because of that move it to the right 5% to center it.
-                    $s = "<div class='col-xs-12 col-sm-6 col-md-4 col-lg-3' style='text-align:center;'>"
-                            ."<div style='width:100%;padding-top:75%;position:relative;'>"
-                                ."<a href='$link' style='text-decoration:none;border:none'>"
-                                ."<img src='$img' style='position:absolute;top:0;left:5%;width:90%;height:90%;border-radius:5px;object-fit:cover' />"
-                                ."</a>"
-                            ."</div>"
-                            ."<p style='font-weight:bold;font-size:large;margin-top:0px'><a href='$link' style='text-decoration:none'>$caption</a></p>"
-                        ."</div>"; 
-                } else if( $contentName == 'homeimgB' ) {
-                    // Make a 8.5x11 div inside the bootstrap grid div.
-                    // Position the image inside. Shrink it 90% to make nicer whitespace, and because of that move it to the right 5% to center it.
-                    $s = "<div class='col-xs-12 col-sm-6 col-md-4 col-lg-3' style='text-align:center;'>"
-                            ."<div style='width:100%;padding-top:130%;position:relative;'>"
-                                ."<a href='$link' style='text-decoration:none;border:none'>"
-                                ."<img src='$img' style='position:absolute;top:0;left:5%;width:90%;height:90%;border-radius:5px;object-fit:cover' />"
-                                ."</a>"
-                            ."</div>"
-                            ."<p style='font-weight:bold;font-size:large;margin-top:-20px'><a href='$link' style='text-decoration:none'>$caption</a></p>"
-                        ."</div>"; 
-                } else if( $contentName == 'homeimgC' ) {
-                    // Make a 1x1 div inside the bootstrap grid div.
-                    // Position the image inside. Shrink it 90% to make nicer whitespace, and because of that move it to the right 5% to center it.
-                    $s = "<div class='col-xs-12 col-sm-6 col-md-4 col-lg-3' style='text-align:center;'>"
-                            ."<div style='width:100%;padding-top:100%;position:relative;'>"
-                                ."<a href='$link' style='text-decoration:none;border:none'>"
-                                ."<img src='$img' style='position:absolute;top:0;left:5%;width:90%;height:90%;border-radius:5px;object-fit:cover' />"
-                                ."</a>"
-                            ."</div>"
-                            ."<p style='font-weight:bold;font-size:large;margin-top:-20px'><a href='$link' style='text-decoration:none'>$caption</a></p>"
-                        ."</div>"; 
-                } else if( $contentName == 'homeimgV' ) {
-                    // For vertically centering images.
-                    // Make a 1x1 div inside the bootstrap grid div.
-                    // Scale the image to fit in the div, centered horizontally and vertically.
-                    $s = "<div class='col-xs-12 col-sm-6 col-md-4 col-lg-3' style='text-align:center'>"
-                            ."<div style='width:100%;padding-top:100%;position:relative;'>"
-                                ."<a href='$link' style='text-decoration:none;border:none'>"
-                                ."<img src='$img' style='position:absolute;top:0;left:5%;width:90%;height:90%;border-radius:5px;object-fit:contain' />"
-                                ."</a>"
-                            ."</div>"
-                        ."</div>";
-                } else {
-                    $s = "<div class='col-xs-12 col-sm-6 col-md-4 col-lg-3' style='text-align:center'>"
-                        ."<div style='width:100%;padding-top:130%;position:relative;'>"
+                            ."</div>";
+                } else if( $contentName == 'homeimg' ) {
+                    $s = "<div style='width:100%;padding-top:130%;position:relative;'>"
                         ."<div style='position:absolute;top:0;bottom:0;left:0;right:0;'>"
                             ."<a href='$link' style='text-decoration:none;border:none'><img src='$img' style='$sWidth;border-radius:5px;'/></a>"
                             ."<p style='font-weight:bold;font-size:large;padding-top:10px'><a href='$link' style='text-decoration:none'>$caption</a></p>"
-                        ."</div></div></div>";
+                        ."</div></div>";
                 }
+                
+                $s = "<div class='col-xs-12 col-sm-6 col-md-4 col-lg-3' style='text-align:center;'>$s</div>";
                 break;
             case 'helloworld':
                 $s = "Hello World!";
