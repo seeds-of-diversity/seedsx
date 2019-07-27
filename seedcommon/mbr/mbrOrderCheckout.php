@@ -113,6 +113,9 @@ class MbrOrderCheckout {
     var $kfdb;
     var $sess;
     var $lang;
+
+    private $oApp;  // should match the above variables; replace those with this
+
 //  var $kfrelMbrOrder;
     var $oMbrOrder;
     var $oL;
@@ -133,6 +136,9 @@ class MbrOrderCheckout {
         $this->kfdb = $kfdb;
         $this->sess = $sess;
         $this->lang =  $lang;
+
+        $this->oApp = SiteAppConsole( ['lang'=>$lang] );    // no perms required but will detect current login if any
+
 //      $this->kfrelMbrOrder = new KeyFrameRelation( $kfdb, $kfrdef_mbrOrder, 0 );      // $sess might have GetUID(), or it might not
         $this->oMbrOrder = new MbrOrder( $kfdb, $lang );
         $this->_setLocalText( $lang );
@@ -235,6 +241,9 @@ class MbrOrderCheckout {
                         if( $this->kfrOC->PutDBRow() ) {
                             $this->setSessKOrder( $this->kfrOC->Key() );
                             $this->oMbrOrder->setKOrder( $this->kfrOC->Key() );
+include_once( SEEDAPP."basket/sodBasketFulfil.php" );
+                            $o = new SoDOrder_MbrOrder( $this->oApp );
+                            $o->CreateFromMbrOrder( $this->kfrOC->Key() );
                         } else {
                             die("Sorry, our database cannot save your order.  Please contact our office for assistance.");
                         }
