@@ -321,14 +321,28 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
 
     function stateTransButton( $newState, $sL )
     {
-// drupal kluge for non-friendly url installations
-$sD = (($q = SEEDSafeGPC_GetStrPlain('q')) ? "?q=$q" : "");
+        $sFormAction = $this->getFormAction();
 
-        return( "<FORM action='${_SERVER['PHP_SELF']}$sD' method='post'>"
+        return( "<FORM action='$sFormAction' method='post'>"
                .$this->sess->FormHidden()
                ."<INPUT type='hidden' name='mbrocst' value='$newState'/>"
                ."<INPUT type='submit' value='".$this->oL->S($sL)."'>"
                ."</FORM>" );
+    }
+
+    function getFormAction()
+    {
+        // Get the action for a form to submit to this page.
+        // In drupal 7 it is the base path with q= the page name.
+        // In drupal 8 it is obtained from drupal.
+        // Else it is PHP_SELF 
+        if( function_exists('drupal_get_path_alias') ) {
+            // drupal 7
+            $sFormAction = $_SERVER['PHP_SELF'].(($q = SEEDSafeGPC_GetStrPlain('q')) ? "?q=$q" : "");
+        } else {    
+            $sFormAction = Site_path_self();
+        }
+        return( $sFormAction );
     }
 
     function FormDraw()
@@ -430,9 +444,8 @@ $sD = (($q = SEEDSafeGPC_GetStrPlain('q')) ? "?q=$q" : "");
 
         /* Draw the Form
          */
-// drupal kluge for non-friendly url installations
-$sD = (($q = SEEDSafeGPC_GetStrPlain('q')) ? "?q=$q" : "");
 
+    $sFormAction = $this->getFormAction();
 
     /* The Login form and the Order form are separate <form>s so you can't nest them.
      * Maybe they can be a single form and the login happens but the state doesn't advance to VALIDATE ?
@@ -445,7 +458,7 @@ $sD = (($q = SEEDSafeGPC_GetStrPlain('q')) ? "?q=$q" : "");
          ."</div>"
 
          // this <form> surrounds the order form and contact form but !not! the login form above
-         ."<form id='mbrocForm1' action='${_SERVER['PHP_SELF']}$sD' method='post' accept-charset='ISO-8859-1' onsubmit='document.charset=\"iso-8859-1\"'>"
+         ."<form id='mbrocForm1' action='$sFormAction' method='post' accept-charset='ISO-8859-1' onsubmit='document.charset=\"iso-8859-1\"'>"
          //$this->sess->FormHidden();
          ."<div class='row'>"
              ."<div class='col-sm-7' id='mbrocForm1col_order'>"
@@ -730,8 +743,7 @@ $sD = (($q = SEEDSafeGPC_GetStrPlain('q')) ? "?q=$q" : "");
         $s .= "<H2>".$this->oL->S('Order_confirmed')." - "
             .($this->oMbrOrder->kfr->value('ePayType') == 'PayPal' ? $this->oL->S('Pay_by_credit') : $this->oL->S('Pay_by_cheque_mo'))."</H2>";
 
-// drupal kluge for non-friendly url installations
-$sD = (($q = SEEDSafeGPC_GetStrPlain('q')) ? "?q=$q" : "");
+        $sFormAction = $this->getFormAction();
 
         if( $this->oMbrOrder->kfr->value('ePayType') == 'PayPal' ) {
             $s .= $this->oL->S('paypal_instructions1')
@@ -739,7 +751,7 @@ $sD = (($q = SEEDSafeGPC_GetStrPlain('q')) ? "?q=$q" : "");
                 .$this->confirmedDrawPayPalButton()
                 ."</P>"
                 .$this->oL->S('paypal_instructions2')
-                ."<FORM action='${_SERVER['PHP_SELF']}$sD' method='post'>"
+                ."<FORM action='$sFormAction' method='post'>"
                 .$this->sess->FormHidden()
                 ."<INPUT type='hidden' name='ePayType' value='Cheque'>"
                 ."<INPUT type='submit' value='".$this->oL->S('pay_by_cheque_instead')."'>"
@@ -747,7 +759,7 @@ $sD = (($q = SEEDSafeGPC_GetStrPlain('q')) ? "?q=$q" : "");
 
         } else {
             $s .= $this->oL->S('cheque_instructions')
-                ."<FORM action='${_SERVER['PHP_SELF']}$sD' method='post'>"
+                ."<FORM action='$sFormAction' method='post'>"
                 .$this->sess->FormHidden()
                 ."<INPUT type='hidden' name='ePayType' value='PayPal'>"
                 ."<INPUT type='submit' value='".$this->oL->S('pay_by_credit_card_instead')."'>"

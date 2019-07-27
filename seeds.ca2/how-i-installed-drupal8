@@ -9,13 +9,28 @@ mkdir sw8
 cd ~/public_html/sw8
 ~/composer/composer.phar require drupal/breeze:^1.11
 
-#copy our themes and modules - might have to adjust relative links to SITEROOT - install via admin menu
+# copy our themes and modules 
 cd ~/public_html/sw8
 mkdir web/sites/all
 cp -R ../drupalmod/d8/copy_to_drupal/modules web/sites/all
 cp -R ../drupalmod/d8/copy_to_drupal/themes web/sites/all
 
-#database installed in seeds3.drupal8_*
+# install via http://.../sw8/web
+# databases: sw8 in seeds3.drupal8_*
+#            sw8test in seeds3.drupal8test_*
+
+# Go to Extend and install module "seeds"
+# Go to Admin->Appearance and install SeedBreeze as the theme
+# If/When that breaks the site, it's because seedbreeze.theme can't find SITEROOT/drupalmod. Put a var_dump in there and fix the path to site.php
+# Also I found from drupal.org forums and it worked for me twice: css/js aggregation fails on seeds.ca if web/default/files/.htaccess tries to change -MultiViews
+#     So remove that from Options at the top, and suddenly all your css and js works. Also you can see apache saying in error.log that MultiViews can't be changed.
+
+# Error reporting in sw8test - this is added at the top of settings.php to see what goes wrong
+error_reporting(E_ALL);
+ini_set('display_errors', TRUE);
+ini_set('display_startup_errors', TRUE);
+$config['system.logging']['error_level'] = 'verbose';
+
 
 #multilingual
 # In Extend add 4 core modules in the Multilingual section
@@ -30,6 +45,7 @@ cp -R ../drupalmod/d8/copy_to_drupal/themes web/sites/all
 # to Update:
 cd ~/public_html/sw8
 ~/composer/composer.phar update
-
+./vendor/drush/drush/drush updatedb
+./vendor/drush/drush/drush cache-rebuild
 
 

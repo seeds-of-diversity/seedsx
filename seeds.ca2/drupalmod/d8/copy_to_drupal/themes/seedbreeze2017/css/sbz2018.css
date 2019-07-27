@@ -1,2 +1,18 @@
 /* SeedBreeze CSS
+
+   Undo some breeze things I don't like.
+   font-size 14px instead of 12px
+   list-style-type circle instead of none
+   list-style-position inside instead of outside (because there's a circle now)
+   override the way breeze sizes the search control and make it match the width of our four-colour buttons
  */
+
+body { font-size:14px; }
+
+ul li:not(.dropdown) { list-style-type:circle; list-style-position:inside; }
+
+.header-right .block { width:100% }
+.header-right #search-block-form { width:100% }
+@media only screen and (min-width:1200px) {
+    .header-right #search-block-form { width:50% !important; }
+}
