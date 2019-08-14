@@ -65,7 +65,7 @@ class SEEDBasketFulfilment
 
         // overflow:hidden prevents the div from being zero-height due to its children floating, so the background colour appears
         $s = "<div class='' style='clear:both;background-color:$colour;overflow:hidden'>"
-                ."<div style='float:left'>{$raP['P_title']} : $amount</div>"
+                ."<div style='float:left'>{$raP['P_title_en']} : $amount</div>"
 
                 ."<div style='float:right;width:100px;display:inline-block;'>";
         switch( $eStatus ) {
@@ -139,7 +139,6 @@ class mbrBasket_Products extends Console01_Worker1
         $sList .= "<div><form method='post'>Add a new $sSelect <input type='submit' value='Add'/></form></div>";
 
         // Draw the list
-/*
         if( ($kfrcP = $this->oC->oSB->oDB->GetProductKFRC("uid_seller='1'")) ) {
             while( $kfrcP->CursorFetch() ) {
                 $kP = $kfrcP->Key();
@@ -150,10 +149,9 @@ class mbrBasket_Products extends Console01_Worker1
                          ."</div>";
             }
         }
-*/
 
-        $s = $this->oMSDAppSeedEdit->Draw( $this->sess->GetUID() );
-
+//        $s = $this->oMSDAppSeedEdit->Draw( $this->sess->GetUID(), 0 );
+$s = "<div>$sForm</div><div>$sList</div>";
         return( $s );
     }
 }
