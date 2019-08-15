@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<buildpath>
-    <buildpathentry excluding="seeds/" kind="src" path=""/>
-    <buildpathentry kind="src" path="seeds"/>
-    <buildpathentry kind="src" path="seeds.ca2"/>
-    <buildpathentry kind="con" path="org.eclipse.php.core.LANGUAGE"/>
-    <buildpathentry kind="src" path="seedcommon"/>
-    <buildpathentry kind="src" path="std"/>
-</buildpath>
