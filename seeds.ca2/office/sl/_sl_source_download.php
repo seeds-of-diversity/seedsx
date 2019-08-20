@@ -61,7 +61,7 @@ where c.osp=c0.osp and c.ocv=c0.ocv and c.company_name=c0.company and c.bOrganic
 
 /* _sl_source_download.php
  *
- * Copyright 2012-2016 Seeds of Diversity Canada
+ * Copyright 2012-2019 Seeds of Diversity Canada
  *
  * Implement the user interface for Download (companies, seedbanks, collectors, etc)
  */
@@ -329,6 +329,11 @@ class SLSourceDownload
                                       'seedTableDef'=>$this->companyTableDef,
                                     );
                     $s .= Console01UI_DownloadUpload( $this->oW, $raParms );
+
+                    $s .= "<div style='border:1px solid #aaa;margin-top:30px;padding:15px'>"
+                         ."<p><a href='{$_SERVER['PHP_SELF']}?cmd=testSrccv'>Test Seed Company List</a></p>"
+                         ."<p><a href='{$_SERVER['PHP_SELF']}?cmd=archiveSrccv'>Archive Seed Company List</a></p>"
+                         ."</div>";
                     break;
 
                 case 'pgrc':
@@ -1593,19 +1598,20 @@ $this->oW->kfdb->Execute( SLDB_Create::SEEDS_DB_TABLE_SL_TMP_CV_SOURCES );
              */
             $condUpdateCase = "($condKUpload AND C._key=T.k AND T.fk_sl_sources<>'0')";
             // test if rows the same without/with considering somebody changed osp to a sl_syn
-            $condDataSame     = "(C.osp=T.osp                                             AND C.fk_sl_sources=T.fk_sl_sources AND C.ocv=T.ocv AND C.bOrganic=T.organic AND C.notes=T.notes)";
-            $condDataSameFkSp = "(C.fk_sl_species=T.fk_sl_species AND T.fk_sl_species<>0  AND C.fk_sl_sources=T.fk_sl_sources AND C.ocv=T.ocv AND C.bOrganic=T.organic AND C.notes=T.notes)";
+            $condDataBasicSame     = "(C.osp=T.osp                                              AND C.fk_sl_sources=T.fk_sl_sources AND C.ocv=T.ocv )";
+            $condDataBasicSameFkSp = "(C.fk_sl_species=T.fk_sl_species AND T.fk_sl_species<>'0' AND C.fk_sl_sources=T.fk_sl_sources AND C.ocv=T.ocv )";
+            $condDataSame          = "($condDataBasicSame AND C.bOrganic=T.organic AND C.notes=T.notes)";
 
             // Before computing operations, any rows in the tmp table whose non-blank (fk_sl_sources,osp/fk_sl_species,ocv) are identical
             // to sl_cv_sources are deemed to be matches. If their keys are different, that is a mistake in data entry.
             $this->oW->kfdb->Execute(
                 "UPDATE {$this->tmpTable} T,seeds.sl_cv_sources C SET T.op='.' "
                ."WHERE T.op=' ' AND $condKUpload AND T.fk_sl_sources<>'0' AND "
-                     ."($condDataSame OR $condDataSameFkSp) "
+                     ."($condDataBasicSame OR $condDataBasicSameFkSp) AND C.fk_sl_sources>='3' "
                      ."AND C._key<>T.k" );
             if( ($c = $this->oW->kfdb->Query1( "SELECT count(*) FROM {$this->tmpTable} T WHERE $condKUpload AND T.op='.'" )) ) {
                 $sErr .= "$c rows in {$this->tmpTable} have the same data as sl_cv_sources but different keys. "
-                        ."<span style='color:#888'>SELECT * FROM {$this->tmpTable} T WHERE $condKUpload AND T.op='.'</span>";
+                        ."<span style='color:#888'>SELECT * FROM {$this->tmpTable} T LEFT JOIN seeds.sl_cv_sources C ON ($condDataBasicSame OR $condDataBasicSameFkSp) WHERE $condKUpload AND T.op='.'</span>";
                 goto done;
             }
 

@@ -7,7 +7,7 @@
  * Implement the user interface for RosettaSEED tests and updates in the Seed Source tables
  */
 
-include_once( STDINC."SEEDProblemSolver.php" );
+include_once( SEEDCORE."SEEDProblemSolver.php" );
 include_once( SEEDCOMMON."sl/q/_QServerPCV.php" );
 
 include_once( SEEDLIB."sl/sources/sl_sources_rosetta.php" );
