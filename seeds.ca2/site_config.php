@@ -19,16 +19,10 @@ if( !defined("SEEDROOT") ) {
     if( !STD_isLocal ) {
         // On typical production systems the seeds directory is a sibling of public_html
         // SITEROOT (aka seeds.ca2) is public_html
-        // The seeds/wcore directory has to be copied to public_html/wcore so browsers can see .css, .js, images
         define( "SEEDROOT", SITEROOT."../seeds/" );
-        if( !defined("W_CORE") ) {
-            define("W_CORE", SITEROOT."wcore/");
-        }
-        define( "W_CORE_URL", W_CORE );
     } else {
         // On typical development systems the seeds and seedsx directories are siblings at public_html/seeds and public_html/seedsx
         // SITEROOT is public_html/seedsx/seeds.ca2
-        // wcore doesn't have to be copied because it's in public_html
 
         // However some dev installations currently have the seeds directory at public_html/../seeds so do some looking
         if( file_exists( SEEDSX_ROOT."../seeds/seedcore" ) ) {
@@ -39,16 +33,24 @@ if( !defined("SEEDROOT") ) {
         } else {
             die( "site_config.php can't find seedroot" );
         }
+    }
+}
+if( !defined("W_CORE") ) {
+    if( !STD_isLocal ) {
+        // On typical production sytems the seeds/wcore directory has to be copied to public_html/wcore so browsers can see .css, .js, images
+        define( "W_CORE", SITEROOT."wcore/" );
+        define( "W_CORE_URL", W_CORE );
+    } else {
+        // On typical development systems wcore doesn't have to be copied because it's in public_html
+
         // look for wcore
-        if( !defined("W_CORE") ) {
-            if( !file_exists($f = SEEDSX_ROOT."../wcore/") &&       // wcore is copied as a sibling of seedsx (possibly shared by other sibling sites)
-                !file_exists($f = SEEDSX_ROOT."../seeds/wcore/") )  // seeds is installed as a sibling of seedsx
-            {
-                die( "site_config.php can't find wcore" );
-            }
-            define( "W_CORE", $f );
-            define( "W_CORE_URL", $f );
+        if( !file_exists($f = SEEDSX_ROOT."../wcore/") &&       // wcore is copied as a sibling of seedsx (possibly shared by other sibling sites)
+            !file_exists($f = SEEDROOT."wcore/") )              // wcore is in seeds, which should be under the docroot
+        {
+            die( "site_config.php can't find wcore" );
         }
+        define( "W_CORE", $f );
+        define( "W_CORE_URL", $f );
     }
 }
 
