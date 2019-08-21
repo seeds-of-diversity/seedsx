@@ -334,7 +334,6 @@ class SLSourceDownload
                          ."<p><a href='{$_SERVER['PHP_SELF']}?cmd=testSrccv'>Test Seed Company List</a></p>"
                          ."<p><a href='{$_SERVER['PHP_SELF']}?cmd=archiveSrccv'>Archive Seed Company List</a></p>"
                          ."</div>";
-                         //select A._key,B._key,A.fk_sl_sources,A.osp,B.ocv from sl_cv_sources A, sl_cv_sources B where A._key>B._key and A.fk_sl_sources=B.fk_sl_sources and A.fk_sl_species=B.fk_sl_species and A.ocv=B.ocv and A.fk_sl_sources >=3;
                     break;
 
                 case 'pgrc':
