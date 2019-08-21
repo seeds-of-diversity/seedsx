@@ -9,6 +9,8 @@
 
 if( !defined("SITEROOT") )  die( "You have to define SITEROOT (path from your script to seeds.ca2)" );
 
+//define("SEEDROOT", SITEROOT."../../seeds-wt/");
+
 
 define("STD_isLocal", (($_SERVER["SERVER_NAME"] == "localhost") ? true : false));
 
