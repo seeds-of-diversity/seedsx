@@ -41,7 +41,6 @@ if( !defined("W_CORE") ) {
     if( !STD_isLocal ) {
         // On typical production sytems the seeds/wcore directory has to be copied to public_html/wcore so browsers can see .css, .js, images
         define( "W_CORE", SITEROOT."wcore/" );
-        define( "W_CORE_URL", W_CORE );
     } else {
         // On typical development systems wcore doesn't have to be copied because it's in public_html
 
@@ -52,8 +51,10 @@ if( !defined("W_CORE") ) {
             die( "site_config.php can't find wcore" );
         }
         define( "W_CORE", $f );
-        define( "W_CORE_URL", $f );
     }
+}
+if( !defined("W_CORE_URL") ) {
+    define( "W_CORE_URL", W_CORE );
 }
 
 
@@ -118,7 +119,12 @@ define("W_ROOT_STD",        W_ROOT."std/");         // stuff that std needs to b
 define("W_ROOT_SEEDCOMMON", W_ROOT."seedcommon/");  // stuff that seedcommon needs to be visible in the web root
 
 
-// locations of components that are shared in the W_ROOT (need to be visible to the web server)
+// locations of components that need to be visible to the web server
+
+// [move these to a seeds_config.php in seeds]
+define("W_CORE_JQUERY_3_3_1", W_CORE_URL."os/jquery/jquery-3-3-1.min.js");  // use this if you need this specific version
+define("W_CORE_JQUERY", W_CORE_JQUERY_3_3_1 );                              // use this if you want the latest version (it will change)
+
 define("TINYMCE_DIR", W_ROOT."os/TinyMCE3-3-2/" );
 define("TINYMCE_4_DIR", W_ROOT."os/TinyMCE4/" );
 define("W_ROOT_JQUERY_1_11_0", W_ROOT."os/jquery/jquery-1.11.0.min.js");  // use this if you need this specific version
