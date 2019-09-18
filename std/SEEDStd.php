@@ -391,26 +391,6 @@ function SEEDStd_TagStrAdd( $str, $tag, $raMutex = array() )
     return( $sOut );
 }
 
-function SEEDStd_ImplodeKeyValue( $ra, $sep1, $sep2 )
-/****************************************************
-    Given ra of k1=>v1, k2=>v2, ...
-    Return k1{sep1}v1{sep2}k2{sep1}v2
-
-    e.g. sep1:'=', sep2:',', output: k1=v1,k2=v2
- */
-{
-    $ra2 = array();
-    foreach( $ra as $k => $v ) {
-        if( is_array($v) ) {
-            // kluge to handle nested arrays - this shouldn't happen except e.g. dumping a data structure to a log
-            $ra2[] = $k.$sep1."{".SEEDStd_ImplodeKeyValue( $v, $sep1, $sep2 )."}";
-        } else {
-            $ra2[] = $k.$sep1.$v;
-        }
-    }
-    return( implode( $sep2, $ra2 ) );
-}
-
 function SEEDStd_ParseAttrs( $sAttrs )
 /*************************************
     Given the string ( border=1 cellpadding='5' style="background-color:green;" )

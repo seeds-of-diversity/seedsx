@@ -359,7 +359,7 @@ TODO        but this could be solved using DESCRIBE to make a subset map
     // Create the table if necessary
     if( !$sTableExists ) {
         $sql = "CREATE TEMPORARY TABLE IF NOT EXISTS $sTableName ("
-              .SEEDStd_ImplodeKeyValue( $raColsDB, " ", "," )
+              .SEEDCore_ImplodeKeyValue( $raColsDB, " ", "," )
               .")";
         if( !$kfdb->Execute($sql) ) {
             $raParms['sErrMsg'] = "LoadCSVToDB: cannot create table $sql";

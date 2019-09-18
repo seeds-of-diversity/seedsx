@@ -13,88 +13,6 @@ include_once( "Q.php" );
 
 class QServerSourceCV
 {
-    private $sHelp = "
-    <h2>Data about seed sources</h2>
-    <h4>Seed companies</h4>
-    <p><i>Use this to get metadata about seed companies, filtered by company, location, or what they offer (species/cultivars/organic).</i></p>
-    <p style='margin-left:30px'>cmd=srcSources&[parameters...]<p>
-    <ul style='margin-left:30px'>
-    <li>kSp (integer key of a seed species) : return companies that sell this species</li>
-    <li>kPcv (integer key of a seed cultivar) : return companies that sell this cultivar</li>
-    <li>bOrganic (boolean) : limit results to certified organic seeds of the above species/varieties</li>
-    <li>sProvinces (string e.g. 'QC SK NB') : return companies located in the given province(s)</li>
-    <li>sRegions (string e.g. 'QC AC') : return companies located in the given regions BC, PR=prairies, ON, QC, AC=Atlantic Canada</li>
-    </ul>
-    <p style='margin-left:30px'>Return (one result per company)</p>
-    <ul style='margin-left:30px'>
-    <li>SRC__key : integer key of seed company</li>
-    <li>SRC_name : name of seed company</li>
-    <li>SRC_address, SRC_city, SRC_prov, SRC_postcode : address of seed company</li>
-    <li>SRC_email : email address of seed company</li>
-    <li>SRC_web : web site of seed company</li>
-    </ul>
-
-    <h4>Species available from seed companies</h4>
-    <p><i>Use this to get the species offered by a subset of seed companies, filtered by company, location, etc.</i></p>
-    <p style='margin-left:30px'>cmd=srcSpecies&[parameters...]<p>
-    <ul style='margin-left:30px'>
-    <li>bAllComp : override other parameters, include species from every seed company</li>
-    <li>rngComp (a range string) : include species from a range of seed companies (not implemented)</li>
-    <li>bAll : override other parameters, include species from every possible source (not implemented)</li>
-    <li>bPGRC : include species in the PGRC collection (not implemented)</li>
-    <li>bNPGS : include species in the NPGC collection (not implemented)</li>
-    <li>bSoDSL : include species in the SoD seed library (not implemented)</li>
-    <li>bSoDMSD : include species in the SoD member seed directory (not implemented)</li>
-    <li>bOrganic (boolean) : limit results to certified organic seeds (not implemented)</li>
-    <li>sProvinces (string e.g. 'QC SK NB') : return companies located in the given province(s) (not implemented)</li>
-    <li>sRegions (string e.g. 'QC AC') : return companies located in the given regions BC, PR=prairies, ON, QC, AC=Atlantic Canada (not implemented)</li>
-    <li>outFmt : NameKey = return array(name=>kSp), KeyName = return array(kSp=>name), Name = return array(name), Key => return array(kSp)</li>
-    </ul>
-    <p style='margin-left:30px'>Return (one result per species)</p>
-    <ul style='margin-left:30px'>
-    <li>see outFmt above</li>
-    </ul>
-
-    <h4>Cultivars available from seed companies</h4>
-    <p><i>Use this to search for cultivars available from a subset of seed companies, filtered by company, location, etc.</i></p>
-    <p style='margin-left:30px'>cmd=srcCultivars&[parameters...]<p>
-    <ul style='margin-left:30px'>
-    <li>sSrch : search string that matches species and cultivar names, limited by other parameters</li>
-    <li>kSp (integer key of a seed species) : limit to cultivars of this species</li>
-    <li>bOrganic (boolean) : limit to cultivars available as certified organic</li>
-    <li>sProvinces (string e.g. 'QC SK NB') : return companies located in the given province(s) (not implemented)</li>
-    <li>sRegions (string e.g. 'QC AC') : return companies located in the given regions BC, PR=prairies, ON, QC, AC=Atlantic Canada</li>
-    <li>sMode='TopChoices' : overrides all other parameters and returns the most popular cultivars - can be a nice default if search is blank</li>
-    </ul>
-    <p style='margin-left:30px'>Return (one result per cultivar)</p>
-    <ul style='margin-left:30px'>
-    <li>P__key : integer key for cultivar</li>
-    <li>P_name : cultivar name</li>
-    <li>S_name_en : English name of the cultivar's species</li>
-    </ul>
-
-
-    <h4>Seeds available from seed companies</h4>
-    <p><i>Use this to look up specific relations between seed cultivars and sources</i></p>
-    <p style='margin-left:30px'>cmd=srcSrcCv&[parameters...]<p>
-    <ul style='margin-left:30px'>
-    <li>kSrc (integer key of a seed company) : return seed varieties sold by this company</li>
-    <li>kSp (integer key of a seed species) : return seed varieties/companies for this species</li>
-    <li>kPcv (integer key of a seed cultivar) : return companies that sell this cultivar</li>
-    <li>bOrganic (boolean) : limit results to certified organic seeds of the above species/varieties</li>
-    <li>bAllComp (boolean) : search all companies (kSrc==0) does not imply this)</li>
-    </ul>
-    <p style='margin-left:30px'>Return (one result per company x cultivar)</p>
-    <ul style='margin-left:30px'>
-    <li>SRCCV__key : internal key for this (company,cultivar)</li>
-    <li>SRCCV_fk_sl_species : integer key for species</li>
-    <li>SRCCV_fk_sl_pcv : integer key for cultivar</li>
-    <li>SRCCV_osp : species name</li>
-    <li>SRCCV_ocv : cultivar name</li>
-    <li>SRCCV_bOrganic (boolean) : seed cultivar is certified organic from this company</li>
-    </ul>
-    ";
-
     private $oQ;
     private $oSLDBSrc;
     private $bUTF8 = false;
@@ -111,11 +29,12 @@ class QServerSourceCV
     {
         $rQ = $this->oQ->GetEmptyRQ();
 
+/* Moved to Q2
         if( $cmd == 'srcHelp' ) {
             $rQ['bOk'] = true;
             $rQ['sOut'] = $this->sHelp;
         }
-
+*/
 
         /* Seed companies that fit criteria (one row per company)
         */
@@ -129,7 +48,7 @@ class QServerSourceCV
             if( ($p = @$parms['sProvinces']) )        $raParms['sProvinces'] = $p;
             if( ($p = @$parms['sRegions']) )          $raParms['sRegions'] = $p;
 
-            $rQ['sLog'] = SEEDStd_ImplodeKeyValue( $raParms, "=", "," );
+            $rQ['sLog'] = SEEDCore_ImplodeKeyValue( $raParms, "=", "," );
 
 // add sSrch to match SRC.name LIKE '%sSrch%'
             if( ($raSources = $this->GetSources( $raParms )) ) {
@@ -146,7 +65,7 @@ class QServerSourceCV
                 $rQ['bOk'] = true;
                 $rQ['raOut'] = $ra;
             }
-            $rQ['sLog'] = SEEDStd_ImplodeKeyValue( $parms, "=", "," );
+            $rQ['sLog'] = SEEDCore_ImplodeKeyValue( $parms, "=", "," );
         }
 
         /* Cultivars offered by seed companies (one row per cultivar)
@@ -161,7 +80,7 @@ class QServerSourceCV
             if( ($p = @$parms['sRegions']) )          $raParms['sRegions'] = $p;
             if( ($p = @$parms['sMode']) )             $raParms['sMode'] = $p;
 
-            $rQ['sLog'] = SEEDStd_ImplodeKeyValue( $raParms, "=", "," );
+            $rQ['sLog'] = SEEDCore_ImplodeKeyValue( $raParms, "=", "," );
 
             // This has to have at least some parameters or it tries to fetch the whole SrcCV table (use a parm to do that, not the default).
             if( count($raParms) && ($ra = $this->listCultivars( $raParms )) ) {
@@ -171,6 +90,9 @@ class QServerSourceCV
         }
 
         /* Cultivars X Sources offered by seed companies and/or seed banks (one row per SrcCv)
+
+*** Copied to Q2
+
          */
         if( $cmd == 'srcSrcCv' ) {
             $raParms = $this->normalizeParms( $parms );
@@ -182,7 +104,7 @@ class QServerSourceCV
 // maybe not needed anymore if normalizeParms is forcing bAllComp when src=""?
 //            if( (@$raParms['bNPGS'] || @$raParms['bPGRC']) && !(@$raParms['kSp'] || @$raParms['kPcv']) )  goto done;
 
-            $rQ['sLog'] = SEEDStd_ImplodeKeyValue( $raParms, "=", "," );
+            $rQ['sLog'] = SEEDCore_ImplodeKeyValue( $raParms, "=", "," );
 
             if( ($ra = $this->getSrcCV( $raParms )) ) {
                 $rQ['bOk'] = true;
@@ -195,7 +117,7 @@ class QServerSourceCV
             $raParms = $this->normalizeParms( array_merge( $parms,  array( 'bCSCICols'=>true,
                                                                            'kfrcParms'=>array('sSortCol'=>'SRCCV.osp,SRCCV.ocv') )) );
 
-            $rQ['sLog'] = SEEDStd_ImplodeKeyValue( $raParms, "=", "," );
+            $rQ['sLog'] = SEEDCore_ImplodeKeyValue( $raParms, "=", "," );
 
             if( ($ra = $this->getSrcCV( $raParms )) ) {
                 $rQ['bOk'] = true;
@@ -214,7 +136,7 @@ class QServerSourceCV
         if( $cmd == 'srcESFStats' ) {
             $raParms = array( 'v' => intval(@$parms['v']) );    // select the type of report
 
-            $rQ['sLog'] = SEEDStd_ImplodeKeyValue( $raParms, "=", "," );
+            $rQ['sLog'] = SEEDCore_ImplodeKeyValue( $raParms, "=", "," );
 
             if( ($ra = $this->getSrcESFStats( $raParms )) ) {
                 $rQ['bOk'] = true;
@@ -638,6 +560,11 @@ if( $kPcv > 10000000 ) {
         return( $raOut );
     }
 
+/*
+
+*** Copied to Q2
+
+ */
     private function normalizeParms( $parms )
     /****************************************
         Lots of input parms are allowed. Consolidate them into normalized parms.
