@@ -657,7 +657,9 @@ if( ($k = intval(@$parms['kPcv'])) && $k > 10000000 ) $raParms['kPcvKluge'] = $k
         return( $raParms );
     }
 
-
+/*
+*** Copied to Q2
+ */
     private function getSrcCV( $raParms = array() )
     /**********************************************
     */
@@ -673,6 +675,9 @@ if( ($k = intval(@$parms['kPcv'])) && $k > 10000000 ) $raParms['kPcvKluge'] = $k
         return( $raOut );
     }
 
+/*
+*** Copied to Q2
+ */
     private function getSrcCVCursor( $raParms = array() )
     /****************************************************
         Get sl_cv_sources information for all entries that fit the criteria
@@ -711,6 +716,9 @@ if( ($k = intval(@$raParms['kPcvKluge'])) ) {
         return( $oCursor );
     }
 
+/*
+*** Copied to Q2
+ */
     function GetSrcCVRow( QCursor $oCursor, $raParms )
     {
         $ra = array();
