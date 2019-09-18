@@ -1,8 +1,5 @@
 <?php
 
-// www8  : 104.200.28.125
-// www12 :  66.228.32.253
-
 if( $_SERVER['PHP_SELF'] == "/site.php" ) exit;  // don't let anyone look at this directly
 
 
@@ -14,7 +11,6 @@ define("SEEDCOMMON", SEEDSX_ROOT."seedcommon/");    // application files shared 
 include_once( SEEDCOMMON."siteCommon.php" );
 
 SiteCommon_init( array(
-    "SITE_DB_DEF_FILE"  => (CONFIG_DIR."seeds_def1.php"),  // this def is used by SEEDSetup and below
     "DOCREP_UPLOAD_DIR" => (SEEDSX_ROOT."docrep_upload1/"),
     "DOCREP_UPLOAD_REALDIR" => (SEEDSX_ROOT_REALDIR."docrep_upload1/"),
     "SITE_LOGIN_ROOT"   => (SITEROOT."login/")
@@ -28,6 +24,13 @@ $SEEDSessionAuthUI_Config
              'iActivationInitialGid1' => 3,                              // Public
              'bEnableCreateAccount'   => true /*false*/                  // Random people may create accounts
            );
+
+define("SITE_DB_DEF_FILE", CONFIG_DIR."seeds_def1.php" );  // this def is used by SEEDSetup and below
+define("SiteKFDB_HOST",     SiteKFDB_HOST_seeds1);
+define("SiteKFDB_DB",       SiteKFDB_DB_seeds1);
+define("SiteKFDB_USERID",   SiteKFDB_USERID_seeds1);
+define("SiteKFDB_PASSWORD", SiteKFDB_PASSWORD_seeds1);
+
 
 
 // put this in siteCommon? That would only be useful if other sites used drupal

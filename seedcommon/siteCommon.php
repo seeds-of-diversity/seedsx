@@ -16,11 +16,7 @@ function SiteCommon_init( $raParms )
     define( "SITEIMG", SITEROOT."img/");
     define( "SITEINC", SITEROOT."inc/");
 
-
-    define( "SITE_DB_DEF_FILE", $raParms['SITE_DB_DEF_FILE'] );     // def is used by SEEDSetup but cannot include here because variables would be local to this function
-
     define( "SITE_LOGIN_ROOT", $raParms['SITE_LOGIN_ROOT'] );
-
 
     define( "DOCREP_SEEDPERMS_APP", "DocRep" );              // SEEDPerms app name for DocRep permissions
     define( "DOCREP_KEY_HASH_SEED", "Lagenaria" );           // really nice for this to be the same for seeds and seeds2 because mail created on seeds2 has hashed docpub.php links to seeds.ca

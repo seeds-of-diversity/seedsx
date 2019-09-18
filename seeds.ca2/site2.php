@@ -11,7 +11,6 @@ define("SEEDCOMMON", SEEDSX_ROOT."seedcommon/");    // application files shared 
 include_once( SEEDCOMMON."siteCommon.php" );
 
 SiteCommon_init( array(
-    "SITE_DB_DEF_FILE"  => (CONFIG_DIR."seeds_def2.php"),  // this def is used by SEEDSetup and below
     "DOCREP_UPLOAD_DIR" => (SEEDSX_ROOT."docrep_upload2/"),
     "DOCREP_UPLOAD_REALDIR" => (SEEDSX_ROOT_REALDIR."docrep_upload2/"),
     "SITE_LOGIN_ROOT"   => (SITEROOT."office/login/")
@@ -28,6 +27,12 @@ $SEEDSessionAuthUI_Config = array( 'urlActivation'          => 'https://office.s
                                    'urlSendPasswordSite'    => 'https://office.seeds.ca/login',   // 'web site' in Send Password email
                                    'iActivationInitialGid1' => 2,                                 // Members
                                    'bEnableCreateAccount'   => false );                           // Random people can't create accounts here
+
+define("SITE_DB_DEF_FILE", CONFIG_DIR."seeds_def1.php" );  // this def is used by SEEDSetup and below
+define("SiteKFDB_HOST",     SiteKFDB_HOST_seeds2);
+define("SiteKFDB_DB",       SiteKFDB_DB_seeds2);
+define("SiteKFDB_USERID",   SiteKFDB_USERID_seeds2);
+define("SiteKFDB_PASSWORD", SiteKFDB_PASSWORD_seeds2);
 
 
 function Site_path_self()
