@@ -19,7 +19,6 @@ function SiteCommon_init( $raParms )
 
     define( "SITE_DB_DEF_FILE", $raParms['SITE_DB_DEF_FILE'] );     // def is used by SEEDSetup but cannot include here because variables would be local to this function
 
-    define( "SITE_LOG_ROOT",   $raParms['SITE_LOG_ROOT'] );
     define( "SITE_LOGIN_ROOT", $raParms['SITE_LOGIN_ROOT'] );
 
 

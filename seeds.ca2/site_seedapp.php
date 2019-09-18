@@ -11,7 +11,7 @@ if( !defined('SITEROOT') )  { die("SITEROOT has to be defined"); }
 if( !defined("SEEDSX_ROOT") )  define( "SEEDSX_ROOT", SITEROOT."../" );
 
 if( !defined("SEEDROOT") ) {
-    if( substr($_SERVER["SERVER_NAME"],0,9) != "localhost" ) {
+    if( substr($_SERVER["SERVER_NAME"],0,9) != "localhost" ) {  // same as SEED_isLocal but that is not defined yet
         // On typical production systems the seeds directory is a sibling of public_html
         define( "SEEDROOT", SEEDSX_ROOT."seeds/" );
     } else {
@@ -31,7 +31,7 @@ if( !defined("SEEDROOT") ) {
 }
 
 if( !defined("W_CORE") ) {
-    if( substr($_SERVER["SERVER_NAME"],0,9) != "localhost" ) {
+    if( substr($_SERVER["SERVER_NAME"],0,9) != "localhost" ) {  // same as SEED_isLocal but that is not defined yet
         // On typical production sytems the seeds/wcore directory has to be copied to public_html/wcore so browsers can see .css, .js, images
         define( "W_CORE", SITEROOT."wcore/" );
     } else {
@@ -48,6 +48,12 @@ if( !defined("W_CORE") ) {
 }
 
 if( !defined("Q_URL") )  define( 'Q_URL', SITEROOT."app/q2/" ); // files that include SEEDAPP/q/*
+
+if( !defined("CONFIG_DIR") ) {
+    // should be ~/_config on both dev and prod installations
+    define( "CONFIG_DIR", SEED_isLocal ? (SEEDSX_ROOT."../../_config/") : (SEEDSX_ROOT."_config/") );
+}
+include_once( CONFIG_DIR."seeds_def1.php" );
 
 /* Based on SEEDROOT, define everything about seedapp, seedlib, seedcore, wcore
  */

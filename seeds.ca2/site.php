@@ -15,12 +15,12 @@ include_once( SEEDCOMMON."siteCommon.php" );
 
 SiteCommon_init( array(
     "SITE_DB_DEF_FILE"  => (CONFIG_DIR."seeds_def1.php"),  // this def is used by SEEDSetup and below
-    "SITE_LOG_ROOT"     => (SEEDSX_ROOT."seeds_log/"),
     "DOCREP_UPLOAD_DIR" => (SEEDSX_ROOT."docrep_upload1/"),
     "DOCREP_UPLOAD_REALDIR" => (SEEDSX_ROOT_REALDIR."docrep_upload1/"),
     "SITE_LOGIN_ROOT"   => (SITEROOT."login/")
     ) );
-include_once( SITE_DB_DEF_FILE );  // cannot be included by the function above because variables within it would be local there instead of global
+//included in site_seedapp.php
+//include_once( SITE_DB_DEF_FILE );  // cannot be included by the function above because variables within it would be local there instead of global
 
 $SEEDSessionAuthUI_Config
     = array( 'urlActivation'          => 'https://www.seeds.ca/login',   // link sent in Create Account activation email

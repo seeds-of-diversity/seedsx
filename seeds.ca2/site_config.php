@@ -12,19 +12,18 @@ if( !defined("SITEROOT") )  die( "You have to define SITEROOT (path from your sc
 //define("SEEDROOT", SITEROOT."../../seeds-wt/");
 
 
-define("STD_isLocal", ((substr($_SERVER["SERVER_NAME"],0,9) == "localhost") ? true : false));
-
 // path to seedsx directory
-if( !defined("SEEDSX_ROOT") )  define( "SEEDSX_ROOT", SITEROOT."../" );
+if( !defined("SEEDSX_ROOT") )    define( "SEEDSX_ROOT", SITEROOT."../" );
 
 // SEEDROOT/SEEDAPP config specific to this site, independent of seedsx
 include_once( SITEROOT."site_seedapp.php" );
 
+define( "STD_isLocal", SEED_isLocal );
 
-if( !defined("CONFIG_DIR") ) {
-    // should be ~/_config on both dev and prod installations
-    define( "CONFIG_DIR", STD_isLocal ? (SEEDSX_ROOT."../../_config/") : (SEEDSX_ROOT."_config/") );
-}
+
+if( !defined("SITE_LOG_ROOT") )  define( "SITE_LOG_ROOT", SEED_isLocal ? (SEEDSX_ROOT."../seeds_log/") : (SEEDSX_ROOT."seeds_log/") );
+define( "SEED_LOG_DIR", SITE_LOG_ROOT );
+
 
 /* full filesystem locations of SEEDSX_ROOT and the current script
  */
@@ -37,7 +36,7 @@ define("STD_SCRIPT_REALDIR", realpath(dirname($_SERVER['SCRIPT_FILENAME']))."/" 
  *     - does not contain server_name because things like curl want them separate
  *     - use http://{$_SERVER['SERVER_NAME']}{SITEROOT_URL}foo  where foo has no leading /
  */
-if( STD_isLocal ) {
+if( SEED_isLocal ) {
     // this has to be updated if you use any other top-level site directories in development repository
     $url = '/unknown/';
     if( ($n = strpos( $_SERVER['REQUEST_URI'], "/seeds.ca2/" )) ) {
@@ -51,7 +50,7 @@ if( STD_isLocal ) {
 
 /* activate full error reporting in development environments, not in production
  */
-if( STD_isLocal ) {
+if( SEED_isLocal ) {
     error_reporting(E_ALL | E_STRICT);
     ini_set('display_errors', 1);
     ini_set('html_errors', 1);
@@ -73,7 +72,7 @@ define("STDINC",  SEEDSX_ROOT."std/");
 define("STDIMG",  SITEROOT."std/img");  // must be within Apache DocRoot
 
 if( !defined("W_ROOT") ) {
-    define("W_ROOT", (STD_isLocal ? (SEEDSX_ROOT."w/") : (SITEROOT."w/") ) );
+    define("W_ROOT", (SEED_isLocal ? (SEEDSX_ROOT."w/") : (SITEROOT."w/") ) );
 }
 define("W_ROOT_STD",        W_ROOT."std/");         // stuff that std needs to be visible in the web root
 define("W_ROOT_SEEDCOMMON", W_ROOT."seedcommon/");  // stuff that seedcommon needs to be visible in the web root
@@ -92,4 +91,3 @@ define("W_ROOT_FPDF", W_ROOT."os/fpdf181/" );
 
 // locations of components that are shared in the STD directory (typically hidden from direct access by the web server)
 define("WRITE_EXCEL_DIR", STDINC."os/write_excel/" );
-

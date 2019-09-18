@@ -12,12 +12,12 @@ include_once( SEEDCOMMON."siteCommon.php" );
 
 SiteCommon_init( array(
     "SITE_DB_DEF_FILE"  => (CONFIG_DIR."seeds_def2.php"),  // this def is used by SEEDSetup and below
-    "SITE_LOG_ROOT"     => (SEEDSX_ROOT."seeds_log/"),
     "DOCREP_UPLOAD_DIR" => (SEEDSX_ROOT."docrep_upload2/"),
     "DOCREP_UPLOAD_REALDIR" => (SEEDSX_ROOT_REALDIR."docrep_upload2/"),
     "SITE_LOGIN_ROOT"   => (SITEROOT."office/login/")
     ) );
-include_once( SITE_DB_DEF_FILE );  // cannot be included by the function above because variables within it would be local there instead of global
+//included in site_seedapp.php
+//include_once( SITE_DB_DEF_FILE );  // cannot be included by the function above because variables within it would be local there instead of global
 
 define("SITEIMG_STDIMG", SITEINC."std/img/");   // STDINC/img or a copy that the web server can see
 
