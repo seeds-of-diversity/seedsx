@@ -93,6 +93,7 @@ function Site_UrlQ( $file = "index.php" )
 function SiteAppConsole( $raConfig = array() )
 {
     global $config_KFDB;
+    //$config_KFDB = $GLOBALS['config_KFDB'];   Drupal loads seeds_def1.php in a function scope so that file has to set the var in $GLOBALS. But the global keyword still works here.
 
     $db = @$raConfig['db'] ?: 'seeds1';
     $lang = @$raConfig['lang'] ?: 'EN';
