@@ -384,8 +384,10 @@ class MyConsole extends Console01
              ."<p style='margin-left:30px'><a href='{$_SERVER['PHP_SELF']}?doReport=JanSeeds' target='_blank'>Seeds list</a></p>";
 
         $s .= "<h4><strong>Packages to Send to Growers</strong></h4>"
-             ."<p style='margin-left:30px'><a href='{$_SERVER['PHP_SELF']}?doReport=SeptGrowers' target='_blank'>Grower info sheets</a></p>"
-             ."<p style='margin-left:30px'><a href='{$_SERVER['PHP_SELF']}?doReport=SeptSeeds' target='_blank'>Seeds list per grower</a></p>";
+             ."<p style='margin-left:30px'><a href='{$_SERVER['PHP_SELF']}?doReport=SeptGrowers' target='_blank'>Grower info sheets - all growers</a></p>"
+             ."<p style='margin-left:30px'><a href='{$_SERVER['PHP_SELF']}?doReport=SeptGrowers&noemail=1' target='_blank'>Grower info sheets - those without email addresses</a></p>"
+             ."<p style='margin-left:30px'><a href='{$_SERVER['PHP_SELF']}?doReport=SeptSeeds' target='_blank'>Seeds lists per grower - all growers</a></p>"
+             ."<p style='margin-left:30px'><a href='{$_SERVER['PHP_SELF']}?doReport=SeptSeeds&noemail=1' target='_blank'>Seeds lists per grower - those without email addresses</a></p>";
 
         if( $this->oMSDLib->PermAdmin() ) {
 
