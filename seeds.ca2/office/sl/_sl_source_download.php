@@ -297,43 +297,7 @@ class SLSourceDownload
             $pMode = $oUIPills->GetCurrPill();
             switch( $pMode ) {
                 case 'companies':
-                    $oForm = new SEEDForm( 'Plain' );
-                    $oQ = new Q( $this->oW->kfdb, $this->oW->sess, null, array() );
-                    $oSLSrc = new QServerSourceCV( $oQ, array() );
-                    $raSrc = $oSLSrc->GetSources();
-                    $raOpts = array( " -- All Companies -- " => 0 );
-                    foreach( $raSrc as $ra ) {
-                        $raOpts[$ra['SRC_name']] = $ra['SRC__key'];
-                    }
-                    $sDownloadAction = $_SERVER['PHP_SELF'];
-                    $sDownloadCtrl = "<input type='hidden' name='cmd' value='company_download' />"
-                                    .$oForm->Select2( 'kCompany', $raOpts, "", array() );
-
-                    $sDownloadAction = Site_UrlQ();
-                    $sDownloadCtrl = $oForm->Hidden( 'qcmd', 'srcCSCI' )
-                                    //.$oForm->Hidden( 'qname', "" )
-                                    .$oForm->Hidden( 'qfmt', 'xls' )
-                                    .$oForm->Select2( 'kSrc', $raOpts, "", array() );
-
-                    $raParms = array( 'label'=>"Seed Company listings",
-                                      'downloadaction'=>$sDownloadAction,
-                                      'downloadctrl'=>$sDownloadCtrl,
-                                      'uploadaction'=>$_SERVER['PHP_SELF'],
-                                      'uploadctrl'=>
-                                              "<input type='hidden' name='cmd' value='company_upload' />"
-                                             ."<select name='eReplace' style='margin:0px 0px 10px 20px'>"
-                                             ."<option value='".SLUploadCVSources::ReplaceVerbatimRows."'>Just copy the rows in the spreadsheet</option>"
-                                             ."<option value='".SLUploadCVSources::ReplaceWholeCompanies."'>Replace entire companies mentioned in the spreadsheet</option>"
-                                             ."<option value='".SLUploadCVSources::ReplaceWholeCSCI."'>Replace entire CSCI</option>"
-                                             ."</select>",
-                                      'seedTableDef'=>$this->companyTableDef,
-                                    );
-                    $s .= Console01UI_DownloadUpload( $this->oW, $raParms );
-
-                    $s .= "<div style='border:1px solid #aaa;margin-top:30px;padding:15px'>"
-                         ."<p><a href='{$_SERVER['PHP_SELF']}?cmd=testSrccv'>Test Seed Company List</a></p>"
-                         ."<p><a href='{$_SERVER['PHP_SELF']}?cmd=archiveSrccv'>Archive Seed Company List</a></p>"
-                         ."</div>";
+                    $s .= "<p>Use app/sl/sources.php</p>";
                     break;
 
                 case 'pgrc':
