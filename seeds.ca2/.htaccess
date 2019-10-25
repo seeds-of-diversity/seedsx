@@ -54,9 +54,6 @@ Redirect       /membre                    https://www.semences.ca/boutique
 Redirect       /don                       https://www.semences.ca/boutique
 
 Redirect       /sl                        http://www.seeds.ca/diversity/seed-library
-Redirect       /library                   http://www.seeds.ca/diversity/seed-library
-Redirect       /bibliotheque              http://www.semences.ca/diversite/bibliotheque-semences
-Redirect       /bibliotheque-semences     http://www.semences.ca/diversite/bibliotheque-semences
 
 Redirect       /saveyourseeds             http://www.seeds.ca/publications
 Redirect       /conservezvossemences      http://www.semences.ca/nos-livres
@@ -97,6 +94,13 @@ Redirect       /comment-cultiver-bulbilles http:///www.semences.ca/d?n=web/ebull
 
 
 
+# drupal8 name redirections
+Redirect       /nos-livres               http://semences.ca/livres
+
+Redirect       /library                  http://seeds.ca/diversity/seed-library
+Redirect       /bibliotheque             http://semences.ca/diversite/bibliotheque-semences
+Redirect       /bibliotheque-semences    http://semences.ca/diversite/bibliotheque-semences
+
 RewriteEngine on
 
 RewriteRule ^diversity/seed-library-list.php diversity/seed-library-list    [L,QSA]
@@ -116,7 +120,8 @@ RewriteRule ^diversity/seed-library-list.php diversity/seed-library-list    [L,Q
 
 # Get a "RewriteBase" according to the host name.
 RewriteBase /
-RewriteRule ^ - [E=BASE:/swww/]
+#RewriteRule ^ - [E=BASE:/swww/]
+RewriteRule ^ - [E=BASE:/sw8/web/]
 RewriteCond %{HTTP_HOST} ^localhost$
 RewriteRule ^ - [E=BASE:/~bob/seeds.ca2/swww/]
 # now use BASE like this : RewriteRule ^(.*)$ %{ENV:BASE}index.php [L,QSA]
@@ -141,6 +146,11 @@ RewriteRule \.svn %{ENV:BASE}index.php [L]
 # tmp rule for development of french site
 RewriteRule ^fr$ %{ENV:BASE}index.php?lang=FR [L,QSA]
 RewriteRule ^fr/(.*)$ %{ENV:BASE}index.php?q=$1&lang=FR [L,QSA]
+
+# allow app/pool to use http
+#RewriteCond %{HTTPS} on
+#RewriteCond %{REQUEST_URI} ^/app/pool/
+#RewriteRule ^ http://%{HTTP_HOST}%{REQUEST_URI}  [R,L]
 
 # Serve other applications in the root directory (e.g. seedliving, bauta/descriptions)
 # If the request is not elsewhere in the root, redirect into swww.
