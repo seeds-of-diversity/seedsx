@@ -469,7 +469,7 @@ function DrawEvents( KeyFrameDB $kfdb, $lang )
 
     $sCal = "<div class='EV_navbox'>"
          // in drupal, PHP_SELF is index.php so q=drupal takes us to the current page. if natively displayed, q is ignored
-         ."<FORM method='post' action='${_SERVER['PHP_SELF']}?q=events'>"
+         ."<FORM method='post' action='".Site_path_self()."'>" //${_SERVER['PHP_SELF']}?q=events'>"
          ."<INPUT type='hidden' name='q' value='events'/>"
          ."<INPUT type='submit' value='Show Events'>"
          ."<TABLE border='0' cellpadding='2' cellspacing='0' style='font-size:10pt'>"
