@@ -65,7 +65,7 @@ class SEEDTable     // implemented for a single table - use SEEDTableSheets for 
 
         $bCSV = @$raLoadParms['bCSV'] || (@$raLoadParms['bCSVDoNative'] && inarray(substr($sFilename,-4),array('.csv','.CSV')) );
 
-        $sCharsetFile = SEEDStd_ArraySmartVal( $raLoadParms, 'charset-file', array('utf-8'), false );
+        $sCharsetFile = @$raLoadParms['charset-file'] ?: 'utf-8';
 
         if( $bCSV ) {
             $this->loadFromCSV( $sFilename, $sCharsetFile );
@@ -198,7 +198,7 @@ class SEEDTable     // implemented for a single table - use SEEDTableSheets for 
         /* if bTab is not set use the first row to try to determine the format
          */
         if( isset($parms['bTab']) ) {
-            $bTab = SEEDStd_ArraySmartVal( $parms, 'bTab', array(false,true) );
+            $bTab = SEEDCore_ArraySmartVal( $parms, 'bTab', [false,true] );
         } else {
             $line = fgets($f);
             $bTab = ( strpos( $line, "\t" ) !== false );
@@ -207,13 +207,13 @@ class SEEDTable     // implemented for a single table - use SEEDTableSheets for 
 
 
         if( !$bTab ) {
-            $sDelimiter = SEEDStd_ArraySmartVal( $parms, 'sDelimiter', array(",") );
-            $sEnclosure = SEEDStd_ArraySmartVal( $parms, 'sEnclosure', array("\"") );
+            $sDelimiter = @$parms['sDelimiter'] ?: ",";
+            $sEnclosure = @$parms['sEnclosure'] ?: "\"";
         } else {
             //$sDelimiter = SEEDStd_ArraySmartVal( $parms, 'sDelimiter', array("\t") );
             //$sEnclosure = SEEDStd_ArraySmartVal( $parms, 'sEnclosure', array("") );
         }
-        $sEscape = SEEDStd_ArraySmartVal( $parms, 'sEscape', array("\\") );
+        $sEscape = @$parms['sEscape'] ?: "\\";
 
         while( !feof( $f ) ) {
             if( $bTab ) {
@@ -318,9 +318,9 @@ class SEEDTableSheets
     {
         $this->raRows = array();
 
-        $bCSV = @$raLoadParms['bCSV'] || (@$raLoadParms['bCSVDoNative'] && inarray(substr($sFilename,-4),array('.csv','.CSV')) );
+        $bCSV = @$raLoadParms['bCSV'] || (@$raLoadParms['bCSVDoNative'] && in_array(substr($sFilename,-4),array('.csv','.CSV')) );
 
-        $sCharsetFile = SEEDStd_ArraySmartVal( $raLoadParms, 'charset-file', array('utf-8'), false );
+        $sCharsetFile = @$raLoadParms['charset-file'] ?: 'utf-8';
 
         if( $bCSV ) {
 // this will only be meaningful for a single-sheet table (2-d rows/cols)
@@ -468,7 +468,7 @@ class SEEDTableSheets
         /* if bTab is not set use the first row to try to determine the format
          */
         if( isset($parms['bTab']) ) {
-            $bTab = SEEDStd_ArraySmartVal( $parms, 'bTab', array(false,true) );
+            $bTab = SEEDCore_ArraySmartVal( $parms, 'bTab', [false,true] );
         } else {
             $line = fgets($f);
             $bTab = ( strpos( $line, "\t" ) !== false );
@@ -477,13 +477,13 @@ class SEEDTableSheets
 
 
         if( !$bTab ) {
-            $sDelimiter = SEEDStd_ArraySmartVal( $parms, 'sDelimiter', array(",") );
-            $sEnclosure = SEEDStd_ArraySmartVal( $parms, 'sEnclosure', array("\"") );
+            $sDelimiter = @$parms['sDelimiter'] ?: ",";
+            $sEnclosure = @$parms['sEnclosure'] ?: "\"";
         } else {
             //$sDelimiter = SEEDStd_ArraySmartVal( $parms, 'sDelimiter', array("\t") );
             //$sEnclosure = SEEDStd_ArraySmartVal( $parms, 'sEnclosure', array("") );
         }
-        $sEscape = SEEDStd_ArraySmartVal( $parms, 'sEscape', array("\\") );
+        $sEscape = @$parms['sEscape'] ?: "\\";
 
         while( !feof( $f ) ) {
             if( $bTab ) {
