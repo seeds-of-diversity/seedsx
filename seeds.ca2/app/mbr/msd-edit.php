@@ -370,27 +370,34 @@ class MyConsole extends Console01
 
     private function officeTabDraw()
     {
-        $s = "";
+        $Y = date('Y');     // typically better than oMSDLib->GetCurrYear() unless you want a forward-looking date in late fall
+
+        $s = "<style>"
+            ."h4         { font-weight: bold }"
+            ."p          { margin-left:30px }"
+            ."div.indent { margin-left:60px }"
+            ."</style>";
 
         if( !$this->oMSDLib->PermOfficeW() )  goto done;
 
+        $s .= "<h4>Printed Directory</h4>"
+             ."<p><a href='?doReport=JanGrowers' target='_blank'>Grower list</a></p>"
+             ."<p><a href='?doReport=JanSeeds' target='_blank'>Seeds list</a></p>";
+
+        $s .= "<h4>Packages to Send to Growers</strong></h4>"
+             ."<p><a href='?doReport=SeptGrowers' target='_blank'>Grower info sheets - all growers</a></p>"
+             ."<p><a href='?doReport=SeptGrowers&noemail=1' target='_blank'>Grower info sheets - those without email addresses</a></p>"
+             ."<p><a href='?doReport=SeptSeeds' target='_blank'>Seeds lists per grower - all growers</a></p>"
+             ."<p><a href='?doReport=SeptSeeds&noemail=1' target='_blank'>Seeds lists per grower - those without email addresses</a></p>";
+
+        $s .= "<hr/>";
+
         if( $this->oMSDLib->PermAdmin() ) {
+            $s .= "<h4>Admin</h4>";
+
             $s .= $this->oMSDLib->AdminNormalizeStuff();
-            $s .= "<h4><strong><a href='{$_SERVER['PHP_SELF']}?doIntegrityTests=1'>Do Integrity Tests</a></strong></h4>";
-        }
 
-        $s .= "<h4><strong>Printed Directory</strong></h4>"
-             ."<p style='margin-left:30px'><a href='{$_SERVER['PHP_SELF']}?doReport=JanGrowers' target='_blank'>Grower list</a></p>"
-             ."<p style='margin-left:30px'><a href='{$_SERVER['PHP_SELF']}?doReport=JanSeeds' target='_blank'>Seeds list</a></p>";
-
-        $s .= "<h4><strong>Packages to Send to Growers</strong></h4>"
-             ."<p style='margin-left:30px'><a href='{$_SERVER['PHP_SELF']}?doReport=SeptGrowers' target='_blank'>Grower info sheets - all growers</a></p>"
-             ."<p style='margin-left:30px'><a href='{$_SERVER['PHP_SELF']}?doReport=SeptGrowers&noemail=1' target='_blank'>Grower info sheets - those without email addresses</a></p>"
-             ."<p style='margin-left:30px'><a href='{$_SERVER['PHP_SELF']}?doReport=SeptSeeds' target='_blank'>Seeds lists per grower - all growers</a></p>"
-             ."<p style='margin-left:30px'><a href='{$_SERVER['PHP_SELF']}?doReport=SeptSeeds&noemail=1' target='_blank'>Seeds lists per grower - those without email addresses</a></p>";
-
-        if( $this->oMSDLib->PermAdmin() ) {
-
+            $s .= "<p><a href='?doIntegrityTests=1'>Do integrity tests</a></p>";
             if( SEEDInput_Int('doIntegrityTests') ) {
                 include_once( SEEDLIB."msd/msdlibIntegrity.php" );
                 $oIntegrity = new MSDLibIntegrity( $this->oMSDLib );
@@ -406,6 +413,30 @@ class MyConsole extends Console01
                         .$oIntegrity->AdminContentTests();
 
                 $s .= "<div class='well'>$sTest</div>";
+            }
+
+            $s .= "<p><a href='?archiveCurrentMSD=1'>Archive $Y: replace archive with current msd</a></p>";
+            if( SEEDInput_Int('archiveCurrentMSD') ) {
+                // delete archive records for $Y, copy current active growers and seeds there and give them year $Y
+                list($ok,$s1) = $this->oMSDLib->AdminCopyToArchive( $Y );
+                $s .= "<div class='indent'>$s1</div>";
+            }
+
+            $s .= "<p><a href='?prepareForDataEntry=1'>Show steps to prepare for data entry in fall</a></p>";
+            if( SEEDInput_Int('prepareForDataEntry') ) {
+                $s .= "<p><pre style='margin-left:30px'>"
+                     ."Check sed_curr_growers._updated for changes within the last few months"
+                     ."<br/>SELECT * FROM sed_curr_growers WHERE _updated>'$Y-08-01'"
+                     ."<br/>"
+                     ."<br/>Check SEEDBasket_Products._updated for changes within the last few months"
+                     ."<br/>SELECT * FROM SEEDBasket_Products WHERE prod_type='seeds' AND _updated>'$Y-08-01'"
+                     ."<br/>"
+                     ."<br/>Make sure last year's MSD is archived"
+                     ."<br/>"
+                     ."<br/>Clear the flags in the grower table, but manually replace any that were set recently (per above). Seeds uses _updated to detect changes."
+                     ."<br/>UPDATE sed_curr_growers SET bDone=0,bDoneMbr=0,bDoneOffice=0,bChanged=0"
+                     ."<br/>  todo: bChanged is unnecessary if you use _updated the way seeds do"
+                     ."</pre></p>";
             }
         }
 

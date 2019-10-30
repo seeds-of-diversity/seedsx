@@ -192,63 +192,7 @@ class sedAdmin {
     /************************
      */
     {
-        $ok = true;    // return true if archive successful, or tests show that the archiving is already done
-        $s = "";
-
-        // Only call this from steppers that check integrity first
-        //if( !$this->doCheckIntegrityHard() )  return;
-
-        if( $this->yearMaxSedCurrGrowers <= $this->yearMaxSedGrowers ||
-            $this->yearMaxSedCurrSeeds <= $this->yearMaxSedSeeds )
-        {
-            $s .= "<h3 style='color:orange'>Not archiving growers and seeds</h3>"
-                 ."<p>It appears that the final records are already archived.<p>"
-                 ."<p style='margin-left:3em'>Max year in sed_growers is {$this->yearMaxSedGrowers}.</p>"
-                 ."<p style='margin-left:3em'>Max year in sed_curr_growers is {$this->yearMaxSedCurrGrowers}.</p>"
-                 ."<p style='margin-left:3em'>Max year in sed_seeds is {$this->yearMaxSedSeeds}.</p>"
-                 ."<p style='margin-left:3em'>Max year in sed_curr_seeds is {$this->yearMaxSedCurrSeeds}.</p>";
-        } else if( $this->yearMaxSedCurrSeeds != $this->sed->currentYear || $this->yearMaxSedCurrSeeds != $this->yearMaxSedSeeds + 1 ) {
-            $s .= "<h3 style='color:orange'>Not archiving growers and seeds</h3>"
-                 ."<p>Unexpected years found<p>"
-                 ."<p style='margin-left:3em'>Max year in sed_curr_seeds is {$this->yearMaxSedCurrSeeds}. Expecting it to be {$this->sed->currentYear}.</p>"
-                 ."<p style='margin-left:3em'>Max year in sed_seeds is {$this->yearMaxSedSeeds}. Expecting it to be {$this->yearMaxSedCurrSeeds} or ".($this->sed->currentYear-1).".</p>";
-            $ok = false;
-        } else {
-            /* Archive seeds
-             */
-            $fields = "mbr_id,category,type,variety,bot_name,days_maturity,quantity,origin,year_1st_listed,description,year";
-            $sql = "INSERT INTO seeds.sed_seeds (_key,_created,_created_by,_updated,_updated_by,_status, $fields )"
-                  ."SELECT NULL,NOW(),".$this->sed->sess->GetUID().",NOW(),".$this->sed->sess->GetUID().",0, $fields "
-                  ."FROM seeds.sed_curr_seeds WHERE _status=0 AND NOT bSkip AND NOT bDelete";
-            if( $this->sed->kfdb->Execute($sql) ) {
-                $s .= "<h3 style='color:green'>Seeds Successfully Archived</h3>"
-                     ."<p style='margin-left:20px'>$sql</p>";
-            } else {
-                $s .= "<h3 style='color:red'>Archiving Seeds Failed</h3>"
-                     ."<p style='margin-left:20px'>$sql</p>"
-                     ."<p style='margin-left:20px'>".$this->sed->kfdb->GetErrMsg()."</p>";
-                $ok = false;
-            }
-
-            /* Archive growers
-             */
-            if( $ok ) {
-                $fields = "mbr_id,mbr_code,frostfree,soiltype,organic,zone,notes,year";
-                $sql = "INSERT INTO seeds.sed_growers (_key,_created,_created_by,_updated,_updated_by,_status, $fields )"
-                      ."SELECT NULL,NOW(),".$this->sed->sess->GetUID().",NOW(),".$this->sed->sess->GetUID().",0, $fields "
-                      ."FROM seeds.sed_curr_growers WHERE _status=0 AND NOT bSkip AND NOT bDelete";
-                if( $this->sed->kfdb->Execute($sql) ) {
-                    $s .= "<h3 style='color:green'>Growers Successfully Archived</h3>"
-                         ."<p style='margin-left:20px'>$sql</p>";
-                } else {
-                    $s .= "<h3 style='color:red'>Archiving Growers Failed</h3>"
-                         ."<p style='margin-left:20px'>$sql</p>"
-                         ."<p style='margin-left:20px'>".$this->sed->kfdb->GetErrMsg()."</p>";
-                    $ok = false;
-                }
-            }
-        }
-        return( array( $ok, $s ) );
+        return( [true, "Moved to seeds/app/mbr/msd-edit Office tab"] );
     }
 
     function doCheckIntegrity()
