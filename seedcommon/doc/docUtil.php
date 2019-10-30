@@ -31,7 +31,14 @@ function New_DocRepDB_WithMyPerms( $kfdb, $uid, $raParms = array() )
 {
     $bReadonly = isset($raParms['bReadonly']) ? $raParms['bReadonly'] : false;
 
-$oApp = New_SiteAppDB();
+// only needed until this function takes oApp; otherwise we can't tell which db to use
+if( ($db = @$raParms['db']) ) {
+    global $config_KFDB;
+    $oApp = new SEEDAppDB( $config_KFDB[$db] );
+} else {
+    $oApp = New_SiteAppDB();
+}
+
     $parms = array();
     $oPerms = New_DocRepSEEDPermsFromUID( $oApp, $uid );
     $parms['raPermClassesR'] = $oPerms->GetClassesAllowed( "R", false );

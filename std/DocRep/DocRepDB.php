@@ -877,7 +877,7 @@ if (file_exists($file)) {
                 break;
             case "FILE":
             case "SFILE":
-                if( ($fp = fopen( $this->getDataFilenameUsingDoc(), "rb" )) ) {
+                if( ($fp = fopen( $this->getDataFilenameUsingDoc(), "rb" )) ) { 
                     fpassthru( $fp );
                     fclose( $fp );
                 }

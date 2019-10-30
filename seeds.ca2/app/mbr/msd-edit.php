@@ -29,12 +29,7 @@ include_once( SEEDLIB."msd/msdlib.php" );
 
 list($kfdb, $sess, $lang) = SiteStartSessionAccount( ["W sed"] );
 
-$oApp = new SEEDAppConsole( $config_KFDB['seeds1']
-                            + array( 'sessPermsRequired' => array(["W sed"]),
-                                     'logdir' => SITE_LOG_ROOT,
-                                     'lang' => $lang )
-);
-
+$oApp = SiteAppConsole( ['db'=>'seeds1', 'sessPermsRequired' => ["W sed"], 'lang' => $lang ] );
 
 //var_dump($_SESSION);
 //echo "<BR/><BR/>";
@@ -379,13 +374,22 @@ class MyConsole extends Console01
 
         if( !$this->oMSDLib->PermOfficeW() )  goto done;
 
-        $s .= "<h4><strong><a href='{$_SERVER['PHP_SELF']}?doReport=JanGrowers' target='_blank'>Grower list for printed directory</a></strong></h4>";
-        $s .= "<h4><strong><a href='{$_SERVER['PHP_SELF']}?doReport=JanSeeds' target='_blank'>Seeds list for printed directory</a></strong></h4>";
-
         if( $this->oMSDLib->PermAdmin() ) {
             $s .= $this->oMSDLib->AdminNormalizeStuff();
-
             $s .= "<h4><strong><a href='{$_SERVER['PHP_SELF']}?doIntegrityTests=1'>Do Integrity Tests</a></strong></h4>";
+        }
+
+        $s .= "<h4><strong>Printed Directory</strong></h4>"
+             ."<p style='margin-left:30px'><a href='{$_SERVER['PHP_SELF']}?doReport=JanGrowers' target='_blank'>Grower list</a></p>"
+             ."<p style='margin-left:30px'><a href='{$_SERVER['PHP_SELF']}?doReport=JanSeeds' target='_blank'>Seeds list</a></p>";
+
+        $s .= "<h4><strong>Packages to Send to Growers</strong></h4>"
+             ."<p style='margin-left:30px'><a href='{$_SERVER['PHP_SELF']}?doReport=SeptGrowers' target='_blank'>Grower info sheets - all growers</a></p>"
+             ."<p style='margin-left:30px'><a href='{$_SERVER['PHP_SELF']}?doReport=SeptGrowers&noemail=1' target='_blank'>Grower info sheets - those without email addresses</a></p>"
+             ."<p style='margin-left:30px'><a href='{$_SERVER['PHP_SELF']}?doReport=SeptSeeds' target='_blank'>Seeds lists per grower - all growers</a></p>"
+             ."<p style='margin-left:30px'><a href='{$_SERVER['PHP_SELF']}?doReport=SeptSeeds&noemail=1' target='_blank'>Seeds lists per grower - those without email addresses</a></p>";
+
+        if( $this->oMSDLib->PermAdmin() ) {
 
             if( SEEDInput_Int('doIntegrityTests') ) {
                 include_once( SEEDLIB."msd/msdlibIntegrity.php" );

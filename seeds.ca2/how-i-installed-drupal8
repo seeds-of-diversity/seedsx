@@ -42,6 +42,10 @@ $config['system.logging']['error_level'] = 'verbose';
 
 # Multi-level menus: only the top level of a menu will be shown by default. The non-intuitive way to enable submenus is Structure->Block layout->find the menu->Configure->increase menu levels (default 1)
 
+# Internal Page Cache - installed by default, caches all content for anonymous users but not recommended for sites that generate per-page content for anonymous users e.g. shopping carts
+# Extend->Uninstall, check Internal Page Cache
+
+
 # to Update:
 cd ~/public_html/sw8
 ~/composer/composer.phar update

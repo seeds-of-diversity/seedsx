@@ -18,7 +18,7 @@ class CropProfiles
     {
         $this->oProfilesDB = new SLProfilesDB( $oApp->kfdb, $oApp->sess->GetUID(), $oApp->logdir );
         $this->oProfilesDefs = new SLProfilesDefs( $this->oProfilesDB );
-        $this->oProfilesReport = new SLProfilesReport( $this->oProfilesDB, $this->oProfilesDefs, $oApp->lang );
+        $this->oProfilesReport = new SLProfilesReport( $this->oProfilesDB, $this->oProfilesDefs, $oApp );
     }
 }
 

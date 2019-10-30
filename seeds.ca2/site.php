@@ -36,8 +36,9 @@ define("SiteKFDB_PASSWORD", SiteKFDB_PASSWORD_seeds1);
 // put this in siteCommon? That would only be useful if other sites used drupal
 function Site_path_self()
 /************************
-    Get the path to the current page. Does the right thing if you're on a drupal page,
-    and also if drupal is not present
+    Get the path to the current page. Does the right thing if you're on a drupal page, and also if drupal is not present.
+    
+    Note <form action=""> is not desirable because it defaults to the current browser address including any GET parms that are currently there
  */
 {
     if( function_exists('base_path') && ($path = @base_path()) ) {
@@ -47,20 +48,26 @@ function Site_path_self()
 
             $path .= drupal_get_path_alias();
         } else {
-//remove this when we rebase to seeds.ca/
-              // $path has a trailing-/ and page has a leading-/
-//            if( substr( $path, -9 ) == '/sw8/web/' )  $path = substr( $path, 0, -9 );
-if( substr( $path, -1 ) == '/' )  $path = substr( $path, 0, -1 );
+            // drupal 8
 
-            $current_path = \Drupal::service('path.current')->getPath();
-            $page = \Drupal::service('path.alias_manager')->getAliasByPath($current_path);
+            // In general base_path() has a leading and trailing / or is "/"
+
+            // base_path() ends with /sw8/web/ on dev, or is exactly that on prod (unless this is changed in settings.php). Suppress showing that path.
+            if( substr( $path, -9 ) == '/sw8/web/' )  $path = substr( $path, 0, -9 );
+
+            // $page below has a leading-/ so remove any trailing-/ on $path 
+            if( substr( $path, -1 ) == '/' )  $path = substr( $path, 0, -1 );
+
+            $current_path = \Drupal::service('path.current')->getPath();			// current internal route
+            $page = \Drupal::service('path.alias_manager')->getAliasByPath($current_path);	// alias of current page
             $path = $path.$page;
         }
     } else {
-// this is unsafe because page requests can look like seeds.ca/foo/index.php/"><script>alert(1);</script><span class="
-// also "" is not always desired because it propagates GET parms
-// so a safer alternative is html_specialchars($_SERVER['PHP_SELF']); because the above hack will be rendered non-parseable to js
-        $path = $_SERVER['PHP_SELF'];
+        // not in drupal
+        
+        // PHP_SELF is unsafe because page requests can look like seeds.ca/foo/index.php/"><script>alert(1);</script><span class="
+        // Use htmlspecialchars to make injected js non-parseable
+        $path = SEEDCore_HSC($_SERVER['PHP_SELF']);
     }
 
     return( $path );
