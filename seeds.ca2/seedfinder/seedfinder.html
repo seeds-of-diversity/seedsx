@@ -6,8 +6,9 @@
   </head>
   <body>
   [[setvarmap:sodlink|$lang|EN|http://seeds.ca|FR|http://semences.ca]]
-  [[setvarmap:usclink|$lang|EN|http://usc-canada.org|FR|http://fr.usc-canada.org]]
+  [[setvarmap:usclink|$lang|EN|http://weseedchange.org|FR|http://onsemelavenir.org]]
   [[setvar:sodlogo|//seeds.ca/i/img/logo/logoA_h-[[ifeq:$lang|EN|en|fr]]-300x.png]]
+  [[setvar:usclogo|/seedfinder/images/logos/seedchange-[[ifeq:$lang|EN|en|fr]].svg]]
 
   [[include:sf-body-header]]
   [[include:sf-body-banner]]
@@ -86,7 +87,7 @@
     <a href='[[var:sodlink]]' target='_blank'><img class="img-responsive" src="[[var:sodlogo]]" width="100%" height="auto"></a>
   </div>
   <div class="col col-lg-4 col-md-4 col-sm-12 col-xs-12">
-    <a href='[[var:usclink]]' target='_blank'><img class="img-responsive" src="images/logos/usc-canada.png" width="100%" height="auto"></a>
+    <a href='[[var:usclink]]' target='_blank'><img class="img-responsive" src="[[var:usclogo]]" width="100%" height="auto"></a>
   </div>
   <div class="col col-lg-4 col-md-4 col-sm-12 col-xs-12">
     <img class="img-responsive" src="images/logos/w-garfield-weston-foundation.png" width="100%" height="auto">
@@ -192,7 +193,7 @@
         <div class="content">
           <h1>[[ifeq:$lang|EN|Visit us at|Visitez nous]]:</h1>
           <p><a href='[[var:sodlink]]' target='_blank'><img class="img-responsive" src="[[var:sodlogo]]" width="100%" height="auto"></a></p>
-          <p><a href='[[var:usclink]]' target='_blank'><img class="img-responsive" src="images/logos/usc-canada.png" width="100%" height="auto"></a></p>
+          <p><a href='[[var:usclink]]' target='_blank'><img class="img-responsive" src="[[var:usclogo]]" width="100%" height="auto"></a></p>
         </div>
       </div>
       <div class="col col-lg-4 col-md-12 col-sm-12 col-xs-12">
@@ -200,11 +201,11 @@
           {% if lang=='EN' %}
           <h1>Thank you:</h1>
           <p><img class="img-responsive" src="images/logos/w-garfield-weston-foundation.png" width="100%" height="auto"></p>
-          <p>The Ecological Seed Finder is brought to you by Seeds of Diversity and USC Canada, through the generous support of The W. Garfield Weston Foundation</p>
+          <p>The Ecological Seed Finder is brought to you by Seeds of Diversity and SeedChange, through the generous support of The W. Garfield Weston Foundation</p>
           {% else %}
           <h1>Merci:</h1>
           <p><img class="img-responsive" src="images/logos/w-garfield-weston-foundation.png" width="100%" height="auto"></p>
-          <p>Le Localisateur de semences &eacute;cologiques vous est pr&eacute;sent&eacute; par Semences du patrimoine et USC Canada, 
+          <p>Le Localisateur de semences &eacute;cologiques vous est pr&eacute;sent&eacute; par Semences du patrimoine et S&egrave;me l'avenir, 
           gr&acirc;ce au soutien g&eacute;n&eacute;reux de la Fondation W. Garfield Weston.</p>
           {% endif %}
         </div>
@@ -235,7 +236,7 @@
     <div class="row">
       <div class="col col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="content">
-          <p><small>Copyright &copy; 2016-2018 [[ifeq:$lang|EN|Seeds of Diversity|Semences du patrimoine]] Canada</small></p>
+          <p><small>Copyright &copy; 2016-2019 [[ifeq:$lang|EN|Seeds of Diversity|Semences du patrimoine]] Canada</small></p>
         </div>
       </div>
     </div>
