@@ -126,7 +126,7 @@ $raParms = array();
             $sRight .= $this->oSCA->drawInvForm( $this->oFormI, $nNextInv );
         }
 
-        $s .= "<form method='post' action='{$_SERVER['PHP_SELF']}'>"
+        $s .= "<form method='post' action='".$this->oSCA->oApp->PathToSelf()."'>"
              ."<table class='table' style='width:100%'><tr>"
              ."<td style='width:60%'>$sLeft</td>"
              ."<td>$sRight</td>"

@@ -2,12 +2,15 @@
 
 class SearchControl
 {
+    private $oSCA;
     private $raSearchControlConfig;
     private $oSNavForm;
     private $sSearchCond;
 
     function __construct( SLCollectionAdmin $oSCA )
     {
+        $this->oSCA = $oSCA;
+
         $raT = array('Species'=>'S.name_en',//'S_psp',
                      'Cultivar'=>'P.name',
                      'Botanical name'=>'S.name_bot',
@@ -55,7 +58,7 @@ class SearchControl
     {
         $s = "";
 
-        $s .= "<FORM method='post' action='${_SERVER['PHP_SELF']}'>"
+        $s .= "<FORM method='post' action='".$this->oSCA->oApp->PathToSelf()."'>"
              ."<TABLE border='0' cellpadding='10' style='border:1px solid gray;background-color:#eee;'><TR valign='top'>"
              ."<TD style='font-family:verdana,helvetica,sans serif;font-size:10pt;color:green;'>"
              .$this->oSNavForm->SearchControl( $this->raSearchControlConfig )

@@ -15,6 +15,7 @@ include_once( "_germtest.php" );
 
 class SLCollectionAdmin extends Console01_Worker1
 {
+    public $oApp;
     public $oSVA;  // this tab's own SessionVarAccessor
     private $sSearchCond = "";
     public $oSLDBMaster;
@@ -42,9 +43,10 @@ class SLCollectionAdmin extends Console01_Worker1
 
     public $oTmpl;
 
-    function __construct( Console01 $oC, KeyFrameDB $kfdb, SEEDSession $sess )
+    function __construct( Console01 $oC, KeyFrameDB $kfdb, SEEDSession $sess, SEEDAppConsole $oApp )
     {
         parent::__construct( $oC, $kfdb, $sess );
+        $this->oApp = $oApp;
         $this->oSVA = $this->oC->oSVA;  // could use the TabSetGetSVA() for this tab but we don't know the tsid/tabname here
         $this->oSLDBMaster = new SLDB_Master( $kfdb, $sess->GetUID() );
         $this->oUGP = new SEEDSessionAuthDBRead( $kfdb );

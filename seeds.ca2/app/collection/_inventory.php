@@ -100,7 +100,7 @@ class SLCollectionInventory
 
     function DrawSplit( KFRecord $kfrI )
     {
-        $s = "<form method='post' action='{$_SERVER['PHP_SELF']}'>"
+        $s = "<form method='post' action='".$this->oSCA->oApp->PathToSelf()."'>"
             ."<div style='margin:0 20px'>";
 
         $kfrC = $this->oSCA->oSLDBMaster->GetKFR( "C", $this->oSCA->kCurrCollection );
@@ -135,7 +135,7 @@ class SLCollectionInventory
 
     function DrawDistribute( KFRecord $kfrI )
     {
-        $s = "<form method='post' action='{$_SERVER['PHP_SELF']}'>"
+        $s = "<form method='post' action='".$this->oSCA->oApp->PathToSelf()."'>"
             ."<div style='margin:0 20px'>";
 
         $kfrC = $this->oSCA->oSLDBMaster->GetKFR( "C", $this->oSCA->kCurrCollection );

@@ -19,6 +19,8 @@ include_once( "controls.php" );
 
 list($kfdb, $sess, $lang) = SiteStartSessionAccountNoUI( [ 'W SLCollection', 'A SL', '|' ] );  // SLCollection:W or SL:A
 
+$oApp = SiteAppConsole( ['sessPerms'=> [ 'W SLCollection', 'A SL', '|' ]] );
+
 //var_dump($_REQUEST);
 //$kfdb->SetDebug(1);
 
@@ -37,7 +39,7 @@ $raConsoleParms = array(
     'bLogo' => true
 );
 $oC = new MyConsole( $kfdb, $sess, $raConsoleParms );
-$oSCA = new SLCollectionAdmin( $oC, $kfdb, $sess );
+$oSCA = new SLCollectionAdmin( $oC, $kfdb, $sess, $oApp );
 
 $raCollW = $oSCA->oColl->RACollWritable();
 $raCollVisible = $oSCA->oColl->GetCollectionsVisibleByMe();
@@ -48,8 +50,8 @@ $pScreen = count($raCollVisible) ? $oSCA->oSVA->SmartGPC( 'pScreen', array('coll
 
 
 $oC->SetConfig( array( 'HEADER_LINKS' => array( $pScreen == 'collections'
-                                 ? array( 'label'=>'My Seeds',       'href'=>"{$_SERVER['PHP_SELF']}?pScreen=seeds" )
-                                 : array( 'label'=>'My Collections', 'href'=>"{$_SERVER['PHP_SELF']}?pScreen=collections" )
+                                 ? array( 'label'=>'My Seeds',       'href'=>"?pScreen=seeds" )
+                                 : array( 'label'=>'My Collections', 'href'=>"?pScreen=collections" )
 )));
 
 if( $pScreen == 'collections' ) {

@@ -2,7 +2,7 @@
 
 /* CSCI Archive tool
  *
- * Copyright (c) 2018 Seeds of Diversity Canada
+ * Copyright (c) 2018-2019 Seeds of Diversity Canada
  */
 
 if( !defined("SITEROOT") )  define("SITEROOT", "../../");
@@ -90,11 +90,11 @@ if( SEEDInput_Str( 'cmd' ) == 'downloadsummary-xls' ) {
 }
 
 
-$s .= "<div><form action='{$_SERVER['PHP_SELF']}' method='post'>"
+$s .= "<div><form action='".$oApp->PathToSelf()."' method='post'>"
      ."<input type='submit' value='Download Summary CSV'/>"
      ."<input type='hidden' name='cmd' value='downloadsummary-csv'/>"
      ."</form></div>";
-$s .= "<div><form action='{$_SERVER['PHP_SELF']}' method='post'>"
+$s .= "<div><form action='".$oApp->PathToSelf()."' method='post'>"
      ."<input type='submit' value='Download Summary XLS'/>"
      ."<input type='hidden' name='cmd' value='downloadsummary-xls'/>"
      ."</form></div>";

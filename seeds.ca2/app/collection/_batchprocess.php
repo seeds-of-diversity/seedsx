@@ -30,7 +30,7 @@ class SLCollectionBatchProcess
                  ."<h4>Move ranges of Lot numbers to a single location</h4>"
                  ."<p>e.g. You're putting several envelopes into a jar, or moving them from one jar to another.</p>"
 
-                 ."<form method='post' action='${_SERVER['PHP_SELF']}'>"
+                 ."<form method='post' action='".$this->oSCA->oApp->PathToSelf()."'>"
                  .SEEDForm_Hidden( 'bpCmd', 'locate' )
                  ."<p>".SEEDForm_Text( 'range', '', '', 50 )."&nbsp;&nbsp;Range of Lot numbers e.g. 1-3,8,10-13</p>"
                  ."<p>".SEEDForm_Text( 'location', '', '' )."&nbsp;&nbsp;New location</p>"
@@ -40,7 +40,7 @@ class SLCollectionBatchProcess
 
         $s .= "<div class='well'>"
                  ."<h4>Add a note to range(s) of Lot numbers</h4>"
-                 ."<form method='post' action='${_SERVER['PHP_SELF']}'>"
+                 ."<form method='post' action='".$this->oSCA->oApp->PathToSelf()."'>"
                  .SEEDForm_Hidden( 'bpCmd', 'addnote' )
                  ."<p>".SEEDForm_Text( 'range', '', '', 50 )."&nbsp;&nbsp;Range of Lot numbers e.g. 1-3,8,10-13</p>"
                  ."<p>".SEEDForm_Text( 'note', '', '', 50 )."&nbsp;&nbsp;Note</p>"
@@ -74,7 +74,7 @@ class SLCollectionBatchProcess
             }
         } else {
             $s .= "So, you want to move Lot # <b>$sRangeNormal</b> to $location?"
-                ."<form method='post' action='${_SERVER['PHP_SELF']}'>"
+                ."<form method='post' action='".$this->oSCA->oApp->PathToSelf()."'>"
                 .SEEDForm_Hidden( 'bpCmd', $_REQUEST['bpCmd'] )
                 .SEEDForm_Hidden( 'bpConfirm', 1 )
                 .SEEDForm_Hidden( 'range', $sRangeNormal )
@@ -113,7 +113,7 @@ class SLCollectionBatchProcess
             }
         } else {
             $s .= "So, you want to add this note to Lot # <b>$sRangeNormal</b>:<div style='border:1px solid #aaa;width:400px'>".SEEDStd_HSC($note)."</div>"
-                ."<form method='post' action='${_SERVER['PHP_SELF']}'>"
+                ."<form method='post' action='".$this->oSCA->oApp->PathToSelf()."'>"
                 .SEEDForm_Hidden( 'bpCmd', $_REQUEST['bpCmd'] )
                 .SEEDForm_Hidden( 'bpConfirm', 1 )
                 .SEEDForm_Hidden( 'range', $sRangeNormal )

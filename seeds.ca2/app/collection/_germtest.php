@@ -121,7 +121,7 @@ class SLCollectionGermination
         $s = $iTest ? "<h4>Editing Test $iTest</h4>" : "";
 
         $this->oFormG->SetKFR( $kfrG );
-        $s .= "<form method='post' action='{$_SERVER['PHP_SELF']}'>"
+        $s .= "<form method='post' action='".$this->oSCA->oApp->PathToSelf()."'>"
              ."<table border='0' width='100%'>"
              .$this->oFormG->ExpandForm(
                 "||| Dates ||  [[date:dStart | | placeholder='Start']] [[nbsp:10]] [[date:dEnd | | placeholder='End']]"

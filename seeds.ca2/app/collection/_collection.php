@@ -342,7 +342,7 @@ class SLCollectionCollection
             $kfr->SetValue( 'perm_a', $this->getUsersWithPerm( $kfr->Value('permclass'), "A" ) );
         }
 
-        $s = "<form method='post' action='{$_SERVER['PHP_SELF']}'>"
+        $s = "<form method='post' action='".$this->oSCA->oApp->PathToSelf()."'>"
             ."<table border='0' style='width:100%'>"
             .$oForm->ExpandForm(
                 "||| {width='30%'} Name  || {width='30%'} [[name]] || {width='30%'} &nbsp;"
