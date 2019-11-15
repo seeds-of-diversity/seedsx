@@ -59,29 +59,6 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
 
 
     switch( $cmd ) {
-        case "prodUnfill":
-            $kfdb->Execute( "UPDATE seeds.SEEDBasket_BP SET eStatus='PAID' WHERE _key='$k'" );
-            $raJX['bOk'] = true;
-            break;
-
-        case "prodCancel":
-            $kfdb->Execute( "UPDATE seeds.SEEDBasket_BP SET eStatus='CANCELLED' WHERE _key='$k'" );
-            $raJX['bOk'] = true;
-            break;
-
-        case "prodUncancel":
-            $kfdb->Execute( "UPDATE seeds.SEEDBasket_BP SET eStatus='PAID' WHERE _key='$k'" );
-            $raJX['bOk'] = true;
-            break;
-
-        case "prodAccount":
-            $kfdb->Execute( "UPDATE seeds.SEEDBasket_BP SET bAccountingDone=1 WHERE _key='$k'" );
-            $raJX['bOk'] = true;
-            break;
-        case "prodUnaccount":
-            $kfdb->Execute( "UPDATE seeds.SEEDBasket_BP SET bAccountingDone=0 WHERE _key='$k'" );
-            $raJX['bOk'] = true;
-            break;
 
         case "msdSearch":
 // Can probably use MSDQ::msdSeedList-GetData with an added srch parameter to do this fetch. No because it doesn't join on description like below (it joins on category instead)
