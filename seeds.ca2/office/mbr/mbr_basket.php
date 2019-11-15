@@ -10,35 +10,60 @@ include_once( SITEROOT."site.php" );            // move app out of office
 include_once( SEEDCORE."SEEDBasket.php" );
 include_once( SEEDAPP."basket/basketProductHandlers.php" );
 include_once( SEEDAPP."basket/basketProductHandlers_seeds.php" );
-include_once( STDINC."SEEDTemplateMaker.php" );
-include_once( SEEDCOMMON."console/console01.php" );
+include_once( SEEDCORE."SEEDTemplateMaker.php" );
 include_once( SEEDAPP."seedexchange/msdedit.php" );
+
+
+$consoleConfig = [
+    'CONSOLE_NAME' => "basketman",
+    'HEADER' => "Seeds of Diversity Basket Manager",
+//    'HEADER_LINKS' => array( array( 'href' => 'mbr_email.php',    'label' => "Email Lists",  'target' => '_blank' ),
+//                             array( 'href' => 'mbr_mailsend.php', 'label' => "Send 'READY'", 'target' => '_blank' ) ),
+    'TABSETS' => ['main'=> ['tabs' => [ 'products'        => ['label'=>'Products'],
+                                        'store'           => ['label'=>'Store'],
+                                        'fulfilment'      => ['label'=>'Fulfilment'],
+                                      ],
+                            'perms' =>[ 'products'        => [ "W MBRORDER", "A SEEDBasket", "|" ],
+                                        'store'           => [ "W MBRORDER", "A SEEDBasket", "|" ],
+                                        'fulfilment'      => [ "W MBRORDER", "A SEEDBasket", "|" ],
+                                        '|'  // allows screen-login even if some tabs are ghosted
+                           ],
+                  ],
+    ],
+    'pathToSite' => '../../',
+
+    'bLogo' => true,
+    'consoleSkin' => 'green',
+];
+$oApp = new SEEDAppConsole( $config_KFDB['seeds1']
+                            + array( 'sessPermsRequired' => $consoleConfig['TABSETS']['main']['perms'],
+                                     'sessUIConfig' => ['bTmpActivate'=>true, 'bLoginNotRequired'=>false, 'fTemplates'=>[SEEDAPP.'templates/seeds_sessionaccount.html'] ],
+                                     'consoleConfig' => $consoleConfig,
+                                     'logdir' => SITE_LOG_ROOT )
+);
+
+
+
 
 
 list($kfdb, $sess) = SiteStartSessionAccount( array("R MBRORDER") );
 $bCanWrite = $sess->CanWrite('MBRORDER');
 
-$oApp = new SEEDAppConsole( $config_KFDB['seeds1']
-                            + array( 'sessPermsRequired' => ['R MBRORDER'],
-                                     'logdir' => SITE_LOG_ROOT )
-);
-
 class SEEDBasketFulfilment
 {
+    private $oApp;
     private $oBasketDB;
 
-    var $kfdb;
-
-    function __construct( KeyFrameDB $kfdb, SEEDSessionAccount $sess )
+    function __construct( SEEDAppSession $oApp )
     {
-        $this->oBasketDB = new SEEDBasketDB( $kfdb, $sess->GetUID(), SITE_LOG_ROOT );
-        $this->kfdb = $kfdb;
+        $this->oApp = $oApp;
+        $this->oBasketDB = new SEEDBasketDB( $oApp->kfdb, $oApp->sess->GetUID(), SITE_LOG_ROOT );
     }
 
     function DrawOrderFulfilment( $raBasket )
     {
         $s = "";
-        $s .= SEEDStd_ArrayExpand( $raBasket, "<tr><td valign='top'>[[buyer_firstname]] [[buyer_lastname]]</td><td valign='top'>" );
+        $s .= SEEDCore_ArrayExpand( $raBasket, "<tr><td valign='top'>[[buyer_firstname]] [[buyer_lastname]]</td><td valign='top'>" );
 
         if( ($kfrc = $this->oBasketDB->GetKFRC( "BxP", "B._key='{$raBasket['_key']}'" )) ) {
             while( $kfrc->CursorFetch() ) {
@@ -82,9 +107,9 @@ class SEEDBasketFulfilment
         }
         $s .= "</div>";
         $s .= "<div style='float:right;width:100px;display:inline-block;'>"
-             .($raP['BP_bAccountingDone'] ? "<div style='text-align:center' onclick='doFulfilButton(\"prodUnaccount\",{$raP['BP__key']});'>"
+             .($raP['BP_bAccountingDone'] ? "<div style='text-align:center' onclick='doFulfilButton(\"basketPurchaseUnaccount\",{$raP['BP__key']});'>"
                                            ."<img style='margin-left:40px' src='".W_ROOT."img/checkmark01.png' height='20'/></div>"
-                                          : $this->drawFulfilButton( "Account", "prodAccount", $raP['BP__key']))
+                                          : $this->drawFulfilButton( "Account", "basketPurchaseAccount", $raP['BP__key']))
              ."</div>";
 
         $s .= "</div>";
@@ -103,31 +128,31 @@ class SEEDBasketFulfilment
 }
 
 
-class mbrBasket_Products extends Console01_Worker1
+
+class mbrBasket_Products
 {
+    private $oApp;
+    private $oSB;
     private $oMSDAppSeedEdit;
 
-    function __construct( MyBasketConsole $oC, KeyFrameDB $kfdb, SEEDSessionAccount $sess )
+    function __construct( SEEDAppConsole $oApp, SEEDBasketCore $oSB )
     {
-        parent::__construct( $oC, $kfdb, $sess );
-        $this->oMSDAppSeedEdit = new MSDAppSeedEdit( $oC->oSB );
-    }
-
-    function Init()
-    {
+        $this->oApp = $oApp;
+        $this->oSB = $oSB;
+        $this->oMSDAppSeedEdit = new MSDAppSeedEdit( $oSB );
     }
 
     function DrawContent()
     {
         $sList = $sForm = "";
 
-        $kCurrProd = SEEDSafeGPC_GetInt('kP');
+        $kCurrProd = SEEDInput_Int('kP');
 
         // Draw the form (if any) first because it Updates the db
-        if( ($newProdType = SEEDSafeGPC_GetStrPlain( 'newProdType' )) ) {
-            $sForm = $this->oC->oSB->DrawProductNewForm( $newProdType );
+        if( ($newProdType = SEEDInput_Str( 'newProdType' )) ) {
+            $sForm = $this->oSB->DrawProductNewForm( $newProdType );
         } else if( $kCurrProd ) {
-            $sForm = $this->oC->oSB->DrawProductForm( $kCurrProd );
+            $sForm = $this->oSB->DrawProductForm( $kCurrProd );
         }
 
         // Draw the Add New control
@@ -135,32 +160,39 @@ class mbrBasket_Products extends Console01_Worker1
         foreach( SEEDBasketProducts_SoD::$raProductTypes as $k => $ra ) {
             $raPT[$ra['label']] = $k;
         }
-        $sSelect = SEEDForm_Select2( "newProdType", $raPT, "", array() );
+        $oForm = new SEEDCoreForm('Plain');
+        $sSelect = $oForm->Select( "newProdType", $raPT, "", array() );
         $sList .= "<div><form method='post'>Add a new $sSelect <input type='submit' value='Add'/></form></div>";
 
         // Draw the list
-        if( ($kfrcP = $this->oC->oSB->oDB->GetProductKFRC("uid_seller='1'")) ) {
+        if( ($kfrcP = $this->oSB->oDB->GetProductKFRC("uid_seller='1'")) ) {
             while( $kfrcP->CursorFetch() ) {
                 $kP = $kfrcP->Key();
                 $bCurr = ($kCurrProd && $kfrcP->Key() == $kCurrProd);
                 $sStyleCurr = $bCurr ? "border:2px solid blue;" : "";
                 $sList .= "<div class='well' style='padding:5px;margin:5px;$sStyleCurr' onclick='location.replace(\"?kP=$kP\")' ".($bCurr ? "style='border:1px solid #333'" : "").">"
-                         .$this->oC->oSB->DrawProduct( $kfrcP, $bCurr ? SEEDBasketProductHandler::DETAIL_ALL : SEEDBasketProductHandler::DETAIL_TINY, ['bUTF8'=>false] )
+                         .$this->oSB->DrawProduct( $kfrcP, $bCurr ? SEEDBasketProductHandler::DETAIL_ALL : SEEDBasketProductHandler::DETAIL_TINY, ['bUTF8'=>false] )
                          ."</div>";
             }
         }
 
 //        $s = $this->oMSDAppSeedEdit->Draw( $this->sess->GetUID(), 0 );
-$s = "<div>$sForm</div><div>$sList</div>";
+        $s = "<div>$sForm</div><div>$sList</div>";
+
         return( $s );
     }
 }
 
-class mbrBasket_Store extends Console01_Worker1
+
+class mbrBasket_Store
 {
-    function __construct( MyBasketConsole $oC, KeyFrameDB $kfdb, SEEDSessionAccount $sess )
+    private $oApp;
+    private $oSB;
+
+    function __construct( SEEDAppConsole $oApp, SEEDBasketCore $oSB )
     {
-        parent::__construct( $oC, $kfdb, $sess );
+        $this->oApp = $oApp;
+        $this->oSB = $oSB;
 
         $raTmplParms = array(
             'fTemplates' => array( SEEDAPP."templates/store-sod.html", SEEDAPP."templates/msd.html" ),
@@ -168,12 +200,7 @@ class mbrBasket_Store extends Console01_Worker1
             'raResolvers'=> array( array( 'fn'=>array($this,'ResolveTag'), 'raParms'=>array() ) ),
             'vars'       => array()
         );
-        $this->oTmpl = SEEDTemplateMaker( $raTmplParms );
-    }
-
-    function Init()
-    {
-
+        $this->oTmpl = SEEDTemplateMaker2( $raTmplParms );
     }
 
     function DrawContent()
@@ -191,10 +218,10 @@ class mbrBasket_Store extends Console01_Worker1
         switch( strtolower($raTag['tag']) ) {
             case 'basket_contents':
                 // could parse parms out of target for this method (use a standard seedtag method with the same format that seedform uses)
-                $s = $this->oC->oSB->DrawBasketContents();
+                $s = $this->oSB->DrawBasketContents();
                 break;
             case 'basket_purchase0':
-                $s = $this->oC->oSB->DrawPurchaseForm( $raTag['target'] );
+                $s = $this->oSB->DrawPurchaseForm( $raTag['target'] );
                 break;
             default:
                 $bHandled = false;
@@ -204,16 +231,16 @@ class mbrBasket_Store extends Console01_Worker1
     }
 }
 
-class mbrBasket_Fulfilment extends Console01_Worker1
+
+class mbrBasket_Fulfilment
 {
-    function __construct( MyBasketConsole $oC, KeyFrameDB $kfdb, SEEDSessionAccount $sess )
-    {
-        parent::__construct( $oC, $kfdb, $sess );
-    }
+    private $oApp;
+    private $oSB;
 
-    function Init()
+    function __construct( SEEDAppConsole $oApp, SEEDBasketCore $oSB )
     {
-
+        $this->oApp = $oApp;
+        $this->oSB = $oSB;
     }
 
     function DrawContent()
@@ -221,12 +248,12 @@ class mbrBasket_Fulfilment extends Console01_Worker1
 $s = "";
 
 
-$oBasket = new SEEDBasketFulfilment( $this->kfdb, $this->sess );
+$oBasket = new SEEDBasketFulfilment( $this->oApp );
 
 $s .= "<table style='width:100%;border:1px solid #aaa'>";
 $raOrders = array();
-if( ($dbc = $this->kfdb->CursorOpen( "SELECT * FROM seeds.SEEDBasket_Baskets WHERE _status='0' AND eStatus<>'NEW'" ) ) ) {
-    while( ($raB = $this->kfdb->CursorFetch($dbc)) ) {
+if( ($dbc = $this->oApp->kfdb->CursorOpen( "SELECT * FROM seeds.SEEDBasket_Baskets WHERE _status='0' AND eStatus<>'NEW'" ) ) ) {
+    while( ($raB = $this->oApp->kfdb->CursorFetch($dbc)) ) {
         $s .= $oBasket->DrawOrderFulfilment( $raB );
     }
 }
@@ -238,38 +265,42 @@ $s .= "</table>";
 }
 
 
-class MyBasketConsole extends Console01
+class MyConsole02TabSet extends Console02TabSet
 {
-    public $oW;
-    public $oSB;
-    public $oApp;
+    private $oApp;
+    private $oSB;
+    private $oW;    // object that does the work for the chosen tab
 
-    function __construct( KeyFrameDB $kfdb, SEEDSessionAccount $sess, SEEDAppConsole $oApp, $raParms )
+    function __construct( SEEDAppConsole $oApp )
     {
-        parent::__construct( $kfdb, $sess, $raParms );
-        $this->oApp = $oApp;
+        global $consoleConfig;
+        parent::__construct( $oApp->oC, $consoleConfig['TABSETS'] );
 
-        $this->oSB = new SEEDBasketCore( $kfdb, $sess, $oApp, SEEDBasketProducts_SoD::$raProductTypes, array('logdir'=>SITE_LOG_ROOT) );
+        $this->oApp = $oApp;
+        $this->oSB = new SEEDBasketCore( $oApp->kfdb, $oApp->sess, $oApp, SEEDBasketProducts_SoD::$raProductTypes, array('logdir'=>$oApp->logdir) );
     }
 
     function TabSetInit( $tsid, $tabname )
     {
         if( $tsid == 'main' ) {
             switch( $tabname ) {
-                case "Products":    $this->oW = new mbrBasket_Products( $this, $this->kfdb, $this->sess, $this->oApp ); break;
-                case "Store":       $this->oW = new mbrBasket_Store( $this, $this->kfdb, $this->sess ); break;
-                case "Fulfilment":  $this->oW = new mbrBasket_Fulfilment( $this, $this->kfdb, $this->sess ); break;
+                case 'products':    $this->oW = new mbrBasket_Products( $this->oApp, $this->oSB );     break;
+                case 'store':       $this->oW = new mbrBasket_Store( $this->oApp, $this->oSB );        break;
+                case "fulfilment":  $this->oW = new mbrBasket_Fulfilment( $this->oApp, $this->oSB );  break;
             }
         }
     }
 
     function TabSetControlDraw( $tsid, $tabname )
     {
+        $s = "";
         if( $tsid == 'main' ) {
+            $s = "<style>.console02-tabset-controlarea { padding:15px; }</style>"
+                ."AAA";
             switch( $tabname ) {
-                case 'Products':    break;
-                case 'Store':       break;
-                case 'Fulfilment':  break;
+                case 'products':    break;
+                case 'store':       break;
+                case 'fulfilment':  break;
             }
         }
         return( "" );
@@ -278,58 +309,41 @@ class MyBasketConsole extends Console01
     function TabSetContentDraw( $tsid, $tabname )
     {
         $s = "";
-
         if( $tsid == 'main' ) {
+            $s = "<style>.console02-tabset-contentarea { padding:15px; }</style>";
             switch( $tabname ) {
-                case 'Products':   $s = $this->oW->DrawContent();  break;
-                case 'Store':      $s = $this->oW->DrawContent();  break;
-                case 'Fulfilment': $s = $this->oW->DrawContent();  break;
+                case 'products':   $s .= $this->oW->DrawContent();  break;
+                case 'store':      $s .= $this->oW->DrawContent();  break;
+                case 'fulfilment': $s .= $this->oW->DrawContent();  break;
             }
         }
         return( $s );
     }
 }
 
-
-
-
-header( "Content-type: text/html; charset=ISO-8859-1");    // this should be on all pages so accented chars look right (on Linux anyway)
-
 $kfdb->SetDebug(1);
 
 
-$raConsoleParms = array(
-    'HEADER' => "Seeds of Diversity Basket Manager",
-    'CONSOLE_NAME' => "mbrBasket",
-    'TABSETS' => array( "main" => array( 'tabs'=> array( "Products" => array('label' => "Products" ),
-                                                         "Store" => array('label' => "Store" ),
-                                                         "Fulfilment"  => array('label' => "Fulfilment" ),
-                                                          ) ) ),
-    'bLogo' => true,
-    'bBootstrap' => true,
-    'script_files' => array( W_ROOT."std/js/SEEDStd.js", W_CORE."js/SEEDCore.js" )
-);
+$oCTS = new MyConsole02TabSet( $oApp );
 
-$oC = new MyBasketConsole( $kfdb, $sess, $oApp, $raConsoleParms );
+$s = $oApp->oC->DrawConsole( "[[TabSet:main]]", ['oTabSet'=>$oCTS] );
 
-echo $oC->DrawConsole( "[[TabSet: main]]" );
+$s .= "<script>var qURL = '".Q_URL."';</script>";
 
-
-
-?>
+$s .= <<<SCRIPT
 
 <script type='text/javascript'>
 $(document).ready( function(){  });
 
-function doFulfilButton( jxCmd, kBxP )
+function doFulfilButton( jxCmd, kBP )
 {
-    var jxData = { cmd : jxCmd,
-                   prod : kBxP,
+    let jxData = { qcmd : jxCmd,
+                   kBP  : kBP,
                    lang : "EN"
-
-          };
-    //SEEDJX_bDebug = true;
-    o = SEEDJX( "http://localhost/~bob/office/mbr/mbrJX.php", jxData );
+                 };
+    console.log(jxData);
+    SEEDJX_bDebug = true;
+    o = SEEDJXSync( qURL+"index.php", jxData );
 
     location.reload();
 
@@ -341,8 +355,12 @@ function doFulfilButton( jxCmd, kBxP )
 
 </script>
 
-<?php
+SCRIPT;
 
+echo Console02Static::HTMLPage( utf8_encode($s), "", 'EN',                    // sCharset defaults to utf8
+                                ['consoleSkin'=>'green',
+                                 'raScriptFiles' => [W_CORE_URL."js/SEEDCore.js"],
+                                ] );
 
 
 ?>
