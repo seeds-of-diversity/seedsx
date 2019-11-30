@@ -199,8 +199,9 @@ class SLSourceDownload
 */
 
             case 'sound_build':
-                SLSourceRosetta_BuildDB::ClearSoundIndex( $this->oW->kfdb );
-                SLSourceRosetta_BuildDB::BuildSoundIndex( $this->oW->kfdb );
+                //moved to seedlib
+                //SLSourceRosetta_BuildDB::ClearSoundIndex( $this->oW->kfdb );
+                //SLSourceRosetta_BuildDB::BuildSoundIndex( $this->oW->kfdb );
                 break;
 
             case 'sound_status':
@@ -1419,178 +1420,10 @@ class SLUploadCVSources
 
 
     function Validate()
-    /******************
-        Index the company, species, and cultivar columns. Compute the operations represented by each row.
-
-        If the table has already been indexed, just return validation codes.
-
-        Row types admitted by Load():
-            (A)  k && company && species            = existing row with possible changes
-            (B) !k && company && species            = new row
-            (C)  k && !company && !species          = this means delete row k
-     */
     {
         $sOk = $sWarn = $sErr = "";
         $bOk = false;
 
-        if( !$this->kUpload ) goto done;
-
-        $condKUpload = "T.kUpload='{$this->kUpload}'";
-
-        $bIndexed = $this->oW->kfdb->Query1( "SELECT count(*) FROM {$this->tmpTable} T WHERE $condKUpload AND T.op<>' '" );
-
-        /* Index the tmp table if there are no ops computed yet
-         */
-        if( !$bIndexed ) {
-            $sOk = "<p>Indexing the table</p>";
-
-            // Index companies
-            $this->oW->kfdb->Execute( "UPDATE {$this->tmpTable} T,seeds.sl_sources S SET T.fk_sl_sources=S._key "
-                                     ."WHERE S._status='0' AND $condKUpload AND T.company<>'' AND T.company=S.name_en" );
-
-            // Index species and cultivars using Rosetta
-            SLSourceRosetta_BuildDB::BuildSpeciesIndex( $this->oW->kfdb, $this->tmpTable, "kUpload='{$this->kUpload}'" );
-            SLSourceRosetta_BuildDB::BuildCultivarIndex( $this->oW->kfdb, $this->tmpTable, "kUpload='{$this->kUpload}'" );
-
-
-            /* Compute Operations to perform on the rows
-             *
-             *  N = new:     tmp.k==0
-             *  U = update1: tmp.k<>0, tmp.fk_sl_sources<>0, some data and year changed
-             *  V = update2: tmp.k<>0, tmp.fk_sl_sources<>0, some data changed but year is the same
-             *  Y = year:    tmp.k<>0, tmp.fk_sl_sources<>0, only year changed
-             *  - = same:    tmp.k<>0, tmp.fk_sl_sources<>0, data and year not changed
-             *  . = same:    tmp.k<>0, tmp.fk_sl_sources<>0, data and year not changed, but tmp.k<>cvsrc.k (data entry error re key)
-             *  D = delete1: tmp.k<>0, tmp.fk_sl_sources==0
-             *  X = delete2: tmp.k is missing in the set of rows that should match sl_cv_sources rows
-             *
-             * The tests below are very stringent, assuming nothing, so outlying cases wind up "uncomputed" and flagged
-             *
-             * Archiving
-             *     Rows are archived when their year changes or when they are deleted.
-             *     (U V Y -) include all combinations of changes to data and year. Changes of year (U Y) trigger an archive.
-             *     (V) does not trigger an archive.
-             *     That way the archive contains only old rows no longer contained in current sl_cv_sources, and you can
-             *     make current-year corrections without having to correct any archived copy too.
-             */
-            $condUpdateCase = "($condKUpload AND C._key=T.k AND T.fk_sl_sources<>'0')";
-            // test if rows the same without/with considering somebody changed osp to a sl_syn
-            $condDataBasicSame     = "(C.osp=T.osp                                              AND C.fk_sl_sources=T.fk_sl_sources AND C.ocv=T.ocv )";
-            $condDataBasicSameFkSp = "(C.fk_sl_species=T.fk_sl_species AND T.fk_sl_species<>'0' AND C.fk_sl_sources=T.fk_sl_sources AND C.ocv=T.ocv )";
-            $condDataSame          = "($condDataBasicSame AND C.bOrganic=T.organic AND C.notes=T.notes)";
-
-            // Before computing operations, any rows in the tmp table whose non-blank (fk_sl_sources,osp/fk_sl_species,ocv) are identical
-            // to sl_cv_sources are deemed to be matches. If their keys are different, that is a mistake in data entry.
-            $this->oW->kfdb->Execute(
-                "UPDATE {$this->tmpTable} T,seeds.sl_cv_sources C SET T.op='.' "
-               ."WHERE T.op=' ' AND $condKUpload AND T.fk_sl_sources<>'0' AND "
-                     ."($condDataBasicSame OR $condDataBasicSameFkSp) AND C.fk_sl_sources>='3' "
-                     ."AND C._key<>T.k" );
-            if( ($c = $this->oW->kfdb->Query1( "SELECT count(*) FROM {$this->tmpTable} T WHERE $condKUpload AND T.op='.'" )) ) {
-                $sErr .= "$c rows in {$this->tmpTable} have the same data as sl_cv_sources but different keys. "
-                        ."<span style='color:#888'>SELECT * FROM {$this->tmpTable} T LEFT JOIN seeds.sl_cv_sources C ON ($condDataBasicSame OR $condDataBasicSameFkSp) WHERE $condKUpload AND T.op='.'</span>";
-                goto done;
-            }
-
-            // N (tmp.k==0)
-            $this->oW->kfdb->Execute( "UPDATE {$this->tmpTable} T SET T.op='N' WHERE $condKUpload AND T.k='0'" );
-
-            // U (data and year changed)
-            $this->oW->kfdb->Execute(
-                "UPDATE {$this->tmpTable} T,seeds.sl_cv_sources C SET T.op='U' "
-               ."WHERE $condUpdateCase AND "
-                     ."NOT $condDataSame AND C.year<>T.year" );
-
-            // V (data changed but year the same)
-            $this->oW->kfdb->Execute(
-                "UPDATE {$this->tmpTable} T,seeds.sl_cv_sources C SET T.op='V' "
-               ."WHERE $condUpdateCase AND "
-                     ."NOT $condDataSame AND C.year=T.year" );
-
-            // Y (only the year changed)
-            $this->oW->kfdb->Execute(
-                "UPDATE {$this->tmpTable} T,seeds.sl_cv_sources C SET T.op='Y' "
-               ."WHERE $condUpdateCase AND "
-                     ."$condDataSame AND C.year<>T.year" );
-
-            // - (perfect match on all columns including year)
-            $this->oW->kfdb->Execute(
-                "UPDATE {$this->tmpTable} T,seeds.sl_cv_sources C SET T.op='-' "
-               ."WHERE $condUpdateCase AND "
-                     ."$condDataSame AND C.year=T.year" );
-
-            // D (company and osp are blank)
-            $this->oW->kfdb->Execute( "UPDATE {$this->tmpTable} T SET T.op='D' WHERE $condKUpload AND T.k<>'0' AND T.company='' AND T.osp=''" );
-
-            // X (rows in sl_cv_sources don't exist in tmp) - implement this by adding them to tmp
-            if( $this->eReplace != self::ReplaceVerbatimRows ) {
-                $this->oW->kfdb->Execute(
-                    "INSERT INTO {$this->tmpTable} (k,kUpload,op) "
-                    ."SELECT SRCCV._key,{$this->kUpload},'X' FROM seeds.sl_cv_sources SRCCV LEFT JOIN {$this->tmpTable} T2 "
-                        ."ON SRCCV._key=T2.k WHERE T2.k IS NULL AND "
-                        .($this->eReplace == self::ReplaceWholeCSCI
-                            // if replacing all companies then delete all rows that are missing in tmpTable (except seed banks)
-                            ? "SRCCV.fk_sl_sources >= '3'"
-                            // if replacing specific companies then delete missing rows from those companies only
-                            : ("SRCCV.fk_sl_sources IN (SELECT distinct(fk_sl_sources) FROM {$this->tmpTable} T "
-                                                      ."WHERE $condKUpload AND T.fk_sl_sources<>'0')")) );
-            }
-        }
-
-
-        /* Report on upload status
-         */
-        $raReport = $this->ReportPendingUpload( $this->kUpload, $this->eReplace );
-        $sOk .= "<p>Processing {$raReport['nRows']} rows for {$raReport['nDistinctCompanies']} companies.</p>";
-
-        $sOk .= "<style>"
-               .".companyUploadResultsTable    { border-collapse-collapse; text-align:center }"
-               .".companyUploadResultsTable th { text-align:center }"
-               .".companyUploadResultsTable td { border:1px solid #aaa; padding:3px; text-align:center }"
-
-               ."</style>";
-        $sOk .= "<table class='companyUploadResultsTable'><tr><th>Existing</th><th width='50%'>Upload</th></tr>"
-               ."<tr><td colspan='2'>{$raReport['nRowsSame']} rows are identical including the year</td></tr>"
-               ."<tr><td colspan='2'>{$raReport['nRowsY']} rows are exactly the same except for the year (will be archived)</td></tr>"
-               ."<tr><td colspan='2'>{$raReport['nRowsU']} rows have changed from previous year (will be archived)</td></tr>"
-               ."<tr><td colspan='2'>{$raReport['nRowsV']} rows have corrections for current-year (won't be archived)</td></tr>"
-               ."<tr><td>&nbsp;</td><td>{$raReport['nRowsN']} rows are new</td></tr>"
-               ."<tr><td>&nbsp;</td><td>{$raReport['nRowsD1']} rows are marked in the spreadsheet for deletion</td></tr>"
-               ."<tr><td>{$raReport['nRowsD2']} rows will be deleted because they are missing in the upload</td><td>&nbsp;</td></tr>"
-               ."<tr><td>&nbsp;</td><td><span style='color:red'>{$raReport['nRowsUncomputed']} rows are not computed</span></td></tr>"
-               ."</table><br/>";
-
-
-        /* Require all rows to have a valid company (or blank as per action C-delete).
-         */
-        $raFail = $this->oW->kfdb->QueryRowsRA( "SELECT T.company FROM {$this->tmpTable} T WHERE $condKUpload AND "
-                                                      ."T.company<>'' AND T.fk_sl_sources='0' GROUP BY 1" );
-        if( count($raFail) ) {
-            $sErr .= "These companies are not known. Please add to Sources list and try again."
-                    ."<ul>".SEEDCore_ArrayExpandRows( $raFail, "<li>[[company]]</li>")."</ul>";
-            goto done;
-        }
-
-        /* Warn about species that are not indexed, unless company is blank (action C-delete).
-         */
-        if( count($raReport['raUnknownSpecies']) ) {
-            $sWarn .= "<p>These species are not known. Please add to Species list or Species Synonyms and try again.</p>"
-                     ."<ul style='background-color:#f8f8f8;max-height:200px;overflow-y:scroll'>"
-                     .SEEDCore_ArrayExpandRows( $raReport['raUnknownSpecies'], "<li>[[osp]]</li>")."</ul><br/>";
-            //goto done;
-        }
-
-        /* Warn about cultivars that are not indexed, unless company is blank (action C-delete).
-         */
-        if( count($raReport['raUnknownCultivars']) ) {
-            $sWarn .= "<p>These cultivars are not known. They will be matched by name as much as possible, but you should add them to the Cultivars list.</p>"
-                     ."<ul style='background-color:#f8f8f8;max-height:200px;overflow-y:scroll'>"
-                     .SEEDCore_ArrayExpandRows( $raReport['raUnknownCultivars'], "<li>[[osp]] : [[ocv]]</li>")."</ul>";
-        }
-
-        $bOk = true;
-
-        done:
         return( array($bOk,$sOk,$sWarn,$sErr) );
     }
 
