@@ -1411,96 +1411,9 @@ class SLUploadCVSources
     }
 
     function Load( $raRows )
-    /***********************
-        Copy data from $raRows to sl_tmp_cv_sources
-
-            $raRows must contain at least
-                'k'        => copy of sl_cv_sources._key
-                'company'  => copy of sl_sources.name_en
-                'species'  => copy of sl_cv_sources.osp
-                'cultivar' => copy of sl_cv_sources.ocv
-                'organic'  => copy of sl_cv_sources.bOrganic (allows a variety of boolean ways to say 'yes')
-                'notes'    => copy of the notes that people use while editing the spreadsheet
-
-            Optional columns:
-                'year'
-
-        Validate data
-
-            Companies must all be known and convertible to fk_sl_sources
-            No duplicate (company,species,cultivar) allowed
-            Warnings for unknown species and cultivars
-     */
     {
         $sOk = $sWarn = $sErr = "";
         $bOk = false;
-//$this->oW->kfdb->SetDebug(2);
-
-// There's code here to handle multiple updates simultaneously. That means you don't want to drop and recreate the table all the time.
-// Let's keep the multiple-update facility but not use it and just drop/create the table at the start of every update.
-$this->oW->kfdb->Execute( "DROP TABLE IF EXISTS {$this->tmpTable}" );
-$this->oW->kfdb->Execute( SLDB_Create::SEEDS_DB_TABLE_SL_TMP_CV_SOURCES );
-
-        /* This number groups this upload's rows in the db table. It doesn't matter what the number is, as long as it's different from others in the kUpload column
-         */
-        $this->kUpload = $this->uniqueNumber();
-
-
-        /* Copy the rows to a temporary table, alerting where rows have invalid blank content
-         *     (A)  k && company && species            = existing row with possible changes
-         *     (B) !k && company && species            = new row
-         *
-         *     (C)  k && !company && !species          = this means delete row k
-         *     (D) !k && !company && !species          = ignore empty row
-         *
-         *     (E) company xor species                 = not allowed
-         */
-        $sqlRows = array();
-        $nRow = 0;
-        foreach( $raRows as $ra ) {
-            $nRow++;
-
-            $k = intval($ra['k']);
-            $company = trim(addslashes($ra['company']));
-            $species = trim(addslashes($ra['species']));
-            $cultivar = trim(addslashes($ra['cultivar']));
-            $organic = in_array( trim($ra['organic']), array(1,'1','x','X','y','Y','yes','YES') ) ? 1 : 0;
-            $notes  = trim(addslashes($ra['notes']));
-            $year = intval(@$ra['year']) or ($year = date("Y"));
-
-            // (D) skip blank lines (but increment the nRow counter)
-            if( !$k && !$company && !$species )  continue;
-
-            // (E) all valid cases require both company+species or neither
-            if( empty($company) xor empty($species) ) {
-                $sWarn .= "Row ".($nRow+1)." has a blank ".(empty($species) ? "species" : "company").", so it will be skipped.<br/>";    // +1 because of the header row
-                continue; //goto done;
-            }
-
-            // (A,B,C) copy to sl_tmp_cv_sources for processing
-            $sqlRows[] = "($k,'$company','$species','$cultivar',$organic,'$notes',$year,$this->kUpload,now(),0)";
-        }
-        $nRowsAffected = 0;
-        if( count($sqlRows) ) {
-            if( !$this->oW->kfdb->Execute( "INSERT INTO {$this->tmpTable} (k,company,osp,ocv,organic,notes,year,kUpload,_created,_status) "
-                                          ."VALUES ".implode( ',', $sqlRows ) ) )
-            {
-                $s1 = "Database error inserting : ".$this->oW->kfdb->GetErrMsg();
-                $this->oW->oC->ErrMsg( $s1 );
-                $sErr .= $s1;
-                goto done;
-            }
-            $nRowsAffected = $this->oW->kfdb->GetAffectedRows();
-        }
-
-        $sOk .= "Uploaded $nRowsAffected rows from the spreadsheet.<br/>";
-
-//Check for duplicates and fail if they exist
-//Ignore rows where k!=0, company='' because those are for deletion
-
-        $bOk = true;
-
-        done:
         return( array($bOk,$sOk,$sWarn,$sErr) );
     }
 
@@ -1793,18 +1706,6 @@ $this->oW->kfdb->Execute( SLDB_Create::SEEDS_DB_TABLE_SL_TMP_CV_SOURCES );
 
         done:
         return( array($ok,$sOk,$sWarn,$sErr) );
-    }
-
-    private function uniqueNumber()
-    /******************************
-        Make a unique number by incrementing the _key of a table that we know exists during the lifetime of an upload.
-        This could be any table with an auto-inc.
-     */
-    {
-        if( ($k = $this->oW->kfdb->InsertAutoInc( "INSERT INTO seeds.sl_cv_sources (_key) VALUES (NULL)" )) ) {
-            $this->oW->kfdb->Execute( "DELETE FROM seeds.sl_cv_sources WHERE _key='$k'" );
-        }
-        return( $k );
     }
 }
 
