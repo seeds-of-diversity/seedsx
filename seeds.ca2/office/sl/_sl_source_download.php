@@ -112,7 +112,6 @@ class SLSourceDownload
                           'pgrc'      => array( "Canada: Plant Gene Resources (PGRC)" ),
                           'npgs'      => array( "USA: National Plant Germplasm System (NPGS)" ),
                           'sound'     => array( "Sound Tests" ),
-                          'one-off-csci' => array( "One-off CSCI loading" ),
         );
 
 
@@ -323,46 +322,6 @@ class SLSourceDownload
                          ."<P><A href='{$_SERVER['PHP_SELF']}?cmd=showslpcv'>sl_pcv</A></P>"
                          ."<P><A href='{$_SERVER['PHP_SELF']}?cmd=addedtoslcvsources'>Added to sl_cv_sources</A></P>"
                          ."<P><A href='{$_SERVER['PHP_SELF']}?cmd=updatefromslcvsources'>Update from sl_cv_sources</A></P>";
-                    break;
-
-                case 'one-off-csci':
-                    // Use xlsload.php to upload a file containing (k,company,species,cultivar,organic,notes).
-                    // This copies it to sl_tmp_cv_sources, and tries to build its index.
-                    // When it works, it's up to you to copy the tmp table to sl_cv_sources or sl_cv_sources_archive
-                    // The reason for this is it's much easier to manage the process of fixing errors by fixing the spreadsheet and re-uploading.
-
-                    $s .= "<h3 class='DownloadBodyHeading'>Old CSCI loader</h3>";
-
-                    $dbtable = "seeds.sl_tmp_cv_sources";
-                    if( !$this->kfdb->TableExists($dbtable) ) {
-                        $this->kfdb->Execute( SLDB_Create::SEEDS_DB_TABLE_SL_TMP_CV_SOURCES );
-                    }
-
-                    // xlsupload is in seeds2. All other db access in this class is for db-seeds1 so the kfdb is for user-seeds1.
-                    // Better to prefix all the tables and use user-seeds2.
-                    $kfdb2 = SiteKFDB( SiteKFDB_DB_seeds2 ) or die( "Cannot connect to database" );
-
-                    $kUpload = 12345;
-$kfdb2->SetDebug(2);
-                    $kfdb2->Execute( "UPDATE seeds2.xlsupload SET k=trim(k),company=trim(company),species=trim(species),cultivar=trim(cultivar),organic=trim(organic)" );
-                    $kfdb2->Execute( "UPDATE seeds2.xlsupload SET k='0' WHERE k='' or k IS NULL" );
-                    $kfdb2->Execute( "UPDATE seeds2.xlsupload SET organic='0' WHERE organic='' or organic IS NULL" );
-                    $kfdb2->Execute( "UPDATE seeds2.xlsupload SET organic='1' WHERE organic<>'0'" );
-                    $this->kfdb->Execute( "DELETE FROM seeds.sl_tmp_cv_sources" );
-$kfdb2->SetDebug(0);
-                    $kfdb2->Execute( "INSERT INTO $dbtable (k,company,osp,ocv,organic,notes,kUpload) "
-                                    ."SELECT k,company,species,cultivar,organic,notes,{$kUpload} FROM seeds2.xlsupload" );
-                    $s .= "<p>Copied ".$this->kfdb->Query1( "SELECT count(*) FROM $dbtable" )." rows to sl_tmp_cv_sources.</p>";
-
-                    // bIncludeOldSources causes sl_sources._status to be ignored, so we will index companies that are out of business
-                    $s .= SLSourceCV_Build::BuildAll( $this->kfdb, $dbtable, array( 'bIncludeOldSources'=>true ) );
-
-                    // Report
-                    $raReport = SLSourceCV_Build::ReportTmpTable( $this->kfdb, $kUpload );
-                    $s .= "<p>".count($raReport['raUnknownCompanies'])." companies not known</p>"
-                         ."<ul>".SEEDCore_ArrayExpandRows($raReport['raUnknownCompanies'], "<li>[[company]]</li>")."</ul>";
-                    $s .= "<p>".count($raReport['raUnknownSpecies'])." species not known</p>"
-                         ."<ul>".SEEDCore_ArrayExpandRows($raReport['raUnknownSpecies'], "<li>[[osp]]</li>")."</ul>";
                     break;
             }
         }
