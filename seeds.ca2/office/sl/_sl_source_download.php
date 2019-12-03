@@ -1489,57 +1489,7 @@ class SLUploadCVSources
         return( array($ok,$sOk,$sWarn,$sErr) );
     }
 
-    function Commit()
-    /****************
-        Update sl_cv_sources with the rows in the given upload
-
-        N:     insert new rows
-        U,V,Y: overwrite existing rows
-        D,X:   delete rows
-     */
-    {
-        $ok = false;
-        $sOk = $sWarn = $sErr = "";
-
-        $uid = $this->oW->sess->GetUID();
-
-        // N
-        $ok = $this->oW->kfdb->Execute(
-                "INSERT INTO seeds.sl_cv_sources "
-                   ."(fk_sl_sources,fk_sl_pcv,fk_sl_species,company_name,osp,ocv,bOrganic,year,notes,_created,_updated,_created_by,_updated_by) "
-               ."SELECT fk_sl_sources,fk_sl_pcv,fk_sl_species,company,osp,ocv,organic,year,notes,now(),now(),'$uid','$uid' "
-               ."FROM {$this->tmpTable} WHERE op='N'" );
-        if( !$ok ) {
-            $sErr = $this->oW->kfdb->GetErrMsg();
-            goto done;
-        }
-        $sOk .= "<div class='alert alert-success'>Committed ".$this->oW->kfdb->GetAffectedRows()." new rows</div>";
-
-        // U,V,Y
-        $ok = $this->oW->kfdb->Execute(
-                "UPDATE seeds.sl_cv_sources C,{$this->tmpTable} T "
-               ."SET C.fk_sl_sources=T.fk_sl_sources,C.fk_sl_pcv=T.fk_sl_pcv,C.fk_sl_species=T.fk_sl_species,"
-                   ."C.company_name=T.company,C.osp=T.osp,C.ocv=T.ocv,C.bOrganic=T.organic,C.year=T.year,C.notes=T.notes,_updated=now(),_updated_by='$uid' "
-               ."WHERE C._key=T.k AND T.op in ('U','V','Y')" );
-        if( !$ok ) {
-            $sErr = $this->oW->kfdb->GetErrMsg();
-            goto done;
-        }
-        $sOk .= "<div class='alert alert-success'>Committed ".$this->oW->kfdb->GetAffectedRows()." changed rows</div>";
-
-        // D,X
-        $ok = $this->oW->kfdb->Execute(
-                "DELETE C FROM seeds.sl_cv_sources C,{$this->tmpTable} T "
-               ."WHERE C._key=T.k AND T.op in ('D','X')" );
-        if( !$ok ) {
-            $sErr = $this->oW->kfdb->GetErrMsg();
-            goto done;
-        }
-        $sOk .= "<div class='alert alert-success'>Deleted ".$this->oW->kfdb->GetAffectedRows()." rows identified for removal</div>";
-
-        done:
-        return( array($ok,$sOk,$sWarn,$sErr) );
-    }
+    function Commit() {}
 }
 
 ?>
