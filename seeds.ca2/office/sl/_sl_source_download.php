@@ -1386,17 +1386,6 @@ class SLUploadCVSources
         return( array($bOk,$sOk,$sWarn,$sErr) );
     }
 
-    function ReportPendingUpload( $kUpload, $eReplace )
-    /**************************************************
-        Report on the status of the given pending upload.
-        This can only be used after the tmp.op column is computed
-     */
-    {
-        $raReport = SLSourceCV_Build::ReportTmpTable( $this->oW->kfdb, $kUpload );
-
-        return( $raReport );
-    }
-
     function Archive()
     /*****************
         Archive is an accumulation of sl_cv_sources rows that have been deleted or updated from year-to year.
