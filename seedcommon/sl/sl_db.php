@@ -222,6 +222,7 @@ class sldb__base
                        array("col"=>"osp",           "type"=>"S"),
                        array("col"=>"ocv",           "type"=>"S"),
                        array("col"=>"bOrganic",      "type"=>"I"),
+                       array("col"=>"bulk",          "type"=>"S"),
                        array("col"=>"notes",         "type"=>"S"),
         )
             // fk_sl_species and sound* are not here because they're only used during rebuild-index and its associated manual steps
