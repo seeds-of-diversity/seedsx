@@ -106,9 +106,9 @@ $sPrintButton =
    .(is_array($raOrders) ? SEEDCore_ArrayExpandSeries( $raOrders, "<input type='hidden' name='orders[]' value='[[]]'/>" ) : "")
    .(is_array($raMbrs)   ? SEEDCore_ArrayExpandSeries( $raMbrs,   "<input type='hidden' name='mbrs[]'   value='[[]]'/>" ) : "")
    ."<div style='margin:5px'>"
-   ."Offset labels <input type='text' name='offset' />"
+   ."Skip # labels <input type='text' name='offset' />"
    ."</div>"
-   ."<input type='submit' value='Print Labels'/>"
+   ."<input type='submit' value='Format Labels'/>"
    ."</form>";
 
 

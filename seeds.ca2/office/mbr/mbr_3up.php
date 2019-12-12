@@ -240,10 +240,10 @@ $sWantMonthly = $lang=='EN' ? "I want to make a monthly donation of" : "Je d&eac
 $sOther       = $lang=='EN' ? "Other" : "Autre";
 
 $sRight       = $lang=='EN' ? "<p>Your charitable donation this year will help save hundreds of rare plant varieties next year.
-  Seeds of Diversity will use your donation to find seeds that need rescuing, and organize seed savers across the country to grow them in 2019.</p>
+  Seeds of Diversity will use your donation to find seeds that need rescuing, and organize seed savers across the country to grow them in 2020.</p>
   <p>You can also make your donation online at <b><u>www.seeds.ca/donate</u></b>.</p>"
                             : "<p>Votre don de charit&eacute; de cette ann&eacute;e aidera &agrave; sauver des centaines de vari&eacute;t&eacute;s rares l'an prochain.
-  Semences du patrimoine utilisera votre don pour trouver des semences qui ont besoin d'&ecirc;tre secourues, et pour trouver des conservateurs de semences &agrave; travers le Canada afin de les cultiver en 2019.</p>
+  Semences du patrimoine utilisera votre don pour trouver des semences qui ont besoin d'&ecirc;tre secourues, et pour trouver des conservateurs de semences &agrave; travers le Canada afin de les cultiver en 2020.</p>
   <p>Vous pouvez &eacute;galement faire un don en ligne au <b><u>www.semences.ca/don</u></b>.</p>";
 
 $sAddrChanged = $lang=='EN' ? "Has your address or contact information changed?"

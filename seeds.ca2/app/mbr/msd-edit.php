@@ -460,7 +460,8 @@ $raConsoleParms = array(
                                                           'Office'  => array( 'label' => "Office" ) ) ) ),
     'lang' => $lang,
     'bBootstrap' => true,
-    'script_files' => array( W_ROOT."std/js/SEEDStd.js", W_CORE."js/SEEDCore.js" ),
+    'css_files' => [ W_CORE."css/console02.css" ],
+    'script_files' => [ W_ROOT."std/js/SEEDStd.js", W_CORE."js/SEEDCore.js", W_CORE."js/console02.js" ],
     'sCharset' => 'utf-8'
 );
 $oC = new MyConsole( $oSed, $oApp, $raConsoleParms );
