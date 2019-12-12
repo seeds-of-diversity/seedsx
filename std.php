@@ -1,4 +1,7 @@
 <?php
+
+die( "As far as we know std.php is no longer used" );
+
 /* Definitions that are common to all applications that use the standard shared libraries.
  *
  * All definitions here are compatible with any combination of shared installations, since this file is shared
