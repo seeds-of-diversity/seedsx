@@ -149,11 +149,19 @@ class mbrBasket_Products
 
         $kCurrProd = SEEDInput_Int('kP');
 
+        // creates a special KeyframeForm that figures out which product_type it has to update
+        $oForm = new SEEDBasket_ProductKeyframeForm( $this->oSB, '' );  // blank product_type means figure it out
+        $oForm->Update();
+
         // Draw the form (if any) first because it Updates the db
         if( ($newProdType = SEEDInput_Str( 'newProdType' )) ) {
-            $sForm = $this->oSB->DrawProductNewForm( $newProdType );
+            $oCurrProd = new SEEDBasket_Product( $this->oSB, 0 );
+            $oCurrProd->SetProductType( $newProdType );
+            $sForm = $oCurrProd->DrawProductForm();
         } else if( $kCurrProd ) {
-            $sForm = $this->oSB->DrawProductForm( $kCurrProd );
+            if( ($oCurrProd = new SEEDBasket_Product( $this->oSB, $kCurrProd )) ) {
+                $sForm = $oCurrProd->DrawProductForm();
+            }
         }
 
         // Draw the Add New control
