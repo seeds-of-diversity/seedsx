@@ -13,6 +13,7 @@ include_once( SEEDAPP."basket/basketProductHandlers_seeds.php" );
 include_once( SEEDCORE."SEEDTemplateMaker.php" );
 include_once( SEEDAPP."seedexchange/msdedit.php" );
 
+//var_dump($_REQUEST);
 
 $consoleConfig = [
     'CONSOLE_NAME' => "basketman",
@@ -35,14 +36,14 @@ $consoleConfig = [
     'bLogo' => true,
     'consoleSkin' => 'green',
 ];
-$oApp = new SEEDAppConsole( $config_KFDB['seeds1']
-                            + array( 'sessPermsRequired' => $consoleConfig['TABSETS']['main']['perms'],
-                                     'sessUIConfig' => ['bTmpActivate'=>true, 'bLoginNotRequired'=>false, 'fTemplates'=>[SEEDAPP.'templates/seeds_sessionaccount.html'] ],
-                                     'consoleConfig' => $consoleConfig,
-                                     'logdir' => SITE_LOG_ROOT )
-);
 
 
+
+$oApp = SEEDConfig_NewAppConsole(
+                ['db'=>'seeds1',
+                 'sessPermsRequired' => $consoleConfig['TABSETS']['main']['perms'],
+                 'consoleConfig' => $consoleConfig,
+                 'lang' => 'EN' ] );
 
 
 
@@ -165,14 +166,19 @@ class mbrBasket_Products
         $sList .= "<div><form method='post'>Add a new $sSelect <input type='submit' value='Add'/></form></div>";
 
         // Draw the list
-        if( ($kfrcP = $this->oSB->oDB->GetProductKFRC("uid_seller='1'")) ) {
-            while( $kfrcP->CursorFetch() ) {
-                $kP = $kfrcP->Key();
-                $bCurr = ($kCurrProd && $kfrcP->Key() == $kCurrProd);
+        if( ($oCursor = $this->oSB->CreateCursor( 'product', "uid_seller='1'", ['sSortCol'=>'product_type'] )) ) {
+            while( ($oProduct = $oCursor->GetNext()) ) {
+                $kP = $oProduct->GetKey();
+                $bCurr = ($kCurrProd && $kP == $kCurrProd);
                 $sStyleCurr = $bCurr ? "border:2px solid blue;" : "";
-                $sList .= "<div class='well' style='padding:5px;margin:5px;$sStyleCurr' onclick='location.replace(\"?kP=$kP\")' ".($bCurr ? "style='border:1px solid #333'" : "").">"
-                         .$this->oSB->DrawProduct( $kfrcP, $bCurr ? SEEDBasketProductHandler::DETAIL_ALL : SEEDBasketProductHandler::DETAIL_TINY, ['bUTF8'=>false] )
-                         ."</div>";
+
+                if( false ) { // $oProduct->FormIsAjax() ) {
+
+                } else {
+                    $sList .= "<div class='well' style='padding:5px;margin:5px;$sStyleCurr' onclick='location.replace(\"?kP=$kP\")' ".($bCurr ? "style='border:1px solid #333'" : "").">"
+                             .$oProduct->Draw( $bCurr ? SEEDBasketProductHandler::DETAIL_ALL : SEEDBasketProductHandler::DETAIL_TINY, ['bUTF8'=>false] )
+                             ."</div>";
+                }
             }
         }
 
