@@ -261,10 +261,10 @@ function SLSrcCVArchive_CVSummaryCsv( SEEDAppConsole $oApp )
     header( "Content-Type:text/plain; charset=cp1252" );
     header( "Content-Disposition: attachment;filename=\"seed-archive-cvsummary.csv\"" );
 
-    echo "species\tcultivar\tspecies_key\t2008\t2010\t2012\t2014\t2016\t2017\t2018\n";
+    echo "species\tcultivar\tspecies_key\t2008\t2010\t2012\t2014\t2016\t2017\t2018\t2019\n";
     foreach( $raSummary as $k => $ra ) {
-        list($sp,$cv,$kSp,$kSrc) = explode( '|', $k, 4 );
-        echo "$sp\t$cv\t$kSp\t{$raSrc[$kSrc]}\t$kSrc\t".@$ra['c2008']."\t".@$ra['c2010']."\t".@$ra['c2012']."\t".@$ra['c2014']."\t".@$ra['c2016']."\t".@$ra['c2017']."\t".@$ra['c2018']."\n";
+        list($sp,$cv,$kSp) = explode( '|', $k, 4 );
+        echo "$sp\t$cv\t$kSp\t".@$ra['c2008']."\t".@$ra['c2010']."\t".@$ra['c2012']."\t".@$ra['c2014']."\t".@$ra['c2016']."\t".@$ra['c2017']."\t".@$ra['c2018']."\t".@$ra['c2019']."\n";
     }
     return;
 }
@@ -302,7 +302,7 @@ function getArchiveSummary( SEEDAppConsole $oApp, $bGroupByCv = false )
             $kSp = $kfr->Value('fk_sl_species');
             $kSrc = $kfr->Value('fk_sl_sources');
             if( $bGroupByCv ) {
-                @$raSummary["$sSp|$sCv|$kSp|summary"]['c'.$kfr->Value('year')] += 1;
+                @$raSummary["$sSp|$sCv|$kSp"]['c'.$kfr->Value('year')] += 1;
             } else {
                 $raSummary["$sSp|$sCv|$kSp|$kSrc"]['c'.$kfr->Value('year')] = true;
             }
