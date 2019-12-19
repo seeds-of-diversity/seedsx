@@ -78,25 +78,25 @@ if( $kSpecies ) {
 $o = new QSRCCVA( $oApp );
 
 
-if( SEEDInput_Str( 'cmd' ) == 'downloadsummary-csv' ) {
-    SLSrcCVArchiveSummaryCsv( $oApp );
-
-    exit;
-}
-if( SEEDInput_Str( 'cmd' ) == 'downloadsummary-xls' ) {
-    SLSrcCVArchiveSummaryXls( $oApp );
-
-    exit;
+switch( SEEDInput_Str('cmd') ) {
+    case 'downloadarchive-csv':     SLSrcCVArchive_DownloadCsv( $oApp );      exit;
+    case 'downloadarchive-xls':     SLSrcCVArchive_DownloadXls( $oApp );      exit;
+    case 'downloadcvsummary-csv':   SLSrcCVArchive_CVSummaryCsv( $oApp );     exit;
+    default: break;
 }
 
 
 $s .= "<div><form action='".$oApp->PathToSelf()."' method='post'>"
-     ."<input type='submit' value='Download Summary CSV'/>"
-     ."<input type='hidden' name='cmd' value='downloadsummary-csv'/>"
+     ."<input type='submit' value='Download Archive CSV'/>"
+     ."<input type='hidden' name='cmd' value='downloadarchive-csv'/>"
      ."</form></div>";
 $s .= "<div><form action='".$oApp->PathToSelf()."' method='post'>"
-     ."<input type='submit' value='Download Summary XLS'/>"
-     ."<input type='hidden' name='cmd' value='downloadsummary-xls'/>"
+     ."<input type='submit' value='Download Archive XLS'/>"
+     ."<input type='hidden' name='cmd' value='downloadarchive-xls'/>"
+     ."</form></div>";
+$s .= "<div><form action='".$oApp->PathToSelf()."' method='post'>"
+     ."<input type='submit' value='Download Cultivar Summary CSV'/>"
+     ."<input type='hidden' name='cmd' value='downloadcvsummary-csv'/>"
      ."</form></div>";
 
 
@@ -211,7 +211,7 @@ $ra = $o->GetList( 'SRCCVxSRC_P', "SRCCV._key BETWEEN 14750 and 14760" );
 echo SEEDCore_ArrayExpandRows( $ra, "<p>[[_key]] [[osp]] [[ocv]] [[SRC_name_en]]</p>" );
 */
 
-function SLSrcCVArchiveSummaryCsv( SEEDAppConsole $oApp )
+function SLSrcCVArchive_DownloadCsv( SEEDAppConsole $oApp )
 {
     list($raSrc,$raSummary) = getArchiveSummary( $oApp );
 
@@ -226,7 +226,7 @@ function SLSrcCVArchiveSummaryCsv( SEEDAppConsole $oApp )
     return;
 }
 
-function SLSrcCVArchiveSummaryXls( SEEDAppConsole $oApp )
+function SLSrcCVArchive_DownloadXls( SEEDAppConsole $oApp )
 {
     list($raSrc,$raSummary) = getArchiveSummary( $oApp );
 
@@ -246,7 +246,27 @@ function SLSrcCVArchiveSummaryXls( SEEDAppConsole $oApp )
     return;
 }
 
-function getArchiveSummary( SEEDAppConsole $oApp )
+function SLSrcCVArchive_CVSummaryCsv( SEEDAppConsole $oApp )
+/***********************************************************
+    Same as Download except grouped by sp,cv and years are group sums.
+    i.e. number of companies selling each variety per year
+ */
+{
+    list($raSrc,$raSummary) = getArchiveSummary( $oApp, true );
+
+    header( "Content-Type:text/plain; charset=cp1252" );
+    header( "Content-Disposition: attachment;filename=\"seed-archive-cvsummary.csv\"" );
+
+    echo "species\tcultivar\tspecies_key\t2008\t2010\t2012\t2014\t2016\t2017\t2018\n";
+    foreach( $raSummary as $k => $ra ) {
+        list($sp,$cv,$kSp,$kSrc) = explode( '|', $k, 4 );
+        echo "$sp\t$cv\t$kSp\t{$raSrc[$kSrc]}\t$kSrc\t".@$ra['c2008']."\t".@$ra['c2010']."\t".@$ra['c2012']."\t".@$ra['c2014']."\t".@$ra['c2016']."\t".@$ra['c2017']."\t".@$ra['c2018']."\n";
+    }
+    return;
+}
+
+
+function getArchiveSummary( SEEDAppConsole $oApp, $bGroupByCv = false )
 {
     $raSrc = array();
     $raSummary = array();
@@ -273,8 +293,15 @@ function getArchiveSummary( SEEDAppConsole $oApp )
 //    $n = 0;
     if( ($kfr = $oSrc->GetKFRC( "SRCCVA", "fk_sl_sources>='3' AND fk_sl_species<>'0'")) ) { //, array('iStatus'=>-1) )) ) { needed for join with SRC not used
         while( $kfr->CursorFetch() ) {
-            //$raSummary[$raSp[$kfr->Value('fk_sl_species')].'|'.$kfr->Value('ocv')]['c'.$kfr->Value('year')] = $kfr->Value('fk_sl_sources');//$kfr->Value('SRC_name_en');
-            $raSummary[$raSp[$kfr->Value('fk_sl_species')].'|'.$kfr->Value('ocv').'|'.$kfr->Value('fk_sl_species').'|'.$kfr->Value('fk_sl_sources')]['c'.$kfr->Value('year')] = true;
+            $sSp = $raSp[$kfr->Value('fk_sl_species')];
+            $sCv = $kfr->Value('ocv');
+            $kSp = $kfr->Value('fk_sl_species');
+            $kSrc = $kfr->Value('fk_sl_sources');
+            if( $bGroupByCv ) {
+                @$raSummary["$sSp|$sCv|$kSp|summary"]['c'.$kfr->Value('year')] += 1;
+            } else {
+                $raSummary["$sSp|$sCv|$kSp|$kSrc"]['c'.$kfr->Value('year')] = true;
+            }
 //            if( ++$n > 100 ) break;
         }
     }
