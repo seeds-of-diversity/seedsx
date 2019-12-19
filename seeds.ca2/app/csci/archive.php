@@ -102,7 +102,7 @@ $s .= "<div><form action='".$oApp->PathToSelf()."' method='post'>"
 
 $raSp = $o->GetSpecies();
 
-$raYears = $oApp->kfdb->QueryRA( "SELECT year FROM seeds.sl_cv_sources_archive WHERE fk_sl_sources>='3' AND _status='0' GROUP BY 1 ORDER BY 1" );
+$raYears = $oApp->kfdb->QueryRowsRA1( "SELECT year FROM seeds.sl_cv_sources_archive WHERE fk_sl_sources>='3' AND _status='0' GROUP BY 1 ORDER BY 1" );
 
 $s .= "
 <style>
@@ -112,7 +112,9 @@ td {border-right:1px solid #777;padding:2px 8px;font-size:9pt;}
 </style>
 ";
 
-$s .= "<table class='srca_table'><tr><th>Primary<br/>Species<br/></th><th>Actual names<br/>matched</th><th>Years</th><th>2008</th><th>2010</th><th>2012</th><th>2014</th><th>2016</th><th>2017</th><th>2018</th></tr>";
+$s .= "<table class='srca_table'><tr><th>Primary<br/>Species<br/></th><th>Actual names<br/>matched</th><th>Years</th>"
+     .SEEDCore_ArrayExpandSeries( $raYears, "<th>[[]]</th>" )
+     ."</tr>";
 $r = 1;
 foreach( $raSp as $ra ) {
     $r = intval(!$r);
@@ -128,7 +130,7 @@ foreach( $raSp as $ra ) {
     }
     $s .= "<td valign='top' style='font-size:9pt'>$sSpAlt</td>";
     $s .= "<td valign='top'>".(count($ra['raYears']) ? SEEDCore_MakeRangeStr($ra['raYears']) : "")."</td>";
-    foreach( array(2008,2010,2012,2014,2016,2017,2018) as $y ) {
+    foreach( $raYears as $y ) {
         $sCond = $ra['kSp'] ? "fk_sl_species='{$ra['kSp']}'" : "osp='{$ra['name']}'";
         $nSrc = $oApp->kfdb->Query1( "SELECT count(distinct fk_sl_sources) FROM seeds.sl_cv_sources_archive WHERE $sCond AND fk_sl_sources>='3' AND year='$y'" );
         $nCV  = $oApp->kfdb->Query1( "SELECT count(distinct ocv) FROM seeds.sl_cv_sources_archive WHERE $sCond AND fk_sl_sources>='3' AND year='$y'" );
@@ -218,10 +220,12 @@ function SLSrcCVArchiveSummaryCsv( SEEDAppConsole $oApp )
     header( "Content-Type:text/plain; charset=cp1252" );
     header( "Content-Disposition: attachment;filename=\"seed-archive.csv\"" );
 
-    echo "species\tcultivar\tspecies_key\tcompany\tcompany_key\t2008\t2010\t2012\t2014\t2016\t2017\t2018\n";
+// todo: use db query as above to get $raYears
+
+    echo "species\tcultivar\tspecies_key\tcompany\tcompany_key\t2008\t2010\t2012\t2014\t2016\t2017\t2018\t2019\n";
     foreach( $raSummary as $k => $ra ) {
         list($sp,$cv,$kSp,$kSrc) = explode( '|', $k, 4 );
-        echo "$sp\t$cv\t$kSp\t{$raSrc[$kSrc]}\t$kSrc\t".@$ra['c2008']."\t".@$ra['c2010']."\t".@$ra['c2012']."\t".@$ra['c2014']."\t".@$ra['c2016']."\t".@$ra['c2017']."\t".@$ra['c2018']."\n";
+        echo "$sp\t$cv\t$kSp\t{$raSrc[$kSrc]}\t$kSrc\t".@$ra['c2008']."\t".@$ra['c2010']."\t".@$ra['c2012']."\t".@$ra['c2014']."\t".@$ra['c2016']."\t".@$ra['c2017']."\t".@$ra['c2018']."\t".@$ra['c2019']."\n";
     }
     return;
 }
@@ -232,13 +236,13 @@ function SLSrcCVArchiveSummaryXls( SEEDAppConsole $oApp )
 
     $oXls = new SEEDXlsWrite( array('filename'=>'seed-archive.xlsx') );
     $oXls->WriteHeader( 0, array( 'species', 'cultivar', 'species_key', 'company', 'company_key',
-                                  '2008', '2010', '2012', '2014', '2016', '2017', '2018' ) );;
+                                  '2008', '2010', '2012', '2014', '2016', '2017', '2018', '2019' ) );;
 
     $row = 2;
     foreach( $raSummary as $k => $ra ) {
         list($sp,$cv,$kSp,$kSrc) = explode( '|', $k, 4 );
         $oXls->WriteRow( 0, $row++, array( $sp, $cv, $kSp, $raSrc[$kSrc], $kSrc,
-                                           @$ra['c2008'], @$ra['c2010'], @$ra['c2012'], @$ra['c2014'], @$ra['c2016'], @$ra['c2017'], @$ra['c2018'] ) );
+                                           @$ra['c2008'], @$ra['c2010'], @$ra['c2012'], @$ra['c2014'], @$ra['c2016'], @$ra['c2017'], @$ra['c2018'], @$ra['c2019'] ) );
 //if( $row>100) break;
     }
     $oXls->OutputSpreadsheet();
