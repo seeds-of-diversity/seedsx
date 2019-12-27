@@ -14,6 +14,8 @@ include_once( "_mbr.php" );
 
 list($kfdb, $sess) = SiteStartSessionAccount( array("R MBRMAIL") );  // and "BULLETIN"=>"R"
 
+$oApp = SiteAppConsole();
+
 $kfrelMbr = MbrContacts::KfrelBase( $kfdb, $sess->GetUID() );
 
 $oConsole = new Console01( $kfdb, $sess, array( 'HEADER' => "Seeds of Diversity Email Lists") );
@@ -24,18 +26,18 @@ echo $oConsole->Style()
 $year = intval(date("Y"));
 
 
-$bMbrCurr =  @$_REQUEST['gMbrcurr'] ? 1 : 0;
-$bMbrPrev =  @$_REQUEST['gMbrprev'] ? 1 : 0;
-$bMbrPrev2 = @$_REQUEST['gMbrprev2'] ? 1 : 0;
-$bEbull    = @$_REQUEST['gEbull'] ? 1 : 0;
-$bSEDCurr  = @$_REQUEST['gSEDCurr'] ? 1 : 0;
-$bSEDCurr2 = @$_REQUEST['gSEDCurrNotDone'] ? 1 : 0;
+$bMbrCurr =  SEEDInput_Int('gMbrcurr');
+$bMbrPrev =  SEEDInput_Int('gMbrprev');
+$bMbrPrev2 = SEEDInput_Int('gMbrprev2');
+$bEbull    = SEEDInput_Int('gEbull');
+$bSEDCurr  = SEEDInput_Int('gSEDCurr');
+$bSEDCurr2 = SEEDInput_Int('gSEDCurrNotDone');
 
 
-$bOverrideNoEmail  = @$_REQUEST['override_noemail'] ? 1 : 0;
+$bOverrideNoEmail  = SEEDInput_Int('override_noemail');
 
-$lang = SEEDSafeGPC_Smart( "mbrLang", array( "", "EN", "FR") );
-$p_listFormat = SEEDSafeGPC_Smart( "listFormat", array( "email", "mbrid" ) );
+$lang = SEEDInput_Smart( 'mbrLang', ['', 'EN', 'FR'] );
+$p_listFormat = SEEDInput_Smart( 'listFormat', ['email', 'mbrid'] );
 
 
 echo "<STYLE>"
@@ -206,13 +208,12 @@ if( $bEbull ) {
 /* Look up emails/mbrids in sed_grower_curr
  */
 if( $bSEDCurr || $bSEDCurr2 ) {
-    include( "../int/sed/_sed.php" );   //TODO: SEDOffice should be in a segregated include file so we don't have to pick up all the sedadmin stuff
+    include( SEEDLIB."msd/msdlib.php" );
 
-    $raM = array();
-    $raE = array();
+    $raM = [];
+    $raE = [];
 
-    $oSED = new SEDOffice( $kfdb, $kfdb, $sess, "EN", "VIEW" );  // kluge: both kfdb are actually kfdb2, assuming that it doesn't really need kfdb1
-    $raCond = array();
+    $raCond = [];
     $raCond[] = "NOT G.bDelete";
     $raCond[] = "M.email IS NOT NULL AND M.email <> ''";
     if( $lang == "EN" )  $raCond[] = "M.lang IN ('','E')";
@@ -221,9 +222,10 @@ if( $bSEDCurr || $bSEDCurr2 ) {
 
     $sCond = "(".implode( " AND ", $raCond ).")";
 
-    echo "Seed Directory Growers:<BR/>$sCond<BR/>";
+    echo "Seed Directory Growers:<br/>$sCond<br/>";
 
-    if( ($kfr = $oSED->kfrelGxM->CreateRecordCursor( $sCond." AND G.mbr_id=M._key" )) ) {
+    $oMSDLib = new MSDLib( $oApp );
+    if( ($kfr = $oMSDLib->KFRelGxM()->CreateRecordCursor($sCond)) ) {
         while( $kfr->CursorFetch() ) {
             if( $p_listFormat == "mbrid" ) {
                 $raM[] = $kfr->value('mbr_id');
@@ -232,7 +234,8 @@ if( $bSEDCurr || $bSEDCurr2 ) {
             }
         }
     }
-    echo "Found ".($p_listFormat == "mbrid" ? (count($raM)." members") : (count($raE)." emails"))."<BR/><BR/>";
+
+    echo "Found ".($p_listFormat == "mbrid" ? (count($raM)." members") : (count($raE)." emails"))."<br/><br/>";
     $raMbrid = array_merge( $raMbrid, $raM );
     $raEmail = array_merge( $raEmail, $raE );
 }
