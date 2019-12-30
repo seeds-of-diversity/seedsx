@@ -746,10 +746,11 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
         $sFormAction = $this->getFormAction();
 
         if( $this->oMbrOrder->kfr->value('ePayType') == 'PayPal' ) {
-            $s .= $this->oL->S('paypal_instructions1')
-                ."<P>"
+            $s .= "<table border='0'><tr><td style='padding:10px'>"
                 .$this->confirmedDrawPayPalButton()
-                ."</P>"
+                ."</td>"
+                ."<td>".$this->oL->S('paypal_instructions1')."</td>"
+                ."</tr></table>"
                 .$this->oL->S('paypal_instructions2')
                 ."<FORM action='$sFormAction' method='post'>"
                 .$this->sess->FormHidden()
@@ -1092,8 +1093,7 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
                                   "<DIV style='margin:1em'>Programme Semencier du Patrimoine Canada<BR>#1 - 12 Dupont St West<br/>Waterloo ON N2L 2X6</DIV></P>".
                                   "<P>Veuillez accorder 4 ou 5 semaines pour la livraison.</P>" ),
             "paypal_instructions1"
-                => array( "EN" => "<p>Please click the button below to go to PayPal's secure payment page.<br/>"
-                                   ."(You don't need a PayPal account to pay for your order, just a credit card)</p>",
+                => array( "EN" => "<p><strong>Click here to pay by credit card</strong><br/>You don't need a PayPal account to pay for your order, just a credit card.</p>",
                                    //."<div style='padding:10px;margin:10px; border:1px solid orange;background-color:#fe9;width:75%;max-width:600px'>As of Dec 20, 2016, PayPal has advised us that it will require all purchasers to create PayPal accounts. We understand that some people simply want to pay with their credit card without needing a PayPal account, and we apologize for this inconvenience as we look for an alternative payment system.<br/><br/>If you have come here specifically to make a <b>donation</b> with your credit card, we gratefully invite you to do so through our secure charity page at <a href='https://www.canadahelps.org/en/charities/seeds-of-diversity-canada-programme-semencier-du-patrimoin/' target='_blank'>CanadaHelps.org</a>.<br/><br/>We can also process membership renewals by phone at (226) 600-7782 (please leave a voice message and we will call you back).<br/><br/>- Your office team at Seeds of Diversity</div>",
 /* TODO */                "FR" => "<P>Cliquez ici pour employer notre page s&ucirc;re de PayPal pour le paiement de carte de cr&eacute;dit.</P>" ),
             "paypal_instructions2"
