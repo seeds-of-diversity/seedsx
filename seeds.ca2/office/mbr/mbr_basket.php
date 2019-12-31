@@ -44,11 +44,6 @@ $oApp = new SEEDAppConsole( $config_KFDB['seeds1']
 
 
 
-
-
-list($kfdb, $sess) = SiteStartSessionAccount( array("R MBRORDER") );
-$bCanWrite = $sess->CanWrite('MBRORDER');
-
 class SEEDBasketFulfilment
 {
     private $oApp;
@@ -144,6 +139,11 @@ class mbrBasket_Products
 
     function DrawContent()
     {
+        $s = "";
+
+        $oMSDAppSeedEdit = new MSDAppSeedEdit( $this->oSB );
+        $s .= $oMSDAppSeedEdit->Draw( 1, "" ); //$this->kCurrGrower, $this->kCurrSpecies );
+
         $sList = $sForm = "";
 
         $kCurrProd = SEEDInput_Int('kP');
@@ -176,8 +176,7 @@ class mbrBasket_Products
             }
         }
 
-//        $s = $this->oMSDAppSeedEdit->Draw( $this->sess->GetUID(), 0 );
-        $s = "<div>$sForm</div><div>$sList</div>";
+        $s .= "<div>$sForm</div><div>$sList</div>";
 
         return( $s );
     }
@@ -321,8 +320,6 @@ class MyConsole02TabSet extends Console02TabSet
     }
 }
 
-$kfdb->SetDebug(1);
-
 
 $oCTS = new MyConsole02TabSet( $oApp );
 
@@ -359,7 +356,7 @@ SCRIPT;
 
 echo Console02Static::HTMLPage( utf8_encode($s), "", 'EN',                    // sCharset defaults to utf8
                                 ['consoleSkin'=>'green',
-                                 'raScriptFiles' => [W_CORE_URL."js/SEEDCore.js"],
+                                 'raScriptFiles' => [W_CORE_URL."js/SEEDCore.js", W_CORE_URL."js/console02.js"],
                                 ] );
 
 
