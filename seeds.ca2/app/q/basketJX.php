@@ -105,6 +105,7 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
             break;
 
         case "msdSeedsFromGrower":
+// use MSDQ:msdSeedList-Draw with kUidSeller=$kG and eStatus=ACTIVE
             //include_once( "_QServerCollection.php" );
             //$o = new QServerCollection( $this, array( ) );
             //$rQ = $o->Cmd( $cmd, $parms );

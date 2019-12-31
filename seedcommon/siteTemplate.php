@@ -149,11 +149,14 @@ class MasterTemplate
                 }
                 break;
 
-            case 'sed':
-                // [[sed:seedlist|kMbr]]
+            case 'msd':
+            case 'sed':     // deprecated
+                // [[msd:seedlist|kMbr]]
+                // MSDQ is configured to override read access on seeds so the bulk emailer can show each grower their skipped and deleted seeds.
+                include_once( SEEDLIB."msd/msdq.php" );
                 if( $raTag['target'] == 'seedlist' ) {
                     if( !($kMbr = intval($raTag['raParms'][1])) ) {
-                        if( STD_isLocal ) $s = "<div class='alert alert-danger'>**sed:seedlist** kMbr not defined</div>";
+                        if( SEED_isLocal ) $s = "<div class='alert alert-danger'>**msd:seedlist** kMbr not defined</div>";
                         goto done;
                     }
 
@@ -161,7 +164,13 @@ class MasterTemplate
                         $sSeedListStyle="font-family:verdana,arial,helvetica,sans serif;margin-bottom:15px";
                     }
 
-
+                    $oApp = SiteAppConsole();   // seeds1 and no perms required
+                    $o = new MSDQ( $oApp, ['config_bUTF8'=>false, 'config_bAllowCanSeedRead'=>true] );
+                    $rQ = $o->Cmd( 'msdSeedList-Draw', ['kUidSeller'=>$kMbr, 'eStatus'=>'ALL'] );
+                    $s =
+                    "<style>.sed_seed_skip {background-color:#ccc} .sed_seed {margin:10px}</style>"
+                    .$rQ['sOut'];
+/*
                     include_once( SEEDCOMMON."sl/sed/sedCommon.php" );
                     $oSed = new SEDCommonDraw( $this->kfdb, 0, $this->lang, "REVIEW" );    // uid == 0
 
@@ -172,7 +181,7 @@ class MasterTemplate
                             $s .= "<div style='$sSeedListStyle'>".$oSed->DrawSeedFromKFR( $kfrc )."</div>";
                         }
                     }
-
+*/
                     $bHandled = true;
                 }
                 break;

@@ -3,6 +3,7 @@
 include_once( STDINC."DocRep/DocRepWiki.php" );
 include_once( SEEDCOMMON."doc/docUtil.php" );  // New_DocRepDB_WithMyPerms, DocRepWiki_Site
 include_once( SEEDCOMMON."siteTemplate.php" );
+//include_once( SEEDLIB."SEEDTemplate/masterTemplate.php" );  move MasterTemplate here
 include_once( "_mbr.php" );                    // kfrelDef_mbr_contacts
 
 
@@ -294,6 +295,8 @@ $raDRVars['kMailSend'] = $kfrRecipient->Key();
         if( ($oTmpl = $oMaster->GetTmpl()) ) {
             $sDoc = $oTmpl->ExpandStr( $sDoc, array( 'kMbrTo' => $kMbr, 'lang'=>$lang ) );
         }
+// MasterTemplate's SEEDTag turns all unrecognized tags into "" so there can't be a new MasterTemplate2 to continue processing here.
+// Instead move MasterTemplate to seedlib/SEEDTemplate/masterTemplate.php
 
         return( $sDoc );
     }

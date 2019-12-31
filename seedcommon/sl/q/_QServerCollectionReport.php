@@ -85,7 +85,7 @@ class QServerCollectionReport
         $raPRows = $oSLDBMaster->GetList(
                         "IxAxPxS",
                         "I.fk_sl_collection='$kCollection' AND NOT I.bDeAcc",
-                        array( 'sGroupCol' => 'P._key',
+                        array( 'sGroupCol' => 'P._key,P.name,S.name_en,S.name_fr,S.psp,S._key',
                                'raFieldsOverride' => array( 'S_name_en'=>"S.name_en", 'S_name_fr'=>"S.name_fr", 'S_psp'=>'S.psp', 'S__key'=>"S._key",
                                                             'P_name'=>"P.name", 'P__key'=>"P._key" ),
                                'sSortCol' => 'S.psp,P.name' ) );
