@@ -72,12 +72,13 @@ class SLAdminReports
         $s = "";
 
         $qCmd = $bUnionCSCI ? 'collreport-cultivarsummaryUnionCSCI' : 'collreport-cultivarsummary';
+        $sTitle = "Summary of All Varieties in the Seed Collection" . ($bUnionCSCI ? " + Seed Finder" : "");
 
         $Q = new Q( $this->oW->kfdb, $this->oW->sess, null, array() );  // oApp null for now
         $rQ = $Q->Cmd( $qCmd, array('kCollection'=>1) );
 
         if( $rQ['bOk'] ) {
-            $s .= "<div><h3 style='display:inline-block;margin-right:3em;'>Summary of All Varieties</h3>"
+            $s .= "<div><h3 style='display:inline-block;margin-right:3em;'>$sTitle</h3>"
                       ."<a style='display:inline-block' href='".Site_UrlQ('q2.php')."?qcmd=$qCmd&kCollection=1&qfmt=xls' target='_blank'><img src='".W_ROOT."std/img/dr/xls.png' height='25'/></a>"
                  ."</div>"
 
