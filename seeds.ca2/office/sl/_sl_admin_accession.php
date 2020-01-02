@@ -51,7 +51,8 @@ class SLAdminReports
 
         $s .= "<div>"
              ."<a href='".Site_path_self()."?report=cultivar-summary'>Summary of All Varieties in the Seed Library Collection</a><br/>"
-             ."<a href='".Site_path_self()."?report=cultivar-summary-including-csci-cultivars'>Summary of All Varieties in the Seed Finder</a><br/>"
+             ."<a href='".Site_path_self()."?report=cultivar-summary-including-csci-cultivars'>"
+                 ."Summary of All Varieties in the Seed Library Collection + Seed Finder</a><br/>"
              // redundant with above but broken anyway with a GROUP BY error ."<a href='".Site_path_self()."?report=adopted-summary'>Summary of Adopted Varieties</a><br/>"
              ."<a href='".Site_path_self()."?report=germ-summary'>Germination Tests</a></br>"
              ."</div>";
@@ -72,7 +73,7 @@ class SLAdminReports
         $s = "";
 
         $qCmd = $bUnionCSCI ? 'collreport-cultivarsummaryUnionCSCI' : 'collreport-cultivarsummary';
-        $sTitle = "Summary of All Varieties in the Seed Collection" . ($bUnionCSCI ? " + Seed Finder" : "");
+        $sTitle = "Summary of All Varieties in the Seed Library Collection" . ($bUnionCSCI ? " + Seed Finder" : "");
 
         $Q = new Q( $this->oW->kfdb, $this->oW->sess, null, array() );  // oApp null for now
         $rQ = $Q->Cmd( $qCmd, array('kCollection'=>1) );
