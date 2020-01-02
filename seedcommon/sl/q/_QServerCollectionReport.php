@@ -35,11 +35,12 @@ class QServerCollectionReport
 
         switch( strtolower($cmd) ) {
             case 'collreport-cultivarsummary':
+            case 'collreport-cultivarsummaryunioncsci':
                 if( !($kCollection = intval(@$parms['kCollection'])) ) {
                     $rQ['sErr'] = "No collection specified";
                     goto done;
                 }
-                list($rQ['bOk'],$rQ['raOut']) = $this->cultivarSummary( $kCollection );
+                list($rQ['bOk'],$rQ['raOut']) = $this->cultivarSummary( $kCollection, strtolower($cmd)=='collreport-cultivarsummaryunioncsci' );
                 $rQ['raMeta']['title'] = "Summary of All Varieties";
                 $rQ['raMeta']['name'] = "collreport-cultivar-summary";
                 break;
@@ -72,7 +73,11 @@ class QServerCollectionReport
         return( $rQ );
     }
 
-    private function cultivarSummary( $kCollection )
+    private function cultivarSummary( $kCollection, $bUnionCSCI )
+    /************************************************************
+        Get a summary of information on all cultivars in the given Seed Library Collection.
+        If bUnionCSCI get all varieties in the csci and left-join that with the collection information.
+     */
     {
         $bOk = false;
         $raOut = array();
@@ -81,30 +86,90 @@ class QServerCollectionReport
 
         $oSLDBMaster = new SLDB_Master( $this->oQ->kfdb, $this->oQ->sess->GetUID() );
 
-        // Get the pcv of every variety in the specified collection
-        $raPRows = $oSLDBMaster->GetList(
-                        "IxAxPxS",
-                        "I.fk_sl_collection='$kCollection' AND NOT I.bDeAcc",
-                        array( 'sGroupCol' => 'P._key,P.name,S.name_en,S.name_fr,S.psp,S._key',
-                               'raFieldsOverride' => array( 'S_name_en'=>"S.name_en", 'S_name_fr'=>"S.name_fr", 'S_psp'=>'S.psp', 'S__key'=>"S._key",
-                                                            'P_name'=>"P.name", 'P__key'=>"P._key" ),
-                               'sSortCol' => 'S.psp,P.name' ) );
+        $raRows = [];
+        if( $bUnionCSCI ) {
+            // Every sl_cv_sources that is in sl_pcv or sl_pcv_syn should have an fk_sl_pcv.
+            // Every sl_cv_sources should have an fk_sl_species.
+            // So get every P._key,P.name,S.name_en,S.name_fr,S.psp,S._key from sl_pcv UNION (those equivalents from sl_cv_sources where fk_sl_pcv=0)
+            if( ($kfrc = $oSLDBMaster->GetKFRC('PxS')) ) {
+                while( $kfrc->CursorFetch() ) {
+                    $raRows[$kfrc->Value('S_psp').'|'.$kfrc->Value('name')] = [
+                        'P__key' => $kfrc->Value('_key'),
+                        'P_name' => $kfrc->Value('name'),
+                        'S_name_en' => $kfrc->Value('S_name_en'),
+                        'S_name_fr' => $kfrc->Value('S_name_fr'),
+                        'S_psp' => $kfrc->Value('S_psp'),
+                        'S__key' => $kfrc->Value('S__key'),
+                    ];
+                }
+            }
 
-        // Get the most recent harvest date and total weight of each pcv
-        $c = 0;
-        foreach( $raPRows as $ra ) {
-            list($yNewest,$nWeightTotal,$sNotes, $fAdoption) = SLDBCultivar_GetInvDetailsForPCV( $oSLDBMaster, $ra['P__key'], $kCollection, true ); // compute fAdoption
+            // Now get every psp/cv from sl_cv_sources where fk_sl_pcv=0 and add those to the list
+            if( false || ($dbc = $this->oQ->kfdb->CursorOpen(
+                    "SELECT osp,ocv,S.name_en as S_name_en,S.name_fr as S_name_fr,S.psp as S_psp,S._key as S__key,count(*) as c "
+                   ."FROM seeds.sl_cv_sources SrcCV LEFT JOIN seeds.sl_species S ON (SrcCV.fk_sl_species=S._key) "
+                   ."WHERE SrcCV.fk_sl_sources>='3' AND SrcCV._status='0' AND SrcCV.fk_sl_pcv='0' "
+                   ."GROUP BY osp,ocv,S.name_en,S.name_fr,S.psp,S._key")) )
+            {
+                while( $ra = $this->oQ->kfdb->CursorFetch($dbc) ) {
+                    $sp = @$ra['S_psp'] ?: $ra['osp'];
+                    $raRows[$sp.'|'.$ra['ocv']] = [
+                        'P__key' => 0,
+                        'P_name' => $ra['ocv'],
+                        'S_name_en' => $ra['S_name_en'],
+                        'S_name_fr' => $ra['S_name_fr'],
+                        'S_psp' => $sp,
+                        'S__key' => $ra['S__key'],
+                        'nCSCI' => $ra['c']
+                    ];
+                }
+            }
 
-            $raOut[] = array(
-                    'cv'          => $ra['P__key'],
-                    'species'     => $ra['S_psp'],
-                    'cultivar'    => $this->oQ->QCharSet($ra['P_name']),
-                    'adoption'    => $fAdoption,
-                    'year_newest' => $yNewest,
-                    'total_grams' => $nWeightTotal,
-                    'notes'       => $sNotes
-            );
+            ksort($raRows);
+
+            // Process the list
+            foreach( $raRows as $ra ) {
+                if( $ra['P__key'] ) {
+                    // this row came from the Seed Library Collection
+                    $raOut[] = $this->getDetailsForPCV( $ra, $oSLDBMaster, $kCollection, true );
+                } else {
+                    // this row came from the csci where fk_sl_pcv=0
+/*
+                    $nCSCI = $this->oQ->kfdb->Query1( "SELECT count(*) FROM seeds.sl_cv_sources "
+                                                     ."WHERE _status='0' AND fk_sl_sources>='3' "
+                                                     ."AND (fk_sl_species='".intval($ra['S__key'])."' OR osp='".addslashes($ra['S_psp'])."') "
+                                                     ."AND ocv='".addslashes($ra['P_name'])."'" );
+*/
+
+                    $raOut[] = [
+                        'cv'          => 0,
+                        'species'     => $ra['S_psp'],
+                        'cultivar'    => $this->oQ->QCharSet($ra['P_name']),
+                        'csci_count'  => $ra['nCSCI'],
+                        'adoption'    => '',
+                        'year_newest' => '',
+                        'total_grams' => '',
+                        'notes'       => ''
+                    ];
+                }
+
+            }
+
+        } else {
+            // Get the pcv of every variety in the specified collection
+            $raRows = $oSLDBMaster->GetList(
+                            "IxAxPxS",
+                            "I.fk_sl_collection='$kCollection' AND NOT I.bDeAcc",
+                            array( 'sGroupCol' => 'P._key,P.name,S.name_en,S.name_fr,S.psp,S._key',
+                                   'raFieldsOverride' => array( 'S_name_en'=>"S.name_en", 'S_name_fr'=>"S.name_fr", 'S_psp'=>'S.psp', 'S__key'=>"S._key",
+                                                                'P_name'=>"P.name", 'P__key'=>"P._key" ),
+                                   'sSortCol' => 'S.psp,P.name' ) );
+
+            foreach( $raRows as $ra ) {
+                $raOut[] = $this->getDetailsForPCV( $ra, $oSLDBMaster, $kCollection, true );
+            }
         }
+
 
         $bOk = true;
 
@@ -122,29 +187,40 @@ class QServerCollectionReport
         $oSLDBMaster = new SLDB_Master( $this->oQ->kfdb, $this->oQ->sess->GetUID() );
 
         // Get the pcv of every adopted variety
-        $raDRows = SLDBAdopt_GetAdoptedPCV_RA( $oSLDBMaster );
+        $raDRows = SLDBAdopt_GetAdoptedPCV_RA( $oSLDBMaster );  // P._key as P__key,P.name as P_name,S.psp as S_psp,SUM(D.amount) as amount
 
-        // Get the most recent harvest date and total weight of each adopted pcv
-        $c = 0;
-        foreach( $raDRows as $raD ) {
-            list($yNewest,$nWeightTotal,$sNotes,$fDummy) = SLDBCultivar_GetInvDetailsForPCV( $oSLDBMaster, $raD['P__key'], $kCollection, false); // already computed fAdoption above
-
-            $raOut[] = array(
-                    'cv'          => $raD['P__key'],
-                    'species'     => $raD['S_psp'],
-                    'cultivar'    => $this->oQ->QCharSet($raD['P_name']),
-                    'adoption'    => $raD['amount'],
-                    'year_newest' => $yNewest,
-                    'total_grams' => $nWeightTotal,
-                    'notes'       => $sNotes
-            );
-        }
+        //$raOut = $this->getDetailsForPCV( $raDRows, $oSLDBMaster, $kCollection, false );
 
         $bOk = true;
 
         done:
         return( array($bOk, $raOut) );
     }
+
+    private function getDetailsForPCV( $raPCV, SLDB_Master $oSLDBMaster, $kCollection, $bComputeAdoption )
+    {
+        $raOut = [];
+
+        // Get the most recent harvest date and total weight of each pcv
+        list($yNewest,$nWeightTotal,$sNotes,$fAdoption) = SLDBCultivar_GetInvDetailsForPCV( $oSLDBMaster, $raPCV['P__key'], $kCollection, $bComputeAdoption );
+
+        // Get the number of csci companies that have the given pcv
+        $nCSCI = $this->oQ->kfdb->Query1( "SELECT count(*) FROM seeds.sl_cv_sources WHERE _status='0' AND fk_sl_pcv='{$raPCV['P__key']}'" );
+
+        $raOut = [
+                'cv'          => $raPCV['P__key'],
+                'species'     => $raPCV['S_psp'],
+                'cultivar'    => $this->oQ->QCharSet($raPCV['P_name']),
+                'csci_count'  => $nCSCI,
+                'adoption'    => $bComputeAdoption ? $fAdoption : $raPCV['amount'],    // could be pre-computed or not
+                'year_newest' => $yNewest,
+                'total_grams' => $nWeightTotal,
+                'notes'       => $sNotes,
+        ];
+
+        return( $raOut );
+    }
+
 
     private function germSummary( $kCollection )
     {

@@ -50,39 +50,44 @@ class SLAdminReports
              ."</style>";
 
         $s .= "<div>"
-             ."<a href='".Site_path_self()."?report=cultivar-summary'>Summary of All Varieties</a><br/>"
-             ."<a href='".Site_path_self()."?report=adopted-summary'>Summary of Adopted Varieties</a><br/>"
+             ."<a href='".Site_path_self()."?report=cultivar-summary'>Summary of All Varieties in the Seed Library Collection</a><br/>"
+             ."<a href='".Site_path_self()."?report=cultivar-summary-including-csci-cultivars'>Summary of All Varieties in the Seed Finder</a><br/>"
+             // redundant with above but broken anyway with a GROUP BY error ."<a href='".Site_path_self()."?report=adopted-summary'>Summary of Adopted Varieties</a><br/>"
              ."<a href='".Site_path_self()."?report=germ-summary'>Germination Tests</a></br>"
              ."</div>";
 
-        switch( ($report = SEEDInput_Smart( "report", array( "", "cultivar-summary", "adopted-summary", "germ-summary") )) ) {
-            case 'cultivar-summary':    $s .= $this->cultivarSummary();  break;
-            case 'adopted-summary':     $s .= $this->adoptedSummary();   break;
-            case 'germ-summary':        $s .= $this->germSummary();      break;
+        switch( SEEDInput_Str('report') ) {
+            case 'cultivar-summary':                            $s .= $this->cultivarSummary( false );  break;
+            case 'cultivar-summary-including-csci-cultivars':   $s .= $this->cultivarSummary( true );   break;
+            //case 'adopted-summary':     $s .= $this->adoptedSummary();   break;
+            case 'germ-summary':                                $s .= $this->germSummary();             break;
             default:
         }
 
         return( $s );
     }
 
-    private function cultivarSummary()
+    private function cultivarSummary( $bUnionCSCI )
     {
         $s = "";
 
+        $qCmd = $bUnionCSCI ? 'collreport-cultivarsummaryUnionCSCI' : 'collreport-cultivarsummary';
+
         $Q = new Q( $this->oW->kfdb, $this->oW->sess, null, array() );  // oApp null for now
-        $rQ = $Q->Cmd( 'collreport-cultivarsummary', array('kCollection'=>1) );
+        $rQ = $Q->Cmd( $qCmd, array('kCollection'=>1) );
 
         if( $rQ['bOk'] ) {
             $s .= "<div><h3 style='display:inline-block;margin-right:3em;'>Summary of All Varieties</h3>"
-                      ."<a style='display:inline-block' href='".Site_UrlQ('q2.php')."?qcmd=collreport-cultivarsummary&kCollection=1&qfmt=xls' target='_blank'><img src='".W_ROOT."std/img/dr/xls.png' height='25'/></a>"
+                      ."<a style='display:inline-block' href='".Site_UrlQ('q2.php')."?qcmd=$qCmd&kCollection=1&qfmt=xls' target='_blank'><img src='".W_ROOT."std/img/dr/xls.png' height='25'/></a>"
                  ."</div>"
 
                  ."<table cellpadding='5'>"
-                 ."<tr><th>&nbsp;</th><th>&nbsp;</th><th>Adoption</th><th>Newest</th><th>Total grams</th><th>&nbsp;</th></tr>";
+                 ."<tr><th>&nbsp;</th><th>&nbsp;</th><th>Companies</th><th>Adoption</th><th>Newest</th><th>Total grams</th><th>&nbsp;</th></tr>";
             $c = 0;
             foreach( $rQ['raOut'] as $ra ) {
                 $sTDClass = "class='td$c'";
-                $s .= "<tr><td $sTDClass>{$ra['species']}</td><td $sTDClass>{$ra['cultivar']}</td><td $sTDClass>{$ra['adoption']}</td>"
+                $s .= "<tr><td $sTDClass>{$ra['species']}</td><td $sTDClass>{$ra['cultivar']}</td>"
+                     ."<td $sTDClass>{$ra['csci_count']}</td><td $sTDClass>{$ra['adoption']}</td>"
                      ."<td $sTDClass>{$ra['year_newest']}</td><td $sTDClass>{$ra['total_grams']}</td>"
                      ."<td $sTDClass>".str_replace( " | ", "<br/>", $ra['notes'] )."</td></tr>";
                 $c = $c ? 0 : 1;
