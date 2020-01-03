@@ -184,7 +184,11 @@ function drawMSDOrderInfo( SEEDBasketCore $oSB, KeyframeRecord $kfrP )
     $kfrG = $oMSD->kfrelG->GetRecordFromDB( "mbr_id='$kM'" );   // sed_growers
 
     if( $bRequestable ) {
-        $who = SEEDCore_ArrayExpand( $raM, "[[firstname]] [[lastname]] in [[city]] [[province]]" );
+        if( $raM['firstname'] || $raM['lastname'] ) {
+            $who = SEEDCore_ArrayExpand( $raM, "[[firstname]] [[lastname]] in [[city]] [[province]]" );
+        } else {
+            $who = SEEDCore_ArrayExpand( $raM, "[[company]] in [[city]] [[province]]" );
+        }
     } else {
         $who = SEEDCore_ArrayExpand( $raM, "a Seeds of Diversity member in [[province]]" );
     }
