@@ -75,7 +75,7 @@ class msdBasket extends SEEDBasketStore
     {
         parent::__construct();
         $this->oW = new SEEDApp_Worker( $kfdb, $sess, $lang );
-        $this->oSB = new MSDBasketCore( $this->oW, $oApp );
+        $this->oSB = new MSDBasketCore( $kfdb, $sess, $oApp );
         $this->oDraw = new MSDCommonDraw( $this->oSB );
 
         $raTmplParms = array(
