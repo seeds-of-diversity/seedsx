@@ -227,6 +227,17 @@ function drawGrower( KFRecord $kfrG )
         .$oSed->drawGrowerBlock( $kfrG, true )
         ."</div>";
 
+    $kG = $kfrG->value('mbr_id');
+
+    global $oApp;
+
+    $oMSDLib = new MSDLib( $oApp );
+    if( ($kfrGxM = $oMSDLib->KFRelGxM()->GetRecordFromDB( "G.mbr_id='$kG'" )) ) {
+        $s .= "<div style='width:100%;margin:20px auto;max-width:80%;border:1px solid #777;background-color:#f8f8f8'>"
+             .$oMSDLib->DrawGrowerBlock( $kfrGxM, true )
+             ."</div>";
+    }
+
     return( $s );
 }
 
