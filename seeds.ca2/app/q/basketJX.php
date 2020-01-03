@@ -35,7 +35,7 @@ header( "Access-Control-Allow-Origin: *" );
 
 */
 
-$oSB = new MSDBasketCore( $oW, $oApp );    // rewrite MSDBasketCore so it extends MSDQ?
+$oSB = new MSDBasketCore( $oW->kfdb, $oW->sess, $oApp );
 
 $raJX = array( 'bOk'=>false, 'sOut'=>"", 'sErr'=>"", 'raOut'=>array() );
 
@@ -165,12 +165,19 @@ done:
 echo json_encode( $raJX );
 
 
-function drawMSDOrderInfo( SEEDBasketCore $oSB, KeyframeRecord $kfrP )
+function drawMSDOrderInfo( MSDBasketCore $oSB, KeyframeRecord $kfrP )
 {
     global $oApp;
+    global $kfdb;
+
+    $s = "";
+
+    $oMSDDraw = new MSDCommonDraw( $oSB );
+    $oMSDLib = new MSDLib( $oApp );
+
 
     include_once( SITEROOT."l/sl/msd.php" );
-    $oW = new SEEDApp_Worker( $oSB->oDB->kfdb, $oSB->sess, "EN" );  // someday this will be in oSB
+    $oW = new SEEDApp_Worker( $kfdb, $oSB->sess, "EN" );  // someday this will be in oSB
     $oMSD = new MSDView( $oW );
 
     include_once( SEEDLIB."msd/msdcore.php" );
@@ -182,62 +189,45 @@ function drawMSDOrderInfo( SEEDBasketCore $oSB, KeyframeRecord $kfrP )
     $raM = $oMSD->GetMbrContactsRA( $kM );                      // mbr_contacts via mbrsitepipe
     $raPE = $oSB->oDB->GetProdExtraList( $kP );                 // prodExtra
     $kfrG = $oMSD->kfrelG->GetRecordFromDB( "mbr_id='$kM'" );   // sed_growers
+    if( !($kfrGxM = $oMSDLib->KFRelGxM()->GetRecordFromDB( "G.mbr_id='$kM'" )) ) goto done;
 
     if( $bRequestable ) {
         if( $raM['firstname'] || $raM['lastname'] ) {
-            $who = SEEDCore_ArrayExpand( $raM, "[[firstname]] [[lastname]] in [[city]] [[province]]" );
+            $who = $kfrGxM->Expand( "[[M_firstname]] [[M_lastname]] in [[M_city]] [[M_province]]" );
         } else {
-            $who = SEEDCore_ArrayExpand( $raM, "[[company]] in [[city]] [[province]]" );
+            $who = $kfrGxM->Expand( "[[M_company]] in [[M_city]] [[M_province]]" );
         }
     } else {
-        $who = SEEDCore_ArrayExpand( $raM, "a Seeds of Diversity member in [[province]]" );
+        $who = $kfrGxM->Expand( "a Seeds of Diversity member in [[M_province]]" );
     }
 
     // make this false to prevent people from ordering
     $bEnableAddToBasket = true;
 
     $sPayment = $oMSD->drawPaymentMethod( $kfrG );
-    $sMbrCode = $kfrG->Value('mbr_code');
+    $sMbrCode = $kfrGxM->Value('mbr_code');
     $sButton1Attr = $bRequestable && $bEnableAddToBasket ? "onclick='AddToBasket_Name($kP);'"
-                                                           : "disabled='disabled'";
+                                                         : "disabled='disabled'";
     $sButton2Attr = $bRequestable ? "onclick='msdShowSeedsFromGrower($kM,\"$sMbrCode\");'"
-                                    : "disabled='disabled'";
+                                  : "disabled='disabled'";
 
-    $s = "<div style='display:none' class='msd-order-info msd-order-info-$kP'>"
-         //   ."<div>"
-                .SEEDCore_ArrayExpand( $raPE, "<p><b>[[species]] - [[variety]]</b></p>" )
-                ."<p>This is offered by $who for $".$kfrP->Value('item_price')." in $sPayment.</p>"
-                .($bRequestable ? "": "<p>Members can login to request these seeds.</p>")
-                ."<p><button $sButton1Attr>Add this request to your basket</button>&nbsp;&nbsp;&nbsp;"
-                   ."<button $sButton2Attr>Show other seeds from this grower</button></p>"
-                .($bRequestable ? drawGrower( $kfrG ) : "")
-         //   ."</div>"
-        ."</div>";
-
-    return( $s );
-}
-
-function drawGrower( KFRecord $kfrG )
-{
-    global $oW;
-
-    $oSed = new MSDView( $oW );
-
-    $s = "<div style='width:100%;margin:20px auto;max-width:80%;border:1px solid #777;background-color:#f8f8f8'>"
-        .$oSed->drawGrowerBlock( $kfrG, true )
-        ."</div>";
-
-    $kG = $kfrG->value('mbr_id');
-
-    global $oApp;
-
-    $oMSDLib = new MSDLib( $oApp );
-    if( ($kfrGxM = $oMSDLib->KFRelGxM()->GetRecordFromDB( "G.mbr_id='$kG'" )) ) {
-        $s .= "<div style='width:100%;margin:20px auto;max-width:80%;border:1px solid #777;background-color:#f8f8f8'>"
+    $sG = "";
+    if( $kfrGxM ) {
+        $sG = "<div style='width:100%;margin:20px auto;max-width:80%;border:1px solid #777;background-color:#f8f8f8'>"
              .$oMSDLib->DrawGrowerBlock( $kfrGxM, true )
              ."</div>";
     }
 
+    $s = "<div style='display:none' class='msd-order-info msd-order-info-$kP'>"
+            .SEEDCore_ArrayExpand( $raPE, "<p><b>[[species]] - [[variety]]</b></p>" )
+            ."<p>This is offered by $who for $".$kfrP->Value('item_price')." in $sPayment.</p>"
+            .($bRequestable ? "": "<p>Members can login to request these seeds.</p>")
+            ."<p><button $sButton1Attr>Add this request to your basket</button>&nbsp;&nbsp;&nbsp;"
+               ."<button $sButton2Attr>Show other seeds from this grower</button></p>"
+            .($bRequestable ? $sG : "")
+        ."</div>";
+
+    done:
     return( $s );
 }
 
