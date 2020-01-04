@@ -45,7 +45,7 @@
  */
 
 include_once( "SEEDLocal.php" );
-include_once( "SEEDSessionAccount.php" );
+include_once( SEEDCORE."SEEDSessionAccount.php" );
 include_once( "SEEDTemplateMaker.php" );
 
 

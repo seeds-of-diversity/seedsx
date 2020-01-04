@@ -6,7 +6,6 @@
 include_once( "siteKFDB.php" );
 include_once( "siteutil.php" );     // MailFromOffice
 include_once( STDINC."SEEDSession.php");
-include_once( STDINC."SEEDSessionAccount.php");
 include_once( STDINC."SEEDSessionAuthUI.php");
 include_once( STDINC."SEEDForm.php");
 include_once( "console/console01.php" );  // HTMLPage()
@@ -531,7 +530,7 @@ function _doSSL()
 /****************
  */
 {
-    if( $_SERVER['HTTP_HOST'] == 'localhost' || $_SERVER['HTTP_HOST']=='heritageseeds.ca' 
+    if( $_SERVER['HTTP_HOST'] == 'localhost' || $_SERVER['HTTP_HOST']=='heritageseeds.ca'
                                              || $_SERVER['HTTP_HOST']=='pollinationcanada.ca' ) return;              // can't do SSL on my development machine
 
     if( $_SERVER['HTTPS'] != "on" ) {
