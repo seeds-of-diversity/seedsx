@@ -12,6 +12,7 @@
 // French = lang==F
 // Bilingual = lang==F || province==QC || province==NB
 
+die( "No longer uploading Access files" );
 
 /* Member list uploader
  *
