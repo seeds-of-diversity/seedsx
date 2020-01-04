@@ -348,7 +348,7 @@ class EV_Events {
 
         if( intval(substr($kfrEV->value("date_start"),0,4)) < 2008 ) {
             // prior to 2008 we used plaintext, now use Wiki
-            $s = SEEDStd_StrBR($details);
+            $s = nl2br($details);
         } else {
             $details = nl2br($details);
 //correct new way            $s = $this->oTag->ProcessTags( $details );

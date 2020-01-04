@@ -7,19 +7,6 @@
  * Standard functions useful to most applications
  */
 
-function SEEDStd_HTTPRedirect( $url )
-/************************************
-    N.B. some clients require this to be an absolute URL with http:// prefix
-
-    This can be done with: "http://".$_SERVER['HTTP_HOST'].dirname($_SERVER['PHP_SELF'])."/".$relative_url
- */
-{
-    if( headers_sent() ) {
-        echo '<BR><BR>Click <a href="' . $url . '">here</a> to continue.';
-    } else {
-        header( "Location: " . $url );
-    }
-}
 
 function SEEDStd_HTTPRequest( $host, $page, $raReqParms )
 {
@@ -102,27 +89,6 @@ function SEEDStd_StrNBSP( $s, $n = 0 )
     return( $s );
 }
 
-
-function SEEDStd_StrBR( $s )        // deprecate: there's a PHP function nl2br() that does exactly this
-/********************* *****
- */
-{
-    return( str_replace( "\n", "<BR>", $s ) );
-}
-
-function SEEDStd_Dollar( $d, $lang = 'EN')  // if you have a SEEDLocal this is SEEDLocal::Dollar()
-/*****************************************
- */
-{
-    if( $lang == "EN" ) {
-        $s = "$".sprintf("%.2f",$d);
-    } else {
-        $d1 = intval($d);
-        $d2 = intval(($d - $d1)*100);
-        $s = "$d1,".sprintf("%02d",$d2)." $";
-    }
-    return( $s );
-}
 
 function SEEDStd_FmtNumber( $f, $nDecimals = -1, $sDecPoint = '.', $sDecThousandsSep = ',' )
 /*******************************************************************************************

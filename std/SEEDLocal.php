@@ -167,7 +167,7 @@ class SEEDLocal {
 
     function Dollar( $d )
     {
-        return( SEEDStd_Dollar( $d, $this->GetLang() ) );
+        return( SEEDCore_Dollar( $d, $this->GetLang() ) );
     }
 
 

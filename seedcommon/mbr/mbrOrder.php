@@ -483,19 +483,19 @@ if( $kOrder ) $this->setKOrder( $kOrder );
             $s .= $this->raMbrTypes[$v]['EN']."<BR/>";
         }
         if( ($v = @$this->raOrder['donation']) ) {
-            $s .= SEEDStd_Dollar($v)." Donation<BR/>";
+            $s .= SEEDCore_Dollar($v)." Donation<BR/>";
         }
         if( ($v = @$this->raOrder['slAdopt_amount']) ) {
-            $s .= SEEDStd_Dollar($v)." Adoption<BR/>";
+            $s .= SEEDCore_Dollar($v)." Adoption<BR/>";
         }
         if( ($v = @$this->raOrder['misc']) ) {
-            $s .= SEEDStd_Dollar($v)." Misc<BR/>";
+            $s .= SEEDCore_Dollar($v)." Misc<BR/>";
         }
         if( @$this->raOrder['pubs'] ) {
             foreach( $this->raOrder['pubs'] as $ra ) {
                 $s.= $ra[1]." x ".$this->raPubs[$ra[0]]['concise'];
                 if( $ra[0] == 'everyseed' ) {
-                    $s .= " + ".SEEDStd_Dollar(floatval(@$this->raOrder['everyseed_shipping']));
+                    $s .= " + ".SEEDCore_Dollar(floatval(@$this->raOrder['everyseed_shipping']));
                 }
                 $s .= "<BR/>";
             }
@@ -503,13 +503,13 @@ if( $kOrder ) $this->setKOrder( $kOrder );
         if( @$this->raOrder['seeds'] ) {
             foreach( $this->raOrder['seeds'] as $ra ) {
                 if( @$ra['k'] == 'bulbils' ) {
-                    $s .= SEEDStd_Dollar(@$ra['amount'])." garlic bulbils<br/>";
+                    $s .= SEEDCore_Dollar(@$ra['amount'])." garlic bulbils<br/>";
                 }
             }
         }
         if( @$this->raOrder['registration'] ) {
             foreach( $this->raOrder['registration'] as $ra ) {
-                $s .= SEEDStd_Dollar($ra['amount'])." ".$ra['concise']."<BR/>";
+                $s .= SEEDCore_Dollar($ra['amount'])." ".$ra['concise']."<BR/>";
             }
         }
         if( @$this->raOrder['special'] ) {
@@ -517,7 +517,7 @@ if( $kOrder ) $this->setKOrder( $kOrder );
                 if( $k == 'nametag' ) {
                     $s .= "Nametag: $v";
                 } else {
-                    $s .= SEEDStd_Dollar(@$v['amount'])." ".@$v['concise']."<BR/>";
+                    $s .= SEEDCore_Dollar(@$v['amount'])." ".@$v['concise']."<BR/>";
                 }
             }
         }
@@ -649,7 +649,7 @@ if( $kOrder ) $this->setKOrder( $kOrder );
                 if( $k == 'nPubEverySeed' ) {
                     $shipping = @$ra['nPubEverySeed_shipping'];
                     $s .= "<TR><TH colspan=3>Publications</TH></TR>"
-                         ."<TR><TD>Every Seed Tells a Tale</TD><TD>$v ".($v > 1 ? "copies" : $this->oL->S('copy'))." @ $35 + ".$this->dollar($shipping)." ".$this->oL->S('postage')."</TD><TD>".SEEDStd_Dollar($v*35+$shipping,$this->oL->GetLang())."</TD></TR>";
+                         ."<TR><TD>Every Seed Tells a Tale</TD><TD>$v ".($v > 1 ? "copies" : $this->oL->S('copy'))." @ $35 + ".$this->dollar($shipping)." ".$this->oL->S('postage')."</TD><TD>".SEEDCore_Dollar($v*35+$shipping,$this->oL->GetLang())."</TD></TR>";
                 }
                 if( $k == 'nPubEverySeed_shipping' ) {
                     // this is processed in nPubEverySeed
@@ -657,7 +657,7 @@ if( $kOrder ) $this->setKOrder( $kOrder );
 // computeOrder puts this in ['registrations']
                 if( $k == 'nTorontoReg' && ($v = intval($v)) ) {
                     $s .= "<TR><TH colspan=3>Registrations</TH></TR>"
-                         ."<TR><TD>25th Anniversary Celebration (Toronto) - $v registrant".($v>1 ? "s" : "")."</TD><TD>&nbsp;</TD><TD>".SEEDStd_Dollar($v*35)."</TD><TR>";
+                         ."<TR><TD>25th Anniversary Celebration (Toronto) - $v registrant".($v>1 ? "s" : "")."</TD><TD>&nbsp;</TD><TD>".SEEDCore_Dollar($v*35)."</TD><TR>";
                 }
             }
         }
@@ -734,7 +734,7 @@ if( $kOrder ) $this->setKOrder( $kOrder );
 
     function dollar($amt)   // deprecate, this is the same as $this->oL->Dollar($amt)
     {
-        return( SEEDStd_Dollar($amt,$this->oL->GetLang()) );
+        return( SEEDCore_Dollar($amt,$this->oL->GetLang()) );
     }
 
     function CreateBlankKFR()
