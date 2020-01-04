@@ -23,7 +23,7 @@ INSERT INTO sl_inventory (_key,fk_sl_accession,g_weight,location,dCreation,bDeAc
 include_once( SEEDCOMMON."sl/sl_db_adoption.php" );    // DoReports
 
 //Admin
-include_once( STDINC."SEEDUIWidgets.php" );
+include_once( SEEDCORE."SEEDUI.php" );
 include_once( SEEDCOMMON."sl/q/_QServerSourceCV.php" );
 include_once( SEEDCOMMON."sl/q/Q.php" );
 include_once( SEEDCOMMON."console/console01ui.php" );   // DownloadUpload

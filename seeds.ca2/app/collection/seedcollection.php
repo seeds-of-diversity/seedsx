@@ -5,7 +5,7 @@
 // initial user goes to collection screen, but not obvious how to see the seeds
 
 include_once( SEEDCORE."SEEDSessionPerms.php" );
-include_once( STDINC."SEEDUIWidgets.php" );
+include_once( SEEDCORE."SEEDUI.php" );
 
 include_once( "_collection.php" );
 include_once( "_accession.php" );

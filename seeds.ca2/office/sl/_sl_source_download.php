@@ -68,7 +68,7 @@ where c.osp=c0.osp and c.ocv=c0.ocv and c.company_name=c0.company and c.bOrganic
 
 include_once( STDINC."SEEDCSV.php" );
 include_once( STDINC."SEEDTable.php" );
-include_once( STDINC."SEEDUIWidgets.php" );
+include_once( SEEDCORE."SEEDUI.php" );
 include_once( SEEDCOMMON."console/console01ui.php" );   // DownloadUpload
 include_once( SEEDCOMMON."sl/q/_QServerSourceCV.php" );
 include_once( SEEDLIB."sl/sldb.php" );
