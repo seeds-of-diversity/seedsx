@@ -89,51 +89,6 @@ function SEEDStd_StrNBSP( $s, $n = 0 )
     return( $s );
 }
 
-
-function SEEDStd_FmtNumber( $f, $nDecimals = -1, $sDecPoint = '.', $sDecThousandsSep = ',' )
-/*******************************************************************************************
-    Format a number
-        nDecimals = precision after decimal point (-1 = all, 0 = integer)
-
-    e.g. $f = 1234.5678
-
-    $english_no_separator  = SEEDStd_FmtNumber( $f, -1, '.', '');
-    = 1234.5678
-
-    $english_round_integer = SEEDStd_FmtNumber( $f, 0 );
-    = 1,235
-
-    $francais_dollars = SEEDStd_FmtNumber( $f, 2, ',', ' ');
-    = 1 234,57
- */
-{
-    // $s1 is left of decimal, $s2 is right of decimal
-    $s1 = strval( intval($f) );
-    $s2 = "0";
-
-    if( !$nDecimals ) {
-        // Round off to zero decimals. Special case because rounding affects $s1, and $sDecPoint is inhibited
-        $s1 = strval( intval($f + 0.5) );
-        $s2 = "";
-        $sDecPoint = "";
-    } else if( $nDecimals > -1 ) {
-        $p = pow(10,$nDecimals);
-	    $s2 = substr( strval( intval(($f * $p) + 0.5) ), -$nDecimals );
-        while( strlen($s2) < $nDecimals )  $s2 = "0".$s2;  // pad leading zeroes  e.g. 0.002 will only be $s2=='2' at this point
-    } else {
-        // show decimals verbatim
-        $s = strval($f);
-        if( ($i = strpos($s,'.')) !== false ) {
-            $s2 = substr($s,$i+1);
-        }
-	}
-
-    $d1000 = intval( intval($s1) / 1000 );	// millions not implemented
-    $d1    = intval( intval($s1) % 1000 );
-
-    return( ($d1000 ? ($d1000.$sDecThousandsSep) : "") . $d1 . $sDecPoint . $s2 );
-}
-
 function SEEDStd_Range( $i, $floor = NULL, $ceiling = NULL )    // called SEEDCore_Bound() now because Range is a specific data structure
 /***********************************************************
     Constrain $i within the range of floor and ceiling
