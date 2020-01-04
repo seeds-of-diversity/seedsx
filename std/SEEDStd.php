@@ -152,16 +152,6 @@ function SEEDStd_ArrayExpand( $ra, $sTemplate, $bEnt = true )
 }
 
 
-function SEEDStd_ArrayParmArray( $raParms, $k )         // use SEEDCore_ArraySmartVal1( $raParms, $k, array(), false )
-/**********************************************
-    If the array $raParms[$k] is defined, return it, else return an empty array.
-
-    SEEDStd_ArraySmartVal might be able to do this, but there are several parts of that solution that are hard to understand.
- */
-{
-    return( isset($raParms[$k]) && is_array($raParms[$k]) ? $raParms[$k] : array() );
-}
-
 /**
  *  if $raAllowed contains 1 value, then $raParms[$k] is unconstrained (except for empty or !isset) and $raAllowed[0] is the default:
  *      { Return $raParms[$k] if isset() and not empty, or isset() and empty and $bEmptyAllowed : else return $raAllowed[0] }

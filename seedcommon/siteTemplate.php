@@ -50,8 +50,9 @@ class MasterTemplate
 
         $raTmplParms['fTemplates'][] = SEEDCOMMON."templates/seedui.html";
 
-        $raTmplParms['raResolvers'][] = array('fn' => array($this,'ResolveTag'),
-                                              'raParms' => SEEDStd_ArrayParmArray( $raParms, 'raResolverParms' ) );
+        $raTmplParms['raResolvers'][] = ['fn' => array($this,'ResolveTag'),
+                                         'raParms' => SEEDCore_ArraySmartVal1( $raParms, 'raResolverParms', array() )   // empty array is the default value
+        ];
 
         if( isset($raParms['EnableDocRep']) ) {
             include_once( STDINC."DocRep/DocRepTag.php" );
