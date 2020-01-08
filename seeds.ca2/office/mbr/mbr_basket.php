@@ -143,10 +143,7 @@ class mbrBasket_Products
     {
         $s = "";
 
-        $oMSDAppSeedEdit = new MSDAppSeedEdit( $this->oSB );
-        $s .= $oMSDAppSeedEdit->Draw( 1, "" ); //$this->kCurrGrower, $this->kCurrSpecies );
-
-        $sList = $sForm = "";
+        $sList = $sForm = $sDel = "";
 
         $kCurrProd = SEEDInput_Int('kP');
 
@@ -156,13 +153,13 @@ class mbrBasket_Products
 
         // Draw the form (if any) first because it Updates the db
         if( ($newProdType = SEEDInput_Str( 'newProdType' )) ) {
-            $oCurrProd = new SEEDBasket_Product( $this->oSB, 0 );
-            $oCurrProd->SetProductType( $newProdType );
-            $sForm = $oCurrProd->DrawProductForm();
+            $oCurrProd = new SEEDBasket_Product( $this->oSB, 0, ['product_type'=>$newProdType] );
         } else if( $kCurrProd ) {
-            if( ($oCurrProd = new SEEDBasket_Product( $this->oSB, $kCurrProd )) ) {
-                $sForm = $oCurrProd->DrawProductForm();
-            }
+            $oCurrProd = new SEEDBasket_Product( $this->oSB, $kCurrProd );
+            $sDel = "<form method='post'><input type='hidden' name='sfAk' value='$kCurrProd'/><input type='hidden' name='sfAd' value='1'/><input type='submit' value='Delete'/></form>";
+        }
+        if( $oCurrProd ) {
+            $sForm = $oCurrProd->DrawProductForm();
         }
 
         // Draw the Add New control
@@ -172,7 +169,7 @@ class mbrBasket_Products
         }
         $oForm = new SEEDCoreForm('Plain');
         $sSelect = $oForm->Select( "newProdType", $raPT, "", array() );
-        $sList .= "<div><form method='post'>Add a new $sSelect <input type='submit' value='Add'/></form></div>";
+        $sList .= "<div><form method='post'>Add a new $sSelect <input type='submit' value='Show Form'/></form></div>";
 
         // Draw the list
         if( ($oCursor = $this->oSB->CreateCursor( 'product', "uid_seller='1'", ['sSortCol'=>'product_type'] )) ) {
@@ -181,7 +178,7 @@ class mbrBasket_Products
                 $bCurr = ($kCurrProd && $kP == $kCurrProd);
                 $sStyleCurr = $bCurr ? "border:2px solid blue;" : "";
 
-                if( false ) { // $oProduct->FormIsAjax() ) {
+                if( $oProduct->FormIsAjax() ) {
 
                 } else {
                     $sList .= "<div class='well' style='padding:5px;margin:5px;$sStyleCurr' onclick='location.replace(\"?kP=$kP\")' ".($bCurr ? "style='border:1px solid #333'" : "").">"
@@ -191,7 +188,11 @@ class mbrBasket_Products
             }
         }
 
-        $s .= "<div>$sForm</div><div>$sList</div>";
+        $s .= "<div>$sForm</div><div>$sDel</div><div>$sList</div>";
+
+        // Draw the seeds
+        $oMSDAppSeedEdit = new MSDAppSeedEdit( $this->oSB );
+        $s .= $oMSDAppSeedEdit->Draw( 1, "" ); //$this->kCurrGrower, $this->kCurrSpecies );
 
         return( $s );
     }
