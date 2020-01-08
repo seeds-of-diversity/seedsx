@@ -1,9 +1,5 @@
 <?php
 
-// Judy also keeps track of this information in a spreadsheet (I think it has locations, organizers, contacts, etc)
-// so it could be efficient to include all those and allow spreadsheet download.  Would there be a way to let her add extra columns?
-
-
 include_once( "../site2.php" );
 include_once( STDINC."SEEDForm.php" );
 include_once( STDINC."SEEDDate.php" );
@@ -14,10 +10,14 @@ include_once( STDINC."SEEDEditor.php" );
 
 include_once( SEEDCOMMON."console/console01kfui.php" );
 
+include_once( SEEDLIB.'events/eventsDB.php' );
+
 // DB is seeds2 : authentication is done on seeds2.SEEDSession_Users, all table references are to seeds.ev_events
 // This works on www8 because seeds2 user can see seeds and seeds2 databases.
 // This works on www12 because seeds2_def.php connects the single user that can see all databases
 list($kfdb, $sess, $dummyLang) = SiteStartSessionAccount( array( "W events" ) );
+
+$oApp = SiteAppConsole( ['db'=>'seeds1', 'sessPermsRequired'=>['W events']] );
 
 header( "Content-type: text/html; charset=ISO-8859-1");
 
@@ -25,7 +25,7 @@ header( "Content-type: text/html; charset=ISO-8859-1");
 //$kfdb->SetDebug(1);
 
 $iCurrYear = intval(date("Y",time()+3600*24*60));
-$iYear = SEEDSafeGPC_GetInt("EVfltYear");
+$iYear = SEEDInput_Int("EVfltYear");
 
 
 $raConsoleParms = array(
@@ -57,6 +57,8 @@ $raCompParms = array(
 $oC = new Console01KFUI( $kfdb, $sess, $raConsoleParms );
 
 $oEv = new EV_Events( $kfdb, $sess->GetUID() );
+
+$oEvDB = new EventsDB( $oApp );
 
 $oC->CompInit( $oEv->GetKfrelEvents(), $raCompParms );
 
@@ -185,13 +187,6 @@ function EV2_DSPreStore( $oDS )
     return( true );
 }
 
-//TODO put this in seedcommon/SEEDBootstrap.php along with a const for W_ROOT_BOOTSTRAP
-//     should this be in a SEEDBootstrap:: class?
-function BS_Row( $s )
-{
-    return( "<div class='row'>".$s."</div>" );
-}
-
 function BS_Row2( $raCols, $raParms = array() )
 /*********************************************
     Put any number of columns in a row
@@ -212,7 +207,6 @@ function BS_Row2( $raCols, $raParms = array() )
 
 function EV2_formDraw( $oForm )
 /******************************
-    Mobile-ready (uses BS_Row instead of TextTD)
  */
 {
     //$oForm->raParms['bBootstrap'] = true;
@@ -249,8 +243,8 @@ function EV2_formDraw( $oForm )
 
             ."<br/>"
             ."<div id='ev_titlebox' style='margin-bottom:10px'>"
-            .BS_Row( $oForm->Text( 'title',    "Title",    array('size'=>40, 'bsCol'=>"md-10,md-2") ) )
-            .BS_Row( $oForm->Text( 'title_fr', "(French)", array('size'=>40, 'bsCol'=>"md-10,md-2") ) )
+            ."<div class='row'>".$oForm->Text( 'title',    "Title",    array('size'=>40, 'bsCol'=>"md-10,md-2") )."</div>"
+            ."<div class='row'>".$oForm->Text( 'title_fr', "(French)", array('size'=>40, 'bsCol'=>"md-10,md-2") )."</div>"
             ."</div>"
 
             ."<div id='ev_citybox' style='margin-bottom:10px'>"
@@ -261,7 +255,7 @@ function EV2_formDraw( $oForm )
             ."</div>"
 
             ."<div id='ev_locationbox' style='margin-bottom:10px'>"
-            .BS_Row( $oForm->Text( 'location', "Location", array('size'=>30, 'bsCol'=>"md-10,md-2") ) )
+            ."<div class='row'>".$oForm->Text( 'location', "Location", array('size'=>30, 'bsCol'=>"md-10,md-2") )."</div>"
             ."</div>"
 
             ."<div class='well'>"
@@ -273,8 +267,8 @@ function EV2_formDraw( $oForm )
                                                   .$oForm->Text( 'date_alt_fr', "(fr)" ) )
                    ))
             ."</div>"
-            .BS_Row( $oForm->Text( 'contact', "Contact", array('size'=>30, 'bsCol'=>"md-10,md-2") ) )
-            .BS_Row( $oForm->Text( 'url_more', "Link to<br/> more info", array('size'=>30, 'bsCol'=>"md-10,md-2") ) )
+            ."<div class='row'>".$oForm->Text( 'contact', "Contact", array('size'=>30, 'bsCol'=>"md-10,md-2") )."</div>"
+            ."<div class='row'>".$oForm->Text( 'url_more', "Link to<br/> more info", array('size'=>30, 'bsCol'=>"md-10,md-2") )."</div>"
             ."<br/>"
 
             ."<label>Details (English)</label><br/>"
