@@ -11,7 +11,7 @@ include_once( STDINC."SEEDEditor.php" );
 include_once( SEEDCOMMON."console/console01kfui.php" );
 
 include_once( SEEDROOT."Keyframe/KeyframeForm.php" );
-include_once( SEEDLIB.'events/eventsDB.php' );
+include_once( SEEDLIB.'events/events.php' );
 
 // DB is seeds2 : authentication is done on seeds2.SEEDSession_Users, all table references are to seeds.ev_events
 // This works on www8 because seeds2 user can see seeds and seeds2 databases.
@@ -59,11 +59,11 @@ $oC = new Console01KFUI( $kfdb, $sess, $raConsoleParms );
 
 $oEv = new EV_Events( $kfdb, $sess->GetUID() );
 
-$oEvDB = new EventsDB( $oApp );
+$oEvents = new EventsLib( $oApp );
 
 $oC->CompInit( $oEv->GetKfrelEvents(), $raCompParms, 'A' );
 
-$oFormEv = new KeyframeForm( $oEvDB->KFRel('E'), 'A', [] );
+$oFormEv = new KeyframeForm( $oEvents->oDB->KFRel('E'), 'A', [] );
 $oFormEv->Load();
 //var_dump($oFormEv->GetValuesRA());
 
@@ -221,7 +221,7 @@ function EV2_formDraw( $oForm )
     global $kfdb;
     global $oFormEv;
     global $oC;
-    global $oEvDB;
+    global $oEvents;
 
 // When you click on a list item sfAk causes the new form to Load() the record, but
 // on the first instance of the app there is no sfAk parm.  Console01KFUI figures out the current record
@@ -229,7 +229,7 @@ function EV2_formDraw( $oForm )
 // On initial instance, when sfAk is not in parms, set the new form to the same record as the old form.
 if( !$oFormEv->GetKey() ) {
     $k = $oC->oComp->oForm->GetKey();
-    $kfr = $k ? $oEvDB->GetKFR( 'E', $k ) : $oEvDB->KFRel('E')->CreateRecord();   // do the right thing if $k is zero (New record)
+    $kfr = $k ? $oEvents->oDB->GetKFR( 'E', $k ) : $oEvents->oDB->KFRel('E')->CreateRecord();   // do the right thing if $k is zero (New record)
     $oFormEv->SetKFR( $kfr );
 }
 
@@ -247,7 +247,7 @@ if( !$oFormEv->GetKey() ) {
 
     $raMbrVol = ($kVol = $oForm->Value('vol_kMbr')) ? $kfdb->QueryRA( "SELECT * FROM seeds2.mbr_contacts WHERE _key='$kVol'" ) : [];
 
-    $sForm = EV_formdraw( $oFormEv, $raMbrVol ); //$kEv );
+    $sForm = EV_formdraw( $oFormEv, $raMbrVol );
 
     $s = "<div class='container'><div class='row'>"
             ."<div class='col-md-6'>"
@@ -327,7 +327,7 @@ function EV_formdraw( $oForm, $raMbrVol )
     global $SiteUtilRaProvinces1;
 
 
-    $s =
+    $sFormMain =
              BS_Row2( array( array( 'col-md-8', $oForm->Select( 'type',
                                                                 [ "Seedy Saturday"=>'SS', "Event"=>'EV', "Virtual"=>'VIRTUAL' ],
                                                                 "", ['classes'=>'typeSelect'] ) ),
@@ -372,23 +372,6 @@ function EV_formdraw( $oForm, $raMbrVol )
             ."<div class='row'>".$oForm->Text( 'url_more', "Link to<br/> more info", array('size'=>30, 'bsCol'=>"md-10,md-2") )."</div>"
             ."<br/><hr/>"
 
-            // Volunteer coordination
-            ."<div class='well' style='position:relative'>"     // specify position because SFU_TextComplete puts the <select> relative to first "positioned" ancestor
-            ."<h3>Volunteer Coordination</h3>"
-            ."<label>Our main volunteer there</label><br/>"
-
-            //[[text:dummy_kMbr | size:10 class:SFU_TextComplete | placeholder='Search']]
-            //[[hidden:vol_kMbr]]
-            ."<span id='vol-label'>".(@$raMbrVol['_key'] ? "{$raMbrVol['firstname']} {$raMbrVol['lastname']} in {$raMbrVol['city']} ({$raMbrVol['_key']})" : "")."</span>"
-            ."&nbsp;&nbsp;"
-            .$oForm->Text( 'dummy_kMbr', '', ['size'=>10,'class'=>'SFU_TextComplete','attrs'=>"placeholder='Search'"] )
-            .$oForm->Hidden( 'vol_kMbr' )
-            ."<br/>"
-            ."<label>Materials to ship and notes</label><br/>"
-            .$oForm->TextArea( 'vol_notes', ['width'=>'100%', 'attrs'=>"wrap='soft'"] )."<br/>"
-            ."<label>Date materials mailed (YYYY-MM-DD or N/A)</label><br/>"
-            .$oForm->Text( 'vol_dSent' )."<br/>"
-            ."</div>"
 
             ."<br/><br/>"
             ."<input type='submit' value='Save'/>"
@@ -404,6 +387,48 @@ function EV_formdraw( $oForm, $raMbrVol )
                 ."<BR/>"
                 ."Contact and Details use special tags [[mailto:my@email.ca] ] and [[http://my.website.ca] ]"  // escape the [[ because console01 expands template tags
             ."</div>";
+
+    // Volunteer coordination
+    $sFormVol =
+             "<div style='position:relative'>"     // specify position because SFU_TextComplete puts the <select> relative to first "positioned" ancestor
+            ."<h3>Volunteer Coordination</h3>"
+            ."<label>Our main volunteer there</label><br/>"
+
+            //[[text:dummy_kMbr | size:10 class:SFU_TextComplete | placeholder='Search']]
+            //[[hidden:vol_kMbr]]
+            ."<span id='vol-label'>".(@$raMbrVol['_key'] ? "{$raMbrVol['firstname']} {$raMbrVol['lastname']} in {$raMbrVol['city']} ({$raMbrVol['_key']})" : "")."</span>"
+            ."&nbsp;&nbsp;"
+            .$oForm->Text( 'dummy_kMbr', '', ['size'=>10,'classes'=>'SFU_TextComplete','attrs'=>"placeholder='Search'"] )
+            .$oForm->Hidden( 'vol_kMbr' )
+            ."<br/>"
+            ."<label>Materials to ship and notes</label><br/>"
+            .$oForm->TextArea( 'vol_notes', ['width'=>'100%', 'attrs'=>"wrap='soft'"] )."<br/>"
+            ."<label>Date materials mailed (YYYY-MM-DD or N/A)</label><br/>"
+            .$oForm->Text( 'vol_dSent' )."<br/>"
+            ."<input type='submit' value='Save'/>"
+            ."</div>";
+
+
+    $s = "<div class='ev-form well'>"
+            ."<div class='ev-form-head'>Event Form</div>"
+            ."<div class='ev-form-open'>$sFormMain</div>"
+        ."</div>"
+        ."<div class='ev-form well'>"
+            ."<div class='ev-form-head'>Volunteer Form</div>"
+            ."<div class='ev-form-open'>$sFormVol</div>"
+        ."</div>";
+
+    $s .= "<script>
+$(document).ready( function() {
+        $('.ev-form-open').hide();
+
+        $('.ev-form-head').click( function() {
+            $(this).closest('.ev-form').find('.ev-form-open').toggle();
+        });
+});
+</script>
+";
+
 
     return( $s );
 }
