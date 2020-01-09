@@ -10,6 +10,7 @@ include_once( STDINC."SEEDEditor.php" );
 
 include_once( SEEDCOMMON."console/console01kfui.php" );
 
+include_once( SEEDROOT."Keyframe/KeyframeForm.php" );
 include_once( SEEDLIB.'events/eventsDB.php' );
 
 // DB is seeds2 : authentication is done on seeds2.SEEDSession_Users, all table references are to seeds.ev_events
@@ -60,7 +61,13 @@ $oEv = new EV_Events( $kfdb, $sess->GetUID() );
 
 $oEvDB = new EventsDB( $oApp );
 
-$oC->CompInit( $oEv->GetKfrelEvents(), $raCompParms );
+$oC->CompInit( $oEv->GetKfrelEvents(), $raCompParms, 'A' );
+
+$oFormEv = new KeyframeForm( $oEvDB->KFRel('E'), 'A', [] );
+$oFormEv->Load();
+//var_dump($oFormEv->GetValuesRA());
+
+
 
 $oC->SetFrameControlParm( 'EVfltYear', $iYear );   // this causes the EVfltYear value to be propagated with oComp form submissions
 
@@ -210,9 +217,23 @@ function EV2_formDraw( $oForm )
  */
 {
     //$oForm->raParms['bBootstrap'] = true;
-    global $SiteUtilRaProvinces1;
     global $oEv;
     global $kfdb;
+    global $oFormEv;
+    global $oC;
+    global $oEvDB;
+
+// When you click on a list item sfAk causes the new form to Load() the record, but
+// on the first instance of the app there is no sfAk parm.  Console01KFUI figures out the current record
+// from the first item in the list and sets up its (old) form.
+// On initial instance, when sfAk is not in parms, set the new form to the same record as the old form.
+if( !$oFormEv->GetKey() ) {
+    $k = $oC->oComp->oForm->GetKey();
+    $kfr = $k ? $oEvDB->GetKFR( 'E', $k ) : $oEvDB->KFRel('E')->CreateRecord();   // do the right thing if $k is zero (New record)
+    $oFormEv->SetKFR( $kfr );
+}
+
+
 
     if( ($kEv = $oForm->GetKey()) ) {
         if( ($kfr = $oEv->GetKfrelEvents()->GetRecordFromDBKey( $kEv )) ) {
@@ -224,110 +245,25 @@ function EV2_formDraw( $oForm )
         $sPreviewText = "Preview will go here";
     }
 
-    if( ($kVol = $oForm->Value('vol_kMbr')) ) {
-        // a volunteer is assigned to this event
-        $raMbrVol = $kfdb->QueryRA( "SELECT * FROM seeds2.mbr_contacts WHERE _key='$kVol'" );
-    }
+    $raMbrVol = ($kVol = $oForm->Value('vol_kMbr')) ? $kfdb->QueryRA( "SELECT * FROM seeds2.mbr_contacts WHERE _key='$kVol'" ) : [];
 
-    $s = "<div class='container'>"
+    $sForm = EV_formdraw( $oFormEv, $raMbrVol ); //$kEv );
 
-        ."<div class='row'>"
-
-        // left column
-        ."<div class='col-md-6'>"
-            .BS_Row2( array( array( 'col-md-8', $oForm->Select2( 'type',
-                                                                array( "Seedy Saturday"=>'SS', "Event"=>'EV', "Virtual"=>'VIRTUAL' ),
-                                                                "", array('class'=>'typeSelect') ) ),
-                             array( 'col-md-4', "<input type='submit' value='Save'/>" )
-                   ))
-
-            ."<br/>"
-            ."<div id='ev_titlebox' style='margin-bottom:10px'>"
-            ."<div class='row'>".$oForm->Text( 'title',    "Title",    array('size'=>40, 'bsCol'=>"md-10,md-2") )."</div>"
-            ."<div class='row'>".$oForm->Text( 'title_fr', "(French)", array('size'=>40, 'bsCol'=>"md-10,md-2") )."</div>"
+    $s = "<div class='container'><div class='row'>"
+            ."<div class='col-md-6'>"
+                .$sForm
             ."</div>"
-
-            ."<div id='ev_citybox' style='margin-bottom:10px'>"
-            .BS_Row2( array( array( 'col-md-2', "<b>City/town</b>" ),
-                             array( 'col-md-10', $oForm->Text( 'city', "", array('size'=>30) )
-                                                .$oForm->Select2( 'province', $SiteUtilRaProvinces1 ) )
-                   ))
+            ."<div class='col-md-6'>"
+                ."<div class='well well-sm' style='background-color:#ded'>"
+                .$sPreviewText
+                ."</div>"
             ."</div>"
-
-            ."<div id='ev_locationbox' style='margin-bottom:10px'>"
-            ."<div class='row'>".$oForm->Text( 'location', "Location", array('size'=>30, 'bsCol'=>"md-10,md-2") )."</div>"
-            ."</div>"
-
-            ."<div class='well'>"
-                .BS_Row2( array( array( 'col-md-6', $oForm->Date( 'date_start', "Date" )."<br/>"
-                                                //.$oForm->Date( 'date_end', "Date end" )."<br/>"   use date_alt instead of a range
-                                                  .$oForm->Text( 'time', "Time" ) ),
-                                array( 'col-md-6', "<b>Date Alternate</b><br/>"
-                                                  .$oForm->Text( 'date_alt', "(en)" )."<br/>"
-                                                  .$oForm->Text( 'date_alt_fr', "(fr)" ) )
-                   ))
-            ."</div>"
-            ."<div class='row'>".$oForm->Text( 'contact', "Contact", array('size'=>30, 'bsCol'=>"md-10,md-2") )."</div>"
-            ."<div class='row'>".$oForm->Text( 'url_more', "Link to<br/> more info", array('size'=>30, 'bsCol'=>"md-10,md-2") )."</div>"
-            ."<br/>"
-
-            ."<label>Details (English)</label><br/>"
-            .$oForm->TextArea( 'details', "", 60, 8, array('attrs'=>"wrap='soft'") )."<br/>"
-            ."<label>(French)</label><br/>"
-            .$oForm->TextArea( 'details_fr', "", 60, 8, array('attrs'=>"wrap='soft'") )."<br/>"
-
-            ."<br/><hr/>"
-
-            // Volunteer coordination
-            ."<div class='well' style='position:relative'>"     // specify position because SFU_TextComplete puts the <select> relative to first "positioned" ancestor
-            ."<h3>Volunteer Coordination</h3>"
-            ."<label>Our main volunteer there</label><br/>"
-
-            //[[text:dummy_kMbr | size:10 class:SFU_TextComplete | placeholder='Search']]
-            //[[hidden:vol_kMbr]]
-            ."<span id='vol-label'>".(@$raMbrVol['_key'] ? "{$raMbrVol['firstname']} {$raMbrVol['lastname']} in {$raMbrVol['city']} ({$raMbrVol['_key']})" : "")."</span>"
-            ."&nbsp;&nbsp;"
-            .$oForm->Text( 'dummy_kMbr', '', ['size'=>10,'class'=>'SFU_TextComplete','attrs'=>"placeholder='Search'"] )
-            .$oForm->Hidden( 'vol_kMbr' )
-            ."<br/>"
-            ."<label>Materials to ship and notes</label><br/>"
-            .$oForm->TextArea( 'vol_notes', "", 60, 8, array('attrs'=>"wrap='soft'") )."<br/>"
-            ."<label>Date materials mailed (YYYY-MM-DD or N/A)</label><br/>"
-            .$oForm->Text( 'vol_dSent' )."<br/>"
-            ."</div>"
-
-            ."<br/><br/>"
-            ."<input type='submit' value='Save'/>"
-
-            ."<br/><br/>"
-            ."<div style='padding:1em;margin:0 auto;width:95%;border:thin solid black;font-size:8pt;font-family:verdana,sans serif;'>"
-                ."<B>Location</B>: name of venue, address<BR/>"
-                ."<B>Date</B>: must be YYYY-MM-DD<BR/>"
-                ."<B>Alternate Date Text</B>: enter a Date too, so the list can sort properly, but this will be shown instead. "
-                ."e.g. if date is unknown enter 2014-01-01 for Date, TBA as Alternate - the list will show TBA as the date and it will put the event at "
-                ."Jan 1, 2014<br/>"
-                ."<B>Contact</B>: name, phone, email here instead of in details so we can delete that personal info later.<BR/>"
-                ."<BR/>"
-                ."Contact and Details use special tags [[mailto:my@email.ca] ] and [[http://my.website.ca] ]"  // escape the [[ because console01 expands template tags
-            ."</div>"
-
-        ."</div>"  // left column
-
-        // right column
-        ."<div class='col-md-6'>"
-            ."<div class='well well-sm' style='background-color:#ded'>"
-            .$sPreviewText
-            ."</div>"
-        ."</div>"  // right column
-
-       ."</div>"  // row
+        ."</div></div>";
 
 //    spec        VARCHAR(200),                           # control tags (like texttype for the details)
 //    latlong     VARCHAR(200),                           # latitude and longitude urlencoded (blank means it needs to be geocoded)
 //    attendance  INTEGER,
 //    notes_priv  TEXT,                                   # internal notes
-
-        ."</div>";  // container
 
     $s .= EV2_volSearchJS();
 
@@ -384,6 +320,95 @@ volSearchJS;
 
     return( $s );
 }
+
+
+function EV_formdraw( $oForm, $raMbrVol )
+{
+    global $SiteUtilRaProvinces1;
+
+
+    $s =
+             BS_Row2( array( array( 'col-md-8', $oForm->Select( 'type',
+                                                                [ "Seedy Saturday"=>'SS', "Event"=>'EV', "Virtual"=>'VIRTUAL' ],
+                                                                "", ['classes'=>'typeSelect'] ) ),
+                             array( 'col-md-4', "<input type='submit' value='Save'/>" )
+                   ))
+
+            ."<br/>"
+            ."<div id='ev_titlebox' style='margin-bottom:10px'>"
+            ."<div class='row'>".$oForm->Text( 'title',    "Title",    array('size'=>40, 'bsCol'=>"md-10,md-2") )."</div>"
+            ."<div class='row'>".$oForm->Text( 'title_fr', "(French)", array('size'=>40, 'bsCol'=>"md-10,md-2") )."</div>"
+            ."</div>"
+
+            ."<div id='ev_citybox' style='margin-bottom:10px'>"
+            .BS_Row2( array( array( 'col-md-2', "<b>City/town</b>" ),
+                             array( 'col-md-10', $oForm->Text( 'city', "", array('size'=>30) )
+                                                .$oForm->Select( 'province', $SiteUtilRaProvinces1 ) )
+                   ))
+            ."</div>"
+
+            ."<div id='ev_locationbox' style='margin-bottom:10px'>"
+            ."<div class='row'>".$oForm->Text( 'location', "Location", array('size'=>30, 'bsCol'=>"md-10,md-2") )."</div>"
+            ."</div>"
+
+            ."<div class='well'>"
+                .BS_Row2( array( array( 'col-md-6', $oForm->Date( 'date_start', "Date" )."<br/>"
+                                                //.$oForm->Date( 'date_end', "Date end" )."<br/>"   use date_alt instead of a range
+                                                  .$oForm->Text( 'time', "Time" ) ),
+                                array( 'col-md-6', "<b>Date Alternate</b><br/>"
+                                                  .$oForm->Text( 'date_alt', "(en)" )."<br/>"
+                                                  .$oForm->Text( 'date_alt_fr', "(fr)" ) )
+                   ))
+            ."</div>"
+            ."<br/>"
+
+            ."<label>Details (English)</label><br/>"
+            .$oForm->TextArea( 'details', ['width'=>'100%', 'attrs'=>"wrap='soft'"] )."<br/>"
+            ."<label>(French)</label><br/>"
+            .$oForm->TextArea( 'details_fr', ['width'=>'100%', 'attrs'=>"wrap='soft'"] )."<br/>"
+
+            ."<br/>"
+            ."<div class='row'>".$oForm->Text( 'contact', "Contact", array('size'=>30, 'bsCol'=>"md-10,md-2") )."</div>"
+            ."<div class='row'>".$oForm->Text( 'url_more', "Link to<br/> more info", array('size'=>30, 'bsCol'=>"md-10,md-2") )."</div>"
+            ."<br/><hr/>"
+
+            // Volunteer coordination
+            ."<div class='well' style='position:relative'>"     // specify position because SFU_TextComplete puts the <select> relative to first "positioned" ancestor
+            ."<h3>Volunteer Coordination</h3>"
+            ."<label>Our main volunteer there</label><br/>"
+
+            //[[text:dummy_kMbr | size:10 class:SFU_TextComplete | placeholder='Search']]
+            //[[hidden:vol_kMbr]]
+            ."<span id='vol-label'>".(@$raMbrVol['_key'] ? "{$raMbrVol['firstname']} {$raMbrVol['lastname']} in {$raMbrVol['city']} ({$raMbrVol['_key']})" : "")."</span>"
+            ."&nbsp;&nbsp;"
+            .$oForm->Text( 'dummy_kMbr', '', ['size'=>10,'class'=>'SFU_TextComplete','attrs'=>"placeholder='Search'"] )
+            .$oForm->Hidden( 'vol_kMbr' )
+            ."<br/>"
+            ."<label>Materials to ship and notes</label><br/>"
+            .$oForm->TextArea( 'vol_notes', ['width'=>'100%', 'attrs'=>"wrap='soft'"] )."<br/>"
+            ."<label>Date materials mailed (YYYY-MM-DD or N/A)</label><br/>"
+            .$oForm->Text( 'vol_dSent' )."<br/>"
+            ."</div>"
+
+            ."<br/><br/>"
+            ."<input type='submit' value='Save'/>"
+
+            ."<br/><br/>"
+            ."<div style='padding:1em;margin:0 auto;width:95%;border:thin solid black;font-size:8pt;font-family:verdana,sans serif;'>"
+                ."<B>Location</B>: name of venue, address<BR/>"
+                ."<B>Date</B>: must be YYYY-MM-DD<BR/>"
+                ."<B>Alternate Date Text</B>: enter a Date too, so the list can sort properly, but this will be shown instead. "
+                ."e.g. if date is unknown enter 2014-01-01 for Date, TBA as Alternate - the list will show TBA as the date and it will put the event at "
+                ."Jan 1, 2014<br/>"
+                ."<B>Contact</B>: name, phone, email here instead of in details so we can delete that personal info later.<BR/>"
+                ."<BR/>"
+                ."Contact and Details use special tags [[mailto:my@email.ca] ] and [[http://my.website.ca] ]"  // escape the [[ because console01 expands template tags
+            ."</div>";
+
+    return( $s );
+}
+
+
 
 exit;
 
