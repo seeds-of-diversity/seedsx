@@ -152,6 +152,7 @@ class mbrBasket_Products
         $oForm->Update();
 
         // Draw the form (if any) first because it Updates the db
+        $oCurrProd = null;
         if( ($newProdType = SEEDInput_Str( 'newProdType' )) ) {
             $oCurrProd = new SEEDBasket_Product( $this->oSB, 0, ['product_type'=>$newProdType] );
         } else if( $kCurrProd ) {

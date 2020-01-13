@@ -48,7 +48,14 @@ if( ($jx = @$_REQUEST['jx']) ) {
                 $rQ['bOk'] = true;
             }
             break;
-
+        case 'doBuildBasket':
+            if( ($k = SEEDInput_Int('k'))) {
+                $o = new SoDOrder_MbrOrder( $oApp );
+                $o->CreateFromMbrOrder( $k );
+                $rQ['sOut'] = "";
+                $rQ['bOk'] = true;
+            }
+            break;
         case 'drawTicket':
             if( ($id = intval(@$_REQUEST['id'])) ) {
                 if( !($kfr = $oUI->KfrelOrder()->GetRecordFromDBKey( $id )) ) { $rQ['sErr'] = "Couldn't load $id"; goto jxDone; }
@@ -206,6 +213,7 @@ $s .= "<table border='1' width='100%' cellpadding='2' style='border-collapse:col
      ."<th>Language<br/>eBulletin</th>"
      ."<th>Order</th>"
      ."<th>Payment</th>"
+     ."<th>Fulfilment</th>"
      ."</tr>";
 
 while( $kfr->CursorFetch() ) {
@@ -294,6 +302,25 @@ $(document).ready(function() {
             $(this).html("");
             $('#status2_'+thisId).html("");  // remove the other button
             $("#mailed"+thisId).html("");    // "Order not mailed" changes to ""
+        }
+    });
+
+    /* Build basket button click
+     */
+    $(".doBuildBasket").click(function(event){
+        event.preventDefault();
+        let k = $(this).attr('data-kOrder');
+
+        jxData = { jx     : 'doBuildBasket',
+                   k      : k,
+                   lang   : "EN"
+                 };
+
+        o = SEEDJX( "mbr_order.php", jxData );
+        if( o['bOk'] ) {
+//            $(this).html("");
+//            $('#status2_'+thisId).html("");  // remove the other button
+//            $("#mailed"+thisId).html("");    // "Order not mailed" changes to ""
         }
     });
 });
