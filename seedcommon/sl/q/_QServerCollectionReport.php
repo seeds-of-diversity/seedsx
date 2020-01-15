@@ -205,7 +205,7 @@ class QServerCollectionReport
         list($yNewest,$nWeightTotal,$sNotes,$fAdoption) = SLDBCultivar_GetInvDetailsForPCV( $oSLDBMaster, $raPCV['P__key'], $kCollection, $bComputeAdoption );
 
         // Get the number of csci companies that have the given pcv
-        $nCSCI = $this->oQ->kfdb->Query1( "SELECT count(*) FROM seeds.sl_cv_sources WHERE _status='0' AND fk_sl_pcv='{$raPCV['P__key']}'" );
+        $nCSCI = $this->oQ->kfdb->Query1( "SELECT count(*) FROM seeds.sl_cv_sources WHERE _status='0' AND fk_sl_pcv='{$raPCV['P__key']}' AND fk_sl_sources>='3'" );
 
         $raOut = [
                 'cv'          => $raPCV['P__key'],
