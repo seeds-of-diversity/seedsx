@@ -225,12 +225,65 @@ while( $kfr->CursorFetch() ) {
 }
 $s .= "</table>";
 
+$s .= mbrSearchJS();
+
+
+echo Console01Static::HTMLPage( $s, "", 'EN', [ 'sCharset'=>'cp1252', 'bBodyMargin'=>true,
+                                                'raScriptFiles' => [ W_ROOT."std/js/SEEDStd.js",W_CORE."js/SEEDCore.js", W_CORE."js/SFUTextComplete.js" ]
+] );
 
 
 
-echo Console01Static::HTMLPage( $s, "", 'EN', array( 'sCharset'=>'cp1252', 'bBodyMargin'=>true,
-                                                     'raScriptFiles' => array( W_ROOT."std/js/SEEDStd.js" )
-) );
+// same as ev_admin
+function mbrSearchJS()
+{
+    $urlQ = SITEROOT_URL."app/q/q2.php";    // same as q/index.php but authenticates on seeds2
+
+    $s = <<<volSearchJS
+<script>
+var urlQ = "$urlQ";
+var cp1_pcvSearch = [];
+SFU_TextCompleteVars['sfAp_dummy_kMbr'] = {
+    'fnFillSelect' :
+            function( sSearch ) {
+                let raRet = [];
+
+                let jxData = { qcmd    : 'mbr-search',
+                               lang    : "EN",
+                               sSearch : sSearch
+                             };
+                let o = SEEDJXSync( urlQ, jxData );console.log(o);
+                if( !o || !o['bOk'] || !o['raOut'] ) {
+                    alert( "Sorry there is a server problem" );
+                } else {
+                    //var bOk = o['bOk'];
+                    //var sOut = o['sOut'];
+                    for( let i = 0; i < o['raOut'].length; ++i ) {
+                        r = o['raOut'][i];
+                        raRet[i] = { val: r['_key'],
+                                     label: r['firstname']+" "+r['lastname']+" ("+r['_key']+")" };
+                    }
+                    cp1_pcvSearch = o['raOut'];   // save this so we can look it up in fnSelectChoose
+                }
+                return( raRet );
+            },
+    'fnSelectChoose' :
+            function( val ) {
+                for( let i = 0; i < cp1_pcvSearch.length; ++i ) {
+                    let r = cp1_pcvSearch[i];
+                    if( r['_key'] == val ) {
+                        $("#vol-label").html( r['firstname']+" "+r['lastname']+" ("+r['_key']+")"+" in "+r['city'] );
+                        $("#sfAp_vol_kMbr").val( r['_key'] );
+                        break;
+                    }
+                }
+            }
+};
+</script>
+volSearchJS;
+
+    return( $s );
+}
 
 
 ?>
@@ -322,6 +375,17 @@ $(document).ready(function() {
 //            $('#status2_'+thisId).html("");  // remove the other button
 //            $("#mailed"+thisId).html("");    // "Order not mailed" changes to ""
         }
+    });
+
+    /* Membership item click
+     */
+    $(".doShowMembershipForm").click(function(event){
+        event.preventDefault();
+        let tr = $(this).closest(".mbro-row");
+        tr.after("<tr><td colspan='7'><div style='position:relative'>"
+                +"<input type='text' name='sfAp_dummy_kMbr' id='sfAp_dummy_kMbr' size='10' class='SFU_TextComplete' placeholder='Search'/>"
+                +"</div></td></tr>");
+        SFU_TextComplete_Init();    // activate the search control
     });
 });
 
