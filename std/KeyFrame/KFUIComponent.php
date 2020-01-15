@@ -172,6 +172,9 @@ class SEEDFormUIComponent
             $raUParms['raSerial'] = $raSerial;
             $raUParms['bGPC'] = $bGPC;
         }
+        if( @$this->raCompConfig['bReadonly'] ) {
+            $raUParms['bNoStore'] = true;
+        }
         $this->oForm->Update($raUParms);
 
         /* After the form Update (and any possible insert) set the currRow with the current form key.
