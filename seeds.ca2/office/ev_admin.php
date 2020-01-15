@@ -34,7 +34,7 @@ $raConsoleParms = array(
     'CONSOLE_NAME' => "Events",
     'HEADER_LINKS' => array( ['label'=>'Volunteers', 'href'=>'ev_volunteers.php', 'target'=>'_blank'] ),
     'bBootstrap' => true,
-    'script_files' => [W_CORE."js/SEEDCore.js", W_CORE."js/SFUTextComplete.js"]
+    'script_files' => [W_CORE."js/SEEDCore.js", W_CORE."js/SFUTextComplete.js", W_CORE."js/MbrSelector.js"]
 );
 $raCompParms = array(
     'Label'    => "Event",
@@ -278,43 +278,10 @@ function EV2_volSearchJS()
     $s = <<<volSearchJS
 <script>
 var urlQ = "$urlQ";
-var cp1_pcvSearch = [];
-SFU_TextCompleteVars['sfAp_dummy_kMbr'] = {
-    'fnFillSelect' :
-            function( sSearch ) {
-                let raRet = [];
 
-                let jxData = { qcmd    : 'mbr-search',
-                               lang    : "EN",
-                               sSearch : sSearch
-                             };
-                let o = SEEDJXSync( urlQ, jxData );console.log(o);
-                if( !o || !o['bOk'] || !o['raOut'] ) {
-                    alert( "Sorry there is a server problem" );
-                } else {
-                    //var bOk = o['bOk'];
-                    //var sOut = o['sOut'];
-                    for( let i = 0; i < o['raOut'].length; ++i ) {
-                        r = o['raOut'][i];
-                        raRet[i] = { val: r['_key'],
-                                     label: r['firstname']+" "+r['lastname']+" ("+r['_key']+")" };
-                    }
-                    cp1_pcvSearch = o['raOut'];   // save this so we can look it up in fnSelectChoose
-                }
-                return( raRet );
-            },
-    'fnSelectChoose' :
-            function( val ) {
-                for( let i = 0; i < cp1_pcvSearch.length; ++i ) {
-                    let r = cp1_pcvSearch[i];
-                    if( r['_key'] == val ) {
-                        $("#vol-label").html( r['firstname']+" "+r['lastname']+" ("+r['_key']+")"+" in "+r['city'] );
-                        $("#sfAp_vol_kMbr").val( r['_key'] );
-                        break;
-                    }
-                }
-            }
-};
+$(document).ready( function() {
+    var oTextComplete = new MbrSelector( { idTxtSearch:'sfAp_dummy_kMbr', idOutReport:'vol-label', idOutKey:'sfAp_vol_kMbr' } );
+});
 </script>
 volSearchJS;
 
@@ -326,8 +293,9 @@ function EV_formdraw( $oForm, $raMbrVol )
 {
     global $SiteUtilRaProvinces1;
 
+    $sMainSummary = "";
 
-    $sFormMain =
+    $sMainForm =
              BS_Row2( array( array( 'col-md-8', $oForm->Select( 'type',
                                                                 [ "Seedy Saturday"=>'SS', "Event"=>'EV', "Virtual"=>'VIRTUAL' ],
                                                                 "", ['classes'=>'typeSelect'] ) ),
@@ -388,8 +356,13 @@ function EV_formdraw( $oForm, $raMbrVol )
                 ."Contact and Details use special tags [[mailto:my@email.ca] ] and [[http://my.website.ca] ]"  // escape the [[ because console01 expands template tags
             ."</div>";
 
+    // Our registration for the event
+    $sRegSummary = "";
+    $sRegForm = "";
+
     // Volunteer coordination
-    $sFormVol =
+    $sVolSummary = "";
+    $sVolForm =
              "<div style='position:relative'>"     // specify position because SFU_TextComplete puts the <select> relative to first "positioned" ancestor
             ."<h3>Volunteer Coordination</h3>"
             ."<label>Our main volunteer there</label><br/>"
@@ -409,21 +382,49 @@ function EV_formdraw( $oForm, $raMbrVol )
             ."</div>";
 
 
-    $s = "<div class='ev-form well'>"
-            ."<div class='ev-form-head'>Event Form</div>"
-            ."<div class='ev-form-open'>$sFormMain</div>"
+    $s = "<style>
+              .ev-form-doClose { font-size: x-small; content: 'Close'; border:1px solid #888; padding:5px; margin:10px;
+                                 background-color:#8af; color:white; width:5em; text-align:center; }
+          </style>"
+        ."<div class='ev-form well'>"
+            ."<div class='ev-form-doOpen'>Event Form</div>"
+            ."<div class='ev-form-doClose'>Close</div>"
+            ."<div class='ev-form-bodyClosed'>$sMainSummary</div>"
+            ."<div class='ev-form-bodyOpen'>$sMainForm</div>"
         ."</div>"
         ."<div class='ev-form well'>"
-            ."<div class='ev-form-head'>Volunteer Form</div>"
-            ."<div class='ev-form-open'>$sFormVol</div>"
+            ."<div class='ev-form-doOpen'>Registration</div>"
+            ."<div class='ev-form-doClose'>Close</div>"
+            ."<div class='ev-form-bodyClosed'>$sRegSummary</div>"
+            ."<div class='ev-form-bodyOpen'>$sRegForm</div>"
+        ."</div>"
+        ."<div class='ev-form well'>"
+            ."<div class='ev-form-doOpen'>Volunteer Coordination</div>"
+            ."<div class='ev-form-doClose'>Close</div>"
+            ."<div class='ev-form-bodyClosed'>$sVolSummary</div>"
+            ."<div class='ev-form-bodyOpen'>$sVolForm</div>"
         ."</div>";
 
     $s .= "<script>
 $(document).ready( function() {
-        $('.ev-form-open').hide();
+        $('.ev-form-doOpen').show();
+        $('.ev-form-doClose').hide();
+        $('.ev-form-bodyOpen').hide();
+        $('.ev-form-bodyClosed').show();
 
-        $('.ev-form-head').click( function() {
-            $(this).closest('.ev-form').find('.ev-form-open').toggle();
+        $('.ev-form-doOpen').click( function() {
+            $(this).hide();
+            let f = $(this).closest('.ev-form');
+            f.find('.ev-form-doClose').show();
+            f.find('.ev-form-bodyOpen').show();
+            f.find('.ev-form-bodyClosed').hide();
+        });
+        $('.ev-form-doClose').click( function() {
+            $(this).hide();
+            let f = $(this).closest('.ev-form');
+            f.find('.ev-form-doOpen').show();
+            f.find('.ev-form-bodyOpen').hide();
+            f.find('.ev-form-bodyClosed').show();
         });
 });
 </script>
