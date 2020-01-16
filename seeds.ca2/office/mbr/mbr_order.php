@@ -28,6 +28,32 @@ if( ($jx = @$_REQUEST['jx']) ) {
     $rQ = array( 'bOk'=>false, 'sOut'=>"", 'sErr'=>"" );
 
     switch( $jx ) {
+        case 'drawTicket':
+            if( ($id = intval(@$_REQUEST['id'])) ) {
+                if( !($kfr = $oUI->KfrelOrder()->GetRecordFromDBKey( $id )) ) { $rQ['sErr'] = "Couldn't load $id"; goto jxDone; }
+
+                $oMbrOrder = new MbrOrder( $kfdb, "EN", $id );
+                $rQ['sOut'] = utf8_encode($oMbrOrder->DrawTicket());
+                $rQ['bOk'] = true;
+
+                header( "Content-Type:text/html; charset=utf8" );
+            }
+            break;
+        case 'drawStatusForm':
+            if( ($k = SEEDInput_Int('k')) &&
+                ($kfr = $kfrel->GetRecordFromDBKey( $k )) )
+            {
+                $rQ['sOut'] = utf8_encode(statusForm( $kfr, $bCanWrite ));
+                $rQ['bOk'] = true;
+
+                header( "Content-Type:text/html; charset=utf8" );
+            }
+            break;
+    }
+
+    if( !$bCanWrite )  goto jxDone;
+
+    switch( $jx ) {
         case 'changeStatus2ToMailed':
             if( ($id = intval(@$_REQUEST['id'])) ) {
                 if( !($kfr = $oUI->KfrelOrder()->GetRecordFromDBKey( $id )) ) { $rQ['sErr'] = "Couldn't load $id"; goto jxDone; }
@@ -56,25 +82,13 @@ if( ($jx = @$_REQUEST['jx']) ) {
                 $rQ['bOk'] = true;
             }
             break;
-        case 'drawTicket':
-            if( ($id = intval(@$_REQUEST['id'])) ) {
-                if( !($kfr = $oUI->KfrelOrder()->GetRecordFromDBKey( $id )) ) { $rQ['sErr'] = "Couldn't load $id"; goto jxDone; }
-
-                $oMbrOrder = new MbrOrder( $kfdb, "EN", $id );
-                $rQ['sOut'] = utf8_encode($oMbrOrder->DrawTicket());
-                $rQ['bOk'] = true;
-
-                header( "Content-Type:text/html; charset=utf8" );
-            }
-            break;
-        case 'drawStatusForm':
+        case 'doSubmitStatus':
             if( ($k = SEEDInput_Int('k')) &&
                 ($kfr = $kfrel->GetRecordFromDBKey( $k )) )
             {
-                $rQ['sOut'] = utf8_encode(statusForm( $kfr, $bCanWrite ));
-                $rQ['bOk'] = true;
-
-                header( "Content-Type:text/html; charset=utf8" );
+                $sAction = SEEDInput_Str('action');
+                $sNote   = SEEDInput_Str('note');
+                doSubmitForm( $kfr, $sAction, $sNote );
             }
             break;
     }
@@ -105,52 +119,58 @@ if( ($row = $oUI->GetCurrOrderKey()) ) {
     if( $bCanWrite ) {
         $action = $oUI->pAction;
         $action_notes = SEEDSafeGPC_GetStrPlain('action_note');
+        doSubmitForm( $kfr, $action, $action_notes );
+    }
+}
 
-        $sStamp = "[".$sess->GetName()." at ".date( "Y-M-d h:i")."]";
+function doSubmitForm( $kfr, $action, $action_notes )
+{
+    global $sess;
 
-        $bUpdate = false;
-        $sNoteExtra = "";
-        switch( $action ) {
-            case "Change to Pending":
-                // Pending is represented as (eStatus in (New,Paid)), so for PayPal orders use pp_payment_status=='Completed'
-                // to decide which one to use.  For Cheques, just go back to New and hope for the best.
-                $eNewStatus = $kfr->value('pp_payment_status')=='Completed' ? MBRORDER_STATUS_PAID : MBRORDER_STATUS_NEW;
-                $kfr->SetValue( 'eStatus', $eNewStatus );
-                //$kfr->SetValue( 'pay_status', MBR_PS_CONFIRMED );
-                $sNoteExtra = "Changed status to Pending ($eNewStatus)";
-                $bUpdate = true;
-                break;
-            case "Fill":
-                $kfr->SetValue( 'eStatus', MBRORDER_STATUS_FILLED );
-                //$kfr->SetValue( 'pay_status', MBR_PS_FILLED );
-                $sNoteExtra = "Changed status to Filled";
-                $bUpdate = true;
-                break;
-            case "Cancel":
-                $kfr->SetValue( 'eStatus', MBRORDER_STATUS_CANCELLED );
-                //$kfr->SetValue( 'pay_status', MBR_PS_CANCELLED );
-                $sNoteExtra = "Changed status to Cancelled";
-                $bUpdate = true;
-                break;
-            case "Add Note":
-                $bUpdate = true;
-                break;
+    $sStamp = "[".$sess->GetName()." at ".date( "Y-M-d h:i")."]";
 
-            case "changeStatusToPaid":
-                $kfr->SetValue( 'eStatus', MBRORDER_STATUS_PAID );
-                $bUpdate = true;
-                break;
+    $bUpdate = false;
+    $sNoteExtra = "";
+    switch( $action ) {
+        case "Change to Pending":
+            // Pending is represented as (eStatus in (New,Paid)), so for PayPal orders use pp_payment_status=='Completed'
+            // to decide which one to use.  For Cheques, just go back to New and hope for the best.
+            $eNewStatus = $kfr->value('pp_payment_status')=='Completed' ? MBRORDER_STATUS_PAID : MBRORDER_STATUS_NEW;
+            $kfr->SetValue( 'eStatus', $eNewStatus );
+            //$kfr->SetValue( 'pay_status', MBR_PS_CONFIRMED );
+            $sNoteExtra = "Changed status to Pending ($eNewStatus)";
+            $bUpdate = true;
+            break;
+        case "Fill":
+            $kfr->SetValue( 'eStatus', MBRORDER_STATUS_FILLED );
+            //$kfr->SetValue( 'pay_status', MBR_PS_FILLED );
+            $sNoteExtra = "Changed status to Filled";
+            $bUpdate = true;
+            break;
+        case "Cancel":
+            $kfr->SetValue( 'eStatus', MBRORDER_STATUS_CANCELLED );
+            //$kfr->SetValue( 'pay_status', MBR_PS_CANCELLED );
+            $sNoteExtra = "Changed status to Cancelled";
+            $bUpdate = true;
+            break;
+        case "Add Note":
+            $bUpdate = true;
+            break;
 
-            default:
-                break;
-        }
-        if( $bUpdate ) {
-            $kfr->SetValue( 'notes', "$sStamp "
-                                    .($action_notes ? ($action_notes."\n") : "")
-                                    .($sNoteExtra ? ($sNoteExtra."\n") : "")
-                                    .$kfr->value('notes') );
-            $kfr->PutDBRow();
-        }
+        case "changeStatusToPaid":
+            $kfr->SetValue( 'eStatus', MBRORDER_STATUS_PAID );
+            $bUpdate = true;
+            break;
+
+        default:
+            break;
+    }
+    if( $bUpdate ) {
+        $kfr->SetValue( 'notes', "$sStamp "
+                                .($action_notes ? ($action_notes."\n") : "")
+                                .($sNoteExtra ? ($sNoteExtra."\n") : "")
+                                .$kfr->value('notes') );
+        $kfr->PutDBRow();
     }
 }
 
@@ -197,13 +217,15 @@ function statusForm( $kfr, $bCanWrite )
                 die( "<h3><font color='red'>Undefined payment status.  Inform Bob immediately, with the order number ($row).</font></h3>" );
         }
         $sCol2 = "<h3>This order is $sState - last update ".$kfr->value("_updated")."</h3>"
-                ."<form action='${_SERVER['PHP_SELF']}'>"
+                ."<form class='statusForm' onsubmit='return false;'>"// action='${_SERVER['PHP_SELF']}'>"
                 .SEEDForm_Hidden( 'row', $row );
         foreach( $raActions as $sAction ) {
-            $sCol2 .= "<input type='submit' name='action' value='$sAction'>"
+            //$sCol2 .= "<input type='submit' name='action' value='$sAction'>"
+            $sCol2 .= "<button onclick='doSubmitStatus(\"$sAction\", $row, ".'$(this)'.")'>$sAction</button>"
                      ."&nbsp;&nbsp;&nbsp;";
         }
-        $sCol2 .= "<input type='submit' name='action' value='Add Note'>&nbsp;&nbsp;&nbsp;"
+        $sCol2 .= //"<input type='submit' name='action' value='Add Note'>&nbsp;&nbsp;&nbsp;"
+                  "<button onclick='doSubmitStatus(\"Add Note\", $row, ".'$(this)'.")'>Add Note</button>"
                  .SEEDForm_Text( 'action_note', "", "Note", 50 )
                  ."</form>";
     }
@@ -421,4 +443,36 @@ $(document).ready(function() {
     });
 });
 
+
+function doSubmitStatus( sAction, kRow, e )
+{
+    console.log(sAction);
+    console.log(kRow);
+    console.log(e);
+
+    let form = e.closest(".statusForm");
+    let note = form.find('#action_note').val();
+    console.log(note);
+
+    let jxData = { jx     : 'doSubmitStatus',
+                   k      : kRow,
+                   action : sAction,
+                   note   : note,
+                   lang   : "EN"
+             };
+    o = SEEDJX( "mbr_order.php", jxData );
+
+    let newDiv = e.closest(".newDiv");
+    $.get( 'mbr_order.php',
+           "jx=drawStatusForm&k="+kRow,
+           function (data) {
+               let d = SEEDJX_ParseJSON( data );
+               //console.log(d);
+               if( d['bOk'] ) {
+                   newDiv.html( d['sOut'] );
+               }
+           } );
+
+    return( false );
+}
 </script>
