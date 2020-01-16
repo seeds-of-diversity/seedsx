@@ -67,6 +67,16 @@ if( ($jx = @$_REQUEST['jx']) ) {
                 header( "Content-Type:text/html; charset=utf8" );
             }
             break;
+        case 'drawStatusForm':
+            if( ($k = SEEDInput_Int('k')) &&
+                ($kfr = $kfrel->GetRecordFromDBKey( $k )) )
+            {
+                $rQ['sOut'] = utf8_encode(statusForm( $kfr, $bCanWrite ));
+                $rQ['bOk'] = true;
+
+                header( "Content-Type:text/html; charset=utf8" );
+            }
+            break;
     }
 
     jxDone:
@@ -149,9 +159,19 @@ if( ($row = $oUI->GetCurrOrderKey()) ) {
 $s .= $oUI->DrawFormFilters();
 
 if( $kfr ) {
+    $s .= statusForm( $kfr, $bCanWrite );
+}
+
+function statusForm( $kfr, $bCanWrite )
+{
+    $row = $kfr->Key();
+    $kfdb = $kfr->kfrel->kfdb;
+
     $oMbrOrder = new MbrOrder( $kfdb, "EN", $row );
     $sCol1 = $oMbrOrder->DrawTicket();
     $sCol2 = "";
+
+    $s = "";
 
     if( $bCanWrite ) {
         /* Draw the header for the ticket and controls for changing the order's status
@@ -192,6 +212,8 @@ if( $kfr ) {
              ."<div class='col-sm-6'>$sCol1</div>"
              ."<div class='col-sm-6'>$sCol2</div>"
          ."</div></div>";
+
+    return( $s );
 }
 
 
@@ -299,21 +321,31 @@ $(document).ready(function() {
     $('.mbrOrderShowTicket').click( function (event) {
         let t = $(this);
         let k = $(this).attr( 'data-kOrder' );
-        let x = $(this).attr( 'data-expanded' );
+        let x = $(this).attr( 'data-expanded' );console.log(x);
 
         event.preventDefault();
 
         if( FormValInt(x) ) {
             $(this).html( "Show Ticket" );
             $(this).attr( 'data-expanded', 0 );
+            $(".mbro-tmp-row").remove();
         } else {
+            // insert a <tr> beneath the clicked row
+            let tr = $(this).closest(".mbro-row");
+            let newTr = $("<tr class='mbro-tmp-row'><td colspan='7'><div class='newDiv'></div>"
+                  //  +"<div style='position:relative'>"
+                  //  +"<input type='text' name='sfAp_dummy_kMbr' id='sfAp_dummy_kMbr' size='10' class='SFU_TextComplete' placeholder='Search'/>"
+                  //  +"</div>"
+                    +"</td></tr>");
+            newTr.insertAfter(tr);    // inserts into the dom after the current <tr> but keeps its object identity
+            let newDiv = newTr.find(".newDiv");
             $.get( 'mbr_order.php',
-                   "jx=drawTicket&id="+k,
+                   "jx=drawStatusForm&k="+k,
                    function (data) {
                        let d = SEEDJX_ParseJSON( data );
                        //console.log(d);
                        if( d['bOk'] ) {
-                           t.html( d['sOut'] );
+                           newDiv.html( d['sOut'] );
                            t.attr( 'data-expanded', 1 );
                        }
                    } );
@@ -385,7 +417,7 @@ $(document).ready(function() {
         tr.after("<tr><td colspan='7'><div style='position:relative'>"
                 +"<input type='text' name='sfAp_dummy_kMbr' id='sfAp_dummy_kMbr' size='10' class='SFU_TextComplete' placeholder='Search'/>"
                 +"</div></td></tr>");
-        SFU_TextComplete_Init();    // activate the search control
+        //SFU_TextComplete_Init();    // activate the search control
     });
 });
 
