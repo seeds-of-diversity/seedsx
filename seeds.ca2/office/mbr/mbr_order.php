@@ -11,23 +11,105 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
 
 // kfdb is seeds2
 list($kfdb, $sess) = SiteStartSessionAccount( array("R MBRORDER") );
-$bCanWrite = $sess->CanWrite('MBRORDER');
 
 $oApp = SiteAppConsole( ['db'=>'seeds2', 'sessPermsRequired'=>['R MBRORDER'] ] );
 
-
 define( "MBR_ADMIN", "1" ); // DrawTicket shows all the internal stuff
 
-$oUI = new SodOrderFulfilUI( $oApp );
+
+
+// move stuff to SodOrderFulfilUI from here
+class mbrOrderFulfilUI extends SodOrderFulfilUI
+{
+    //private $kfdb;
+    //private $sess;
+    public $bCanWrite = false;
+
+    function __construct( KeyFrameDB $kfdb, $sess, SEEDAppConsole $oApp )
+    {
+        parent::__construct( $oApp );
+        $this->bCanWrite = $oApp->sess->CanWrite('MBRORDER');
+    }
+
+    function statusForm( KFRecord $kfr )
+    {
+        $row = $kfr->Key();
+        $kfdb = $kfr->kfrel->kfdb;
+
+        $oMbrOrder = new MbrOrder( $kfdb, "EN", $row );
+        $sCol1 = $oMbrOrder->DrawTicket();
+        $sCol2 = "";
+
+        $s = "";
+
+        if( $this->bCanWrite ) {
+            /* Draw the header for the ticket and controls for changing the order's status
+             */
+            switch( $kfr->value('eStatus') ) {
+                case MBRORDER_STATUS_FILLED:
+                    $sState = "Filled";
+                    $raActions = array('Change to Pending');
+                    break;
+                case MBRORDER_STATUS_CANCELLED:
+                    $sState = "Cancelled";
+                    $raActions = array('Change to Pending');
+                    break;
+                case MBRORDER_STATUS_PAID:
+                    $sState = "paid, needs to be filled";
+                    $raActions = array('Fill', 'Cancel');
+                    break;
+                case MBRORDER_STATUS_NEW:
+                    $sState = "awaiting payment";
+                    $raActions = array('Fill','Cancel');
+                    break;
+                default:
+                    die( "<h3><font color='red'>Undefined payment status.  Inform Bob immediately, with the order number ($row).</font></h3>" );
+            }
+            $sCol2 = "<h3>This order is $sState - last update ".$kfr->value("_updated")."</h3>"
+                    ."<form class='statusForm' onsubmit='return false;'>"// action='${_SERVER['PHP_SELF']}'>"
+                    .SEEDForm_Hidden( 'row', $row );
+            foreach( $raActions as $sAction ) {
+                //$sCol2 .= "<input type='submit' name='action' value='$sAction'>"
+                $sCol2 .= "<button onclick='doSubmitStatus(\"$sAction\", $row, ".'$(this)'.")'>$sAction</button>"
+                         ."&nbsp;&nbsp;&nbsp;";
+            }
+            $sCol2 .= //"<input type='submit' name='action' value='Add Note'>&nbsp;&nbsp;&nbsp;"
+                      "<button onclick='doSubmitStatus(\"Add Note\", $row, ".'$(this)'.")'>Add Note</button>"
+                     .SEEDForm_Text( 'action_note', "", "Note", 50 )
+                     ."</form>";
+        }
+
+        $s .= "<div class='container-fluid'><div class='row'>"
+                 ."<div class='col-sm-6'>$sCol1</div>"
+                 ."<div class='col-sm-6'>$sCol2</div>"
+             ."</div></div>";
+
+        return( $s );
+    }
+
+}
+
+$oUI = new mbrOrderFulfilUI( $kfdb, $sess, $oApp );
 
 
 $oOrder = new MbrOrderCommon( $kfdb, "EN", $sess->GetUID() );
 $kfrel = $oOrder->kfrelOrder;
 
-if( ($jx = @$_REQUEST['jx']) ) {
-    $rQ = array( 'bOk'=>false, 'sOut'=>"", 'sErr'=>"" );
+if( ($jx = SEEDInput_Str('jx')) ) {
+    $rQ = ['bOk'=>false, 'sOut'=>"", 'sErr'=>""];
 
+    if( !($k = SEEDInput_Int('k')) ||
+        !($kfr = $kfrel->GetRecordFromDBKey( $k )) ||
+        !($kfr2 = $oUI->KfrelOrder()->GetRecordFromDBKey( $k )) )
+    {
+        $rQ['sErr'] = "Couldn't load $k";
+        goto jxDone;
+    }
+
+    /* Readonly commands
+     */
     switch( $jx ) {
+/*
         case 'drawTicket':
             if( ($id = intval(@$_REQUEST['id'])) ) {
                 if( !($kfr = $oUI->KfrelOrder()->GetRecordFromDBKey( $id )) ) { $rQ['sErr'] = "Couldn't load $id"; goto jxDone; }
@@ -39,71 +121,46 @@ if( ($jx = @$_REQUEST['jx']) ) {
                 header( "Content-Type:text/html; charset=utf8" );
             }
             break;
+*/
         case 'drawStatusForm':
-            if( ($k = SEEDInput_Int('k')) &&
-                ($kfr = $kfrel->GetRecordFromDBKey( $k )) )
-            {
-                $rQ['sOut'] = utf8_encode(statusForm( $kfr, $bCanWrite ));
-                $rQ['bOk'] = true;
-
-                header( "Content-Type:text/html; charset=utf8" );
-            }
+            $rQ['sOut'] = utf8_encode($oUI->statusForm( $kfr ));
+            $rQ['bOk'] = true;
+            header( "Content-Type:text/html; charset=utf8" );
             break;
         case 'drawOrderSummaryRow':
-            if( ($k = SEEDInput_Int('k')) &&
-                ($kfr = $kfrel->GetRecordFromDBKey( $k )) )
-            {
-                $oOrder = new MbrOrder( $kfdb, "EN", $kfr->Key() );
-                $sConciseSummary = $oOrder->conciseSummary( $kfr->Key() );     // this also computes $oOrder->raOrder for details
-
-                $kfr2 = $oUI->KfrelOrder()->GetRecordFromDBKey( $kfr->Key() );
-                $rQ['sOut'] = utf8_encode($oUI->DrawOrderSummaryRow( $kfr2, $sConciseSummary, $oOrder->raOrder ));
-                $rQ['bOk'] = true;
-
-                header( "Content-Type:text/html; charset=utf8" );
-            }
+            $oOrder = new MbrOrder( $kfdb, "EN", $k );
+            $sConciseSummary = $oOrder->conciseSummary( $k );     // this also computes $oOrder->raOrder for DrawOrderSummaryRow()
+            $rQ['sOut'] = utf8_encode($oUI->DrawOrderSummaryRow( $kfr2, $sConciseSummary, $oOrder->raOrder ));
+            $rQ['bOk'] = true;
+            header( "Content-Type:text/html; charset=utf8" );
             break;
     }
 
-    if( !$bCanWrite )  goto jxDone;
+    if( !$oUI->bCanWrite )  goto jxDone;
 
+    /* Write commands
+     */
     switch( $jx ) {
         case 'changeStatus2ToMailed':
-            if( ($id = intval(@$_REQUEST['id'])) ) {
-                if( !($kfr = $oUI->KfrelOrder()->GetRecordFromDBKey( $id )) ) { $rQ['sErr'] = "Couldn't load $id"; goto jxDone; }
-
-                if( !$oUI->SetMailedToday( $kfr ) ) { $rQ['sErr'] = "Couldn't store"; goto jxDone; }
-
-                $rQ['sOut'] = "Order mailed ".$kfr->Value('dMailed');
-                $rQ['bOk'] = true;
-            }
+            if( !$oUI->SetMailedToday( $kfr2 ) ) { $rQ['sErr'] = "Couldn't store"; goto jxDone; }
+            $rQ['sOut'] = "Order mailed ".$kfr2->Value('dMailed');
+            $rQ['bOk'] = true;
             break;
         case 'changeStatus2ToNothingToMail':
-            if( ($id = intval(@$_REQUEST['id'])) ) {
-                if( !($kfr = $oUI->KfrelOrder()->GetRecordFromDBKey( $id )) ) { $rQ['sErr'] = "Couldn't load $id"; goto jxDone; }
-
-                if( !$oUI->SetMailedNothing( $kfr ) ) { $rQ['sErr'] = "Couldn't store"; goto jxDone; }
-
-                $rQ['sOut'] = "";
-                $rQ['bOk'] = true;
-            }
+            if( !$oUI->SetMailedNothing( $kfr2 ) ) { $rQ['sErr'] = "Couldn't store"; goto jxDone; }
+            $rQ['sOut'] = "";
+            $rQ['bOk'] = true;
             break;
         case 'doBuildBasket':
-            if( ($k = SEEDInput_Int('k'))) {
-                $o = new SoDOrder_MbrOrder( $oApp );
-                $o->CreateFromMbrOrder( $k );
-                $rQ['sOut'] = "";
-                $rQ['bOk'] = true;
-            }
+            $o = new SoDOrder_MbrOrder( $oApp );
+            $o->CreateFromMbrOrder( $k );
+            $rQ['sOut'] = "";
+            $rQ['bOk'] = true;
             break;
         case 'doSubmitStatus':
-            if( ($k = SEEDInput_Int('k')) &&
-                ($kfr = $kfrel->GetRecordFromDBKey( $k )) )
-            {
-                $sAction = SEEDInput_Str('action');
-                $sNote   = SEEDInput_Str('note');
-                doSubmitForm( $kfr, $sAction, $sNote );
-            }
+            $sAction = SEEDInput_Str('action');
+            $sNote   = SEEDInput_Str('note');
+            doSubmitForm( $kfr, $sAction, $sNote );
             break;
     }
 
@@ -124,6 +181,7 @@ $s .= "<table border='0' width='100%'><tr><td><h2>Online Order Summary</h2></td>
      ."<td align='right'><a href='".SITE_LOGIN_ROOT."'>Home</a>&nbsp;&nbsp;&nbsp;<a href='mbr_order_stats.php'>Statistics</a>&nbsp;&nbsp;&nbsp;<a href='mbr_order_deposit.php'>Deposit</a></td></tr></table>";
 
 $kfr = null;
+/*
 if( ($row = $oUI->GetCurrOrderKey()) ) {
     $kfr = $kfrel->GetRecordFromDBKey( $row );
 
@@ -136,6 +194,7 @@ if( ($row = $oUI->GetCurrOrderKey()) ) {
         doSubmitForm( $kfr, $action, $action_notes );
     }
 }
+*/
 
 function doSubmitForm( $kfr, $action, $action_notes )
 {
@@ -192,65 +251,10 @@ function doSubmitForm( $kfr, $action, $action_notes )
  */
 $s .= $oUI->DrawFormFilters();
 
-if( $kfr ) {
-    $s .= statusForm( $kfr, $bCanWrite );
-}
+//if( $kfr ) {
+//    $s .= $oUI->statusForm( $kfr, $bCanWrite );
+//}
 
-function statusForm( $kfr, $bCanWrite )
-{
-    $row = $kfr->Key();
-    $kfdb = $kfr->kfrel->kfdb;
-
-    $oMbrOrder = new MbrOrder( $kfdb, "EN", $row );
-    $sCol1 = $oMbrOrder->DrawTicket();
-    $sCol2 = "";
-
-    $s = "";
-
-    if( $bCanWrite ) {
-        /* Draw the header for the ticket and controls for changing the order's status
-         */
-        switch( $kfr->value('eStatus') ) {
-            case MBRORDER_STATUS_FILLED:
-                $sState = "Filled";
-                $raActions = array('Change to Pending');
-                break;
-            case MBRORDER_STATUS_CANCELLED:
-                $sState = "Cancelled";
-                $raActions = array('Change to Pending');
-                break;
-            case MBRORDER_STATUS_PAID:
-                $sState = "paid, needs to be filled";
-                $raActions = array('Fill', 'Cancel');
-                break;
-            case MBRORDER_STATUS_NEW:
-                $sState = "awaiting payment";
-                $raActions = array('Fill','Cancel');
-                break;
-            default:
-                die( "<h3><font color='red'>Undefined payment status.  Inform Bob immediately, with the order number ($row).</font></h3>" );
-        }
-        $sCol2 = "<h3>This order is $sState - last update ".$kfr->value("_updated")."</h3>"
-                ."<form class='statusForm' onsubmit='return false;'>"// action='${_SERVER['PHP_SELF']}'>"
-                .SEEDForm_Hidden( 'row', $row );
-        foreach( $raActions as $sAction ) {
-            //$sCol2 .= "<input type='submit' name='action' value='$sAction'>"
-            $sCol2 .= "<button onclick='doSubmitStatus(\"$sAction\", $row, ".'$(this)'.")'>$sAction</button>"
-                     ."&nbsp;&nbsp;&nbsp;";
-        }
-        $sCol2 .= //"<input type='submit' name='action' value='Add Note'>&nbsp;&nbsp;&nbsp;"
-                  "<button onclick='doSubmitStatus(\"Add Note\", $row, ".'$(this)'.")'>Add Note</button>"
-                 .SEEDForm_Text( 'action_note', "", "Note", 50 )
-                 ."</form>";
-    }
-
-    $s .= "<div class='container-fluid'><div class='row'>"
-             ."<div class='col-sm-6'>$sCol1</div>"
-             ."<div class='col-sm-6'>$sCol2</div>"
-         ."</div></div>";
-
-    return( $s );
-}
 
 
 /* Fetch table of orders
@@ -343,7 +347,6 @@ volSearchJS;
     return( $s );
 }
 
-
 ?>
 
 <script>
@@ -363,18 +366,18 @@ $(document).ready(function() {
      */
     $(".status2").click(function(event){
         event.preventDefault();
-        var thisId = this.id.substr(8);
+        let k = this.id.substr(8);
 
-        jxData = { jx     : 'changeStatus2ToMailed',
-                   id     : thisId,
-                   lang   : "EN"
-                 };
+        let jxData = { jx   : 'changeStatus2ToMailed',
+                       k    : k,
+                       lang : "EN"
+                     };
 
-        o = SEEDJX( "mbr_order.php", jxData );
+        let o = SEEDJX( "mbr_order.php", jxData );
         if( o['bOk'] ) {
             $(this).html("");
-            $('#status2x_'+thisId).html("");        // remove the other button
-            $("#mailed"+thisId).html(o['sOut']);    // "Order not mailed" changes to "Order mailed YYYY-MM-DD"
+            $('#status2x_'+k).html("");        // remove the other button
+            $("#status2_"+k).html(o['sOut']);  // "Order not mailed" changes to "Order mailed YYYY-MM-DD"
         }
     });
 
@@ -382,18 +385,18 @@ $(document).ready(function() {
      */
     $(".status2x").click(function(event){
         event.preventDefault();
-        var thisId = this.id.substr(9);
+        let k = this.id.substr(9);
 
-        jxData = { jx     : 'changeStatus2ToNothingToMail',
-                   id     : thisId,
-                   lang   : "EN"
-                 };
+        let jxData = { jx   : 'changeStatus2ToNothingToMail',
+                       k    : k,
+                       lang : "EN"
+                     };
 
-        o = SEEDJX( "mbr_order.php", jxData );
+        let o = SEEDJX( "mbr_order.php", jxData );
         if( o['bOk'] ) {
             $(this).html("");
-            $('#status2_'+thisId).html("");  // remove the other button
-            $("#mailed"+thisId).html("");    // "Order not mailed" changes to ""
+            $('#status2_'+k).html("");  // remove the other button
+            $("#mailed"+k).html("");    // "Order not mailed" changes to ""
         }
     });
 
