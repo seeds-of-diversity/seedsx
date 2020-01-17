@@ -208,7 +208,7 @@ class mbrContacts_Contacts extends Console01_Worker1
             ."</TR>"
             ."<TR valign='top'>"
             .$oForm->TextTD( 'referral', "Referral", $raP )
-            .$oForm->TextTD( 'expires', "Expires", $raPDisabled )
+            .$oForm->TextTD( 'expires', "Expires", [] ) // $raPDisabled )
 //if( $oForm->Value('expires') == '2100-01-01' ) $kfr->SetValue('expires','Automatic');  // Kluge to translate the coded date through the KFRForm function
 //    echo        KFRForm_TextTD( $kfr, "Expires",      'expires', 40, "DISABLED" );
 //if( $kfr->value('expires') == 'Automatic' )  $kfr->SetValue('expires','2100-01-01');
@@ -219,8 +219,11 @@ class mbrContacts_Contacts extends Console01_Worker1
             ."</TR>"
             ."<TR valign='top'>"
             ."<TD>&nbsp;</TD><TD>&nbsp;</TD>"
-            .$oForm->TextTD( 'lastrenew', "Lastrenew", $raPDisabled )
+            .$oForm->TextTD( 'lastrenew', "Lastrenew", [] ) // $raPDisabled )
             ."</TR>"
+            ."<tr><td colspan='2'>&nbsp;</td>"
+            .$oForm->TextTD( 'bNoSED', "Online MSD", $raP )
+            ."</tr>"
             ."<TR valign='top'>"
             .$oForm->TextAreaTD( 'comment', "Comment", 35, 6 )
             ."</TR>"
