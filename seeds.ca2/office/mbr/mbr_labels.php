@@ -61,10 +61,12 @@ if( ($p = @$_REQUEST['mbradd']) ) {
 
     if( is_array($p) ) {
         foreach( $p as $k ) {
-            $ra[] = $k;
+            list($raRange,$sRange) = SEEDCore_ParseRangeStr( $k );
+            $ra = array_merge( $ra, $raRange );
         }
-    } else if( ($p = intval($p)) ) {
-         $ra[] = $p;
+    } else { // if( ($p = intval($p)) ) {
+         list($raRange,$sRange) = SEEDCore_ParseRangeStr( $p );
+         $ra = array_merge( $ra, $raRange );
     }
     $oSVA->VarSet( 'raMbrs', $ra );
 }
