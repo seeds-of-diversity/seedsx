@@ -40,7 +40,7 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
         return( $this->DrawOrderSummaryRow( $kfr2, $sConciseSummary, $oOrder->raOrder ) );
     }
 
-    function statusForm( KFRecord $kfr )
+    function statusForm( KeyframeRecord $kfr )
     {
         $row = $kfr->Key();
 
@@ -116,7 +116,7 @@ if( ($jx = SEEDInput_Str('jx')) ) {
             break;
 */
         case 'drawStatusForm':
-            $rQ['sOut'] = utf8_encode($oUI->statusForm( $kfr ));
+            $rQ['sOut'] = utf8_encode($oUI->statusForm( $kfr2 ));
             $rQ['bOk'] = true;
             header( "Content-Type:text/html; charset=utf8" );
             break;
