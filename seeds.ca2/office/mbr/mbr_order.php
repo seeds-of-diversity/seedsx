@@ -354,7 +354,10 @@ function FormValInt( k )   { return( parseInt(k) || 0 ); }
 $(document).ready(function() {
     /* Show Ticket click
      */
-    initClickShowTicket();
+     $('.mbrOrderShowTicket').click( function (event) {
+         event.preventDefault();
+         initClickShowTicket( $(this) );
+     });
 
     /* Mailed Today button click
      */
@@ -426,56 +429,42 @@ $(document).ready(function() {
 });
 
 
-function initClickShowTicket()
-/*****************************
+function initClickShowTicket( jDiv )
+/***********************************
     Tell the Show Ticket link to open the status form
  */
 {
-    $('.mbrOrderShowTicket').click( function (event) {
+    let t = jDiv;
+    let k = t.attr( 'data-kOrder' );
+    let x = t.attr( 'data-expanded' );
 
-        let t = $(this);
-        let k = t.attr( 'data-kOrder' );
-        let x = t.attr( 'data-expanded' );console.log(x);
-
-        event.preventDefault();
-
-        if( FormValInt(x) ) {
-            t.html( "Show Ticket" );
-            t.attr( 'data-expanded', 0 );
-            $(".mbro-tmp-row").remove();
-        } else {
-            // insert a <tr> beneath the clicked row
-            let tr = t.closest(".mbro-row");
-            let newTr = $("<tr class='mbro-tmp-row'><td colspan='7'><div class='newDiv'></div>"
-                  //  +"<div style='position:relative'>"
-                  //  +"<input type='text' name='sfAp_dummy_kMbr' id='sfAp_dummy_kMbr' size='10' class='SFU_TextComplete' placeholder='Search'/>"
-                  //  +"</div>"
-                    +"</td></tr>");
-            newTr.insertAfter(tr);    // inserts into the dom after the current <tr> but keeps its object identity
-            let newDiv = newTr.find(".newDiv");
-            $.get( 'mbr_order.php',
-                   "jx=drawStatusForm&k="+k,
-                   function (data) {
-                       let d = SEEDJX_ParseJSON( data );
-                       //console.log(d);
-                       if( d['bOk'] ) {
-                           newDiv.html( d['sOut'] );
-                           t.attr( 'data-expanded', 1 );
-                       }
-                   } );
-        }
-    });
+    if( FormValInt(x) ) {
+        t.html( "Show Ticket" );
+        t.attr( 'data-expanded', 0 );
+        $(".mbro-tmp-row").remove();
+        $(".mbrOrderShowTicket").attr( 'data-expanded', 0 );  // the line above removes all .mbro-tmp-row so mark them all unexpanded
+    } else {
+        // insert a temporary <tr> beneath the clicked row, where controls will be inserted into .tmpRowDiv
+        let mbrTr = t.closest(".mbro-row");
+        let tmpTr = $("<tr class='mbro-tmp-row'><td colspan='7'><div class='tmpRowDiv'></div></td></tr>");
+        tmpTr.insertAfter(mbrTr);    // inserts into the dom after the current <tr> but keeps its object identity
+        $.get( 'mbr_order.php',
+               "jx=drawStatusForm&k="+k,
+               function (data) {
+                   let d = SEEDJX_ParseJSON( data );
+                   //console.log(d);
+                   if( d['bOk'] ) {
+                       tmpTr.find(".tmpRowDiv").html( d['sOut'] );
+                       t.attr( 'data-expanded', 1 );
+                   }
+        });
+    }
 }
 
-function doSubmitStatus( sAction, kRow, e )
+function doSubmitStatus( sAction, kRow, jButton )
 {
-    console.log(sAction);
-    console.log(kRow);
-    console.log(e);
-
-    let form = e.closest(".statusForm");
+    let form = jButton.closest(".statusForm");
     let note = form.find('#action_note').val();
-    console.log(note);
 
     // update the selected record
     let jxData = { jx     : 'doSubmitStatus',
@@ -486,32 +475,37 @@ function doSubmitStatus( sAction, kRow, e )
              };
     o = SEEDJX( "mbr_order.php", jxData );
 
-    // replace the submitForm with its new state
-    let newDiv = e.closest(".newDiv");
+    // replace the statusForm with its new state
+    let tmpRowDiv = jButton.closest(".tmpRowDiv");
     $.get( 'mbr_order.php',
            "jx=drawStatusForm&k="+kRow,
            function (data) {
                let d = SEEDJX_ParseJSON( data );
                //console.log(d);
                if( d['bOk'] ) {
-                   newDiv.html( d['sOut'] );
+                   tmpRowDiv.html( d['sOut'] );
                }
            } );
 
     // replace the previous <tr> with its new state
-    let prevTr = newDiv.closest("tr").prev();
+    let prevTr = tmpRowDiv.closest("tr").prev();
     $.get( 'mbr_order.php',
            "jx=drawOrderSummaryRow&k="+kRow,
            function (data) {
                let d = SEEDJX_ParseJSON( data );
                //console.log(d);
                if( d['bOk'] ) {
-                   prevTr.replaceWith( d['sOut'] );
-                   // and rebind the Show Ticket link in the replaced <tr>, noting that the submitForm is open
-                   initClickShowTicket();
-                   newDiv.closest("tr").prev().find('.mbrOrderShowTicket').attr('data-expanded',1);
+                   newTr = $(d['sOut']);
+                   prevTr.replaceWith( newTr );
+                   // rebind the Show Ticket link in the replaced <tr>
+                   newTr.find('.mbrOrderShowTicket').click( function (event) {
+                       event.preventDefault();
+                       initClickShowTicket( $(this) );
+                   });
+                   // remind it that the submitForm is open
+                   newTr.find('.mbrOrderShowTicket').attr('data-expanded',1);
                }
-           } );
+           });
 
     return( false );
 }
