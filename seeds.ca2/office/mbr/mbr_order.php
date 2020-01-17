@@ -21,22 +21,30 @@ define( "MBR_ADMIN", "1" ); // DrawTicket shows all the internal stuff
 // move stuff to SodOrderFulfilUI from here
 class mbrOrderFulfilUI extends SodOrderFulfilUI
 {
-    //private $kfdb;
+    private $kfdb;
     //private $sess;
     public $bCanWrite = false;
 
     function __construct( KeyFrameDB $kfdb, $sess, SEEDAppConsole $oApp )
     {
         parent::__construct( $oApp );
+        $this->kfdb = $kfdb;
         $this->bCanWrite = $oApp->sess->CanWrite('MBRORDER');
+    }
+
+    function drawRow( $k )
+    {
+        $oOrder = new MbrOrder( $this->kfdb, "EN", $k );
+        $sConciseSummary = $oOrder->conciseSummary( $k );     // this also computes $oOrder->raOrder for DrawOrderSummaryRow()
+        $kfr2 = $this->KfrelOrder()->GetRecordFromDBKey( $k );
+        return( $this->DrawOrderSummaryRow( $kfr2, $sConciseSummary, $oOrder->raOrder ) );
     }
 
     function statusForm( KFRecord $kfr )
     {
         $row = $kfr->Key();
-        $kfdb = $kfr->kfrel->kfdb;
 
-        $oMbrOrder = new MbrOrder( $kfdb, "EN", $row );
+        $oMbrOrder = new MbrOrder( $this->kfdb, "EN", $row );
         $sCol1 = $oMbrOrder->DrawTicket();
         $sCol2 = "";
 
@@ -46,35 +54,20 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
             /* Draw the header for the ticket and controls for changing the order's status
              */
             switch( $kfr->value('eStatus') ) {
-                case MBRORDER_STATUS_FILLED:
-                    $sState = "Filled";
-                    $raActions = array('Change to Pending');
-                    break;
-                case MBRORDER_STATUS_CANCELLED:
-                    $sState = "Cancelled";
-                    $raActions = array('Change to Pending');
-                    break;
-                case MBRORDER_STATUS_PAID:
-                    $sState = "paid, needs to be filled";
-                    $raActions = array('Fill', 'Cancel');
-                    break;
-                case MBRORDER_STATUS_NEW:
-                    $sState = "awaiting payment";
-                    $raActions = array('Fill','Cancel');
-                    break;
+                case MBRORDER_STATUS_FILLED:     $sState = "Filled";                    $raActions = ['Change to Pending'];  break;
+                case MBRORDER_STATUS_CANCELLED:  $sState = "Cancelled";                 $raActions = ['Change to Pending'];  break;
+                case MBRORDER_STATUS_PAID:       $sState = "paid, needs to be filled";  $raActions = ['Fill','Cancel'];      break;
+                case MBRORDER_STATUS_NEW:        $sState = "awaiting payment";          $raActions = ['Fill','Cancel'];      break;
                 default:
                     die( "<h3><font color='red'>Undefined payment status.  Inform Bob immediately, with the order number ($row).</font></h3>" );
             }
             $sCol2 = "<h3>This order is $sState - last update ".$kfr->value("_updated")."</h3>"
-                    ."<form class='statusForm' onsubmit='return false;'>"// action='${_SERVER['PHP_SELF']}'>"
-                    .SEEDForm_Hidden( 'row', $row );
+                    ."<form class='statusForm' onsubmit='return false;'>";
             foreach( $raActions as $sAction ) {
-                //$sCol2 .= "<input type='submit' name='action' value='$sAction'>"
                 $sCol2 .= "<button onclick='doSubmitStatus(\"$sAction\", $row, ".'$(this)'.")'>$sAction</button>"
                          ."&nbsp;&nbsp;&nbsp;";
             }
-            $sCol2 .= //"<input type='submit' name='action' value='Add Note'>&nbsp;&nbsp;&nbsp;"
-                      "<button onclick='doSubmitStatus(\"Add Note\", $row, ".'$(this)'.")'>Add Note</button>"
+            $sCol2 .= "<button onclick='doSubmitStatus(\"Add Note\", $row, ".'$(this)'.")'>Add Note</button>"
                      .SEEDForm_Text( 'action_note', "", "Note", 50 )
                      ."</form>";
         }
@@ -128,9 +121,7 @@ if( ($jx = SEEDInput_Str('jx')) ) {
             header( "Content-Type:text/html; charset=utf8" );
             break;
         case 'drawOrderSummaryRow':
-            $oOrder = new MbrOrder( $kfdb, "EN", $k );
-            $sConciseSummary = $oOrder->conciseSummary( $k );     // this also computes $oOrder->raOrder for DrawOrderSummaryRow()
-            $rQ['sOut'] = utf8_encode($oUI->DrawOrderSummaryRow( $kfr2, $sConciseSummary, $oOrder->raOrder ));
+            $rQ['sOut'] = utf8_encode($oUI->drawRow($k));
             $rQ['bOk'] = true;
             header( "Content-Type:text/html; charset=utf8" );
             break;
@@ -279,11 +270,7 @@ $s .= "<table border='1' width='100%' cellpadding='2' style='border-collapse:col
      ."</tr>";
 
 while( $kfr->CursorFetch() ) {
-    $oOrder = new MbrOrder( $kfdb, "EN", $kfr->Key() );
-    $sConciseSummary = $oOrder->conciseSummary( $kfr->Key() );     // this also computes $oOrder->raOrder for details
-
-    $kfr2 = $oUI->KfrelOrder()->GetRecordFromDBKey( $kfr->Key() );
-    $s .= $oUI->DrawOrderSummaryRow( $kfr2, $sConciseSummary, $oOrder->raOrder );
+    $s .= $oUI->drawRow($kfr->Key());
 }
 $s .= "</table>";
 
