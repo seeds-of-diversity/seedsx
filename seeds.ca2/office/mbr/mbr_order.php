@@ -44,6 +44,7 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
     {
         $row = $kfr->Key();
 
+// this part has to be modernized before moving this method to SodOrderFulfil
         $oMbrOrder = new MbrOrder( $this->kfdb, "EN", $row );
         $sCol1 = $oMbrOrder->DrawTicket();
         $sCol2 = "";
@@ -61,15 +62,23 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
                 default:
                     die( "<h3><font color='red'>Undefined payment status.  Inform Bob immediately, with the order number ($row).</font></h3>" );
             }
-            $sCol2 = "<h3>This order is $sState - last update ".$kfr->value("_updated")."</h3>"
-                    ."<form class='statusForm' onsubmit='return false;'>";
+            $sCol2 = "<h3>This order is $sState - last update ".$kfr->value("_updated")."</h3>";
+
+            // The eStatus-changing buttons (Fill, Cancel, Pending) will pick up the note via JS, but since only the Add Note
+            // button is in a <form> it is the only one that will be activated by hitting enter in the input control. We assume
+            // that you might do this when adding a note but you might not intend to change the eStatus
+            $sCol2 = "<div class='statusForm'>";
             foreach( $raActions as $sAction ) {
                 $sCol2 .= "<button onclick='doSubmitStatus(\"$sAction\", $row, ".'$(this)'.")'>$sAction</button>"
                          ."&nbsp;&nbsp;&nbsp;";
             }
-            $sCol2 .= "<button onclick='doSubmitStatus(\"Add Note\", $row, ".'$(this)'.")'>Add Note</button>"
-                     .SEEDForm_Text( 'action_note', "", "Note", 50 )
-                     ."</form>";
+            $sCol2 .= "<div style='margin-top:15px'>"
+                     ."<form onsubmit='return false;'>"
+                     ."<button onclick='doSubmitStatus(\"Add Note\", $row, ".'$(this)'.")'>Add Note</button>"
+                     ."&nbsp;<input type='text' size='50' id='action_note'/>"
+                     ."</form>"
+                     ."</div>"
+                     ."</div>";
         }
 
         $s .= "<div class='container-fluid'><div class='row'>"
