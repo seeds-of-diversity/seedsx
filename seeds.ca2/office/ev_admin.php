@@ -275,15 +275,12 @@ function EV2_volSearchJS()
 {
     $urlQ = SITEROOT_URL."app/q/q2.php";    // same as q/index.php but authenticates on seeds2
 
-    $s = <<<volSearchJS
-<script>
-var urlQ = "$urlQ";
-
+    $s = "<script>
 $(document).ready( function() {
-    var oTextComplete = new MbrSelector( { idTxtSearch:'sfAp_dummy_kMbr', idOutReport:'vol-label', idOutKey:'sfAp_vol_kMbr' } );
+    // 'o' is not used anywhere; this just sets up the MbrSelector control to run independently
+    let o = new MbrSelector( { urlQ:'".$urlQ."', idTxtSearch:'sfAp_dummy_kMbr', idOutReport:'vol-label', idOutKey:'sfAp_vol_kMbr' } );
 });
-</script>
-volSearchJS;
+</script>";
 
     return( $s );
 }
