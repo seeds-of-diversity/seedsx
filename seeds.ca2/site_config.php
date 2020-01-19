@@ -82,11 +82,6 @@ define("W_ROOT_SEEDCOMMON", W_ROOT."seedcommon/");  // stuff that seedcommon nee
 // locations of components that need to be visible to the web browser
 define("TINYMCE_DIR", W_ROOT."os/TinyMCE3-3-2/" );
 define("TINYMCE_4_DIR", W_ROOT."os/TinyMCE4/" );
-define("W_ROOT_JQUERY_1_11_0", W_ROOT."os/jquery/jquery-1.11.0.min.js");  // use this if you need this specific version
-define("W_ROOT_JQUERY",        W_ROOT_JQUERY_1_11_0);                     // use this if you just want the latest version (it will change)
-define("W_ROOT_JQUERY_UI_1_11_4", W_ROOT."os/jquery/jquery-ui-1.11.4.min.js");  // use this if you need this specific version
-define("W_ROOT_JQUERY_UI",        W_ROOT_JQUERY_UI_1_11_4);                     // use this if you just want the latest version (it will change)
-define("W_ROOT_JQUERY_UI_THEME_SMOOTHNESS", W_ROOT_JQUERY_UI."/../jquery-ui-1.11.4-smoothness.css"); // same directory as the js
 
 define("W_ROOT_FPDF", W_ROOT."os/fpdf181/" );
 

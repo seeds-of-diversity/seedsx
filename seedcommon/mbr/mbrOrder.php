@@ -844,7 +844,6 @@ function MbrOrderStyle()
 
 </STYLE>
 
-<!-- <script src='".W_ROOT_JQUERY."'></script> -->
 <script>
 jQuery(document).ready(function($){
 

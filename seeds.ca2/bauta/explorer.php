@@ -13,7 +13,7 @@ $sLogoLink = $lang=='EN' ? "http://www.seedsecurity.ca" : "http://www.semencesse
 <head>
 
 <!--  JQuery  -->
-<script src="<?php echo W_ROOT_JQUERY_1_11_0; ?>"></script>
+<script src="<?php echo W_CORE_JQUERY; ?>"></script>
 
 <?php
 //<script type='text/javascript' src='https://www.google.com/jsapi'></script>
