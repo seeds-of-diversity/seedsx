@@ -243,7 +243,7 @@ $s .= "</td></tr></table>";
                      ."<input class='slsrcedit_novelsp' name='novelsp1' value=''/>"
                      ."<input class='slsrcedit_novelcv' name='novelcv1' value=''/>"
                      ."<div class='slsrcedit_cvBtns'>"
-                         ."<img class='slsrcedit_novelBtns_new' height='14' src='".W_ROOT."img/ctrl/new01.png'/>"
+                         ."<img class='slsrcedit_novelBtns_new' height='14' src='".W_CORE_URL."img/ctrl/new01.png'/>"
                      ."</div>"
                  ."</div>"
              ."</div>";
@@ -284,7 +284,7 @@ $s .= "</td></tr></table>";
         $spEsc = htmlspecialchars($sp,ENT_QUOTES);
         $s .= "<div class='slsrcedit_sp' osp='$spEsc'>"
                  ."<div class='slsrcedit_spName'>$spEsc</div>"
-                 ."<div class='slsrcedit_spBtns'><img class='slsrcedit_spBtns_new' height='14' src='".W_ROOT."img/ctrl/new01.png'/></div>"
+                 ."<div class='slsrcedit_spBtns'><img class='slsrcedit_spBtns_new' height='14' src='".W_CORE_URL."img/ctrl/new01.png'/></div>"
                  ."<div class='slsrcedit_cvgroup'>";
         $i = 1;
         foreach( $raCV as $r ) {
@@ -297,9 +297,9 @@ $s .= "</td></tr></table>";
                      ."<div class='slsrcedit_cvOrgBtn'></div>"
                      ."<div class='slsrcedit_cvName'>".htmlspecialchars($r['cv'], ENT_QUOTES)."</div>"
                      ."<div class='slsrcedit_cvBtns'>"
-                         ."<img class='slsrcedit_cvBtns_new' height='14' src='".W_ROOT."img/ctrl/new01.png'/>"
-                         ."<img class='slsrcedit_cvBtns_edit' height='14' src='".W_ROOT."img/ctrl/edit01.png'/>"
-                         ."<img class='slsrcedit_cvBtns_del' height='14' src='".W_ROOT."img/ctrl/delete01.png'/>"
+                         ."<img class='slsrcedit_cvBtns_new' height='14' src='".W_CORE_URL."img/ctrl/new01.png'/>"
+                         ."<img class='slsrcedit_cvBtns_edit' height='14' src='".W_CORE_URL."img/ctrl/edit01.png'/>"
+                         ."<img class='slsrcedit_cvBtns_del' height='14' src='".W_CORE_URL."img/ctrl/delete01.png'/>"
                      ."</div>"
 
                      // if any change is requested, put the sfBk here and never remove it. No problem if it's issued when other ctrls don't exist.
@@ -445,6 +445,7 @@ $s .= "</td></tr></table>";
               .slsrcedit_err { border:1px solid black;color:red;padding:10px; }
         </style>";
 
+        $wcore = W_CORE_URL;
         $s .= <<<SLSrcEditScript
               <script>
 
@@ -628,7 +629,7 @@ $s .= "</td></tr></table>";
               });
 
 
-              var wroot = "../../w/";
+              var wcore = "$wcore";
               var slsrceditNewCV =
                       "<div class='slsrcedit_cv slsrcedit_stripe_new' iRow='%%i%%' kSRCCV='0' bOrganic='0'>                \
                            <div class='slsrcedit_cvOrgBtn'></div>                                                          \
@@ -637,8 +638,8 @@ $s .= "</td></tr></table>";
                                <input type='text' name='sfBp%%i%%_ocv' value=''/>                                          \
                            </div>                                                                                          \
                            <div class='slsrcedit_cvBtns' style='margin-left:1px'>                                          \
-                               <img class='slsrcedit_cvBtns_new'    height='14' src='"+wroot+"img/ctrl/new01.png'/>        \
-                               <img class='slsrcedit_cvBtns_delnew' height='14' src='"+wroot+"img/ctrl/delete01.png'>      \
+                               <img class='slsrcedit_cvBtns_new'    height='14' src='"+wcore+"img/ctrl/new01.png'/>        \
+                               <img class='slsrcedit_cvBtns_delnew' height='14' src='"+wcore+"img/ctrl/delete01.png'>      \
                            </div>                                                                                          \
                            <div class='slsrcedit_cvCtrlKey'><input type='hidden' name='sfBk%%i%%' value='0'/></div>        \
                            <div class='slsrcedit_cvCtrlOrg'></div>                                                         \
