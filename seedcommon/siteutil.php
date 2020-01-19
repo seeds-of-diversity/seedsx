@@ -1,5 +1,7 @@
 <?php
 
+include_once( SEEDCORE."SEEDEmail.php" );
+
 function MailFromOffice( $to, $subject, $bodyText, $bodyHTML = "", $raParms = array() )
 /**************************************************************************************
     $raParms['from'] = array( email_addr, [screen_name] )   e.g. array( "webmaster@seeds.ca", "Webmaster at Seeds" )
@@ -7,6 +9,7 @@ function MailFromOffice( $to, $subject, $bodyText, $bodyHTML = "", $raParms = ar
     $raParms['bcc'] = array( bcc1, bcc2, ...)
  */
 {
+
     if( isset($raParms['from']) && is_string($raParms['from']) ) {
         $sFromEmail = $raParms['from'];
         $sFromName = "";
@@ -15,51 +18,7 @@ function MailFromOffice( $to, $subject, $bodyText, $bodyHTML = "", $raParms = ar
         $sFromName  = isset($raParms['from'][1]) ? $raParms['from'][1] : "";
     }
 
-    if( STD_isLocal ) {
-        // on development machines just draw the mail on the screen, since we're probably not set up with smtp anyway
-        echo "<div style='margin:10px;padding:10px;background-color:#ffe;border:1px solid #888;border-radius:5px'>"
-            ."From: $sFromName &lt;$sFromEmail&gt;<br/>"
-            ."To: $to<br/>"
-            ."Subject: $subject<br/>"
-            ."-----<br/>"
-            .nl2br($bodyHTML)
-            ."</div>";
-        // factor raFrom[] code below (re office.seeds.ca) so the default case shows here
-        // show cc and bcc here
-
-        $ok = true;
-    } else {
-        // page hosted on seeds.ca, use localhost SMTP
-//      $ok = mail( $to, $subject, $body,
-//                  "From: Seeds of Diversity Canada <office@seeds.ca>\r\nReply-to: Seeds of Diversity Canada <office@seeds.ca>" );
-        // include once to prevent redefinition error if a second email is sent
-        include_once( "os/inc_cPHPezMail.php" );
-
-        $oMail = new cPHPezMail();
-        $oMail->SetFrom( $sFromEmail, $sFromName );
-        $oMail->AddHeader( 'Reply-to', $sFromEmail );
-        $oMail->AddTo( $to );
-        $oMail->SetSubject( $subject );
-
-        if( empty($bodyText) ) $bodyText = strip_tags( $bodyHTML );
-        $oMail->SetBodyText( $bodyText );
-        if( !empty( $bodyHTML ) ) {
-            $oMail->SetBodyHTML( $bodyHTML );
-        }
-        if( count(@$raParms['cc']) ) {
-            foreach( $raParms['cc'] as $a ) {
-                $oMail->AddCc( $a );
-            }
-        }
-        if( count(@$raParms['bcc']) ) {
-            foreach( $raParms['bcc'] as $a ) {
-                $oMail->AddBcc( $a );
-            }
-        }
-
-        $ok = $oMail->Send();
-    }
-    return( $ok );
+    return( SEEDEmailSend( [$sFromEmail,$sFromName], $to, $subject, $bodyText, $bodyHTML = "", $raParms ) );
 }
 
 
