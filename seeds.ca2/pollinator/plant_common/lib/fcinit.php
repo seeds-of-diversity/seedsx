@@ -16,11 +16,10 @@ define( "PLANT_COMMON_C", SITEROOT."pollinator/plant_common/c/" );
 define( "BOOTSTRAP", PLANT_COMMON_C."bootstrap/" );
 
 
-
-$oApp = new SEEDAppSession( array( 'kfdbHost' => "localhost",
-                                   'kfdbUserid' => SiteKFDB_USERID_floralcal,
-                                   'kfdbPassword' => SiteKFDB_PASSWORD_floralcal,
-                                   'kfdbDatabase' => SiteKFDB_DB_floralcal ) );
+$oApp = SEEDConfig_NewAppConsole(['db'=>'floralcal',
+                                  'sessPermsRequired'=>['PUBLIC'],
+                                  'sessUIConfig' => ['bLoginNotRequired'=>true]
+]);
 
 $kfdb = $oApp->kfdb;
 $sess = $oApp->sess;

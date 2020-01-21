@@ -7,7 +7,7 @@ include_once( SITEROOT."site2.php" );
 include_once( STDINC."SEEDLocal.php" );
 include_once( SEEDCOMMON."mbr/mbrOrder.php" );
 include_once( SEEDAPP."basket/sodBasketFulfil.php" );
-
+include_once( SEEDLIB."mbr/QServerMbr.php" );
 
 // kfdb is seeds2
 list($kfdb, $sess) = SiteStartSessionAccount( array("R MBRORDER") );
@@ -40,9 +40,9 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
         return( $this->DrawOrderSummaryRow( $kfr2, $sConciseSummary, $oOrder->raOrder ) );
     }
 
-    function statusForm( KeyframeRecord $kfr )
+    function statusForm( KeyframeRecord $kfrOrder )
     {
-        $row = $kfr->Key();
+        $row = $kfrOrder->Key();
 
 // this part has to be modernized before moving this method to SodOrderFulfil
         $oMbrOrder = new MbrOrder( $this->kfdb, "EN", $row );
@@ -51,10 +51,19 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
 
         $s = "";
 
+        $raMbr = [];
+        if( ($kMbr = $kfrOrder->UrlParmGet('sExtra','mbrid')) ) {
+            $oMbr = new QServerMbr( $this->oApp, [] );
+            $rQ = $oMbr->Cmd('mbr-get',['kMbr'=>$kMbr]);
+            if( $rQ['bOk'] ) {
+                $raMbr = $rQ['raOut'];
+            }
+        }
+
         if( $this->bCanWrite ) {
-            /* Draw the header for the ticket and controls for changing the order's status
+            /* Draw the header for the status form
              */
-            switch( $kfr->value('eStatus') ) {
+            switch( $kfrOrder->value('eStatus') ) {
                 case MBRORDER_STATUS_FILLED:     $sState = "Filled";                    $raActions = ['Change to Pending'];  break;
                 case MBRORDER_STATUS_CANCELLED:  $sState = "Cancelled";                 $raActions = ['Change to Pending'];  break;
                 case MBRORDER_STATUS_PAID:       $sState = "paid, needs to be filled";  $raActions = ['Fill','Cancel'];      break;
@@ -62,23 +71,25 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
                 default:
                     die( "<h3><font color='red'>Undefined payment status.  Inform Bob immediately, with the order number ($row).</font></h3>" );
             }
-            $sCol2 = "<h3>This order is $sState - last update ".$kfr->value("_updated")."</h3>";
+            $sCol2 = "<h3>This order is $sState - last update ".$kfrOrder->value("_updated")."</h3>";
 
-            // The eStatus-changing buttons (Fill, Cancel, Pending) will pick up the note via JS, but since only the Add Note
-            // button is in a <form> it is the only one that will be activated by hitting enter in the input control. We assume
-            // that you might do this when adding a note but you might not intend to change the eStatus
-            $sCol2 = "<div class='statusForm'>";
-            foreach( $raActions as $sAction ) {
-                $sCol2 .= "<button onclick='doSubmitStatus(\"$sAction\", $row, ".'$(this)'.")'>$sAction</button>"
-                         ."&nbsp;&nbsp;&nbsp;";
+            /* This tool manages the eStatus of the order, independently of the rest of this form
+             */
+            $sCol2 .= $this->drawStatusFormEStatus( $row, $raActions );
+
+            $sCol2 .= "<hr style='border-color:#aaa;margin:30px 0px'/>";
+
+            /* This tool controls the kMbr of the order, independently of the rest of this form
+             */
+            $sCol2 .= "<h4>Contact in database</h4>".$this->drawStatusFormMbrSelect( $kfrOrder, $raMbr );
+
+            if( $kMbr ) {
+                $sCol2 .= "<hr style='border-color:#aaa;margin:30px 0px'/>";
+
+                /* This tool matches the MbrOrder information with the MbrContacts record
+                 */
+                $sCol2 .= $this->drawStatusFormContactData( $kfrOrder, $raMbr );
             }
-            $sCol2 .= "<div style='margin-top:15px'>"
-                     ."<form onsubmit='return false;'>"
-                     ."<button onclick='doSubmitStatus(\"Add Note\", $row, ".'$(this)'.")'>Add Note</button>"
-                     ."&nbsp;<input type='text' size='50' id='action_note'/>"
-                     ."</form>"
-                     ."</div>"
-                     ."</div>";
         }
 
         $s .= "<div class='container-fluid'><div class='row'>"
@@ -89,6 +100,57 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
         return( $s );
     }
 
+    private function drawStatusFormEStatus( $row, $raActions )
+    {
+        // The eStatus-changing buttons (Fill, Cancel, Pending) will pick up the note via JS, but since only the Add Note
+        // button is in a <form> it is the only one that will be activated by hitting enter in the input control. We assume
+        // that you might do this when adding a note but you might not intend to change the eStatus
+        $s = "<div class='statusForm'>";
+        foreach( $raActions as $sAction ) {
+            $s .= "<button onclick='doSubmitStatus(\"$sAction\", $row, ".'$(this)'.")'>$sAction</button>"
+                     ."&nbsp;&nbsp;&nbsp;";
+        }
+        $s .= "<div style='margin-top:15px'>"
+                 ."<form onsubmit='return false;'>"
+                 ."<button onclick='doSubmitStatus(\"Add Note\", $row, ".'$(this)'.")'>Add Note</button>"
+                 ."&nbsp;<input type='text' size='50' id='action_note'/>"
+                 ."</form>"
+                 ."</div>"
+                 ."</div>";
+        return( $s );
+    }
+
+    private function drawStatusFormMbrSelect( KeyframeRecord $kfrOrder, $raMbr )
+    {
+        $oForm = new SEEDCoreForm('A');
+        $s = "<div class='mbroMbrSelect' style='position:relative'>"
+            ."<span id='mbr-label'>".(@$raMbr['_key'] ? SEEDCore_ArrayExpand($raMbr, "[[firstname]] [[lastname]] in [[city]] ([[_key]])") : "")."</span>"
+            ."&nbsp;&nbsp;"
+            .$oForm->Text( 'dummy_kMbr', '', ['size'=>10, 'attrs'=>"placeholder='Search'"] )
+            ."&nbsp;&nbsp;"
+            ."<button onclick='doMbrSelect(".'$(this)'.")'>".(@$raMbr['_key'] ? "Change" : "Select")."</button>"
+            .$oForm->Hidden('kMbr')
+            ."</div>";
+
+        $urlQ = SITEROOT_URL."app/q/q2.php";    // same as q/index.php but authenticates on seeds2
+
+        $s .= "<script>
+               // 'o' is not used anywhere; this just sets up the MbrSelector control to run independently
+               let o = new MbrSelector( { urlQ:'".$urlQ."',
+                                          idTxtSearch:'sfAp_dummy_kMbr',
+                                          idOutReport:'mbr-label',
+                                          idOutKey:'sfAp_kMbr' } );
+               </script>";
+
+        return( $s );
+    }
+
+    private function drawStatusFormContactData( KeyframeRecord $kfrOrder, $raMbr )
+    {
+        $s = "";
+
+        return( $s );
+    }
 }
 
 $oUI = new mbrOrderFulfilUI( $kfdb, $sess, $oApp );
@@ -283,62 +345,28 @@ while( $kfr->CursorFetch() ) {
 }
 $s .= "</table>";
 
+
 $s .= mbrSearchJS();
 
+$raConsoleParms = [
+    'sCharset'=>'cp1252',
+    'bBodyMargin'=>true,
+    'raScriptFiles' => [ W_ROOT."std/js/SEEDStd.js",W_CORE."js/SEEDCore.js", W_CORE."js/SFUTextComplete.js", W_CORE."js/MbrSelector.js" ]
+];
 
-echo Console01Static::HTMLPage( $s, "", 'EN', [ 'sCharset'=>'cp1252', 'bBodyMargin'=>true,
-                                                'raScriptFiles' => [ W_ROOT."std/js/SEEDStd.js",W_CORE."js/SEEDCore.js", W_CORE."js/SFUTextComplete.js" ]
-] );
+echo Console01Static::HTMLPage( $s, "", 'EN', $raConsoleParms );
 
 
-
-// same as ev_admin
 function mbrSearchJS()
 {
     $urlQ = SITEROOT_URL."app/q/q2.php";    // same as q/index.php but authenticates on seeds2
 
-    $s = <<<volSearchJS
-<script>
-var urlQ = "$urlQ";
-var cp1_pcvSearch = [];
-SFU_TextCompleteVars['sfAp_dummy_kMbr'] = {
-    'fnFillSelect' :
-            function( sSearch ) {
-                let raRet = [];
-
-                let jxData = { qcmd    : 'mbr-search',
-                               lang    : "EN",
-                               sSearch : sSearch
-                             };
-                let o = SEEDJXSync( urlQ, jxData );console.log(o);
-                if( !o || !o['bOk'] || !o['raOut'] ) {
-                    alert( "Sorry there is a server problem" );
-                } else {
-                    //var bOk = o['bOk'];
-                    //var sOut = o['sOut'];
-                    for( let i = 0; i < o['raOut'].length; ++i ) {
-                        r = o['raOut'][i];
-                        raRet[i] = { val: r['_key'],
-                                     label: r['firstname']+" "+r['lastname']+" ("+r['_key']+")" };
-                    }
-                    cp1_pcvSearch = o['raOut'];   // save this so we can look it up in fnSelectChoose
-                }
-                return( raRet );
-            },
-    'fnSelectChoose' :
-            function( val ) {
-                for( let i = 0; i < cp1_pcvSearch.length; ++i ) {
-                    let r = cp1_pcvSearch[i];
-                    if( r['_key'] == val ) {
-                        $("#vol-label").html( r['firstname']+" "+r['lastname']+" ("+r['_key']+")"+" in "+r['city'] );
-                        $("#sfAp_vol_kMbr").val( r['_key'] );
-                        break;
-                    }
-                }
-            }
-};
-</script>
-volSearchJS;
+    $s = "<script>
+$(document).ready( function() {
+    // 'o' is not used anywhere; this just sets up the MbrSelector control to run independently
+    let o = new MbrSelector( { urlQ:'".$urlQ."', idTxtSearch:'sfAp_dummy_kMbr', idOutReport:'vol-label', idOutKey:'sfAp_vol_kMbr' } );
+});
+</script>";
 
     return( $s );
 }
@@ -505,6 +533,15 @@ function doSubmitStatus( sAction, kRow, jButton )
                    newTr.find('.mbrOrderShowTicket').attr('data-expanded',1);
                }
            });
+
+    return( false );
+}
+
+function doMbrSelect( jButton )
+{
+    let jContainer = jButton.closest(".mbroMbrSelect");
+    let kMbr = jContainer.find('#sfAp_kMbr').val();
+    alert(kMbr);
 
     return( false );
 }

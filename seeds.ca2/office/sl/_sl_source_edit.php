@@ -243,7 +243,7 @@ $s .= "</td></tr></table>";
                      ."<input class='slsrcedit_novelsp' name='novelsp1' value=''/>"
                      ."<input class='slsrcedit_novelcv' name='novelcv1' value=''/>"
                      ."<div class='slsrcedit_cvBtns'>"
-                         ."<img class='slsrcedit_novelBtns_new' height='14' src='".W_ROOT."img/ctrl/new01.png'/>"
+                         ."<img class='slsrcedit_novelBtns_new' height='14' src='".W_CORE_URL."img/ctrl/new01.png'/>"
                      ."</div>"
                  ."</div>"
              ."</div>";
@@ -284,7 +284,7 @@ $s .= "</td></tr></table>";
         $spEsc = htmlspecialchars($sp,ENT_QUOTES);
         $s .= "<div class='slsrcedit_sp' osp='$spEsc'>"
                  ."<div class='slsrcedit_spName'>$spEsc</div>"
-                 ."<div class='slsrcedit_spBtns'><img class='slsrcedit_spBtns_new' height='14' src='".W_ROOT."img/ctrl/new01.png'/></div>"
+                 ."<div class='slsrcedit_spBtns'><img class='slsrcedit_spBtns_new' height='14' src='".W_CORE_URL."img/ctrl/new01.png'/></div>"
                  ."<div class='slsrcedit_cvgroup'>";
         $i = 1;
         foreach( $raCV as $r ) {
@@ -445,6 +445,7 @@ $s .= "</td></tr></table>";
               .slsrcedit_err { border:1px solid black;color:red;padding:10px; }
         </style>";
 
+        $wcore = W_CORE_URL;
         $s .= <<<SLSrcEditScript
               <script>
 
@@ -628,7 +629,7 @@ $s .= "</td></tr></table>";
               });
 
 
-              var wroot = "../../wcore/";
+              var wcore = "$wcore";
               var slsrceditNewCV =
                       "<div class='slsrcedit_cv slsrcedit_stripe_new' iRow='%%i%%' kSRCCV='0' bOrganic='0'>                \
                            <div class='slsrcedit_cvOrgBtn'></div>                                                          \

@@ -14,7 +14,7 @@ function ViewHead( $sTitle, $raParms = array() )
         ."<title>$sTitle</title>"
         ."<link href='".PLANT_COMMON_C."styles.css' rel='stylesheet' type='text/css'/>"
         //."<link rel='stylesheet' type='text/css' href='".BOOTSTRAP."/css/bootstrap.min.css'>"
-        ."<link rel='stylesheet' type='text/css' href='".W_ROOT."os/bootstrap3/dist/css/bootstrap.min.css'></link>"
+        ."<link rel='stylesheet' type='text/css' href='".W_CORE_URL."os/bootstrap3/dist/css/bootstrap.min.css'></link>"
         ."<style type='text/css'>"
         //."body { background:#212b02 url(images/bg1.png) no-repeat center top;}"
         //."body { background:#fff url(images/bg1.png) no-repeat center top;}"
