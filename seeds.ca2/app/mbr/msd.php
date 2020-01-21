@@ -225,7 +225,7 @@ class msdBasket extends SEEDBasketStore
                                 ."<div class='sb_basket_td'>"
                                         // Use full url instead of W_ROOT because this html can be generated via ajax (so not a relative url)
                 // Only draw the Remove icon for items with kBP because discounts, etc, are coded with kBP==0 and those shouldn't be removable on their own
-                .($raItem['kBP'] ? ("<img height='14' onclick='RemoveFromBasket(".$raItem['kBP'].");' src='http://seeds.ca/w/img/ctrl/delete01.png'/>") : "")
+                .($raItem['kBP'] ? ("<img height='14' onclick='RemoveFromBasket(".$raItem['kBP'].");' src='http://seeds.ca/wcore/img/ctrl/delete01.png'/>") : "")
                 ."</div>"
                         ."</div>";
             }
@@ -296,7 +296,7 @@ class msdBasket extends SEEDBasketStore
                                                 ."<div class='sb_basket_td'>"
                                                         // Use full url instead of W_ROOT because this html can be generated via ajax (so not a relative url)
                                 // Only draw the Remove icon for items with kBP because discounts, etc, are coded with kBP==0 and those shouldn't be removable on their own
-                                .($raItem['kBP'] ? ("<img height='14' onclick='RemoveFromBasket(".$raItem['kBP'].");' src='http://seeds.ca/w/img/ctrl/delete01.png'/>") : "")
+                                .($raItem['kBP'] ? ("<img height='14' onclick='RemoveFromBasket(".$raItem['kBP'].");' src='http://seeds.ca/wcore/img/ctrl/delete01.png'/>") : "")
                                 ."</div>"
                                         ."</div>";
                             }
