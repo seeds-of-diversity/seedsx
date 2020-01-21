@@ -65,7 +65,6 @@ $oFormEv->Load();
 //var_dump($oFormEv->GetValuesRA());
 
 
-
 $oC->SetFrameControlParm( 'EVfltYear', $iYear );   // this causes the EVfltYear value to be propagated with oComp form submissions
 
 $s = jsControls()
@@ -229,20 +228,20 @@ function EV2_formDraw( $oForm )
     global $oEvents;
 
 // When you click on a list item sfAk causes the new form to Load() the record, but
-// on the first instance of the app there is no sfAk parm.  Console01KFUI figures out the current record
-// from the first item in the list and sets up its (old) form.
-// On initial instance, when sfAk is not in parms, set the new form to the same record as the old form.
-if( !$oFormEv->GetKey() ) {
+// on the first instance of the app (or after a search!) there is no sfAk parm.  Console01KFUI figures out the current record
+// from the first item in the list and sets up its form.
+// Set the new form to the same record as the old form.
+//if( !$oFormEv->GetKey() ) {
     $k = $oC->oComp->oForm->GetKey();
     $kfr = $k ? $oEvents->oDB->GetKFR( 'E', $k ) : $oEvents->oDB->KFRel('E')->CreateRecord();   // do the right thing if $k is zero (New record)
     $oFormEv->SetKFR( $kfr );
-}
+//}
 
 
 
     if( ($kEv = $oForm->GetKey()) ) {
         if( ($kfr = $oEv->GetKfrelEvents()->GetRecordFromDBKey( $kEv )) ) {
-            $sPreviewText = $oEv->DrawEvent( $kfr );
+            $sPreviewText = $oEv->DrawEvent( $kfr, $oEvents );
         } else {
             $sPreviewText = "{Error getting preview}";
         }
@@ -429,6 +428,9 @@ $(document).ready( function() {
             f.find('.ev-form-bodyClosed').show();
         });
 });
+
+SEEDCore_CleanBrowserAddress();
+
 </script>
 ";
 
