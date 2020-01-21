@@ -13,12 +13,9 @@ include_once( SEEDCOMMON."console/console01kfui.php" );
 include_once( SEEDROOT."Keyframe/KeyframeForm.php" );
 include_once( SEEDLIB.'events/events.php' );
 
-// DB is seeds2 : authentication is done on seeds2.SEEDSession_Users, all table references are to seeds.ev_events
-// This works on www8 because seeds2 user can see seeds and seeds2 databases.
-// This works on www12 because seeds2_def.php connects the single user that can see all databases
 list($kfdb, $sess, $dummyLang) = SiteStartSessionAccount( array( "W events" ) );
 
-$oApp = SiteAppConsole( ['db'=>'seeds1', 'sessPermsRequired'=>['W events']] );
+$oApp = SiteAppConsole( ['db'=>'seeds2', 'sessPermsRequired'=>['W events']] );
 
 header( "Content-type: text/html; charset=ISO-8859-1");
 
@@ -48,7 +45,7 @@ $raCompParms = array(
                          array( "label"=>"Time",     "colalias"=>"time",       "w"=>100),
                          array( "label"=>"Volunteer", "colalias"=>"vol_kMbr", "w"=>100  ),
     ),
-    'ListSize' => 10,
+    'ListSize' => 8,
     'fnListFilter'    => "EV2_listFilter",
     'fnListRowTranslate' => "EV2_listTranslate",
     'fnFormDraw'      => "EV2_formDraw",
@@ -171,9 +168,17 @@ function EV2_listFilter()
 function EV2_listTranslate( $kfr )
 {
     $ra = $kfr->ValuesRA();
+
+    // make a more readable date
+    if( ($t = @strtotime($ra['date_start'])) ) {
+        $ra['date_start'] = date('Y-M-d', $t );
+    }
+
+    // look up volunteer name
     if( ($kMbr = $ra['vol_kMbr']) ) {
         $ra['vol_kMbr'] = $kfr->kfrel->kfdb->Query1( "SELECT concat(firstname,' ',lastname,' in ',city) FROM seeds2.mbr_contacts WHERE _key='$kMbr'" );
     }
+
     return( $ra );
 }
 
@@ -429,224 +434,6 @@ $(document).ready( function() {
 
 
     return( $s );
-}
-
-
-
-exit;
-
-include_once( STDINC."KeyFrame/KFUIAppSimple.php" );
-include_once( STDINC."KeyFrame/KFRForm.php" );
-
-
-$kfdbSeeds = SiteKFDB(SiteKFDB_DB_seeds1);
-//$kfdbSeeds->SetDebug(1);
-
-$raAppParms = array();
-
-
-SiteApp_KFUIAppHeader( "Seeds of Diversity Events Lists" );
-
-
-$kfuidef =
-        array( "A" =>
-               array( "Label" => "Event",
-                      "ListCols" => array( // array( "label"=>"Page",           "col"=>"Page_name", "w"=>150),
-                                           array( "label"=>"City",           "col"=>"city",      "w"=>150),
-                                           array( "label"=>"Province",       "col"=>"province",  "w"=>50 ),
-// Use title for EV events, not SS events  array( "label"=>"Title",          "col"=>"title",     "w"=>200),  // kluge: must be second column
-                                           array( "label"=>"Location",          "col"=>"location",     "w"=>200),  // kluge: must be second column
-                                           array( "label"=>"Date",           "col"=>"date_start",     "w"=>50 ),
-//                                           array( "label"=>"Day",            "col"=>"day",       "w"=>50 ),
-                                           array( "label"=>"Alt Date",       "col"=>"date_alt",  "w"=>100),
-                                           array( "label"=>"Time",           "col"=>"time",      "w"=>100),
-                                         ),
-                      "ListSize" => 10,
-                      "ListSizePad" => 1,
-//                    "fnHeader"        => "EV_Item_header",
-                      "fnListFilter"    => "EV_Item_listFilter",
-                      "fnListTranslate" => "EV_Item_listTranslate",
-                      "fnFormDraw"      => "EV_Item_formDraw",
-                    ) );
-
-/* Fetch the values for the 'year' global filter
- * 0 = This year
- * 1 = All
- */
-$raYearOpts[0] = "-- Future --";
-$raYearOpts[1] = $iCurrYear;
-$raYearOpts[2] = "-- All --";
-if( ($dbc = $kfdbSeeds->KFDB_CursorOpen( "SELECT distinct(YEAR(date_start)) FROM ev_events ORDER BY 1 DESC" )) ) {
-    while( $ra = $kfdbSeeds->KFDB_CursorFetch($dbc) ) {
-        if( $ra[0] && $ra[0] != $iCurrYear )  $raYearOpts[$ra[0]] = $ra[0];
-    }
-}
-
-$raAppParms['kfLogFile'] = SITE_LOG_ROOT."events.log";
-$raAppParms['raUFlt'] = array( array( "label" => "Year",
-                                      "name" => "EVfltYear",
-                                      "raValues" => $raYearOpts,
-                                      "currValue" => SEEDSafeGPC_GetInt("EVfltYear") ) );
-
-
-KFUIApp_ListForm( $kfdbSeeds, $kfreldef_EVEvents, $kfuidef, $sess->GetUID(), $raAppParms );
-
-
-function EV_Item_listFilter()
-/****************************
-    Filter the list only to items of the current page
- */
-{
-    global $iCurrYear;
-
-    $iYear = SEEDSafeGPC_GetInt("EVfltYear");
-
-    switch( $iYear ) {
-        case 0:  return( "date_start > NOW()" );                 // Future
-        case 1:  return( "(YEAR(date_start) = '$iCurrYear')" );  // this year
-        case 2:  return( "" );                                   // all years
-        default: return( "(YEAR(date_start) = '$iYear')" );      // the selected year
-    }
-}
-
-function EV_Item_listTranslate( $kfr )
-/*************************************
-    Change numerical month to named month in the list view
- */
-{
-    return( array( "month" => date("M", mktime(0,0,0,$kfr->value('month'),1,1978))));
-}
-
-function EV_Item_formDraw( $kfr )
-/********************************
- */
-{
-    echo "<TABLE cellpadding=5 width='95%'>";
-
-//  echo "<TR>".KFRFORM_SelectTD( $kfr, "Event type:", "type", array("SS"=>"Seedy Saturday/Sunday", "EV"=>"Event") )."</TR>";
-    echo "<INPUT type='hidden' name='type' value='SS'>";
-
-    // type=EV: title is the title of the event, city is the location
-    // type=SS: city/prov is the title of the event, title is repurposed as the location
-
-    if( $kfr->value('Page_type')=="EV" ) {
-        draw_field( "title", "Title", $kfr, $kfr->value('Page_bEN'), $kfr->value('Page_bFR'), 50 );
-    }
-
-    // both types have city and province here
-    echo "<TR><TD valign='top'>City:</TD><TD valign='top'>".KFRForm_Text( $kfr, "", "city", 20 );
-    echo "<SELECT NAME='province'>"; echo option_province( $kfr->value('province') ); echo "</SELECT></TD>";
-
-    echo "<TD valign='top' rowspan='5'>";
-    echo "<DIV style='padding:1em;width:30em;float:right; border:thin solid black;font-size:8pt;font-family:verdana,sans serif;'>"
-        ."<B>Location</B>: name of venue, address<BR>"
-        ."<B>Date</B>: must be YYYY-MM-DD<BR>"
-        ."<B>Alternate Date Text</B>: enter a Date too, so the list can sort properly, but this will be shown instead."
-        ."e.g. if date is unknown enter 2009-01-01 for Date, TBA as Alternate - the list will show TBA as the date and it will put the event at"
-        ."Jan 1, 2009<BR>"
-        ."<B>Contact</B>: name, phone, email here instead of in details so we can delete that personal info later.<BR>"
-        ."<BR>"
-        ."Contact and Details use special tags [[mailto:my@email.ca]] and [[http://my.website.ca]] </DIV>";
-    echo "</TD></TR>";
-
-    echo "<TR>".KFRForm_TextTD( $kfr, "Location:", "location", 30 )."</TR>";
-
-    if( $kfr->value('Page_type')=="SS" ) {
-        draw_field( "title", "Location", $kfr, $kfr->value('Page_bEN'), $kfr->value('Page_bFR'), 50 );
-    }
-
-//  echo "<TR><TD align='top'>Date:</TD>      <TD align='left'>".KFRForm_Text( $kfr, "", "date_start", 20 );
-    $oDP = new SEEDDateCalendar();
-    echo $oDP->Setup();
-    echo "<TR><TD align='top'>Date:</TD>      <TD align='left'>".$oDP->DrawCalendarControl( "date_start", $kfr->value('date_start') );
-//  echo "<SELECT NAME=day>"; option_days( $kfr->value('day') ); echo "</SELECT>, ".$kfr->value('Page_year');
-    if( $kfr->value("date_start") ) {
-        echo "<SPAN style='font-size:9pt;color:grey'>";
-
-        $y = substr( $kfr->value("date_start"), 0, 4 );
-        $m = substr( $kfr->value("date_start"), 5, 2 );
-        $d = substr( $kfr->value("date_start"), 8, 2 );
-        echo SEEDStd_StrNBSP("",10) . SEEDDateStr( mktime(0,0,0,$m,$d,$y), "EN" );
-        echo " / "                  . SEEDDateStr( mktime(0,0,0,$m,$d,$y), "FR" );
-        echo "</SPAN>";
-    }
-    echo "</TD></TR>";
-
-    echo "<TR>".KFRForm_TextTD( $kfr, "Time:", "time", 30 )."</TR>";
-
-    draw_field( "date_alt", "Alternate Date&nbsp;Text", $kfr, $kfr->value('Page_bEN'), $kfr->value('Page_bFR'), 50 );
-
-    echo "<TR>".KFRForm_TextTD( $kfr, "Contact:", "contact", 100 )."</TR>";
-
-    echo "<TR><TD align='left' valign=top>Details:"
-        ."<BR><BR><BR><BR><BR><BR>"
-        ."<INPUT type=submit value=Save>"
-        ."</TD><TD colspan=2 align='left'>";
-    echo "<TABLE cellpadding=5 width='100%'>";
-//  if( $kfr->value('Page_bEN') ) {
-        echo "<TR><TD valign='top' bgcolor='".CLR_BG_editEN."' width='100%'>(English) ";
-//        SEEDEditor_Text( 'details', $kfr->value('details'), array("height_px" => 200, "width" => "100%", "editor"=>"PLAIN") );
-        echo "<TEXTAREA style='width:100%' wrap='SOFT' rows='13' name='details'>".$kfr->valueEnt('details')."</TEXTAREA>";
-        echo "</TD></TR>";
-//  }
-//  if( $kfr->value('Page_bFR') ) {
-        echo "<TR><TD valign='top' bgcolor='".CLR_BG_editFR."' width='100%'>(Fran&ccedil;ais) ";
-//        SEEDEditor_Text( 'details_fr', $kfr->value('details_fr'), array("height_px" => 200, "width" => "100%", "editor"=>"PLAIN") );
-        echo "<TEXTAREA style='width:100%' wrap='SOFT' rows='13' name='details_fr'>".$kfr->valueEnt('details_fr')."</TEXTAREA>";
-        echo "</TD></TR>";
-//  }
-    echo "</TABLE>";
-//  if( !$kfr->value('Page_bEN') )  echo KFRForm_Hidden( $kfr, "details" );
-//  if( !$kfr->value('Page_bFR') )  echo KFRForm_Hidden( $kfr, "defails_fr" );
-    echo "</TD></TR>\n";
-//  echo "<TR><TD align=center colspan=2><INPUT TYPE=SUBMIT VALUE='".(($i=="new") ? "Add":"Update")."'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-//  echo "<A HREF='page.php?p=".$p."&".$la->login_auth_get_urlparms()."'>Cancel</A></TD></TR>\n";
-    echo "</TABLE>";
-}
-
-
-
-function draw_field( $name, $label, $kfr, $bEN, $bFR, $size )
-/************************************************************
-*/
-{
-    echo "<TR><TD align='left'>$label:</TD><TD align='left'>";
-    echo "<TABLE cellpadding=5>";
-    echo "<TR><TD bgcolor=".CLR_BG_editEN.">(English) <INPUT TYPE=TEXT NAME='$name' VALUE='".$kfr->ValueEnt($name)."' size='$size'></TD></TR>\n";
-    echo "<TR><TD bgcolor=".CLR_BG_editFR.">(Fran&ccedil;ais) <INPUT TYPE=TEXT NAME='{$name}_fr' VALUE='".$kfr->ValueEnt($name.'_fr')."' size='$size'></TD></TR>\n";
-    echo "</TABLE>";
-//  if( !$bEN )  echo "<INPUT TYPE=HIDDEN NAME={$name} VALUE=\"".$kfr->ValueEnt($name)."\">";
-//  if( !$bFR )  echo "<INPUT TYPE=HIDDEN NAME={$name}_fr VALUE=\"".$kfr->ValueEnt($name.'_fr')."\">";
-    echo "</TD></TR>";
-}
-
-
-function option_months( $sel ) {
-    for( $i = 1; $i <= 12; ++$i ) {
-        echo "<OPTION value='". $i ."'". ( $i==$sel ? " SELECTED" : "") .">". strftime( "%B", mktime(0,0,0,$i,1) ). "</OPTION>";
-    }
-}
-
-function option_days( $sel ) {
-    for( $i = 1; $i <= 31; ++$i ) {
-        echo "<OPTION value='". $i ."'". ( $i==$sel ? " SELECTED" : "") .">". $i ."</OPTION>";
-    }
-}
-
-function option_province( $province ) {
-    echo "<OPTION value='AB'". ($province=='AB' ? " SELECTED" : "") .">AB</OPTION>";
-    echo "<OPTION value='BC'". ($province=='BC' ? " SELECTED" : "") .">BC</OPTION>";
-    echo "<OPTION value='MB'". ($province=='MB' ? " SELECTED" : "") .">MB</OPTION>";
-    echo "<OPTION value='NB'". ($province=='NB' ? " SELECTED" : "") .">NB</OPTION>";
-    echo "<OPTION value='NF'". ($province=='NF' ? " SELECTED" : "") .">NF</OPTION>";
-    echo "<OPTION value='NS'". ($province=='NS' ? " SELECTED" : "") .">NS</OPTION>";
-    echo "<OPTION value='ON'". ($province=='ON' ? " SELECTED" : "") .">ON</OPTION>";
-    echo "<OPTION value='PE'". ($province=='PE' ? " SELECTED" : "") .">PE</OPTION>";
-    echo "<OPTION value='QC'". ($province=='QC' ? " SELECTED" : "") .">QC</OPTION>";
-    echo "<OPTION value='SK'". ($province=='SK' ? " SELECTED" : "") .">SK</OPTION>";
-    echo "<OPTION value='YK'". ($province=='YK' ? " SELECTED" : "") .">YK</OPTION>";
-    echo "<OPTION value='NT'". ($province=='NT' ? " SELECTED" : "") .">NT</OPTION>";
-    echo "<OPTION value='NU'". ($province=='NU' ? " SELECTED" : "") .">NU</OPTION>";
 }
 
 ?>
