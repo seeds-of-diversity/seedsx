@@ -597,12 +597,22 @@ class SEEDTableWrite
     {
         $iCol = 1;
         foreach( $raData as $v ) {
-            $cell = chr(64+$iCol).$this->iRow;
+            $cell = $this->columnLetter($iCol).$this->iRow;
             $this->oPHPE->setActiveSheetIndex($this->iSheet)->setCellValue($cell, $v);
             ++$iCol;
         }
 
         ++$this->iRow;
+    }
+
+    private function columnLetter( $iCol )
+    /*************************************
+        Given an origin-1 column number, return the corresponding Spreadsheet letter(s)
+
+        1=>A, 2=>B, 26=>Z, 27=>AA, 28=>AB
+     */
+    {
+        return( ($iCol > 26 ? chr(64+(($iCol-1)/26)) : "").chr(64+($iCol-1)%26+1) );
     }
 
     function WriteRowMap( $raData, $raMap )
@@ -617,7 +627,7 @@ class SEEDTableWrite
         $iCol = 1;
         foreach( $raMap as $kData ) {
             $v = $raData[$kData];
-            $cell = chr(64+$iCol).$this->iRow;
+            $cell = $this->columnLetter($iCol).$this->iRow;
             $this->oPHPE->setActiveSheetIndex($this->iSheet)->setCellValue($cell, $v);
             ++$iCol;
         }
