@@ -75,7 +75,7 @@ class SEEDBasketFulfilment
 
     private function drawProductFromBxP( $raP )
     {
-        $eStatus = $raP['BP_eStatus'];
+        $eStatus = $raP['PUR_eStatus'];
         switch( $eStatus ) {
             case 'PAID':      $colour = "#eea";   $c = "warning";  break;
             case 'FILLED':    $colour = "#beb";   $c = "success";  break;
@@ -83,7 +83,7 @@ class SEEDBasketFulfilment
             default:          $colour = "#eee";   $c = "";         break;
         }
 
-        $amount = $raP['P_quant_type'] == 'MONEY' ? $raP['BP_f'] : $raP['BP_n'];
+        $amount = $raP['P_quant_type'] == 'MONEY' ? $raP['PUR_f'] : $raP['PUR_n'];
 
         // overflow:hidden prevents the div from being zero-height due to its children floating, so the background colour appears
         $s = "<div class='' style='clear:both;background-color:$colour;overflow:hidden'>"
@@ -92,21 +92,21 @@ class SEEDBasketFulfilment
                 ."<div style='float:right;width:100px;display:inline-block;'>";
         switch( $eStatus ) {
             case "PAID":
-                $s .= $this->drawFulfilButton( "Cancel", "prodCancel", $raP['BP__key'] )
-                     .$this->drawFulfilButton( "Fill", "prodFill", $raP['BP__key'] );
+                $s .= $this->drawFulfilButton( "Cancel", "prodCancel", $raP['PUR__key'] )
+                     .$this->drawFulfilButton( "Fill", "prodFill", $raP['PUR__key'] );
                 break;
             case "FILLED":
-                $s .= $this->drawFulfilButton( "Un-fill", "prodUnfill", $raP['BP__key'] );
+                $s .= $this->drawFulfilButton( "Un-fill", "prodUnfill", $raP['PUR__key'] );
                 break;
             case "CANCELLED":
-                $s .= $this->drawFulfilButton( "Un-cancel", "prodUncancel", $raP['BP__key'] );
+                $s .= $this->drawFulfilButton( "Un-cancel", "prodUncancel", $raP['PUR__key'] );
                 break;
         }
         $s .= "</div>";
         $s .= "<div style='float:right;width:100px;display:inline-block;'>"
-             .($raP['BP_bAccountingDone'] ? "<div style='text-align:center' onclick='doFulfilButton(\"basketPurchaseUnaccount\",{$raP['BP__key']});'>"
-                                           ."<img style='margin-left:40px' src='".W_ROOT."img/checkmark01.png' height='20'/></div>"
-                                          : $this->drawFulfilButton( "Account", "basketPurchaseAccount", $raP['BP__key']))
+             .($raP['PUR_bAccountingDone'] ? "<div style='text-align:center' onclick='doFulfilButton(\"basketPurchaseUnaccount\",{$raP['PUR__key']});'>"
+                                            ."<img style='margin-left:40px' src='".W_CORE_URL."img/ctrl/checkmark01.png' height='20'/></div>"
+                                           : $this->drawFulfilButton( "Account", "basketPurchaseAccount", $raP['PUR__key']))
              ."</div>";
 
         $s .= "</div>";
