@@ -227,11 +227,11 @@ function EV2_formDraw( $oForm )
 // on the first instance of the app there is no sfAk parm.  Console01KFUI figures out the current record
 // from the first item in the list and sets up its (old) form.
 // On initial instance, when sfAk is not in parms, set the new form to the same record as the old form.
-if( !$oFormEv->GetKey() ) {
+//if( !$oFormEv->GetKey() ) {
     $k = $oC->oComp->oForm->GetKey();
     $kfr = $k ? $oEvents->oDB->GetKFR( 'E', $k ) : $oEvents->oDB->KFRel('E')->CreateRecord();   // do the right thing if $k is zero (New record)
     $oFormEv->SetKFR( $kfr );
-}
+//}
 
 
 
@@ -424,6 +424,9 @@ $(document).ready( function() {
             f.find('.ev-form-bodyClosed').show();
         });
 });
+
+SEEDCore_CleanBrowserAddress();
+
 </script>
 ";
 
