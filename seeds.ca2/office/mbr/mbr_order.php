@@ -129,7 +129,7 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
             ."&nbsp;&nbsp;"
             .$oForm->Text( 'dummy_kMbr', '', ['size'=>10, 'attrs'=>"placeholder='Search'"] )
             ."&nbsp;&nbsp;"
-            ."<button onclick='doMbrSelect(".'$(this)'.",$kOrder)'>".(@$raMbr['_key'] ? "Change" : "Select")."</button>"
+            ."<button onclick='doMbrSelect(".'$(this)'.",$kOrder)'>".(@$raMbr['_key'] ? "Change" : "Select")." Contact</button>"
             .$oForm->Hidden('kMbr')
             ."</div>";
 
@@ -152,6 +152,65 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
     private function drawStatusFormContactData( KeyframeRecord $kfrOrder, $raMbr )
     {
         $s = "";
+
+        $oForm = new SEEDCoreForm('B');
+        foreach( $raMbr as $k => $v ) { $oForm->SetValue( $k, $v ); }
+        $oDFC = new drawFormContact( $oForm, $kfrOrder->ValuesRA(), $raMbr );
+        $s .= "<div>".$oDFC->DrawItem('firstname')." ".$oDFC->DrawItem('lastname')."</div>"
+             ."<div>".$oDFC->DrawItem('firstname2')." ".$oDFC->DrawItem('lastname2')."</div>"
+             ."<div>".$oDFC->DrawItem('company')." ".$oDFC->DrawItem('dept')."</div>"
+             ."<div>".$oDFC->DrawItem('address')." ".$oDFC->DrawItem('city')." ".$oDFC->DrawItem('province')."<div>"
+             ."<div>".$oDFC->DrawItem('postcode')." ".$oDFC->DrawItem('country')."</div>"
+             ."<div>".$oDFC->DrawItem('email')." ".$oDFC->DrawItem('phone')."</div>"
+                 ;
+
+        return( $s );
+    }
+}
+
+class drawFormContact
+{
+    private $oForm;
+    private $raOrder;
+    private $raMbr;
+
+    function __construct( SEEDCoreForm $oForm, $raOrder, $raMbr )
+    {
+        $this->oForm = $oForm;
+        $this->raOrder = $raOrder;
+        $this->raMbr = $raMbr;
+    }
+
+    private $raItems = [
+        'firstname'  => ['First name',   'mail_firstname', 'firstname'],
+        'lastname'   => ['Last name',    'mail_lastname',  'lastname'],
+        'firstname2' => ['First name 2', 'mail_firstname', 'firstname2'],
+        'lastname2'  => ['Last name 2',  'mail_lastname',  'lastname2'],
+        'company'    => ['Company',      'mail_company',   'company'],
+        'dept'       => ['Dept',         '',               'dept'],
+        'address'    => ['Address',      'mail_address',   'address'],
+        'city'       => ['City',         'mail_city',      'city'],
+        'province'   => ['Province',     'mail_prov',      'province', 5],
+        'postcode'   => ['Postal code',  'mail_postcode',  'postcode'],
+        'country'    => ['Country',      'mail_country',   'country'],
+        'email'      => ['Email',        'mail_email',     'email'],
+        'phone'      => ['Phone',        'mail_phone',     'phone'],
+
+
+    ];
+
+    public function DrawItem( $fld )
+    {
+        $placeholder = $this->raItems[$fld][0];
+        $valOrder = @$this->raOrder[$this->raItems[$fld][1]];
+        $valMbr = @$this->raMbr[$this->raItems[$fld][2]];
+
+        $ra = ['attrs'=>"placeholder='$placeholder'"];
+        if( @$this->raItems[$fld][3] ) { $ra['size'] = $this->raItems[$fld][3]; }
+        if( $valOrder == $valMbr ) {
+            $ra['disabled'] = 1;
+        }
+        $s = $this->oForm->Text( $fld, "", $ra );
 
         return( $s );
     }
