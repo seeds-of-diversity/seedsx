@@ -122,24 +122,28 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
 
     private function drawStatusFormMbrSelect( KeyframeRecord $kfrOrder, $raMbr )
     {
+        $kOrder = $kfrOrder->Key();
         $oForm = new SEEDCoreForm('A');
         $s = "<div class='mbroMbrSelect' style='position:relative'>"
             ."<span id='mbr-label'>".(@$raMbr['_key'] ? SEEDCore_ArrayExpand($raMbr, "[[firstname]] [[lastname]] in [[city]] ([[_key]])") : "")."</span>"
             ."&nbsp;&nbsp;"
             .$oForm->Text( 'dummy_kMbr', '', ['size'=>10, 'attrs'=>"placeholder='Search'"] )
             ."&nbsp;&nbsp;"
-            ."<button onclick='doMbrSelect(".'$(this)'.")'>".(@$raMbr['_key'] ? "Change" : "Select")."</button>"
+            ."<button onclick='doMbrSelect(".'$(this)'.",$kOrder)'>".(@$raMbr['_key'] ? "Change" : "Select")."</button>"
             .$oForm->Hidden('kMbr')
             ."</div>";
 
         $urlQ = SITEROOT_URL."app/q/q2.php";    // same as q/index.php but authenticates on seeds2
 
         $s .= "<script>
+               function setupMbrSelector() {
                // 'o' is not used anywhere; this just sets up the MbrSelector control to run independently
-               let o = new MbrSelector( { urlQ:'".$urlQ."',
-                                          idTxtSearch:'sfAp_dummy_kMbr',
-                                          idOutReport:'mbr-label',
-                                          idOutKey:'sfAp_kMbr' } );
+               let oMS = new MbrSelector( { urlQ:'".$urlQ."',
+                                            idTxtSearch:'sfAp_dummy_kMbr',
+                                            idOutReport:'mbr-label',
+                                            idOutKey:'sfAp_kMbr' } );
+               }
+               setupMbrSelector();
                </script>";
 
         return( $s );
@@ -223,6 +227,13 @@ if( ($jx = SEEDInput_Str('jx')) ) {
             $sAction = SEEDInput_Str('action');
             $sNote   = SEEDInput_Str('note');
             doSubmitForm( $kfr, $sAction, $sNote );
+            $rQ['bOk'] = true;
+            break;
+        case 'doSetMbrKey':
+            if( ($kMbr = SEEDInput_Int('kMbr')) ) {
+                $kfr2->UrlParmSet( 'sExtra', 'mbrid', $kMbr );
+                $rQ['bOk'] = $kfr2->PutDBRow();
+            }
             break;
     }
 
@@ -475,17 +486,22 @@ function initClickShowTicket( jDiv )
         let mbrTr = t.closest(".mbro-row");
         let tmpTr = $("<tr class='mbro-tmp-row'><td colspan='7'><div class='tmpRowDiv'></div></td></tr>");
         tmpTr.insertAfter(mbrTr);    // inserts into the dom after the current <tr> but keeps its object identity
-        $.get( 'mbr_order.php',
-               "jx=drawStatusForm&k="+k,
-               function (data) {
-                   let d = SEEDJX_ParseJSON( data );
-                   //console.log(d);
-                   if( d['bOk'] ) {
-                       tmpTr.find(".tmpRowDiv").html( d['sOut'] );
-                       t.attr( 'data-expanded', 1 );
-                   }
-        });
+        fillTmpRowDiv( tmpTr.find(".tmpRowDiv"), k );
+        t.attr( 'data-expanded', 1 );
     }
+}
+
+function fillTmpRowDiv( tmpRowDiv, kOrder )
+{
+    $.get( 'mbr_order.php',
+            "jx=drawStatusForm&k="+kOrder,
+            function (data) {
+                let d = SEEDJX_ParseJSON( data );
+                //console.log(d);
+                if( d['bOk'] ) {
+                    tmpRowDiv.html( d['sOut'] );
+                }
+     });
 }
 
 function doSubmitStatus( sAction, kRow, jButton )
@@ -504,15 +520,7 @@ function doSubmitStatus( sAction, kRow, jButton )
 
     // replace the statusForm with its new state
     let tmpRowDiv = jButton.closest(".tmpRowDiv");
-    $.get( 'mbr_order.php',
-           "jx=drawStatusForm&k="+kRow,
-           function (data) {
-               let d = SEEDJX_ParseJSON( data );
-               //console.log(d);
-               if( d['bOk'] ) {
-                   tmpRowDiv.html( d['sOut'] );
-               }
-           } );
+    fillTmpRowDiv( tmpRowDiv, kRow );
 
     // replace the previous <tr> with its new state
     let prevTr = tmpRowDiv.closest("tr").prev();
@@ -537,11 +545,21 @@ function doSubmitStatus( sAction, kRow, jButton )
     return( false );
 }
 
-function doMbrSelect( jButton )
+function doMbrSelect( jButton, kOrder )
 {
     let jContainer = jButton.closest(".mbroMbrSelect");
     let kMbr = jContainer.find('#sfAp_kMbr').val();
-    alert(kMbr);
+
+    if( kMbr ) {
+        let jxData = { jx   : 'doSetMbrKey',
+                       k    : kOrder,
+                       kMbr : kMbr
+                     };console.log(jxData);
+        o = SEEDJX( "mbr_order.php", jxData );
+
+        let tmpRowDiv = jButton.closest(".tmpRowDiv");
+        fillTmpRowDiv( tmpRowDiv, kOrder );
+    }
 
     return( false );
 }
