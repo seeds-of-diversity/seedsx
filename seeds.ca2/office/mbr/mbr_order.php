@@ -53,7 +53,7 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
 
         $raMbr = [];
         if( ($kMbr = $kfrOrder->UrlParmGet('sExtra','mbrid')) ) {
-            $oMbr = new QServerMbr( $this->oApp, [] );
+            $oMbr = new QServerMbr( $this->oApp, ['config_bUTF8'=>false] ); // !utf8 because this whole form gets utf8-encoded at the end
             $rQ = $oMbr->Cmd('mbr-get',['kMbr'=>$kMbr]);
             if( $rQ['bOk'] ) {
                 $raMbr = $rQ['raOut'];
@@ -156,7 +156,7 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
         $oForm = new SEEDCoreForm('M');
         foreach( $raMbr as $k => $v ) { $oForm->SetValue( $k, $v ); }
         $oDFC = new drawFormContact( $oForm, $kfrOrder->ValuesRA(), $raMbr );
-        $s .= "<form class='mbroContactForm' onsubmit='return(false);'>"
+        $s .= "<form class='mbroContactForm' onsubmit='return(false);'>" // accept-charset='ISO-8859-1'>"
              ."<div>".$oDFC->DrawItem('firstname')." ".$oDFC->DrawItem('lastname')."</div>"
              ."<div>".$oDFC->DrawItem('firstname2')." ".$oDFC->DrawItem('lastname2')."</div>"
              ."<div>".$oDFC->DrawItem('company')." ".$oDFC->DrawItem('dept')."</div>"
@@ -190,7 +190,7 @@ class drawFormContact
         'lastname2'  => ['Last name 2',  'mail_lastname',  'lastname2'],
         'company'    => ['Company',      'mail_company',   'company'],
         'dept'       => ['Dept',         '',               'dept'],
-        'address'    => ['Address',      'mail_address',   'address'],
+        'address'    => ['Address',      'mail_addr',      'address'],
         'city'       => ['City',         'mail_city',      'city'],
         'province'   => ['Province',     'mail_prov',      'province', 5],
         'postcode'   => ['Postal code',  'mail_postcode',  'postcode'],
@@ -298,8 +298,8 @@ if( ($jx = SEEDInput_Str('jx')) ) {
             break;
         case 'doContactFormSubmit':
             if( ($kMbr = SEEDInput_Int('kMbr')) ) {
-                $oQ = new QServerMbr( $oApp, [] );
-                $rM = $oQ->Cmd('mbr-getFlds', []);
+                $oQ = new QServerMbr( $oApp, ['config_bUTF8'=>true] );
+                $rM = $oQ->Cmd('mbr-getFlds');
                 $raFlds = $rM['raOut'];
 
                 $raMbr = ['kMbr'=>$kMbr];
@@ -435,7 +435,7 @@ $s .= "<table border='1' width='100%' cellpadding='2' style='border-collapse:col
      ."</tr>";
 
 while( $kfr->CursorFetch() ) {
-    $s .= $oUI->drawRow($kfr->Key());
+    $s .= utf8_encode($oUI->drawRow($kfr->Key()));
 }
 $s .= "</table>";
 
@@ -443,7 +443,7 @@ $s .= "</table>";
 $s .= mbrSearchJS();
 
 $raConsoleParms = [
-    'sCharset'=>'cp1252',
+    'sCharset'=>'utf-8', //'ISO-8859-1',
     'bBodyMargin'=>true,
     'raScriptFiles' => [ W_ROOT."std/js/SEEDStd.js",W_CORE."js/SEEDCore.js", W_CORE."js/SFUTextComplete.js", W_CORE."js/MbrSelector.js" ]
 ];
@@ -657,7 +657,7 @@ function doContactFormSubmit( jButton, kMbr, kOrder )
     jContactForm.find('select, textarea, input').each( function() {
         jxData[$(this).attr('id')] = $(this).val();
     });
-    console.log(jxData);
+    //console.log(jxData);
     o = SEEDJX( "mbr_order.php", jxData );
 
     // replace the statusForm with its new state
