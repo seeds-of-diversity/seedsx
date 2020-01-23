@@ -163,6 +163,16 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
              ."<div>".$oDFC->DrawItem('address')." ".$oDFC->DrawItem('city')." ".$oDFC->DrawItem('province')."<div>"
              ."<div>".$oDFC->DrawItem('postcode')." ".$oDFC->DrawItem('country')."</div>"
              ."<div>".$oDFC->DrawItem('email')." ".$oDFC->DrawItem('phone')."</div>"
+             ."<div>&nbsp;</div>"
+             ."<div>".$oDFC->DrawItem('lang')."</div>"
+             ."<div>".$oDFC->DrawItem('referral')." Referral</div>"
+             ."<div>".$oDFC->DrawItem('expires')." Expires</div>"
+             ."<div>".$oDFC->DrawItem('lastrenew')." Last Renewal</div>"
+             ."<div>".$oDFC->DrawItem('startdate')." Start Date</div>"
+             ."<div>".$oDFC->DrawItem('bNoEBull')." No E-bulletin</div>"
+             ."<div>".$oDFC->DrawItem('bNoDonorAppeals')." No Donor Appeals</div>"
+             ."<div>".$oDFC->DrawItem('bNoSED')." Online MSD</div>"
+
              ."<button onclick='doContactFormSubmit(".'$(this)'.",${raMbr['_key']},".$kfrOrder->Key()." )'>Save</button>"
              ."</form>"
              ."<div class='mbroContactForm_feedback'></div>";
@@ -198,6 +208,14 @@ class drawFormContact
         'country'    => ['Country',      'mail_country',   'country'],
         'email'      => ['Email',        'mail_email',     'email'],
         'phone'      => ['Phone',        'mail_phone',     'phone'],
+        'lang'       => ['Language',     '',               'lang'],
+        'referral'   => ['Referral',     '',               'referral'],
+        'expires'       => ['Expires',     '',               'expires'],
+        'lastrenew'       => ['Last Renewal',     '',               'lastrenew'],
+        'startdate'       => ['Start Date',     '',               'startdate'],
+        'bNoEBull'   => ['No E-bulletin','',               'bNoEBull', 3],
+        'bNoDonorAppeals' => ['No Donor Appeals',     '',               'bNoDonorAppeals', 3],
+        'bNoSED'       => ['Online MSD',     '',               'bNoSED', 3],
     ];
 
     function GetItems() { return($this->raItems); }
