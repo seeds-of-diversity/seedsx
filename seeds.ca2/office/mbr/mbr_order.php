@@ -164,7 +164,8 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
              ."<div>".$oDFC->DrawItem('postcode')." ".$oDFC->DrawItem('country')."</div>"
              ."<div>".$oDFC->DrawItem('email')." ".$oDFC->DrawItem('phone')."</div>"
              ."<button onclick='doContactFormSubmit(".'$(this)'.",${raMbr['_key']},".$kfrOrder->Key()." )'>Save</button>"
-             ."</form>";
+             ."</form>"
+             ."<div class='mbroContactForm_feedback'></div>";
 
         return( $s );
     }
@@ -569,12 +570,12 @@ function initClickShowTicket( jDiv )
         let mbrTr = t.closest(".mbro-row");
         let tmpTr = $("<tr class='mbro-tmp-row'><td colspan='7'><div class='tmpRowDiv'></div></td></tr>");
         tmpTr.insertAfter(mbrTr);    // inserts into the dom after the current <tr> but keeps its object identity
-        fillTmpRowDiv( tmpTr.find(".tmpRowDiv"), k );
+        fillTmpRowDiv( tmpTr.find(".tmpRowDiv"), k, "" );
         t.attr( 'data-expanded', 1 );
     }
 }
 
-function fillTmpRowDiv( tmpRowDiv, kOrder )
+function fillTmpRowDiv( tmpRowDiv, kOrder, feedback )
 {
     $.get( 'mbr_order.php',
             "jx=drawStatusForm&k="+kOrder,
@@ -583,6 +584,7 @@ function fillTmpRowDiv( tmpRowDiv, kOrder )
                 //console.log(d);
                 if( d['bOk'] ) {
                     tmpRowDiv.html( d['sOut'] );
+                    tmpRowDiv.find('.mbroContactForm_feedback').html(feedback);
                 }
      });
 }
@@ -603,7 +605,7 @@ function doSubmitStatus( sAction, kRow, jButton )
 
     // replace the statusForm with its new state
     let tmpRowDiv = jButton.closest(".tmpRowDiv");
-    fillTmpRowDiv( tmpRowDiv, kRow );
+    fillTmpRowDiv( tmpRowDiv, kRow, "" );
 
     // replace the previous <tr> with its new state
     let prevTr = tmpRowDiv.closest("tr").prev();
@@ -641,7 +643,7 @@ function doMbrSelect( jButton, kOrder )
         o = SEEDJX( "mbr_order.php", jxData );
 
         let tmpRowDiv = jButton.closest(".tmpRowDiv");
-        fillTmpRowDiv( tmpRowDiv, kOrder );
+        fillTmpRowDiv( tmpRowDiv, kOrder, "" );
     }
 
     return( false );
@@ -659,10 +661,12 @@ function doContactFormSubmit( jButton, kMbr, kOrder )
     });
     //console.log(jxData);
     o = SEEDJX( "mbr_order.php", jxData );
+    let feedback = o['bOk'] ? "<div class='alert alert-success' style='font-size:small; margin-top:5px;padding:5px;width:5em;text-align:center'>Saved</div>"
+                            : ("<div class='alert alert-danger' style='font-size:small'>Error:"+o['sErr']+"</div>");
 
     // replace the statusForm with its new state
     let tmpRowDiv = jButton.closest(".tmpRowDiv");
-    fillTmpRowDiv( tmpRowDiv, kOrder );
+    fillTmpRowDiv( tmpRowDiv, kOrder, feedback );
 }
 
 </script>
