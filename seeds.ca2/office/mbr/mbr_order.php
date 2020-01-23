@@ -153,16 +153,18 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
     {
         $s = "";
 
-        $oForm = new SEEDCoreForm('B');
+        $oForm = new SEEDCoreForm('M');
         foreach( $raMbr as $k => $v ) { $oForm->SetValue( $k, $v ); }
         $oDFC = new drawFormContact( $oForm, $kfrOrder->ValuesRA(), $raMbr );
-        $s .= "<div>".$oDFC->DrawItem('firstname')." ".$oDFC->DrawItem('lastname')."</div>"
+        $s .= "<form class='mbroContactForm' onsubmit='return(false);'>"
+             ."<div>".$oDFC->DrawItem('firstname')." ".$oDFC->DrawItem('lastname')."</div>"
              ."<div>".$oDFC->DrawItem('firstname2')." ".$oDFC->DrawItem('lastname2')."</div>"
              ."<div>".$oDFC->DrawItem('company')." ".$oDFC->DrawItem('dept')."</div>"
              ."<div>".$oDFC->DrawItem('address')." ".$oDFC->DrawItem('city')." ".$oDFC->DrawItem('province')."<div>"
              ."<div>".$oDFC->DrawItem('postcode')." ".$oDFC->DrawItem('country')."</div>"
              ."<div>".$oDFC->DrawItem('email')." ".$oDFC->DrawItem('phone')."</div>"
-                 ;
+             ."<button onclick='doContactFormSubmit(".'$(this)'.",${raMbr['_key']},".$kfrOrder->Key()." )'>Save</button>"
+             ."</form>";
 
         return( $s );
     }
@@ -195,10 +197,9 @@ class drawFormContact
         'country'    => ['Country',      'mail_country',   'country'],
         'email'      => ['Email',        'mail_email',     'email'],
         'phone'      => ['Phone',        'mail_phone',     'phone'],
-
-
     ];
 
+    function GetItems() { return($this->raItems); }
     public function DrawItem( $fld )
     {
         $placeholder = $this->raItems[$fld][0];
@@ -208,7 +209,8 @@ class drawFormContact
         $ra = ['attrs'=>"placeholder='$placeholder'"];
         if( @$this->raItems[$fld][3] ) { $ra['size'] = $this->raItems[$fld][3]; }
         if( $valOrder == $valMbr ) {
-            $ra['disabled'] = 1;
+            //$ra['disabledAddHidden'] = 1;   // disabled controls look right but don't report values; this appends a hidden element too
+            $ra['disabled'] = 1;              // $().find() reads values of disabled controls though
         }
         $s = $this->oForm->Text( $fld, "", $ra );
 
@@ -292,6 +294,28 @@ if( ($jx = SEEDInput_Str('jx')) ) {
             if( ($kMbr = SEEDInput_Int('kMbr')) ) {
                 $kfr2->UrlParmSet( 'sExtra', 'mbrid', $kMbr );
                 $rQ['bOk'] = $kfr2->PutDBRow();
+            }
+            break;
+        case 'doContactFormSubmit':
+            if( ($kMbr = SEEDInput_Int('kMbr')) ) {
+                $oQ = new QServerMbr( $oApp, [] );
+                $rM = $oQ->Cmd('mbr-getFlds', []);
+                $raFlds = $rM['raOut'];
+
+                $raMbr = ['kMbr'=>$kMbr];
+                $oForm = new SEEDCoreForm('M');
+                $oForm->Load();
+
+$x = $oForm->GetValuesRA();
+$x = $_REQUEST;
+$oApp->Log('tmp',SEEDCore_ArrayExpandSeries( $x, "[[k]] = [[v]]\n") );
+
+                foreach( $raFlds as $k => $raDummy ) {
+                    $raMbr[$k] = $oForm->Value($k);
+                }
+                $rM = $oQ->Cmd('mbr--put', $raMbr);
+                $rQ['bOk'] = $rM['bOk'];
+                $rQ['sErr'] = $rM['sErr'];
             }
             break;
     }
@@ -613,7 +637,7 @@ function doMbrSelect( jButton, kOrder )
         let jxData = { jx   : 'doSetMbrKey',
                        k    : kOrder,
                        kMbr : kMbr
-                     };console.log(jxData);
+                     };
         o = SEEDJX( "mbr_order.php", jxData );
 
         let tmpRowDiv = jButton.closest(".tmpRowDiv");
@@ -622,4 +646,23 @@ function doMbrSelect( jButton, kOrder )
 
     return( false );
 }
+
+function doContactFormSubmit( jButton, kMbr, kOrder )
+{
+    let jContactForm = jButton.closest(".mbroContactForm");
+    let jxData = { jx    : 'doContactFormSubmit',
+                   k     : kOrder,
+                   kMbr  : kMbr,
+                 };
+    jContactForm.find('select, textarea, input').each( function() {
+        jxData[$(this).attr('id')] = $(this).val();
+    });
+    console.log(jxData);
+    o = SEEDJX( "mbr_order.php", jxData );
+
+    // replace the statusForm with its new state
+    let tmpRowDiv = jButton.closest(".tmpRowDiv");
+    fillTmpRowDiv( tmpRowDiv, kOrder );
+}
+
 </script>
