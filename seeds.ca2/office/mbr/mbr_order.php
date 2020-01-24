@@ -229,7 +229,8 @@ class drawFormContact
 
         $ra = ['attrs'=>"placeholder='$placeholder'"];
         if( @$this->raItems[$fld][3] ) { $ra['size'] = $this->raItems[$fld][3]; }
-        if( $valOrder == $valMbr ) {
+        if( $valMbr && $valOrder == $valMbr ) {
+            // disable the control if it is not blank and it matches the value in the order form (if blank we might want to enter something there)
             //$ra['disabledAddHidden'] = 1;   // disabled controls look right but don't report values; this appends a hidden element too
             $ra['disabled'] = 1;              // $().find() reads values of disabled controls though
         }
@@ -604,7 +605,7 @@ function fillTmpRowDiv( tmpRowDiv, kOrder, feedback )
                 //console.log(d);
                 if( d['bOk'] ) {
                     tmpRowDiv.html( d['sOut'] );
-                    tmpRowDiv.find('.mbroContactForm_feedback').html(feedback);
+                    tmpRowDiv.find('.mbroContactForm_feedback').html(feedback).show().delay(5000).fadeOut();
                 }
      });
 }
