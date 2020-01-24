@@ -258,6 +258,7 @@ class MbrContacts
                                                               array("col"=>"bNoEBull",          "type"=>"S"),  // I?
                                                               array("col"=>"bNoDonorAppeals",   "type"=>"I"),
                                                               array("col"=>"bNoSED",            "type"=>"I"),
+                                                              array("col"=>"bPrintedMSD",       "type"=>"I"),
                                                               array("col"=>"comment",           "type"=>"S"),
                                                               array("col"=>"donation",          "type"=>"S"),
                                                               array("col"=>"donation_date",     "type"=>"S") ) ) ) );
@@ -320,6 +321,7 @@ CREATE TABLE mbr_contacts (
     bNoEBull        VARCHAR(200),   -- NO E bulletin (check)
     bNoDonorAppeals INTEGER,        -- No Donor Appeals (check)
     bNoSED          INTEGER,        -- No SED (check)
+    bPrintedMSD     INTEGER NOT NULL DEFAULT 0,        -- Member paid for a printed Member Seed Directory
     comment         VARCHAR(200),   -- Comment
     donation        VARCHAR(200),   -- Donation
     donation_date   VARCHAR(200),   -- Date of Donation

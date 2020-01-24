@@ -224,6 +224,9 @@ class mbrContacts_Contacts extends Console01_Worker1
             ."<tr><td colspan='2'>&nbsp;</td>"
             .$oForm->TextTD( 'bNoSED', "Online MSD", $raP )
             ."</tr>"
+            ."<tr><td colspan='2'>&nbsp;</td>"
+            .$oForm->TextTD( 'bPrintedMSD', "Printed MSD", $raP )
+            ."</tr>"
             ."<TR valign='top'>"
             .$oForm->TextAreaTD( 'comment', "Comment", 35, 6 )
             ."</TR>"
