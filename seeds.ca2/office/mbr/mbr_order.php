@@ -1,5 +1,11 @@
 <?php
 
+/*
+alter table mbr_order_pending add bDoneAccounting integer not null default 0;
+alter table mbr_order_pending add bDoneRecording integer not null default 0;
+update mbr_order_pending set bDoneAccounting=1,bDoneRecording=1 where _key<=17967;
+ */
+
 // todo: flag unpaid entries that have later entries (paid or unpaid) with the same name | address | phone | email
 
 define("SITEROOT", "../../");
@@ -300,6 +306,14 @@ if( ($jx = SEEDInput_Str('jx')) ) {
             $rQ['sOut'] = "";
             $rQ['bOk'] = true;
             break;
+        case 'doAccountingDone':
+            $kfr2->SetValue('bDoneAccounting', 1);
+            $rQ['bOk'] = $kfr2->PutDBRow();
+            break;
+        case 'doRecordingDone':
+            $kfr2->SetValue('bDoneRecording', 1);
+            $rQ['bOk'] = $kfr2->PutDBRow();
+            break;
         case 'doBuildBasket':
             $o = new SoDOrder_MbrOrder( $oApp );
             $o->CreateFromMbrOrder( $k );
@@ -537,6 +551,42 @@ $(document).ready(function() {
             $(this).html("");
             $('#status2_'+k).html("");  // remove the other button
             $("#mailed"+k).html("");    // "Order not mailed" changes to ""
+        }
+    });
+
+    /* Accounting Done button
+     */
+    $(".doAccountingDone").click(function(event){
+        event.preventDefault();
+        let k = $(this).attr('data-kOrder');
+
+        let jxData = { jx   : 'doAccountingDone',
+                       k    : k,
+                       lang : "EN"
+                     };
+
+        let o = SEEDJX( "mbr_order.php", jxData );
+        if( o['bOk'] ) {
+// better to get html from o['sOut'] for true confirmation
+            $(this).html("Bookkeeping done");
+        }
+    });
+
+    /* Recording Done button
+     */
+    $(".doRecordingDone").click(function(event){
+        event.preventDefault();
+        let k = $(this).attr('data-kOrder');
+
+        let jxData = { jx   : 'doRecordingDone',
+                       k    : k,
+                       lang : "EN"
+                     };
+
+        let o = SEEDJX( "mbr_order.php", jxData );
+        if( o['bOk'] ) {
+// better to get html from o['sOut'] for true confirmation
+            $(this).html("Database record done");
         }
     });
 
