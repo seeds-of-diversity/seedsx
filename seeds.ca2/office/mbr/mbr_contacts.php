@@ -221,9 +221,9 @@ class mbrContacts_Contacts extends Console01_Worker1
             ."<TD>&nbsp;</TD><TD>&nbsp;</TD>"
             .$oForm->TextTD( 'lastrenew', "Lastrenew", [] ) // $raPDisabled )
             ."</TR>"
-            ."<tr><td colspan='2'>&nbsp;</td>"
-            .$oForm->TextTD( 'bNoSED', "Online MSD", $raP )
-            ."</tr>"
+//            ."<tr><td colspan='2'>&nbsp;</td>"
+//            .$oForm->TextTD( 'bNoSED', "Online MSD", $raP )
+//            ."</tr>"
             ."<tr><td colspan='2'>&nbsp;</td>"
             .$oForm->TextTD( 'bPrintedMSD', "Printed MSD", $raP )
             ."</tr>"

@@ -171,7 +171,7 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
              ."<div>".$oDFC->DrawItem('startdate')." Start Date</div>"
              ."<div>".$oDFC->DrawItem('bNoEBull')." No E-bulletin</div>"
              ."<div>".$oDFC->DrawItem('bNoDonorAppeals')." No Donor Appeals</div>"
-             ."<div>".$oDFC->DrawItem('bNoSED')." Online MSD</div>"
+//             ."<div>".$oDFC->DrawItem('bNoSED')." Online MSD</div>"
              ."<div>".$oDFC->DrawItem('bPrintedMSD')." Printed MSD</div>"
 
              ."<button onclick='doContactFormSubmit(".'$(this)'.",${raMbr['_key']},".$kfrOrder->Key()." )'>Save</button>"
@@ -216,7 +216,7 @@ class drawFormContact
         'startdate'       => ['Start Date',     '',               'startdate'],
         'bNoEBull'   => ['No E-bulletin','',               'bNoEBull', 3],
         'bNoDonorAppeals' => ['No Donor Appeals',     '',               'bNoDonorAppeals', 3],
-        'bNoSED'       => ['Online MSD',     '',               'bNoSED', 3],
+//        'bNoSED'       => ['Online MSD',     '',               'bNoSED', 3],
         'bPrintedMSD'       => ['Printed MSD',     '',               'bPrintedMSD', 3],
     ];
 
