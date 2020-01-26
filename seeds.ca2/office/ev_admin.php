@@ -241,7 +241,7 @@ function EV2_formDraw( $oForm )
 
     if( ($kEv = $oForm->GetKey()) ) {
         if( ($kfr = $oEv->GetKfrelEvents()->GetRecordFromDBKey( $kEv )) ) {
-            $sPreviewText = $oEv->DrawEvent( $kfr, $oEvents );
+            $sPreviewText = $oEv->DrawEvent( $kfr );//, $oEvents );
         } else {
             $sPreviewText = "{Error getting preview}";
         }
