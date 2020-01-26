@@ -43,7 +43,7 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
         $oOrder = new MbrOrder( $this->kfdb, "EN", $k );
         $sConciseSummary = $oOrder->conciseSummary( $k );     // this also computes $oOrder->raOrder for DrawOrderSummaryRow()
         $kfr2 = $this->KfrelOrder()->GetRecordFromDBKey( $k );
-        return( $this->DrawOrderSummaryRow( $kfr2, $sConciseSummary, $oOrder->raOrder ) );
+        return( $kfr2 ? $this->DrawOrderSummaryRow( $kfr2, $sConciseSummary, $oOrder->raOrder ) : "" );
     }
 
     function statusForm( KeyframeRecord $kfrOrder )
@@ -60,7 +60,7 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
         $raMbr = [];
         if( ($kMbr = $kfrOrder->UrlParmGet('sExtra','mbrid')) ) {
             $oMbr = new QServerMbr( $this->oApp, ['config_bUTF8'=>false] ); // !utf8 because this whole form gets utf8-encoded at the end
-            $rQ = $oMbr->Cmd('mbr-get',['kMbr'=>$kMbr]);
+            $rQ = $oMbr->Cmd('mbr-getOffice',['kMbr'=>$kMbr]);
             if( $rQ['bOk'] ) {
                 $raMbr = $rQ['raOut'];
             }
@@ -335,21 +335,20 @@ if( ($jx = SEEDInput_Str('jx')) ) {
         case 'doContactFormSubmit':
             if( ($kMbr = SEEDInput_Int('kMbr')) ) {
                 $oQ = new QServerMbr( $oApp, ['config_bUTF8'=>true] );
-                $rM = $oQ->Cmd('mbr-getFlds');
+                $rM = $oQ->Cmd('mbr-getFldsOffice');
                 $raFlds = $rM['raOut'];
 
                 $raMbr = ['kMbr'=>$kMbr];
                 $oForm = new SEEDCoreForm('M');
                 $oForm->Load();
-
-$x = $oForm->GetValuesRA();
-$x = $_REQUEST;
-$oApp->Log('tmp',SEEDCore_ArrayExpandSeries( $x, "[[k]] = [[v]]\n") );
+//$x = $oForm->GetValuesRA();
+//$x = $_REQUEST;
+//$oApp->Log('tmp',SEEDCore_ArrayExpandSeries( $x, "[[k]] = [[v]]\n") );
 
                 foreach( $raFlds as $k => $raDummy ) {
                     $raMbr[$k] = $oForm->Value($k);
                 }
-                $rM = $oQ->Cmd('mbr--put', $raMbr);
+                $rM = $oQ->Cmd('mbr--putOffice', $raMbr);
                 $rQ['bOk'] = $rM['bOk'];
                 $rQ['sErr'] = $rM['sErr'];
             }
