@@ -56,11 +56,11 @@ $oC = new Console01KFUI( $kfdb, $sess, $raConsoleParms );
 
 $oEv = new EV_Events( $kfdb, $sess->GetUID() );
 
-$oEvents = new EventsLib( $oApp );
+$oEventsLib = new EventsLib( $oApp );
 
 $oC->CompInit( $oEv->GetKfrelEvents(), $raCompParms, 'A' );
 
-$oFormEv = new KeyframeForm( $oEvents->oDB->KFRel('E'), 'A', [] );
+$oFormEv = new KeyframeForm( $oEventsLib->oDB->KFRel('E'), 'A', [] );
 $oFormEv->Load();
 //var_dump($oFormEv->GetValuesRA());
 
@@ -225,7 +225,7 @@ function EV2_formDraw( $oForm )
     global $kfdb;
     global $oFormEv;
     global $oC;
-    global $oEvents;
+    global $oEventsLib;
 
 // When you click on a list item sfAk causes the new form to Load() the record, but
 // on the first instance of the app (or after a search!) there is no sfAk parm.  Console01KFUI figures out the current record
@@ -233,15 +233,15 @@ function EV2_formDraw( $oForm )
 // Set the new form to the same record as the old form.
 //if( !$oFormEv->GetKey() ) {
     $k = $oC->oComp->oForm->GetKey();
-    $kfr = $k ? $oEvents->oDB->GetKFR( 'E', $k ) : $oEvents->oDB->KFRel('E')->CreateRecord();   // do the right thing if $k is zero (New record)
+    $kfr = $k ? $oEventsLib->oDB->GetKFR( 'E', $k ) : $oEventsLib->oDB->KFRel('E')->CreateRecord();   // do the right thing if $k is zero (New record)
     $oFormEv->SetKFR( $kfr );
 //}
 
-
+    $oEvent = new Events_event( $oEventsLib, $k );
 
     if( ($kEv = $oForm->GetKey()) ) {
         if( ($kfr = $oEv->GetKfrelEvents()->GetRecordFromDBKey( $kEv )) ) {
-            $sPreviewText = $oEv->DrawEvent( $kfr );//, $oEvents );
+            $sPreviewText = $oEv->DrawEvent( $kfr );//, $oEventsLib );
         } else {
             $sPreviewText = "{Error getting preview}";
         }
@@ -249,9 +249,7 @@ function EV2_formDraw( $oForm )
         $sPreviewText = "Preview will go here";
     }
 
-    $raMbrVol = ($kVol = $oForm->Value('vol_kMbr')) ? $kfdb->QueryRA( "SELECT * FROM seeds2.mbr_contacts WHERE _key='$kVol'" ) : [];
-
-    $sForm = EV_formdraw( $oFormEv, $raMbrVol );
+    $sForm = EV_formdraw( $oFormEv, $oEvent );
 
     $s = "<div class='container'><div class='row'>"
             ."<div class='col-md-6'>"
@@ -290,11 +288,11 @@ $(document).ready( function() {
 }
 
 
-function EV_formdraw( $oForm, $raMbrVol )
+function EV_formdraw( $oForm, $oEvent )
 {
     global $SiteUtilRaProvinces1;
 
-    $sMainSummary = "";
+    $sMainSummary = "Event Form";
 
     $sMainForm =
              BS_Row2( array( array( 'col-md-8', $oForm->Select( 'type',
@@ -339,9 +337,6 @@ function EV_formdraw( $oForm, $raMbrVol )
             ."<br/>"
             ."<div class='row'>".$oForm->Text( 'contact', "Contact", array('size'=>30, 'bsCol'=>"md-10,md-2") )."</div>"
             ."<div class='row'>".$oForm->Text( 'url_more', "Link to<br/> more info", array('size'=>30, 'bsCol'=>"md-10,md-2") )."</div>"
-            ."<br/><hr/>"
-
-
             ."<br/><br/>"
             ."<input type='submit' value='Save'/>"
 
@@ -358,11 +353,15 @@ function EV_formdraw( $oForm, $raMbrVol )
             ."</div>";
 
     // Our registration for the event
-    $sRegSummary = "";
+    $sRegSummary = "Registration";
     $sRegForm = "";
 
     // Volunteer coordination
-    $sVolSummary = "";
+    $sVolSummary = "<h4>Volunteer</h4>"
+                  .$oEvent->GetVolunteerLine()
+                  .(($s1 = $oForm->Value('vol_notes')) ? "<div>$s1</div>" : "")
+                  .(($s1 = $oForm->Value('vol_dSent')) ? "<div>Sent $s1</div>" : "");
+
     $sVolForm =
              "<div style='position:relative'>"     // specify position because SFU_TextComplete puts the <select> relative to first "positioned" ancestor
             ."<h3>Volunteer Coordination</h3>"
@@ -370,7 +369,7 @@ function EV_formdraw( $oForm, $raMbrVol )
 
             //[[text:dummy_kMbr | size:10 class:SFU_TextComplete | placeholder='Search']]
             //[[hidden:vol_kMbr]]
-            ."<span id='vol-label'>".(@$raMbrVol['_key'] ? "{$raMbrVol['firstname']} {$raMbrVol['lastname']} in {$raMbrVol['city']} ({$raMbrVol['_key']})" : "")."</span>"
+            ."<span id='vol-label'>".$oEvent->GetVolunteerLine()."</span>"
             ."&nbsp;&nbsp;"
             .$oForm->Text( 'dummy_kMbr', '', ['size'=>10,'classes'=>'SFU_TextComplete','attrs'=>"placeholder='Search'"] )
             .$oForm->Hidden( 'vol_kMbr' )
@@ -384,47 +383,37 @@ function EV_formdraw( $oForm, $raMbrVol )
 
 
     $s = "<style>
-              .ev-form-doClose { font-size: x-small; content: 'Close'; border:1px solid #888; padding:5px; margin:10px;
-                                 background-color:#8af; color:white; width:5em; text-align:center; }
+              .ev-form-buttonClose { font-size: x-small; content: 'Close'; border:1px solid #888; padding:5px; margin:10px;
+                                     background-color:#8af; color:white; width:5em; text-align:center; }
           </style>"
         ."<div class='ev-form well'>"
-            ."<div class='ev-form-doOpen'>Event Form</div>"
-            ."<div class='ev-form-doClose'>Close</div>"
             ."<div class='ev-form-bodyClosed'>$sMainSummary</div>"
-            ."<div class='ev-form-bodyOpen'>$sMainForm</div>"
+            ."<div class='ev-form-bodyOpen'>$sMainForm<div class='ev-form-buttonClose'>Close</div></div>"
         ."</div>"
         ."<div class='ev-form well'>"
-            ."<div class='ev-form-doOpen'>Registration</div>"
-            ."<div class='ev-form-doClose'>Close</div>"
             ."<div class='ev-form-bodyClosed'>$sRegSummary</div>"
-            ."<div class='ev-form-bodyOpen'>$sRegForm</div>"
+            ."<div class='ev-form-bodyOpen'>$sRegForm<div class='ev-form-buttonClose'>Close</div></div>"
         ."</div>"
         ."<div class='ev-form well'>"
-            ."<div class='ev-form-doOpen'>Volunteer Coordination</div>"
-            ."<div class='ev-form-doClose'>Close</div>"
             ."<div class='ev-form-bodyClosed'>$sVolSummary</div>"
-            ."<div class='ev-form-bodyOpen'>$sVolForm</div>"
+            ."<div class='ev-form-bodyOpen'>$sVolForm<div class='ev-form-buttonClose'>Close</div></div>"
         ."</div>";
 
     $s .= "<script>
 $(document).ready( function() {
-        $('.ev-form-doOpen').show();
-        $('.ev-form-doClose').hide();
         $('.ev-form-bodyOpen').hide();
         $('.ev-form-bodyClosed').show();
 
-        $('.ev-form-doOpen').click( function() {
-            $(this).hide();
+        // shown when a form is closed, so click makes it open
+        $('.ev-form-bodyClosed').click( function() {
             let f = $(this).closest('.ev-form');
-            f.find('.ev-form-doClose').show();
-            f.find('.ev-form-bodyOpen').show();
+            f.find('.ev-form-bodyOpen').show();     // buttonClose is inside this
             f.find('.ev-form-bodyClosed').hide();
         });
-        $('.ev-form-doClose').click( function() {
-            $(this).hide();
+        // shown when a form is open, so click makes it close
+        $('.ev-form-buttonClose').click( function() {
             let f = $(this).closest('.ev-form');
-            f.find('.ev-form-doOpen').show();
-            f.find('.ev-form-bodyOpen').hide();
+            f.find('.ev-form-bodyOpen').hide();     // buttonClose is inside this
             f.find('.ev-form-bodyClosed').show();
         });
 });
