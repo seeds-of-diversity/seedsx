@@ -13,12 +13,9 @@ include_once( SEEDCOMMON."console/console01kfui.php" );
 include_once( SEEDROOT."Keyframe/KeyframeForm.php" );
 include_once( SEEDLIB.'events/events.php' );
 
-// DB is seeds2 : authentication is done on seeds2.SEEDSession_Users, all table references are to seeds.ev_events
-// This works on www8 because seeds2 user can see seeds and seeds2 databases.
-// This works on www12 because seeds2_def.php connects the single user that can see all databases
 list($kfdb, $sess, $dummyLang) = SiteStartSessionAccount( array( "W events" ) );
 
-$oApp = SiteAppConsole( ['db'=>'seeds1', 'sessPermsRequired'=>['W events']] );
+$oApp = SiteAppConsole( ['db'=>'seeds2', 'sessPermsRequired'=>['W events']] );
 
 header( "Content-type: text/html; charset=ISO-8859-1");
 
@@ -48,7 +45,7 @@ $raCompParms = array(
                          array( "label"=>"Time",     "colalias"=>"time",       "w"=>100),
                          array( "label"=>"Volunteer", "colalias"=>"vol_kMbr", "w"=>100  ),
     ),
-    'ListSize' => 10,
+    'ListSize' => 8,
     'fnListFilter'    => "EV2_listFilter",
     'fnListRowTranslate' => "EV2_listTranslate",
     'fnFormDraw'      => "EV2_formDraw",
@@ -59,14 +56,13 @@ $oC = new Console01KFUI( $kfdb, $sess, $raConsoleParms );
 
 $oEv = new EV_Events( $kfdb, $sess->GetUID() );
 
-$oEvents = new EventsLib( $oApp );
+$oEventsLib = new EventsLib( $oApp );
 
 $oC->CompInit( $oEv->GetKfrelEvents(), $raCompParms, 'A' );
 
-$oFormEv = new KeyframeForm( $oEvents->oDB->KFRel('E'), 'A', [] );
+$oFormEv = new KeyframeForm( $oEventsLib->oDB->KFRel('E'), 'A', [] );
 $oFormEv->Load();
 //var_dump($oFormEv->GetValuesRA());
-
 
 
 $oC->SetFrameControlParm( 'EVfltYear', $iYear );   // this causes the EVfltYear value to be propagated with oComp form submissions
@@ -171,9 +167,17 @@ function EV2_listFilter()
 function EV2_listTranslate( $kfr )
 {
     $ra = $kfr->ValuesRA();
+
+    // make a more readable date
+    if( ($t = @strtotime($ra['date_start'])) ) {
+        $ra['date_start'] = date('Y-M-d', $t );
+    }
+
+    // look up volunteer name
     if( ($kMbr = $ra['vol_kMbr']) ) {
         $ra['vol_kMbr'] = $kfr->kfrel->kfdb->Query1( "SELECT concat(firstname,' ',lastname,' in ',city) FROM seeds2.mbr_contacts WHERE _key='$kMbr'" );
     }
+
     return( $ra );
 }
 
@@ -221,23 +225,23 @@ function EV2_formDraw( $oForm )
     global $kfdb;
     global $oFormEv;
     global $oC;
-    global $oEvents;
+    global $oEventsLib;
 
 // When you click on a list item sfAk causes the new form to Load() the record, but
-// on the first instance of the app there is no sfAk parm.  Console01KFUI figures out the current record
-// from the first item in the list and sets up its (old) form.
-// On initial instance, when sfAk is not in parms, set the new form to the same record as the old form.
+// on the first instance of the app (or after a search!) there is no sfAk parm.  Console01KFUI figures out the current record
+// from the first item in the list and sets up its form.
+// Set the new form to the same record as the old form.
 //if( !$oFormEv->GetKey() ) {
     $k = $oC->oComp->oForm->GetKey();
-    $kfr = $k ? $oEvents->oDB->GetKFR( 'E', $k ) : $oEvents->oDB->KFRel('E')->CreateRecord();   // do the right thing if $k is zero (New record)
+    $kfr = $k ? $oEventsLib->oDB->GetKFR( 'E', $k ) : $oEventsLib->oDB->KFRel('E')->CreateRecord();   // do the right thing if $k is zero (New record)
     $oFormEv->SetKFR( $kfr );
 //}
 
-
+    $oEvent = new Events_event( $oEventsLib, $k );
 
     if( ($kEv = $oForm->GetKey()) ) {
         if( ($kfr = $oEv->GetKfrelEvents()->GetRecordFromDBKey( $kEv )) ) {
-            $sPreviewText = $oEv->DrawEvent( $kfr );
+            $sPreviewText = $oEv->DrawEvent( $kfr );//, $oEventsLib );
         } else {
             $sPreviewText = "{Error getting preview}";
         }
@@ -245,9 +249,7 @@ function EV2_formDraw( $oForm )
         $sPreviewText = "Preview will go here";
     }
 
-    $raMbrVol = ($kVol = $oForm->Value('vol_kMbr')) ? $kfdb->QueryRA( "SELECT * FROM seeds2.mbr_contacts WHERE _key='$kVol'" ) : [];
-
-    $sForm = EV_formdraw( $oFormEv, $raMbrVol );
+    $sForm = EV_formdraw( $oFormEv, $oEvent );
 
     $s = "<div class='container'><div class='row'>"
             ."<div class='col-md-6'>"
@@ -286,11 +288,11 @@ $(document).ready( function() {
 }
 
 
-function EV_formdraw( $oForm, $raMbrVol )
+function EV_formdraw( $oForm, $oEvent )
 {
     global $SiteUtilRaProvinces1;
 
-    $sMainSummary = "";
+    $sMainSummary = "Event Form";
 
     $sMainForm =
              BS_Row2( array( array( 'col-md-8', $oForm->Select( 'type',
@@ -335,9 +337,6 @@ function EV_formdraw( $oForm, $raMbrVol )
             ."<br/>"
             ."<div class='row'>".$oForm->Text( 'contact', "Contact", array('size'=>30, 'bsCol'=>"md-10,md-2") )."</div>"
             ."<div class='row'>".$oForm->Text( 'url_more', "Link to<br/> more info", array('size'=>30, 'bsCol'=>"md-10,md-2") )."</div>"
-            ."<br/><hr/>"
-
-
             ."<br/><br/>"
             ."<input type='submit' value='Save'/>"
 
@@ -354,11 +353,15 @@ function EV_formdraw( $oForm, $raMbrVol )
             ."</div>";
 
     // Our registration for the event
-    $sRegSummary = "";
+    $sRegSummary = "Registration";
     $sRegForm = "";
 
     // Volunteer coordination
-    $sVolSummary = "";
+    $sVolSummary = "<h4>Volunteer</h4>"
+                  .$oEvent->GetVolunteerLine()
+                  .(($s1 = $oForm->Value('vol_notes')) ? "<div>$s1</div>" : "")
+                  .(($s1 = $oForm->Value('vol_dSent')) ? "<div>Sent $s1</div>" : "");
+
     $sVolForm =
              "<div style='position:relative'>"     // specify position because SFU_TextComplete puts the <select> relative to first "positioned" ancestor
             ."<h3>Volunteer Coordination</h3>"
@@ -366,7 +369,7 @@ function EV_formdraw( $oForm, $raMbrVol )
 
             //[[text:dummy_kMbr | size:10 class:SFU_TextComplete | placeholder='Search']]
             //[[hidden:vol_kMbr]]
-            ."<span id='vol-label'>".(@$raMbrVol['_key'] ? "{$raMbrVol['firstname']} {$raMbrVol['lastname']} in {$raMbrVol['city']} ({$raMbrVol['_key']})" : "")."</span>"
+            ."<span id='vol-label'>".$oEvent->GetVolunteerLine()."</span>"
             ."&nbsp;&nbsp;"
             .$oForm->Text( 'dummy_kMbr', '', ['size'=>10,'classes'=>'SFU_TextComplete','attrs'=>"placeholder='Search'"] )
             .$oForm->Hidden( 'vol_kMbr' )
@@ -380,47 +383,37 @@ function EV_formdraw( $oForm, $raMbrVol )
 
 
     $s = "<style>
-              .ev-form-doClose { font-size: x-small; content: 'Close'; border:1px solid #888; padding:5px; margin:10px;
-                                 background-color:#8af; color:white; width:5em; text-align:center; }
+              .ev-form-buttonClose { font-size: x-small; content: 'Close'; border:1px solid #888; padding:5px; margin:10px;
+                                     background-color:#8af; color:white; width:5em; text-align:center; }
           </style>"
         ."<div class='ev-form well'>"
-            ."<div class='ev-form-doOpen'>Event Form</div>"
-            ."<div class='ev-form-doClose'>Close</div>"
             ."<div class='ev-form-bodyClosed'>$sMainSummary</div>"
-            ."<div class='ev-form-bodyOpen'>$sMainForm</div>"
+            ."<div class='ev-form-bodyOpen'>$sMainForm<div class='ev-form-buttonClose'>Close</div></div>"
         ."</div>"
         ."<div class='ev-form well'>"
-            ."<div class='ev-form-doOpen'>Registration</div>"
-            ."<div class='ev-form-doClose'>Close</div>"
             ."<div class='ev-form-bodyClosed'>$sRegSummary</div>"
-            ."<div class='ev-form-bodyOpen'>$sRegForm</div>"
+            ."<div class='ev-form-bodyOpen'>$sRegForm<div class='ev-form-buttonClose'>Close</div></div>"
         ."</div>"
         ."<div class='ev-form well'>"
-            ."<div class='ev-form-doOpen'>Volunteer Coordination</div>"
-            ."<div class='ev-form-doClose'>Close</div>"
             ."<div class='ev-form-bodyClosed'>$sVolSummary</div>"
-            ."<div class='ev-form-bodyOpen'>$sVolForm</div>"
+            ."<div class='ev-form-bodyOpen'>$sVolForm<div class='ev-form-buttonClose'>Close</div></div>"
         ."</div>";
 
     $s .= "<script>
 $(document).ready( function() {
-        $('.ev-form-doOpen').show();
-        $('.ev-form-doClose').hide();
         $('.ev-form-bodyOpen').hide();
         $('.ev-form-bodyClosed').show();
 
-        $('.ev-form-doOpen').click( function() {
-            $(this).hide();
+        // shown when a form is closed, so click makes it open
+        $('.ev-form-bodyClosed').click( function() {
             let f = $(this).closest('.ev-form');
-            f.find('.ev-form-doClose').show();
-            f.find('.ev-form-bodyOpen').show();
+            f.find('.ev-form-bodyOpen').show();     // buttonClose is inside this
             f.find('.ev-form-bodyClosed').hide();
         });
-        $('.ev-form-doClose').click( function() {
-            $(this).hide();
+        // shown when a form is open, so click makes it close
+        $('.ev-form-buttonClose').click( function() {
             let f = $(this).closest('.ev-form');
-            f.find('.ev-form-doOpen').show();
-            f.find('.ev-form-bodyOpen').hide();
+            f.find('.ev-form-bodyOpen').hide();     // buttonClose is inside this
             f.find('.ev-form-bodyClosed').show();
         });
 });
@@ -432,224 +425,6 @@ SEEDCore_CleanBrowserAddress();
 
 
     return( $s );
-}
-
-
-
-exit;
-
-include_once( STDINC."KeyFrame/KFUIAppSimple.php" );
-include_once( STDINC."KeyFrame/KFRForm.php" );
-
-
-$kfdbSeeds = SiteKFDB(SiteKFDB_DB_seeds1);
-//$kfdbSeeds->SetDebug(1);
-
-$raAppParms = array();
-
-
-SiteApp_KFUIAppHeader( "Seeds of Diversity Events Lists" );
-
-
-$kfuidef =
-        array( "A" =>
-               array( "Label" => "Event",
-                      "ListCols" => array( // array( "label"=>"Page",           "col"=>"Page_name", "w"=>150),
-                                           array( "label"=>"City",           "col"=>"city",      "w"=>150),
-                                           array( "label"=>"Province",       "col"=>"province",  "w"=>50 ),
-// Use title for EV events, not SS events  array( "label"=>"Title",          "col"=>"title",     "w"=>200),  // kluge: must be second column
-                                           array( "label"=>"Location",          "col"=>"location",     "w"=>200),  // kluge: must be second column
-                                           array( "label"=>"Date",           "col"=>"date_start",     "w"=>50 ),
-//                                           array( "label"=>"Day",            "col"=>"day",       "w"=>50 ),
-                                           array( "label"=>"Alt Date",       "col"=>"date_alt",  "w"=>100),
-                                           array( "label"=>"Time",           "col"=>"time",      "w"=>100),
-                                         ),
-                      "ListSize" => 10,
-                      "ListSizePad" => 1,
-//                    "fnHeader"        => "EV_Item_header",
-                      "fnListFilter"    => "EV_Item_listFilter",
-                      "fnListTranslate" => "EV_Item_listTranslate",
-                      "fnFormDraw"      => "EV_Item_formDraw",
-                    ) );
-
-/* Fetch the values for the 'year' global filter
- * 0 = This year
- * 1 = All
- */
-$raYearOpts[0] = "-- Future --";
-$raYearOpts[1] = $iCurrYear;
-$raYearOpts[2] = "-- All --";
-if( ($dbc = $kfdbSeeds->KFDB_CursorOpen( "SELECT distinct(YEAR(date_start)) FROM ev_events ORDER BY 1 DESC" )) ) {
-    while( $ra = $kfdbSeeds->KFDB_CursorFetch($dbc) ) {
-        if( $ra[0] && $ra[0] != $iCurrYear )  $raYearOpts[$ra[0]] = $ra[0];
-    }
-}
-
-$raAppParms['kfLogFile'] = SITE_LOG_ROOT."events.log";
-$raAppParms['raUFlt'] = array( array( "label" => "Year",
-                                      "name" => "EVfltYear",
-                                      "raValues" => $raYearOpts,
-                                      "currValue" => SEEDSafeGPC_GetInt("EVfltYear") ) );
-
-
-KFUIApp_ListForm( $kfdbSeeds, $kfreldef_EVEvents, $kfuidef, $sess->GetUID(), $raAppParms );
-
-
-function EV_Item_listFilter()
-/****************************
-    Filter the list only to items of the current page
- */
-{
-    global $iCurrYear;
-
-    $iYear = SEEDSafeGPC_GetInt("EVfltYear");
-
-    switch( $iYear ) {
-        case 0:  return( "date_start > NOW()" );                 // Future
-        case 1:  return( "(YEAR(date_start) = '$iCurrYear')" );  // this year
-        case 2:  return( "" );                                   // all years
-        default: return( "(YEAR(date_start) = '$iYear')" );      // the selected year
-    }
-}
-
-function EV_Item_listTranslate( $kfr )
-/*************************************
-    Change numerical month to named month in the list view
- */
-{
-    return( array( "month" => date("M", mktime(0,0,0,$kfr->value('month'),1,1978))));
-}
-
-function EV_Item_formDraw( $kfr )
-/********************************
- */
-{
-    echo "<TABLE cellpadding=5 width='95%'>";
-
-//  echo "<TR>".KFRFORM_SelectTD( $kfr, "Event type:", "type", array("SS"=>"Seedy Saturday/Sunday", "EV"=>"Event") )."</TR>";
-    echo "<INPUT type='hidden' name='type' value='SS'>";
-
-    // type=EV: title is the title of the event, city is the location
-    // type=SS: city/prov is the title of the event, title is repurposed as the location
-
-    if( $kfr->value('Page_type')=="EV" ) {
-        draw_field( "title", "Title", $kfr, $kfr->value('Page_bEN'), $kfr->value('Page_bFR'), 50 );
-    }
-
-    // both types have city and province here
-    echo "<TR><TD valign='top'>City:</TD><TD valign='top'>".KFRForm_Text( $kfr, "", "city", 20 );
-    echo "<SELECT NAME='province'>"; echo option_province( $kfr->value('province') ); echo "</SELECT></TD>";
-
-    echo "<TD valign='top' rowspan='5'>";
-    echo "<DIV style='padding:1em;width:30em;float:right; border:thin solid black;font-size:8pt;font-family:verdana,sans serif;'>"
-        ."<B>Location</B>: name of venue, address<BR>"
-        ."<B>Date</B>: must be YYYY-MM-DD<BR>"
-        ."<B>Alternate Date Text</B>: enter a Date too, so the list can sort properly, but this will be shown instead."
-        ."e.g. if date is unknown enter 2009-01-01 for Date, TBA as Alternate - the list will show TBA as the date and it will put the event at"
-        ."Jan 1, 2009<BR>"
-        ."<B>Contact</B>: name, phone, email here instead of in details so we can delete that personal info later.<BR>"
-        ."<BR>"
-        ."Contact and Details use special tags [[mailto:my@email.ca]] and [[http://my.website.ca]] </DIV>";
-    echo "</TD></TR>";
-
-    echo "<TR>".KFRForm_TextTD( $kfr, "Location:", "location", 30 )."</TR>";
-
-    if( $kfr->value('Page_type')=="SS" ) {
-        draw_field( "title", "Location", $kfr, $kfr->value('Page_bEN'), $kfr->value('Page_bFR'), 50 );
-    }
-
-//  echo "<TR><TD align='top'>Date:</TD>      <TD align='left'>".KFRForm_Text( $kfr, "", "date_start", 20 );
-    $oDP = new SEEDDateCalendar();
-    echo $oDP->Setup();
-    echo "<TR><TD align='top'>Date:</TD>      <TD align='left'>".$oDP->DrawCalendarControl( "date_start", $kfr->value('date_start') );
-//  echo "<SELECT NAME=day>"; option_days( $kfr->value('day') ); echo "</SELECT>, ".$kfr->value('Page_year');
-    if( $kfr->value("date_start") ) {
-        echo "<SPAN style='font-size:9pt;color:grey'>";
-
-        $y = substr( $kfr->value("date_start"), 0, 4 );
-        $m = substr( $kfr->value("date_start"), 5, 2 );
-        $d = substr( $kfr->value("date_start"), 8, 2 );
-        echo SEEDStd_StrNBSP("",10) . SEEDDateStr( mktime(0,0,0,$m,$d,$y), "EN" );
-        echo " / "                  . SEEDDateStr( mktime(0,0,0,$m,$d,$y), "FR" );
-        echo "</SPAN>";
-    }
-    echo "</TD></TR>";
-
-    echo "<TR>".KFRForm_TextTD( $kfr, "Time:", "time", 30 )."</TR>";
-
-    draw_field( "date_alt", "Alternate Date&nbsp;Text", $kfr, $kfr->value('Page_bEN'), $kfr->value('Page_bFR'), 50 );
-
-    echo "<TR>".KFRForm_TextTD( $kfr, "Contact:", "contact", 100 )."</TR>";
-
-    echo "<TR><TD align='left' valign=top>Details:"
-        ."<BR><BR><BR><BR><BR><BR>"
-        ."<INPUT type=submit value=Save>"
-        ."</TD><TD colspan=2 align='left'>";
-    echo "<TABLE cellpadding=5 width='100%'>";
-//  if( $kfr->value('Page_bEN') ) {
-        echo "<TR><TD valign='top' bgcolor='".CLR_BG_editEN."' width='100%'>(English) ";
-//        SEEDEditor_Text( 'details', $kfr->value('details'), array("height_px" => 200, "width" => "100%", "editor"=>"PLAIN") );
-        echo "<TEXTAREA style='width:100%' wrap='SOFT' rows='13' name='details'>".$kfr->valueEnt('details')."</TEXTAREA>";
-        echo "</TD></TR>";
-//  }
-//  if( $kfr->value('Page_bFR') ) {
-        echo "<TR><TD valign='top' bgcolor='".CLR_BG_editFR."' width='100%'>(Fran&ccedil;ais) ";
-//        SEEDEditor_Text( 'details_fr', $kfr->value('details_fr'), array("height_px" => 200, "width" => "100%", "editor"=>"PLAIN") );
-        echo "<TEXTAREA style='width:100%' wrap='SOFT' rows='13' name='details_fr'>".$kfr->valueEnt('details_fr')."</TEXTAREA>";
-        echo "</TD></TR>";
-//  }
-    echo "</TABLE>";
-//  if( !$kfr->value('Page_bEN') )  echo KFRForm_Hidden( $kfr, "details" );
-//  if( !$kfr->value('Page_bFR') )  echo KFRForm_Hidden( $kfr, "defails_fr" );
-    echo "</TD></TR>\n";
-//  echo "<TR><TD align=center colspan=2><INPUT TYPE=SUBMIT VALUE='".(($i=="new") ? "Add":"Update")."'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-//  echo "<A HREF='page.php?p=".$p."&".$la->login_auth_get_urlparms()."'>Cancel</A></TD></TR>\n";
-    echo "</TABLE>";
-}
-
-
-
-function draw_field( $name, $label, $kfr, $bEN, $bFR, $size )
-/************************************************************
-*/
-{
-    echo "<TR><TD align='left'>$label:</TD><TD align='left'>";
-    echo "<TABLE cellpadding=5>";
-    echo "<TR><TD bgcolor=".CLR_BG_editEN.">(English) <INPUT TYPE=TEXT NAME='$name' VALUE='".$kfr->ValueEnt($name)."' size='$size'></TD></TR>\n";
-    echo "<TR><TD bgcolor=".CLR_BG_editFR.">(Fran&ccedil;ais) <INPUT TYPE=TEXT NAME='{$name}_fr' VALUE='".$kfr->ValueEnt($name.'_fr')."' size='$size'></TD></TR>\n";
-    echo "</TABLE>";
-//  if( !$bEN )  echo "<INPUT TYPE=HIDDEN NAME={$name} VALUE=\"".$kfr->ValueEnt($name)."\">";
-//  if( !$bFR )  echo "<INPUT TYPE=HIDDEN NAME={$name}_fr VALUE=\"".$kfr->ValueEnt($name.'_fr')."\">";
-    echo "</TD></TR>";
-}
-
-
-function option_months( $sel ) {
-    for( $i = 1; $i <= 12; ++$i ) {
-        echo "<OPTION value='". $i ."'". ( $i==$sel ? " SELECTED" : "") .">". strftime( "%B", mktime(0,0,0,$i,1) ). "</OPTION>";
-    }
-}
-
-function option_days( $sel ) {
-    for( $i = 1; $i <= 31; ++$i ) {
-        echo "<OPTION value='". $i ."'". ( $i==$sel ? " SELECTED" : "") .">". $i ."</OPTION>";
-    }
-}
-
-function option_province( $province ) {
-    echo "<OPTION value='AB'". ($province=='AB' ? " SELECTED" : "") .">AB</OPTION>";
-    echo "<OPTION value='BC'". ($province=='BC' ? " SELECTED" : "") .">BC</OPTION>";
-    echo "<OPTION value='MB'". ($province=='MB' ? " SELECTED" : "") .">MB</OPTION>";
-    echo "<OPTION value='NB'". ($province=='NB' ? " SELECTED" : "") .">NB</OPTION>";
-    echo "<OPTION value='NF'". ($province=='NF' ? " SELECTED" : "") .">NF</OPTION>";
-    echo "<OPTION value='NS'". ($province=='NS' ? " SELECTED" : "") .">NS</OPTION>";
-    echo "<OPTION value='ON'". ($province=='ON' ? " SELECTED" : "") .">ON</OPTION>";
-    echo "<OPTION value='PE'". ($province=='PE' ? " SELECTED" : "") .">PE</OPTION>";
-    echo "<OPTION value='QC'". ($province=='QC' ? " SELECTED" : "") .">QC</OPTION>";
-    echo "<OPTION value='SK'". ($province=='SK' ? " SELECTED" : "") .">SK</OPTION>";
-    echo "<OPTION value='YK'". ($province=='YK' ? " SELECTED" : "") .">YK</OPTION>";
-    echo "<OPTION value='NT'". ($province=='NT' ? " SELECTED" : "") .">NT</OPTION>";
-    echo "<OPTION value='NU'". ($province=='NU' ? " SELECTED" : "") .">NU</OPTION>";
 }
 
 ?>

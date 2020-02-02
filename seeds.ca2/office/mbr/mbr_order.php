@@ -1,5 +1,11 @@
 <?php
 
+/*
+alter table mbr_order_pending add bDoneAccounting integer not null default 0;
+alter table mbr_order_pending add bDoneRecording integer not null default 0;
+update mbr_order_pending set bDoneAccounting=1,bDoneRecording=1 where _key<=17967;
+ */
+
 // todo: flag unpaid entries that have later entries (paid or unpaid) with the same name | address | phone | email
 
 define("SITEROOT", "../../");
@@ -37,7 +43,7 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
         $oOrder = new MbrOrder( $this->kfdb, "EN", $k );
         $sConciseSummary = $oOrder->conciseSummary( $k );     // this also computes $oOrder->raOrder for DrawOrderSummaryRow()
         $kfr2 = $this->KfrelOrder()->GetRecordFromDBKey( $k );
-        return( $this->DrawOrderSummaryRow( $kfr2, $sConciseSummary, $oOrder->raOrder ) );
+        return( $kfr2 ? $this->DrawOrderSummaryRow( $kfr2, $sConciseSummary, $oOrder->raOrder ) : "" );
     }
 
     function statusForm( KeyframeRecord $kfrOrder )
@@ -54,7 +60,7 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
         $raMbr = [];
         if( ($kMbr = $kfrOrder->UrlParmGet('sExtra','mbrid')) ) {
             $oMbr = new QServerMbr( $this->oApp, ['config_bUTF8'=>false] ); // !utf8 because this whole form gets utf8-encoded at the end
-            $rQ = $oMbr->Cmd('mbr-get',['kMbr'=>$kMbr]);
+            $rQ = $oMbr->Cmd('mbr-getOffice',['kMbr'=>$kMbr]);
             if( $rQ['bOk'] ) {
                 $raMbr = $rQ['raOut'];
             }
@@ -171,7 +177,8 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
              ."<div>".$oDFC->DrawItem('startdate')." Start Date</div>"
              ."<div>".$oDFC->DrawItem('bNoEBull')." No E-bulletin</div>"
              ."<div>".$oDFC->DrawItem('bNoDonorAppeals')." No Donor Appeals</div>"
-             ."<div>".$oDFC->DrawItem('bNoSED')." Online MSD</div>"
+//             ."<div>".$oDFC->DrawItem('bNoSED')." Online MSD</div>"
+             ."<div>".$oDFC->DrawItem('bPrintedMSD')." Printed MSD</div>"
 
              ."<button onclick='doContactFormSubmit(".'$(this)'.",${raMbr['_key']},".$kfrOrder->Key()." )'>Save</button>"
              ."</form>"
@@ -215,7 +222,8 @@ class drawFormContact
         'startdate'       => ['Start Date',     '',               'startdate'],
         'bNoEBull'   => ['No E-bulletin','',               'bNoEBull', 3],
         'bNoDonorAppeals' => ['No Donor Appeals',     '',               'bNoDonorAppeals', 3],
-        'bNoSED'       => ['Online MSD',     '',               'bNoSED', 3],
+//        'bNoSED'       => ['Online MSD',     '',               'bNoSED', 3],
+        'bPrintedMSD'       => ['Printed MSD',     '',               'bPrintedMSD', 3],
     ];
 
     function GetItems() { return($this->raItems); }
@@ -227,7 +235,8 @@ class drawFormContact
 
         $ra = ['attrs'=>"placeholder='$placeholder'"];
         if( @$this->raItems[$fld][3] ) { $ra['size'] = $this->raItems[$fld][3]; }
-        if( $valOrder == $valMbr ) {
+        if( $valMbr && $valOrder == $valMbr ) {
+            // disable the control if it is not blank and it matches the value in the order form (if blank we might want to enter something there)
             //$ra['disabledAddHidden'] = 1;   // disabled controls look right but don't report values; this appends a hidden element too
             $ra['disabled'] = 1;              // $().find() reads values of disabled controls though
         }
@@ -297,6 +306,14 @@ if( ($jx = SEEDInput_Str('jx')) ) {
             $rQ['sOut'] = "";
             $rQ['bOk'] = true;
             break;
+        case 'doAccountingDone':
+            $kfr2->SetValue('bDoneAccounting', 1);
+            $rQ['bOk'] = $kfr2->PutDBRow();
+            break;
+        case 'doRecordingDone':
+            $kfr2->SetValue('bDoneRecording', 1);
+            $rQ['bOk'] = $kfr2->PutDBRow();
+            break;
         case 'doBuildBasket':
             $o = new SoDOrder_MbrOrder( $oApp );
             $o->CreateFromMbrOrder( $k );
@@ -318,21 +335,20 @@ if( ($jx = SEEDInput_Str('jx')) ) {
         case 'doContactFormSubmit':
             if( ($kMbr = SEEDInput_Int('kMbr')) ) {
                 $oQ = new QServerMbr( $oApp, ['config_bUTF8'=>true] );
-                $rM = $oQ->Cmd('mbr-getFlds');
+                $rM = $oQ->Cmd('mbr-getFldsOffice');
                 $raFlds = $rM['raOut'];
 
                 $raMbr = ['kMbr'=>$kMbr];
                 $oForm = new SEEDCoreForm('M');
                 $oForm->Load();
-
-$x = $oForm->GetValuesRA();
-$x = $_REQUEST;
-$oApp->Log('tmp',SEEDCore_ArrayExpandSeries( $x, "[[k]] = [[v]]\n") );
+//$x = $oForm->GetValuesRA();
+//$x = $_REQUEST;
+//$oApp->Log('tmp',SEEDCore_ArrayExpandSeries( $x, "[[k]] = [[v]]\n") );
 
                 foreach( $raFlds as $k => $raDummy ) {
                     $raMbr[$k] = $oForm->Value($k);
                 }
-                $rM = $oQ->Cmd('mbr--put', $raMbr);
+                $rM = $oQ->Cmd('mbr--putOffice', $raMbr);
                 $rQ['bOk'] = $rM['bOk'];
                 $rQ['sErr'] = $rM['sErr'];
             }
@@ -537,6 +553,42 @@ $(document).ready(function() {
         }
     });
 
+    /* Accounting Done button
+     */
+    $(".doAccountingDone").click(function(event){
+        event.preventDefault();
+        let k = $(this).attr('data-kOrder');
+
+        let jxData = { jx   : 'doAccountingDone',
+                       k    : k,
+                       lang : "EN"
+                     };
+
+        let o = SEEDJX( "mbr_order.php", jxData );
+        if( o['bOk'] ) {
+// better to get html from o['sOut'] for true confirmation
+            $(this).html("Bookkeeping done");
+        }
+    });
+
+    /* Recording Done button
+     */
+    $(".doRecordingDone").click(function(event){
+        event.preventDefault();
+        let k = $(this).attr('data-kOrder');
+
+        let jxData = { jx   : 'doRecordingDone',
+                       k    : k,
+                       lang : "EN"
+                     };
+
+        let o = SEEDJX( "mbr_order.php", jxData );
+        if( o['bOk'] ) {
+// better to get html from o['sOut'] for true confirmation
+            $(this).html("Database record done");
+        }
+    });
+
     /* Build basket button click
      */
     $(".doBuildBasket").click(function(event){
@@ -602,7 +654,7 @@ function fillTmpRowDiv( tmpRowDiv, kOrder, feedback )
                 //console.log(d);
                 if( d['bOk'] ) {
                     tmpRowDiv.html( d['sOut'] );
-                    tmpRowDiv.find('.mbroContactForm_feedback').html(feedback);
+                    tmpRowDiv.find('.mbroContactForm_feedback').html(feedback).show().delay(5000).fadeOut();
                 }
      });
 }

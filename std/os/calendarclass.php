@@ -6,7 +6,7 @@
  *
  */
 
-include_once( STDINC."SEEDDate.php" );
+include_once( SEEDCORE."SEEDDate.php" );
 
 
 class calendar_class extends table_class

@@ -5,6 +5,7 @@ include_once( SEEDCORE."SEEDTag.php" );
 include_once( STDINC."SEEDWiki.php" );
 include_once( SEEDCOMMON."siteutil.php" );  // SelectProvince
 
+include_once( SEEDLIB."events/events.php" );
 
 if( !defined("CLR_BG_editEN") ) define( "CLR_BG_editEN","#e0e0e0");
 if( !defined("CLR_BG_editFR") ) define( "CLR_BG_editFR","#e0e0ff");
@@ -249,7 +250,7 @@ class EV_Events {
     }
 
 
-    function DrawEvent( $kfrEV )
+    function DrawEvent( $kfrEV, $oEventLib = null )
     /***************************
         Draw the text of an event item, in either english or french
 
@@ -257,6 +258,15 @@ class EV_Events {
         bPrn:  format with a table model with the title in first col, other info in second col
      */
     {
+        if( $oEventLib ) {
+            // new code, use EventLib to draw the event
+            $e = new Events_event( $oEventLib, $kfrEV->Key() );
+            return( $e->DrawEvent() );
+        } else {
+            // old code, use the below
+        }
+
+
 //        if( $kfrEV->IsEmpty('latlong') ) { $this->geocode( $kfrEV ); }
 
         $city     = $kfrEV->Expand( "[[city]], [[province]]" );

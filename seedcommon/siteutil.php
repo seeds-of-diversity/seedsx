@@ -18,7 +18,7 @@ function MailFromOffice( $to, $subject, $bodyText, $bodyHTML = "", $raParms = ar
         $sFromName  = isset($raParms['from'][1]) ? $raParms['from'][1] : "";
     }
 
-    return( SEEDEmailSend( [$sFromEmail,$sFromName], $to, $subject, $bodyText, $bodyHTML = "", $raParms ) );
+    return( SEEDEmailSend( [$sFromEmail,$sFromName], $to, $subject, $bodyText, $bodyHTML, $raParms ) );
 }
 
 
