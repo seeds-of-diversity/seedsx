@@ -22,6 +22,7 @@ include_once( SEEDCOMMON."mbr/mbrBulletin.php" );
 include_once( "_mbr.php" );
 include_once( "_mbr_mail.php" );
 
+
 define( "MBRCONTACTS_TABNAME_BULLETIN", "Bulletin" );    // so per-tab TabSetGetSVA knows its name
 
 
@@ -39,8 +40,10 @@ $bReadonly = !($sess->CanWrite( "MBR" ));
 header( "Content-type: text/html; charset=ISO-8859-1");    // this should be on all pages so accented chars look right (on Linux anyway)
 
 $kfdb2->SetDebug(1);
-//var_dump($_REQUEST);
 
+// Implement Post-Redirect-Get paradigm.
+SEEDPRG();
+//var_dump($_REQUEST);  // after SEEDPRG because that resets _REQUEST to contain any _POST from prior to an http 303
 
 
 
