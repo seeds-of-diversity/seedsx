@@ -151,13 +151,21 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
 
                     // DrawProduct always returns utf8 now - construct MSDQ with $raConfig['config_bUTF8']=false to get cp1252.
                     // So just utf8_encode the order info
-                    $raJX['sOut'] .= utf8_encode($oSB->DrawProduct( $kfrP, SEEDBasketProductHandler_Seeds::DETAIL_VIEW_NO_SPECIES, ['bUTF8'=>false] ))
-                                    .utf8_encode(drawMSDOrderInfo( $oSB, $kfrP ));
+                    $raJX['sOut'] .= utf8_encode($oSB->DrawProduct( $kfrP, SEEDBasketProductHandler_Seeds::DETAIL_VIEW_NO_SPECIES, ['bUTF8'=>false] ));
+                    //$raJX['sOut'] .= utf8_encode(drawMSDOrderInfo( $oSB, $kfrP ));
+                    $raJX['sOut'] .= "<div style='display:none' class='msd-order-info msd-order-info-{$ra['_key']}'></div>";
                     $raJX['bOk'] = true;
                 }
             }
             break;
 
+        case 'msdOrderInfo':
+            // when you click on a variety description this order info slides open
+            if( ($kP = SEEDInput_Int('kP')) && ($kfrP = $oSB->oDB->GetKFR( 'P', $kP )) ) {
+                $raJX['sOut'] .= utf8_encode(drawMSDOrderInfo( $oSB, $kfrP ));
+                $raJX['bOk'] = true;
+            }
+            break;
     }
 }
 
@@ -218,14 +226,14 @@ function drawMSDOrderInfo( MSDBasketCore $oSB, KeyframeRecord $kfrP )
              ."</div>";
     }
 
-    $s = "<div style='display:none' class='msd-order-info msd-order-info-$kP'>"
+    $s = "" //"<div style='display:none' class='msd-order-info msd-order-info-$kP'>"
             .SEEDCore_ArrayExpand( $raPE, "<p><b>[[species]] - [[variety]]</b></p>" )
             ."<p>This is offered by $who for $".$kfrP->Value('item_price')." in $sPayment.</p>"
             .($bRequestable ? "": "<p>Members can login to request these seeds.</p>")
             ."<p><button $sButton1Attr>Add this request to your basket</button>&nbsp;&nbsp;&nbsp;"
                ."<button $sButton2Attr>Show other seeds from this grower</button></p>"
             .($bRequestable ? $sG : "")
-        ."</div>";
+        ;//."</div>";
 
     done:
     return( $s );
