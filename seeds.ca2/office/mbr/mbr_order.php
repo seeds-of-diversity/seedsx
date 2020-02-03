@@ -506,6 +506,44 @@ $(document).ready( function() {
 
 function FormValInt( k )   { return( parseInt(k) || 0 ); }
 
+class MbrOrderFulfil
+{
+    constructor()
+    {
+    }
+
+    static MailToday( k )
+    {
+        if( !k ) return;
+
+        let jxData = { jx   : 'changeStatus2ToMailed',
+                       k    : k,
+                       lang : "EN"
+                     };
+
+        SEEDJXAsync2( "mbr_order.php", jxData, function(o) {
+                if( o['bOk'] ) {
+                    $('#status2x_'+k).html("");        // remove the Mail Nothing button
+                    $("#status2_"+k).html(o['sOut']);  // Mail Today button changes to "Order mailed YYYY-MM-DD"
+                }
+            });
+    }
+
+    static MailNothing( k )
+    {
+        let jxData = { jx   : 'changeStatus2ToNothingToMail',
+                       k    : k,
+                       lang : "EN"
+                     };
+
+        let o = SEEDJX( "mbr_order.php", jxData );
+        if( o['bOk'] ) {
+            $("#status2x_"+k).html(""); // remove the Mail Nothing button
+            $('#status2_'+k).html("");  // remove the Mail Today button
+        }
+
+    }
+}
 
 $(document).ready(function() {
     /* Show Ticket click
@@ -519,38 +557,14 @@ $(document).ready(function() {
      */
     $(".status2").click(function(event){
         event.preventDefault();
-        let k = this.id.substr(8);
-
-        let jxData = { jx   : 'changeStatus2ToMailed',
-                       k    : k,
-                       lang : "EN"
-                     };
-
-        let o = SEEDJX( "mbr_order.php", jxData );
-        if( o['bOk'] ) {
-            $(this).html("");
-            $('#status2x_'+k).html("");        // remove the other button
-            $("#status2_"+k).html(o['sOut']);  // "Order not mailed" changes to "Order mailed YYYY-MM-DD"
-        }
+        MbrOrderFulfil.MailToday( this.id.substr(8) )
     });
 
     /* Nothing to Mail button click
      */
     $(".status2x").click(function(event){
         event.preventDefault();
-        let k = this.id.substr(9);
-
-        let jxData = { jx   : 'changeStatus2ToNothingToMail',
-                       k    : k,
-                       lang : "EN"
-                     };
-
-        let o = SEEDJX( "mbr_order.php", jxData );
-        if( o['bOk'] ) {
-            $(this).html("");
-            $('#status2_'+k).html("");  // remove the other button
-            $("#mailed"+k).html("");    // "Order not mailed" changes to ""
-        }
+        MbrOrderFulfil.MailNothing( this.id.substr(9) )
     });
 
     /* Accounting Done button
