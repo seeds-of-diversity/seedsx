@@ -97,8 +97,9 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
                 while( $nLimit-- && $kfrP->CursorFetch() ) {
                     // DrawProduct always returns utf8 now - construct MSDQ with $raConfig['config_bUTF8']=false to get cp1252.
                     // So just utf8_encode the order info
-                    $raJX['sOut'] .= utf8_encode($oSB->DrawProduct( $kfrP, SEEDBasketProductHandler::DETAIL_ALL, ['bUTF8'=>false] ))
-                                    .utf8_encode(drawMSDOrderInfo( $oSB, $kfrP ));
+                    $raJX['sOut'] .= utf8_encode($oSB->DrawProduct( $kfrP, SEEDBasketProductHandler_Seeds::DETAIL_ALL, ['bUTF8'=>false] ));
+                    //$raJX['sOut'] .= utf8_encode(drawMSDOrderInfo( $oSB, $kfrP ));
+                    $raJX['sOut'] .= "<div style='display:none' class='msd-order-info msd-order-info-".$kfrP->Key()."'></div>";
                 }
                 $raJX['bOk'] = true;
             }
@@ -121,13 +122,14 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
                                        array('sSortCol'=>'PE1_v,PE2_v') );
 
             foreach( $raP as $ra ) {
-                $kfrP = $oSB->oDB->GetKFR( 'P', $ra['_key'] );
-
-                // DrawProduct always returns utf8 now - construct MSDQ with $raConfig['config_bUTF8']=false to get cp1252.
-                // So just utf8_encode the order info
-                $raJX['sOut'] .= utf8_encode($oSB->DrawProduct( $kfrP, SEEDBasketProductHandler::DETAIL_ALL, ['bUTF8'=>false] ))
-                                .utf8_encode(drawMSDOrderInfo( $oSB, $kfrP ));
-                $raJX['bOk'] = true;
+                if( ($kfrP = $oSB->oDB->GetKFR( 'P', $ra['_key'] )) ) {
+                    // DrawProduct always returns utf8 now - construct MSDQ with $raConfig['config_bUTF8']=false to get cp1252.
+                    // So just utf8_encode the order info
+                    $raJX['sOut'] .= utf8_encode($oSB->DrawProduct( $kfrP, SEEDBasketProductHandler_Seeds::DETAIL_ALL, ['bUTF8'=>false] ));
+                    //$raJX['sOut'] .= utf8_encode(drawMSDOrderInfo( $oSB, $kfrP ));
+                    $raJX['sOut'] .= "<div style='display:none' class='msd-order-info msd-order-info-{$ra['_key']}'></div>";
+                    $raJX['bOk'] = true;
+                }
             }
             break;
 
