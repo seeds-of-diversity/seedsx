@@ -269,10 +269,14 @@ private $_lastType = "";
             'HOLLYHOCK'  => array( 'FR' => 'Tr&eacute;mi&egrave;re' ),
             'LATHYRUS (SWEET PEA)' => array( 'FR' => 'Pois de senteur' ),
             'LAVATERA' => array( 'FR' => 'Lavat&egrave;re' ),
+            'LINUM (FLAX)' => array( 'FR' => "Lin" ),
+            'MALVA (MALLOW)' => ['FR'=>"Mauve"],
             'MARIGOLD' => array( 'FR' => "Oeillets d'Inde" ),
+            "MIRABILIS (FOUR O'CLOCKS)" => ['FR'=>"Belle de nuit"],
             'MORNING GLORY' => array( 'FR' => 'Belle-de-jour' ),
             'NASTURTIUM' => array( 'FR' => 'Capucine' ),
             'OENOTHERA' => array( 'FR' => 'Onagre' ),
+            'POPPY (PAPAVER)' => array( 'FR' => "Pavot" ),
             'SUNFLOWER' => array( 'FR' => 'Tournesol' ),
 
 
@@ -321,6 +325,7 @@ private $_lastType = "";
             'FENNEL' => array( 'FR' => 'Fenouil' ),
             'FENUGREEK' => array( 'FR' => 'Fenugrec' ),
             'FEVERFEW' => array( 'FR' => 'Grande camomille' ),
+            'GARLIC CHIVES' => array( 'FR' => 'Ciboulette ail' ),
             'HOPS' => array( 'FR' => 'Houblon' ),
             'HOREHOUND' => array( 'FR' => 'Marrube' ),
             'HORSERADISH (ROOTS)' => array( 'FR' => 'Raifort' ),
@@ -341,7 +346,7 @@ private $_lastType = "";
             'SALAD BURNET' => array( 'FR' => 'Sanguisorba pimprenelle' ),
             'SORREL' => array( 'FR' => 'Oseille' ),
             "ST. JOHN'S WORT" => array( 'FR' => 'Millepertuis' ),
-            'SUMMER SAVORY' => array( 'FR' => 'Sarriette' ),
+            'SUMMER SAVORY' => array( 'FR' => "Sarriette d'&eacute;t&eacute;" ),
             'SWEET CICELY' => array( 'FR' => 'Cerfeuil musqu&eacute;' ),
             'TANSY' => array( 'FR' => 'Tanasie' ),
             'TEASEL' => array( 'FR' => 'Card&egrave;re cultiv&eacute;e' ),
@@ -366,6 +371,7 @@ private $_lastType = "";
             'BEAN/ADZUKI' => array( 'FR' => 'F&egrave;ves - Adzuki' ),
             'BEAN/BUSH' => array( 'FR' => 'F&egrave;ves - Plants nains' ),
             'BEAN/FAVA (BROAD)' => array( 'FR' => 'F&egrave;ves - Fava (Larges)' ),
+            'BEAN/LIMA' => array( 'FR' => 'F&egrave;ves de Lima' ),
             'BEAN/OTHER' => array( 'FR' => 'F&egrave;ves et haricots - Divers' ),
             'BEAN/POLE' => array( 'FR' => 'F&egrave;ves - Plants grimpants' ),
             'BEAN/RUNNER' => array( 'FR' => "Haricots d'Espagne" ),
@@ -386,6 +392,8 @@ private $_lastType = "";
             'CORN/POP' => array( 'FR' => 'Ma&iuml;s &agrave; souffler' ),
             'CORN/SWEET' => array( 'FR' => 'Ma&iuml;s sucr&eacute;' ),
             'COWPEA' => array( 'FR' => 'Doliques' ),
+            'CUCUMBER/ANTILLES' => array( 'FR' => 'Concombre des Antilles' ),
+            'CUCUMBER/KAYWA' => array( 'FR' => 'Concombre grimpant (Kaywa)' ),
             'CUCUMBER/MEXICAN SOUR GHERKIN' => array( 'FR' => 'Concombres &agrave; confire', 'EN'=> 'Cucumber - Mexican Sour Gherkin' ),
             'CUCUMBER/PICKLING' => array( 'FR' => 'Concombres &agrave; mariner', 'EN'=> 'Cucumber - Pickling' ),
             'CUCUMBER/SLICING' => array( 'FR' => 'Concombres frais', 'EN'=> 'Cucumber - Slicing' ),
@@ -420,7 +428,8 @@ private $_lastType = "";
             'SALSIFY/SCORZONERA' => array( 'FR' => 'Salsifis' ),
             'SKIRRET' => array( 'FR' => 'Chervis' ),
             'SPINACH' => array( 'FR' => '&Eacute;pinards', 'FR_sort' => 'Epinards' ),  // '&' initial is not good for sorting
-            'SPINACH/MALABAR' => array( 'FR' => '&Eacute;pinard de Malabar', 'FR_sort' => 'Epinard de Malabar' ),  // '&' initial is not good for sorting
+            'SPINACH/MALABAR' => array( 'FR' => '&Eacute;pinards de Malabar', 'FR_sort' => 'Epinard de Malabar' ),  // '&' initial is not good for sorting
+            'SPINACH/NEW ZEALAND' => array( 'FR' => '&Eacute;pinards T&eacute;tragone', 'FR_sort' => 'Epinard Tetragon' ),  // '&' initial is not good for sorting
             'SPINACH/STRAWBERRY' => array( 'FR' => '&Eacute;pinard-Fraise', 'FR_sort' => 'Epinard-Fraise' ),  // '&' initial is not good for sorting
             'SQUASH/MAXIMA' => array( 'FR' => 'Courges (Cucurbita maxima)' ),
             'SQUASH/MIXTA' => array( 'FR' => 'Courges (Cucurbita mixta)' ),
@@ -428,12 +437,12 @@ private $_lastType = "";
             'SQUASH/PEPO' => array( 'FR' => 'Courges/Citrouilles (Cucurbita pepo)' ),
             'SWISS CHARD' => array( 'FR' => 'Bette &agrave; carde' ),
             'TOMATO/MISC OR MULTI-COLOUR' => array( 'FR' => 'Tomates - Couleurs diverses' ),
-            'TOMATO/MISC SPECIES' => array( 'FR' => 'Tomates - Esp&egrave;ces diverses' ),
-            'TOMATO/PINK TO PURPLE SKIN' => array( 'FR' => 'Tomates - Peaux roses &agrave; pourpres' ),
-            'TOMATO/RED SKIN' => array( 'FR' => 'Tomates - Peaux rouges' ),
-            'TOMATO/YELLOW TO ORANGE SKIN' => array( 'FR' => 'Tomates - Peaux jaunes &agrave; oranges' ),
+            'TOMATO/MISCELLANEOUS SPECIES' => array( 'FR' => 'Tomates - Esp&egrave;ces diverses' ),
+            'TOMATO/PINK TO PURPLE' => array( 'FR' => 'Tomates - Peaux roses &agrave; pourpres' ),
+            'TOMATO/RED' => array( 'FR' => 'Tomates - Peaux rouges' ),
+            'TOMATO/YELLOW TO ORANGE' => array( 'FR' => 'Tomates - Peaux jaunes &agrave; oranges' ),
             'TURNIP' => array( 'FR' => 'Navets' ),
-            'TURNIP/RUTABAGA' => array( 'FR' => 'Rutabagas' ),
+            'TURNIP - RUTABAGA' => array( 'FR' => 'Rutabagas' ),
     );
 }
 
