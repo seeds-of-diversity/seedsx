@@ -134,6 +134,9 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
             break;
 
         case "msdVarietyListFromSpecies":
+//this is way faster - see msd-edit.php
+//$rQ = $oMSDQ->Cmd( 'msdSeedList-GetData', ['kUidSeller'=>$uidSeller,'kSp'=>$kSp,'eStatus'=>"ALL"] );
+
             include_once( SEEDLIB."msd/msdcore.php" );
             $oMSDCore = new MSDCore( $oApp, array() );
 
