@@ -1,39 +1,23 @@
-<H2> Snipped from QuirksMode - Detecting Keystrokes </H2>
+<h2>Detecting Keystrokes </h2>
 
 <script type="text/javascript">
-<!--
 
-window.onload =
-function () {
-    document['onkeypress'] = detectEvent;
+document.onkeypress = detectKey;
+document.onkeydown = detectKey;
+
+function detectKey(e) {
+    e = e || window.event;    // for IE9 which doesn't pass the event to the function
+    writeLine( e.type + ': '
+               + 'keyCode=' + e.keyCode
+               + ', charCode=' + e.charCode
+               + ', key=' + e.key );
+    return true;
 }
 
-function detectEvent(e) {
-	var evt = e || window.event;
-    s = evt.type + ': ';
-    s += 'keyCode=' + evt.keyCode;
-    s += ', charCode=' + evt.charCode;
-	writeData( s );
-	writeData('');
-    if(evt.charCode==97) window.top.location='http://www.seeds.ca';
-	return true;
+function writeLine(msg) {
+    document.getElementById('myWrite').innerHTML += msg + '<br />';
 }
-
-function writeData(msg) {
-	document.getElementById('writeroot').innerHTML += msg + '<br />';
-}
-
-// -->
 </script>
 
-<style type="text/css">
-#writeroot {
-	height: 300px;
-	overflow: auto;
-	border: 1px solid #2EB2DC;
-}
-</style>
-
-
-<p id="writeroot"></p>
+<p id="myWrite" style="height: 300px; overflow: auto; border: 1px solid #2EB2DC;"></p>
 
