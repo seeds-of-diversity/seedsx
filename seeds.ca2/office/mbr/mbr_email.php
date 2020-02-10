@@ -11,10 +11,14 @@ include_once( SITEROOT."site2.php" );
 include_once( STDINC."SEEDForm.php" );
 include_once( SEEDCOMMON."console/console01.php" );
 include_once( "_mbr.php" );
+include_once( SEEDLIB."mbr/QServerMbr.php" );
+
 
 list($kfdb, $sess) = SiteStartSessionAccount( array("R MBRMAIL") );  // and "BULLETIN"=>"R"
 
-$oApp = SiteAppConsole();
+$oApp = SEEDConfig_NewAppConsole( ['db'=>'seeds2',
+                                   'sessPermsRequired'=>['R MBRMAIL'] ]
+);
 
 $kfrelMbr = MbrContacts::KfrelBase( $kfdb, $sess->GetUID() );
 
@@ -24,7 +28,6 @@ echo $oConsole->Style()
 
 
 $year = intval(date("Y"));
-
 
 $bMbrCurr =  SEEDInput_Int('gMbrcurr');
 $bMbrPrev =  SEEDInput_Int('gMbrprev');
@@ -54,12 +57,25 @@ echo "<STYLE>"
     ."}"
     ."</STYLE>";
 
+$oForm = new SEEDCoreForm('Plain');
+$oForm->Load();
+
+
 echo "<TABLE border='0' cellpadding='20' cellspacing='0'><TR>"
     ."<TD valign='top' width='60%'>"
     ."<P>Choose the combination of email lists that you want. Click the List button.<BR/>Copy/paste addresses from the box on the right.</P>"
     ."<FORM method='post' action='${_SERVER['PHP_SELF']}'>"
     ."<DIV class='box1'>"
-    ."<P>Choose one or more groups</P><BLOCKQUOTE>"
+    ."<P>Choose one or more groups</P>"
+    .$oForm->Select( 'yMbrExpires', ["-- No Members by Expiry --"=>0,
+                                     "Current Members ($year or greater)"=>$year,
+                                     ("Non-current members expired in ".($year-1))=>($year-1),
+                                     ("Non-current members expired in ".($year-2))=>($year-2)] )
+    ."</br/><br/>"
+    .$oForm->Select( 'yMbrExpiresSince',  ["-- No Members Since --"=>0,
+                                           ("All members since ".($year-1))=>($year-1),
+                                           ("All members since ".($year-2))=>($year-2)] )
+    ."<BLOCKQUOTE>"
     .SEEDForm_Checkbox( "gMbrcurr",  $bMbrCurr,  "Current members ($year or greater)" )."<BR/>"
     .SEEDForm_Checkbox( "gMbrprev",  $bMbrPrev,  "Members expired in ".($year-1) )."<BR/>"
     .SEEDForm_Checkbox( "gMbrprev2", $bMbrPrev2, "Members expired in ".($year-2) )."<BR/><BR/>"
@@ -139,6 +155,8 @@ $raMbrid = array();
 /* Look up emails/mbrids in mbr_contacts
  */
 $raExp = array();
+if( ($v = $oForm->ValueInt('yMbrExpires')) )       $raExp[] = "YEAR(expires) = '$v'";
+if( ($v = $oForm->ValueInt('yMbrExpiresSince')) )  $raExp[] = "YEAR(expires) >= '$v'";
 if( $bMbrCurr )  $raExp[] = "YEAR(expires) >= '$year'";
 if( $bMbrPrev )  $raExp[] = "YEAR(expires) = '".($year-1)."'";
 if( $bMbrPrev2 ) $raExp[] = "YEAR(expires) = '".($year-2)."'";
@@ -181,6 +199,16 @@ if( count($raExp) ) {
     }
     echo "Found ".($p_listFormat == "mbrid" ? (count($raMbrid)." members") : (count($raEmail)." emails"))."<BR/><BR/>";
 }
+
+$qParms = ['bExistsEmail'=>true, 'bEbulletin'=>true];
+if( ($v = $oForm->Value('yMbrExpires')) )       $qParms['yExpiresIn'] = $v;
+if( ($v = $oForm->Value('yMbrExpiresSince')) )  $qParms['yExpiresSince'] = $v;
+
+    $oQ = new QServerMbr( $oApp, ['config_bUTF8'=>false] );
+    $rQ = $oQ->Cmd( 'mbr-!-getListOffice', $qParms );
+    echo "<p style='color:#888;font-size:small'>{$rQ['sOut']}</p>";
+    var_dump(count($rQ['raOut']));
+
 
 /* Look up emails in bull_list
  */
