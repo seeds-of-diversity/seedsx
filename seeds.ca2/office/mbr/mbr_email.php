@@ -11,30 +11,20 @@
  */
 define( "SITEROOT", "../../" );
 include_once( SITEROOT."site2.php" );
-include_once( STDINC."SEEDForm.php" );
-include_once( SEEDCOMMON."console/console01.php" );
-include_once( "_mbr.php" );
 include_once( SEEDLIB."mbr/QServerMbr.php" );
 
-
-list($kfdb, $sess) = SiteStartSessionAccount( array("R MBRMAIL") );  // and "BULLETIN"=>"R"
-
 $oApp = SEEDConfig_NewAppConsole( ['db'=>'seeds2',
-                                   'sessPermsRequired'=>['R MBRMAIL'] ]
+                                   'sessPermsRequired'=>['R MBR'],  // and R EBULLETIN
+                                   'consoleConfig' => ['HEADER' => "Seeds of Diversity Mailing Lists"] ]
 );
 
+SEEDPRG();
 
-$s = "";
-
-
-$kfrelMbr = MbrContacts::KfrelBase( $kfdb, $sess->GetUID() );
+$sLeft = $sRight = "";
 
 
 $year = intval(date("Y"));
 
-$bMbrCurr =  SEEDInput_Int('gMbrcurr');
-$bMbrPrev =  SEEDInput_Int('gMbrprev');
-$bMbrPrev2 = SEEDInput_Int('gMbrprev2');
 $bEbull    = SEEDInput_Int('gEbull');
 $bSEDCurr  = SEEDInput_Int('gSEDCurr');
 $bSEDCurr2 = SEEDInput_Int('gSEDCurrNotDone');
@@ -42,72 +32,63 @@ $bSEDCurr2 = SEEDInput_Int('gSEDCurrNotDone');
 
 $bOverrideNoEmail  = SEEDInput_Int('override_noemail');
 
-$lang = SEEDInput_Smart( 'mbrLang', ['', 'EN', 'FR'] );
-$p_listFormat = SEEDInput_Smart( 'listFormat', ['email', 'mbrid'] );
-
-
-$s .= "<STYLE>"
-    .".box1 { "
-        ."border:3px grey solid;"
-        ."background-color:#dddddd;"
-        ."padding:1em 2em;"
-        ."font-family:verdana,helvetica,sans serif;"
-        ."font-size:11pt"
-    ."}"
-    ."p { "
-        ."font-family:verdana,helvetica,sans serif;"
-        ."font-size:11pt"
-    ."}"
-    ."</STYLE>";
 
 $oForm = new SEEDCoreForm('Plain');
 $oForm->Load();
 
+$p_lang = SEEDInput_Smart( 'eLang', ['', 'EN', 'FR'] );                     // also available as $oForm->Value('eLang')
+$p_outFormat = SEEDInput_Smart( 'outFormat', ['email', 'mbrid','xls'] );
+$p_mbrFilter = $oForm->Value( 'eMbrFilter' );
+
 $yMinus1 = $year-1;
 $yMinus2 = $year-2;
 
-$s .= "<TABLE border='0' cellpadding='20' cellspacing='0'><TR>"
-    ."<TD valign='top' width='60%'>"
-    ."<P>Choose the combination of email lists that you want. Click the List button.<BR/>Copy/paste addresses from the box on the right.</P>"
-    ."<FORM method='post' action='${_SERVER['PHP_SELF']}'>"
-    ."<DIV class='box1'>"
-    ."<P>Choose one or more groups</P>"
-    .$oForm->Select( 'yMbrExpires', ["-- No Members by Expiry --"=>0,
+$sLeft .=
+     "<form method='post' action='".$oApp->PathToSelf()."'>"
+    ."<div class='box1'>"
+    ."<p>Choose Members</p>"
+    ."<div style='margin-bottom:10px'>"
+    .$oForm->Select( 'yMbrExpires', ["-- No Members --" => 0,
                                      "Current Members ($year and greater)" => "$year+",
                                      "All members since $yMinus1 ($yMinus1 and greater)" => "$yMinus1+",
                                      "All members since $yMinus2 ($yMinus2 and greater)" => "$yMinus2+",
                                      "Non-current members expired in $yMinus2 or $yMinus1" => "$yMinus2,$yMinus1",
                                      "Non-current members expired in $yMinus1" => $yMinus1,
                                      "Non-current members expired in $yMinus2" => $yMinus2 ] )
+    ."</div><div style='margin-bottom:10px'>"
+    .$oForm->Select( 'eMbrFilter', ["-- No filter --" => 0,
+                                    "Who receive the e-bulletin"             => "getEbulletin",
+                                    "Who receive the magazine"               => "getMagazine",
+                                    "Who receive the printed Seed Directory" => "getPrintedMSD",
+                                    "Who list seeds in the Seed Directory (active or skipped)" => "msdGrowers",
+                                    "Who list seeds in the Seed Directory (active or skipped) but are not Done this year" => "msdGrowersNotDone"] )
+    ."</div><br/>"
+    ."<p>Language</p>"
+    .$oForm->Select( 'eLang', ["-- All languages --" => 0,
+                               "English" => 'EN',
+                               "French"  => 'FR'] )
     ."</br/><br/>"
-    ."<BLOCKQUOTE>"
-    .SEEDForm_Checkbox( "gMbrcurr",  $bMbrCurr,  "Current members ($year or greater)" )."<BR/>"
-    .SEEDForm_Checkbox( "gMbrprev",  $bMbrPrev,  "Members expired in ".($year-1) )."<BR/>"
-    .SEEDForm_Checkbox( "gMbrprev2", $bMbrPrev2, "Members expired in ".($year-2) )."<BR/><BR/>"
+
+    ."<p>"
     .SEEDForm_Checkbox( "gEbull",    $bEbull,    "e-Bulletin subscribers who signed up on the web site" )."<BR/><BR/>"
     .SEEDForm_Checkbox( "gSEDCurr",  $bSEDCurr,  "Members currently active or skipped in Member Seed Directory" )."<BR/>"
     .SEEDForm_Checkbox( "gSEDCurrNotDone", $bSEDCurr2,  "Members currently active or skipped in Member Seed Directory, and not bDone" )."<BR/>"
-    ."</BLOCKQUOTE>"
-    ."<BR/>"
+    ."</p>"
+    ."<br/>"
 
-    ."<P>Language</P><BLOCKQUOTE>"
-    .SEEDForm_Radio( "mbrLang", "",   $lang, "All" )."</BR>"
-    .SEEDForm_Radio( "mbrLang", "EN", $lang, "English Only" )."</BR>"
-    .SEEDForm_Radio( "mbrLang", "FR", $lang, "French Only" )."</BR>"
-    ."</BLOCKQUOTE>"
-    ."<BR/>"
+    ."<p>Output Format</p>"
+    .$oForm->Select( 'outFormat', ["Email addresses" => 'email',
+                                   "Member numbers" => 'mbrid',
+                                   "Full spreadsheet" => 'xls'] )
+    ."</br/><br/>"
 
-    ."<P>Format to Show</P><BLOCKQUOTE>"
-    .SEEDForm_Radio( "listFormat", "email", $lang, "Email address" )."</BR>"
-    .SEEDForm_Radio( "listFormat", "mbrid", $lang, "Member id (only if they have email addresses)" )."</BR>"
-    ."</BLOCKQUOTE>"
-    ."<BR/>"
-
-    ."<DIV style='color:gray; margin-left:3em;border:thin solid grey;padding-left:1em;'>"
-    ."<P>Don't check this unless you really mean it</P><BLOCKQUOTE>"  // don't use SEEDForm because it's actually good if the check isn't sticky
-    ."<INPUT type='checkbox' name='override_noemail' value='1'> Include members who said they <U>don't want</U> email / e-Bulletin<BR><BR>"
-    ."</BLOCKQUOTE>"
-    ."</DIV>"
+    ."<div style='color:gray; border:thin solid grey;padding-left:1em;'>"
+    ."<p>Don't check this unless you really mean it -- e.g. for magazines and Seed Directories</p>"
+    ."<p style='margin-left:30px'>"
+    // don't use SEEDForm because it's actually good if the check isn't sticky
+    ."<input type='checkbox' name='override_noemail' value='1'> Include members who said they <U>don't want</U> email / e-Bulletin"
+    ."</p>"
+    ."</div>"
 
     ."<BR/>"
     ."<INPUT type='submit' value='List'>"
@@ -151,83 +132,44 @@ $s .= "<TABLE border='0' cellpadding='20' cellspacing='0'><TR>"
 
 */
 
-$s .= "</TD>"
-    ."<TD valign='top'><DIV style='color:gray;font-size:9pt;font-family:verdana,helvetica,sans serif;'>";
-
 $raEmail = array();
 $raMbrid = array();
+$raMbr = [];
 
-/* Look up emails/mbrids in mbr_contacts
+
+/* Look up mbr_contacts
  */
-$raExp = array();
-if( $bMbrCurr )  $raExp[] = "YEAR(expires) >= '$year'";
-if( $bMbrPrev )  $raExp[] = "YEAR(expires) = '".($year-1)."'";
-if( $bMbrPrev2 ) $raExp[] = "YEAR(expires) = '".($year-2)."'";
-// uncomment this temporarily if it's January and you want to include people from 2.1 years ago
-//if( $bMbrPrev2 ) $raExp[] = "YEAR(expires) = '".($year-3)."'";
+if( ($yMbrExpires = $oForm->Value('yMbrExpires')) && !SEEDCore_StartsWith($p_mbrFilter,'msdGrower') ) {     // msdGrower filters are handled below
 
-if( count($raExp) ) {
-    $raMbrCond = array();
-    $raMbrCond[] = "(".implode( " OR ", $raExp ).")";
-    $raMbrCond[] = "email IS NOT NULL AND email <> ''";
+    $qParms = ['yMbrExpires' => $yMbrExpires];
 
-    if( !$bOverrideNoEmail )  $raMbrCond[] = "bNoEBull=0";
-    if( $lang == "EN" )       $raMbrCond[] = "lang IN ('','E')";
-    if( $lang == "FR" )       $raMbrCond[] = "lang IN ('','F')";
+    if( $p_lang )                $qParms['lang'] = $p_lang;
+    if( $p_outFormat=='email' )  $qParms['bExistsEmail'] = true;
 
-    if( false ) { // Toronto region
-        $raMbrCond[] = "(LEFT(postcode,1) IN ('M','L') OR LEFT(postcode,2) IN ('N1','N2','N3','K9'))";
+    switch( $p_mbrFilter ) {
+        case 'getMagazine':     $qParms['bEbulletin'] = false;               break;  // don't limit only to members who allow email
+        case 'getEbulletin':    $qParms['bEbulletin'] = !$bOverrideNoEmail;          // limit to members who allow email, unless the override box is checked
+                                $qParms['bExistsEmail'] = true;              break;
+        case 'getPrintedMSD':   $qParms['bPrintedMSD'] = true;               break;
     }
 
-    if( false ) { // Southern Ontario
-        $raMbrCond[] = "(LEFT(postcode,1) IN ('K','L','M','N'))";
-    }
-
-    if( false ) { // ON, QC, NB, NS, PEI, NF (and NL)
-        $raMbrCond[] = "(province in ('ON','QC','NB','NS','PE','NF','NL'))";
-    }
-
-    $sCond = "(".implode( " AND ", $raMbrCond ).")";
-
-    $s .= "Members:<BR/>$sCond<BR/>";
-
-    if( ($kfr = $kfrelMbr->CreateRecordCursor( $sCond )) ) {
-        while( $kfr->CursorFetch() ) {
-            if( $p_listFormat == "mbrid" ) {
-                $raMbrid[] = $kfr->Key();
-            } else {
-                $raEmail[] = $kfr->value('email');
-            }
-        }
-    }
-}
-
-if( ($yMbrExpires = $oForm->Value('yMbrExpires')) ) {
-
-    $qParms = ['bExistsEmail' => true,
-               'bEbulletin'   => true,
-               'yMbrExpires'  => $yMbrExpires ];
+    // Toronto region   "(LEFT(postcode,1) IN ('M','L') OR LEFT(postcode,2) IN ('N1','N2','N3','K9'))";
+    // Southern Ontario "(LEFT(postcode,1) IN ('K','L','M','N'))";
+    // Eastern Canada   "(province in ('ON','QC','NB','NS','PE','NF','NL'))";
 
     $oQ = new QServerMbr( $oApp, ['config_bUTF8'=>false] );
     $rQ = $oQ->Cmd( 'mbr-!-getListOffice', $qParms );
-    $s .= "<p style='color:#888;font-size:small'>{$rQ['sOut']} : ".count($rQ['raOut'])." members</p>";
-    foreach( $rQ['raOut'] as $ra ) {
-        if( $p_listFormat == "mbrid" ) {
-            $raMbrid[] = $ra['_key'];
-        } else {
-            $raEmail[] = $ra['email'];
-        }
-    }
+    $sRight .= "Members:<br/>{$rQ['sOut']}<br/>Found ".count($rQ['raOut'])." members<br/><br/>";
+
+    $raMbr += $rQ['raOut'];
 }
 
-$s .= "Found ".($p_listFormat == "mbrid" ? (count($raMbrid)." members") : (count($raEmail)." emails"))."<BR/><BR/>";
 
-
-/* Look up emails in bull_list
+/* Look up bull_list
  */
 if( $bEbull ) {
     $n = 0;
-    switch( $lang ) {
+    switch( $p_lang ) {
         case 'EN': $sCond = "lang IN ('','B','E')";      break;
         //case 'FR': $sCond = "lang IN ('','B','F')";      break;
         case 'FR': $sCond = "lang IN ('B','F')";      break;
@@ -235,20 +177,21 @@ if( $bEbull ) {
         default:   $sCond = "lang IN ('','B','E','F')";  break;
     }
 
-    $s .= "e-Bulletin:<BR/>$sCond<BR/>";
+    $sRight .= "e-Bulletin:<BR/>$sCond<BR/>";
 
-    if( ($dbc = $kfdb->CursorOpen( "SELECT email FROM seeds.bull_list WHERE status>0 AND $sCond" ) ) ) {
-        while( $ra = $kfdb->CursorFetch( $dbc ) ) {
+    if( ($dbc = $oApp->kfdb->CursorOpen( "SELECT email FROM seeds.bull_list WHERE status>0 AND $sCond" ) ) ) {
+        while( $ra = $oApp->kfdb->CursorFetch( $dbc ) ) {
             $raEmail[] = $ra[0];
             ++$n;
         }
     }
-    $s .= "Found $n emails<BR/><BR/>";
+    $sRight .= "Found $n emails<BR/><BR/>";
 }
 
-/* Look up emails/mbrids in sed_grower_curr
+
+/* Look up sed_grower_curr
  */
-if( $bSEDCurr || $bSEDCurr2 ) {
+if( SEEDCore_StartsWith($p_mbrFilter,'msdGrower') ) {
     include( SEEDLIB."msd/msdlib.php" );
 
     $raM = [];
@@ -257,18 +200,18 @@ if( $bSEDCurr || $bSEDCurr2 ) {
     $raCond = [];
     $raCond[] = "NOT G.bDelete";
     $raCond[] = "M.email IS NOT NULL AND M.email <> ''";
-    if( $lang == "EN" )  $raCond[] = "M.lang IN ('','E')";
-    if( $lang == "FR" )  $raCond[] = "M.lang IN ('','F')";
+    if( $p_lang == "EN" )  $raCond[] = "M.lang IN ('','E')";
+    if( $p_lang == "FR" )  $raCond[] = "M.lang IN ('','F')";
     if( $bSEDCurr2 )     $raCond[] = "(NOT G.bDone AND NOT G.bDoneMbr AND NOT G.bDoneOffice)";  // these are independent, shouldn't be
 
     $sCond = "(".implode( " AND ", $raCond ).")";
 
-    $s .= "Seed Directory Growers:<br/>$sCond<br/>";
+    $sRight .= "Seed Directory Growers:<br/>$sCond<br/>";
 
     $oMSDLib = new MSDLib( $oApp );
     if( ($kfr = $oMSDLib->KFRelGxM()->CreateRecordCursor($sCond)) ) {
         while( $kfr->CursorFetch() ) {
-            if( $p_listFormat == "mbrid" ) {
+            if( $p_outFormat == "mbrid" ) {
                 $raM[] = $kfr->value('mbr_id');
             } else {
                 $raE[] = $kfr->value('M_email');
@@ -276,37 +219,70 @@ if( $bSEDCurr || $bSEDCurr2 ) {
         }
     }
 
-    $s .= "Found ".($p_listFormat == "mbrid" ? (count($raM)." members") : (count($raE)." emails"))."<br/><br/>";
+    $sRight .= "Found ".($p_outFormat == "mbrid" ? (count($raM)." members") : (count($raE)." emails"))."<br/><br/>";
     $raMbrid = array_merge( $raMbrid, $raM );
     $raEmail = array_merge( $raEmail, $raE );
 }
 
 
+switch( $p_outFormat ) {
+    case 'email':
+        // get the emails out of the raMbr array
+        $raEmail += array_map( function($ra){ return($ra['email']); }, $raMbr );
+        break;
+    case 'mbrid':
+        // get the _keys out of the raMbr array
+        $raMbrid += array_map( function($ra){ return($ra['_key']); }, $raMbr );
+        break;
+    case 'xls':
+        break;
+}
+
+
+
+
+
 $n = count($raEmail);
 $raEmail = array_unique( $raEmail );
-$s .= "Removed ".($n-count($raEmail))." duplicate emails.<BR/>Listing ".count($raEmail)." addresses below.<BR/>";
+$sRight .= "Removed ".($n-count($raEmail))." duplicate emails.<BR/>Listing ".count($raEmail)." addresses below.<BR/>";
 $n = count($raMbrid);
 $raMbrid = array_unique( $raMbrid );
-$s .= "Removed ".($n-count($raMbrid))." duplicate member ids.<BR/>Listing ".count($raMbrid)." member ids below.<BR/>";
+$sRight .= "Removed ".($n-count($raMbrid))." duplicate member ids.<BR/>Listing ".count($raMbrid)." member ids below.<BR/>";
 
 sort( $raEmail, SORT_STRING );
 sort( $raMbrid, SORT_NUMERIC );
 
-$s .= "</DIV><DIV style='border:solid thin gray;padding:1em;font-family:courier new,monospace;font-size:10pt;'>"
+$sRight .= "<DIV style='border:solid thin gray;padding:1em;font-family:courier new,monospace;font-size:10pt;color:black'>"
      ."<textarea style='width:100%' rows='50'>";
 
 foreach( $raEmail as $v ) {
-    $s .= $v."\n"; //echo "$v<BR/>";
+    $sRight .= $v."\n"; //echo "$v<BR/>";
 }
 foreach( $raMbrid as $v ) {
-    $s .= $v."\n"; //echo "$v<BR/>";
+    $sRight .= $v."\n"; //echo "$v<BR/>";
 }
 
-$s .= "</textarea></TD></TR></TABLE>";
+$sRight .= "</textarea></div>";
 
 
-$oConsole = new Console01( $kfdb, $sess, array( 'HEADER' => "Seeds of Diversity Email Lists") );
-echo $oConsole->Style()
-    .$oConsole->DrawConsole( $s );  // put the rest of the output below into this string for best results
+$s = "<STYLE>"
+    .".box1 { "
+        ."border:3px grey solid;"
+        ."background-color:#dddddd;"
+        ."padding:1em 2em;"
+        ."font-family:verdana,helvetica,sans serif;"
+        ."font-size:11pt"
+    ."}"
+    ."p { "
+        ."font-family:verdana,helvetica,sans serif;"
+        ."font-size:11pt"
+    ."}"
+    ."</STYLE>"
+    ."<div class='container-fluid'><div class='row'>"
+    ."<div class='col-md-7'>$sLeft</div>"
+    ."<div class='col-md-5' style='font-size:small;color:gray'>$sRight</div>"
+    ."</div></div>";
+
+echo Console02Static::HTMLPage( utf8_encode($oApp->oC->DrawConsole($s)), "", 'EN', array( 'consoleSkin'=>'green') );   // sCharset defaults to utf8
 
 ?>
