@@ -157,10 +157,17 @@ class mbrContacts_Contacts extends Console01_Worker1
             "ListSizePad" => false,
             "fnFormDraw" => array($this,"mbrContactsForm"),
             "fnListRowTranslateRA" => array($this,"mbrContactsListRowTranslateRA"),
-            "bReadonly"=> !($this->sess->CanWrite( "MBR" ))
+            "bReadonly"=> !($this->sess->CanWrite( "MBR" )),
+            'raSEEDFormParms' => array('DSParms'=>array('fn_DSPreStore'=>[$this,'dsPreStore'])),
         );
 
         $this->oC->CompInit( $kfrel, $raCompParms );
+    }
+
+    function dsPreStore( $oDS )
+    {
+        if( $oDS->Value('bNoEBull') !== 1 ) $oDS->SetValue( 'bNoEBull', 0 );
+        return( true );
     }
 
     function mbrContactsForm( $oForm )
