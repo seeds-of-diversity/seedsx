@@ -83,6 +83,7 @@ class Q
             $rQ = $o->Cmd( $cmd, $parms );
         }
 
+        done:
         return( $rQ );
     }
 
