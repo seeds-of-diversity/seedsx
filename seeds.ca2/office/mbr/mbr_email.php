@@ -209,12 +209,12 @@ if( SEEDCore_StartsWith($p_mbrFilter,'msdGrowers') ) {
 
 switch( $p_outFormat ) {
     case 'email':
-        // get the emails out of the raMbr array
-        $raEmail += array_map( function($ra){ return($ra['email']); }, $raMbr );
+        // get the emails out of the raMbr array (N.B. the += and + operators overwrite elements by key, instead of appending)
+        $raEmail = array_merge( $raEmail, array_map( function($ra){ return($ra['email']); }, $raMbr ) );
         break;
     case 'mbrid':
-        // get the _keys out of the raMbr array
-        $raMbrid += array_map( function($ra){ return($ra['_key']); }, $raMbr );
+        // get the _keys out of the raMbr array (N.B. the += and + operators overwrite elements by key, instead of appending)
+        $raMbrid = array_merge( $raMbrid, array_map( function($ra){ return($ra['_key']); }, $raMbr ) );
         break;
     case 'xls':
         // output the raMbr array to a spreadsheet
