@@ -152,9 +152,11 @@ $raListParms = array( 'tableWidth' => "100%",
                       'kCurr' => $oComp->Get_kCurr()
 );
 
+$oViewWindow = new SEEDUIComponent_ViewWindow( $oComp, ['bEnableKeys'=>true] );
+$oViewWindow->SetViewSlice( $raList, ['iViewSliceOffset' => 0, 'nViewSize' => count($raList)] );    // slice == full view
 
 $sVI = $oList->Style()
-      .$oList->ListDrawInteractive( $raList, $raListParms )
+      .$oList->ListDrawInteractive( $oViewWindow, $raListParms )
       //.$oList->ListDrawBasic( $raList, $iOffset, $nSize, $raListParms )
       //.$sVI;
       ;
