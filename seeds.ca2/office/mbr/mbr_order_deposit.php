@@ -57,7 +57,7 @@ if( $cmd == "xls" ) {
     $raRows = $oOrder->kfrelOrder->GetRecordSetRA( "depositCode='".addslashes($sDepositCode)."'", ['sSortCol'=>'_key'] );
 
     foreach( $raRows as $raR ) {
-        [$ra,$fSubtotal] = order2table( $oOrder, $raR );
+        list($ra,$fSubtotal) = order2table( $oOrder, $raR );
         $raOut[] = $ra;
     }
 //var_dump($raOut);
@@ -124,7 +124,7 @@ foreach( $raCodes as $code ) {
 
     $sT = "";
     foreach( $raOrders as $raR ) {
-        [$ra,$fSubtotal] = order2table( $oOrder, $raR );
+        list($ra,$fSubtotal) = order2table( $oOrder, $raR );
         $fTotal += $fSubtotal;
         $sT .= SEEDCore_ArrayExpand( $ra, "<tr><td>[[order]]</td><td>[[name]]</td>"
                                             ."<td>[[membership]]</td><td>[[donation]]</td><td>[[sladoption]]</td>"
