@@ -421,12 +421,12 @@ $sFooter      = $lang=='EN' ? "Seeds of Diversity is a registered charitable org
 
 //<img style='float:right;width:0.75in' src='http://seeds.ca/i/img/logo/logoA_v-en-bw-300x.png'/>
 $sTmpl = $sLocalStyle."
-<img style='position:absolute;top:0.125in;right:0.125in;width:0.75in' src='http://seeds.ca/i/img/logo/logoA_v-".($lang=='EN' ? "en":"fr")."-bw-300x.png'/>
+<img style='position:absolute;top:0.125in;right:0.3in;width:0.75in' src='http://seeds.ca/i/img/logo/logoA_v-".($lang=='EN' ? "en":"fr")."-bw-300x.png'/>
 <div class='s_title'>[[Var:sTitle]]</div>
 <div class='s_form'>
   [[Var:sForm]]
 </div>
-<div class='s_right' style='position:absolute;right:0.125in;top:1.125in;width:4.25in'>
+<div class='s_right' style='position:absolute;right:0.375in;top:1.125in;width:4.25in'>
   [[Var:sRight]]
   <div style='border:1px solid #aaa;background-color:#f4f4f4;margin:0 0.125in 0 0.75in;padding:0.125in'>
     <div>$sAddrChanged</div>
