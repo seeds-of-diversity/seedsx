@@ -1015,7 +1015,7 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
 
             "cheque_mo"
                 => array( "EN" => "Cheque / Money Order",
-                          "FR" => "Ch&agrave;que / Mandat postal" ),
+                          "FR" => "Ch&eacute;que / Mandat postal" ),
 
             "credit_card_desc"
                 => array( "EN" => "Use our secure credit card service for safe payment.  Your order will be processed ".

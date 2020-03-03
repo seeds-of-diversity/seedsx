@@ -23,6 +23,12 @@ class Q
     {
         $rQ = $this->GetEmptyRQ();
 
+        // cmds containing ! are insecure for ajax access: use them via your own instance of a QServer* object
+        if( strpos($cmd,'!') !== false ) {
+            $rQ['sErr'] = "cmd $cmd not available at this access point";
+            goto done;
+        }
+
         if( $cmd == 'test' ) {
             $rQ['bOk'] = true;
             $rQ['sOut'] = "Test is successful";
@@ -77,6 +83,7 @@ class Q
             $rQ = $o->Cmd( $cmd, $parms );
         }
 
+        done:
         return( $rQ );
     }
 

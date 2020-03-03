@@ -28,7 +28,7 @@ $oSLDB = new SLDBCollection( $oApp );
 
 if( (!$oForm->Value('cvName') || !$oForm->Value('desc')) && $oForm->Value('kLot') ) {
     if( ($kfrLot = $oSLDB->GetKFRCond( 'IxAxPxS', "fk_sl_collection='1' AND inv_number='".$oForm->Value('kLot')."'" )) ) {
-        if( !$oForm->Value('cvName') ) $oForm->SetValue( 'cvName', $kfrLot->Value('P_name') );
+        if( !$oForm->Value('cvName') ) $oForm->SetValue( 'cvName', $kfrLot->Value('P_name').' '.strtolower($kfrLot->Value('S_name_en')) );
 
         if( !$oForm->Value('desc') ) $oForm->SetValue( 'desc', $kfrLot->Value('P_packetLabel') );
     }

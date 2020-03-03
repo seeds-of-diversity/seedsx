@@ -48,7 +48,8 @@ $config['system.logging']['error_level'] = 'verbose';
 
 # to Update:
 cd ~/public_html/sw8
-~/composer/composer.phar update
+~/composer/composer.phar install                               -- use in production (just reads composer.lock)
+~/composer/composer.phar update --with-all-dependencies        -- use in devel (updates dependencies and changes composer.json/lock)
 ./vendor/drush/drush/drush updatedb
 ./vendor/drush/drush/drush cache-rebuild
 
