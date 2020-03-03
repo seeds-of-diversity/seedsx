@@ -1,6 +1,11 @@
 <?php
 
-if( !defined("SITEROOT") ) define( "SITEROOT", DRUPAL_ROOT."/../../" );    // because seeds.module also does this
+// seeds.module also does this
+if( !defined("SITEROOT") ) define( "SITEROOT", DRUPAL_ROOT."/../../" );
+
+// DRUPAL_ROOT starts with /home/seeds/public... so default W_CORE_URL will start with that instead of being relative as usually expected
+if( !defined("W_CORE_URL") ) define( "W_CORE_URL", "https://seeds.ca/wcore/" );
+
 include_once( SITEROOT."site.php" );
 include_once( SITEROOT."drupalmod/lib/d8_seedbreeze.php" );
 
