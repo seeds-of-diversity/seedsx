@@ -293,6 +293,9 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
         /* Draw the appropriate Checkout page
          */
         $s .= MbrOrderStyle();
+
+        $s .= "<script>SEEDUI_BoxExpandInit( '{$this->lang}', \"".W_CORE_URL."\");</script>";
+
         $s .= $this->oTmpl->ExpandTmpl( 'mbroStyle', array() );
 
         switch( $state ) {
@@ -335,11 +338,11 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
         // Get the action for a form to submit to this page.
         // In drupal 7 it is the base path with q= the page name.
         // In drupal 8 it is obtained from drupal.
-        // Else it is PHP_SELF 
+        // Else it is PHP_SELF
         if( function_exists('drupal_get_path_alias') ) {
             // drupal 7
             $sFormAction = $_SERVER['PHP_SELF'].(($q = SEEDSafeGPC_GetStrPlain('q')) ? "?q=$q" : "");
-        } else {    
+        } else {
             $sFormAction = Site_path_self();
         }
         return( $sFormAction );
@@ -503,16 +506,14 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
 
     protected function FormBox( $heading, $body, $bExpandable = false )
     {
-        $sExpandButton = "";
-        if( $bExpandable ) {
-            $sExpandButton = "<div class='mbro_expand-button'><img src='".W_ROOT."img/expand_button.gif'/></div>"
-                            ."<div class='mbro_expand-note'>".$this->oL->S('Click to show')."</div>";
-        }
+        $cBox  = $bExpandable ? 'seedui_boxexpand' : "";
+        $cHead = $bExpandable ? 'seedui_boxexpand_head' : "";
+        $cBody = $bExpandable ? 'seedui_boxexpand_body' : "";
 
-        $s = "<div class='mbro_box".($bExpandable ? " mbro_expand" : "")."'>"
-            ."<div class='mbro_boxheader'>$sExpandButton $heading</div>"
-            ."<div class='mbro_boxbody'>$body</div>"
-            ."</div>\n";
+        $s = "<div class='mbro_box $cBox'>"
+                ."<div class='mbro_boxheader $cHead'>$heading</div>"
+                 ."<div class='mbro_boxbody $cBody'>$body</div>"
+             ."</div>";
 
         return( $s );
     }
@@ -522,26 +523,21 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
         The standard stuff at the bottom of the order form
      */
     {
-    	$s = $this->oL->S('form_end_info')
-            ."<br/>";
+        $s = $this->oL->S('form_end_info')."<br/>";
 
-        $s .= "<div class='mbro_box'>"
-             ."<div class='mbro_boxheader'>".$this->oL->S('Method of Payment')."</div>"
-             ."<div class='mbro_boxbody'>"
-             ."<p style='font-weight:bold'>".$this->oL->S('Select a method of payment')."</p>"
-             .$this->oKForm->Radio('ePayType', "",'PayPal').$this->oL->S('credit_card')
-             ."<div class='mbro_help' style='padding-left:50px;'>".$this->oL->S('credit_card_desc')."</div>"
-             .$this->oKForm->Radio('ePayType', "",'Cheque').$this->oL->S('cheque_mo')
-             ."<div class='mbro_help' style='padding-left:50px;'>".$this->oL->S('cheque_desc')."</div>"
-             ."</div></div>\n";    // mbr_form_boxbody, mbr_form_box
+        $s .= $this->FormBox(
+                $this->oL->S('Method of Payment'),
+                "<p style='font-weight:bold'>".$this->oL->S('Select a method of payment')."</p>"
+               .$this->oKForm->Radio('ePayType', "",'PayPal').$this->oL->S('credit_card')
+               ."<div class='mbro_help' style='padding-left:50px;'>".$this->oL->S('credit_card_desc')."</div>"
+               .$this->oKForm->Radio('ePayType', "",'Cheque').$this->oL->S('cheque_mo')
+               ."<div class='mbro_help' style='padding-left:50px;'>".$this->oL->S('cheque_desc')."</div>",
+                false );
 
-
-        $s .= "<br/><br/>"
-             ."<div class='mbro_box'>"
-             ."<div class='mbro_boxheader'>".$this->oL->S('mail_note')."</div>"
-             ."<div class='mbro_boxbody' style='text-align:center'>"
-             .$this->oKForm->TextArea( 'notes', "", 0, 5, array('width'=>"100%") )
-             ."</div></div>\n";
+        $s .= $this->FormBox(
+                $this->oL->S('mail_note'),
+                $this->oKForm->TextArea( 'notes', "", 0, 5, ['width'=>"100%"] ),
+                false );
 
         return( $s );
     }

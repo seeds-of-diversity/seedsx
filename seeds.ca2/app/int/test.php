@@ -16,7 +16,7 @@ $s = "";
 
 $oTmpl = New_DrupalTmpl( $kfdb, $sess->GetUID(), $lang );
 
-echo "<div style='border:1px solid #aaa;margin-bottom:30px;padding:10px'>"
+$s .= "<div style='border:1px solid #aaa;margin-bottom:30px;padding:10px'>"
     ."<div><a href='".Site_path_self()."?test='>Generic test</a></div>"
     ."<div><a href='".Site_path_self()."?test=store'>Store test</a></div>"
     ."<div><a href='".Site_path_self()."?test=events'>Events test</a></div>"
@@ -78,6 +78,11 @@ switch( $test ) {
         break;
 }
 
-echo $bBootstrap ? Console01Static::HTMLPage( $s, "", $lang, array() ) : $s;
+$raParms = [
+    'raScriptFiles' => [W_CORE_URL."js/SEEDUI.js"],
+    'raCSSFiles'    => [W_CORE_URL."css/SEEDUI.css"]
+];
+
+echo $bBootstrap ? Console02Static::HTMLPage( $s, "", $lang, $raParms ) : $s;
 
 ?>

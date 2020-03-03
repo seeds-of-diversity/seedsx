@@ -111,21 +111,15 @@ class SoDMbrOrderCheckout extends MbrOrderCheckout
 
         if( $bGarlicAdvertised ) {
             $s .= "<a name='garlic'></a>"
-                 ."<div class='mbro_box mbro_expand'>"
-                 ."<div class='mbro_boxheader'>"
-                 ."<div class='mbro_expand-button'><img src='".W_ROOT."img/expand_button.gif'/></div>"
-                 ."<div class='mbro_expand-note'>".$this->oL->S('Click to show')."</div>"
-                 .$this->oL->S("Garlic bulbils available for planting")
-                 ."</div>"
-                 ."<div class='mbro_boxbody'>"
-                 .($bGarlicAdvertisedButGone
+                 .$this->FormBox(
+                     $this->oL->S("Garlic bulbils available for planting"),
+                     ($bGarlicAdvertisedButGone
                       ? ("<p style='border:1px solid #822;color:#822;padding:10px'>Sorry! Our garlic bulbils are sold out for ".date("Y").".  Thank you for your interest!</p>")
                       : ($this->oL->S("Garlic-bulbils-instr")
                          ."<p>".$this->oKForm->Checkbox( 'bBulbils', $this->oL->S("Please send samples of garlic bulbils for $15") )."</p>")
-                  )
-                 ."<br/><br/>"
-                 ."</div></div>\n"
-                 ."<br/>";
+                        )
+                     ."<br/><br/>",
+                     true );
         }
 
         /*** Conference Registrations ***
@@ -143,14 +137,32 @@ class SoDMbrOrderCheckout extends MbrOrderCheckout
         /*** SL Adoption ***
          */
         $s .= "<a name='adoptions'></a>"
-             ."<div class='mbro_box mbro_expand'>"
-             ."<div class='mbro_boxheader'>"
-             ."<div class='mbro_expand-button'><img src='".W_ROOT."img/expand_button.gif'/></div>"
-             ."<div class='mbro_expand-note'>".$this->oL->S('Click to show')."</div>"
-             .$this->oL->S("Adopt a Variety into the Canadian Seed Library")
-             ."</div>"
-             ."<div class='mbro_boxbody'>"
-             .$this->oL->S("You can adopt etc")
+             .$this->FormBox(
+                 $this->oL->S("Adopt a Variety into the Canadian Seed Library"),
+                 $this->formBodyAdoption(),
+                 true );
+
+        /*** Publications ***
+         */
+        $s .= $this->FormBox(
+                 "Publications",        // same in EN and FR
+                 $this->formBodyPubs(),
+                 true );
+
+        /*** Other Payments ***
+         */
+        $s .= $this->FormBox(
+                 $this->oL->S('Misc Payment'),
+                 "<p>".$this->oL->S('Misc_payment_instructions').$this->oKForm->Text('fMisc',"",["size"=>5])."</p>",
+                 true );
+
+
+        return( $s );
+    }
+
+    private function formBodyAdoption()
+    {
+        $s =  $this->oL->S("You can adopt etc")
              ."<table class='mbro_ctrl' border='0' cellspacing='0' cellpadding='0'><tr valign='top'>"
              ."<td class='mbro_ctrl'>".$this->oL->S('Choose a variety to adopt').":</td>"
              ."<td class='mbro_ctrl'>".$this->oKForm->Radio('slcvchoose',"","as_needed")." ".$this->oL->S('as needed')."<br/>"
@@ -187,18 +199,12 @@ class SoDMbrOrderCheckout extends MbrOrderCheckout
              //."<div class='mbro_infobox'>Gift donors will be sent a card in the recipient's name, describing the adopted variety. Please make your donation by Dec 14 for holiday delivery.</div>"
              ."</td></tr></table>";
 
-        $s .= "<br/></div></div>\n<br/>";    // mbro_boxbody, mbro_box
+        return( $s );
+    }
 
-
-        /*** Publications ***
-         */
-        $s .= "<div class='mbro_box mbro_expand'>"
-             ."<div class='mbro_boxheader'>Publications"       // same in EN and FR
-             ."<div class='mbro_expand-button'><img src='".W_ROOT."img/expand_button.gif'/></div>"
-             ."<div class='mbro_expand-note'>".$this->oL->S('Click to show')."</div>"
-             ."</div>"
-             ."<div class='mbro_boxbody'>"
-             ."<p align='center'>".$this->oL->S('see_descriptions_here')."</p>"
+    private function formBodyPubs()
+    {
+        $s = "<p align='center'>".$this->oL->S('see_descriptions_here')."</p>"
              ."<table class='mbro_ctrl' cellspacing='0' cellpadding='0' border='0'><tr valign='top'>"
              ."<td width='60'>&nbsp;</td>"
              ."<td width='500'><b>".$this->oL->S('title')."</b></td>"
@@ -225,25 +231,10 @@ class SoDMbrOrderCheckout extends MbrOrderCheckout
         // .$this->mbr_pub( "shc" )
         $s .= "</table>"
              ."<p>U.S. orders: please add $5 for shipping in the Miscellaneous Payment box below</p>"
-             ."<p>".$this->oL->S('contact_for_bulk_rates')."</p>"
-             ."<br/></div></div>\n<br/>";    // mbro_boxbody, mbro_box
-
-        /*** Other Payments ***
-         */
-        $s .= "<div class='mbro_box mbro_expand'>"
-             ."<div class='mbro_boxheader'>".$this->oL->S('Misc Payment')
-             ."<div class='mbro_expand-button'><img src='".W_ROOT."img/expand_button.gif'/></div>"
-             ."<div class='mbro_expand-note'>".$this->oL->S('Click to show')."</div>"
-             ."</div>"
-             ."<div class='mbro_boxbody'>"
-//."<p style='border:1px solid #a22;border-radius:5px;padding:10px;color:#a22'>We regret that due to poor growing conditions we aren't able to offer any garlic bulbils this year.</p>"
-             ."<p>".$this->oL->S('Misc_payment_instructions').$this->oKForm->Text('fMisc',"",array("size"=>5))."</p>"
-             ."</div></div>\n"     // mbr_form_boxbody, mbr_form_box
-             ."<br/>";
+             ."<p>".$this->oL->S('contact_for_bulk_rates')."</p>";
 
         return( $s );
     }
-
 
     function mbr_pub( $type )
     {
