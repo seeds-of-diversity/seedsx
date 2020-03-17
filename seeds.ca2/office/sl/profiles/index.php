@@ -12,7 +12,7 @@ include_once( SEEDCORE."SEEDGrid.php" );
 include_once( SEEDCORE."SEEDUI.php" );
 include_once( "profiles.php" );
 
-//$oApp = SiteAppConsole( ['sessPermsRequired' => ['W slProfilesOffice'] ] );
+//$oApp = SEEDConfig_NewAppConsole( ['sessPermsRequired' => ['W slProfilesOffice'] ] );     // uses seeds1
 $oApp = new SEEDAppConsole( $config_KFDB['seeds2']
                             + array( 'sessPermsRequired' => array('W slProfilesOffice'),
                                      'logdir' => SITE_LOG_ROOT ) );
