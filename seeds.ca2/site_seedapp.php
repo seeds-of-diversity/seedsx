@@ -46,8 +46,10 @@ if( !defined("W_CORE") ) {
         define( "W_CORE", $f );
     }
 }
+define("SEEDW", W_CORE);
 
 if( !defined("Q_URL") )  define( 'Q_URL', SITEROOT."app/q2/" ); // files that include SEEDAPP/q/*
+define("SEEDQ", Q_URL);
 
 /* Based on SEEDROOT, define everything about seedapp, seedlib, seedcore, wcore
  */
