@@ -503,9 +503,9 @@ $s .= "<tr valign='top'><td colspan='2' class='mbro_boxheader'>Fundraising Dinne
 
     function addLocalText()
     {
-        $sSiteImg = $this->bDrupal ? (SITEROOT."i/img/") : SITEIMG;
-        $sPubPageEN = $this->bDrupal ? (SITEROOT."publications") : (SITEROOT."vend/forsale.php");
-        $sPubPageFR = $this->bDrupal ? (SITEROOT."publications_fr") : (SITEROOT."vend/vendre.php");
+        $sSiteImg = $this->bDrupal ? ("https://seeds.ca/i/img/") : SITEIMG;
+        $sPubPageEN = "//seeds.ca/books";     //$this->bDrupal ? (SITEROOT."publications") : (SITEROOT."vend/forsale.php");
+        $sPubPageFR = "//semences.ca/livres"; //$this->bDrupal ? (SITEROOT."publications_fr") : (SITEROOT."vend/vendre.php");
 
 $sGarlicVarieties =
 "
