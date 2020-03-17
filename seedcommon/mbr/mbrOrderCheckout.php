@@ -137,7 +137,7 @@ class MbrOrderCheckout {
         $this->sess = $sess;
         $this->lang =  $lang;
 
-        $this->oApp = SiteAppConsole( ['lang'=>$lang] );    // no perms required but will detect current login if any
+        $this->oApp = SEEDConfig_NewAppConsole( ['lang'=>$lang] );    // no perms required but will detect current login if any
 
 //      $this->kfrelMbrOrder = new KeyFrameRelation( $kfdb, $kfrdef_mbrOrder, 0 );      // $sess might have GetUID(), or it might not
         $this->oMbrOrder = new MbrOrder( $kfdb, $lang );

@@ -29,7 +29,7 @@ include_once( SEEDLIB."msd/msdlib.php" );
 
 list($kfdb, $sess, $lang) = SiteStartSessionAccount( ["W sed"] );
 
-$oApp = SiteAppConsole( ['db'=>'seeds1', 'sessPermsRequired' => ["W sed"], 'lang' => $lang ] );
+$oApp = SEEDConfig_NewAppConsole( ['db'=>'seeds1', 'sessPermsRequired' => ["W sed"], 'lang' => $lang ] );
 
 //var_dump($_SESSION);
 //echo "<BR/><BR/>";

@@ -4,7 +4,7 @@ if( !defined("SITEROOT") )  define("SITEROOT", "../../");
 include_once( SITEROOT."site.php" );
 
 SiteStartSessionAccount();  // this forces login, should be replaced by something in seedlib
-$oApp = SiteAppConsole();
+$oApp = SEEDConfig_NewAppConsole();
 
 $raGood = array(
     [ 'W sed', 'R sed'],
