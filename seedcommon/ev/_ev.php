@@ -497,11 +497,11 @@ function DrawEvents( KeyFrameDB $kfdb, $lang )
 
 
     $sNotices =
+//              "<div style='margin:2em;border:1px solid #99a;background-color:#efffef;border-radius:5px;padding:1em;text-align:center;'>"
+//             ."<a href='http://www.seeds.ca/Seedy-Saturday' target='_blank'>"
+//             ."Organizing a Seedy Saturday? <br/> Volunteering at a Seedy Saturday?<br/> Here's everything you want to know!</a>"
+//             ."</div>"
               "<div style='margin:2em;border:1px solid #99a;background-color:#efffef;border-radius:5px;padding:1em;text-align:center;'>"
-             ."<a href='http://www.seeds.ca/Seedy-Saturday' target='_blank'>"
-             ."Organizing a Seedy Saturday? <br/> Volunteering at a Seedy Saturday?<br/> Here's everything you want to know!</a>"
-             ."</div>"
-             ."<div style='margin:2em;border:1px solid #99a;background-color:#efffef;border-radius:5px;padding:1em;text-align:center;'>"
                  ."<p><strong>Do you have leftover seeds from your seed swap or seed library?</strong></p>"
                  ."<p>We can help circulate them to our representatives who will put them to good use at other community seed swaps. Every week during the winter, we mail books and table-top materials to Seedy Saturdays and Seedy Sundays all across the country, so we can easily include your leftover seeds in our packages. Our volunteers will make sure the seeds get to their local seed swap tables and seed libraries, so you'll know that they won't go to waste.</p><p>Mail your leftover seeds to:</p><p><strong>Seeds of Diversity Canada<br/>#1-12 Dupont St West<br/>Waterloo ON N2L 2X6</strong></p>"
              ."</div>";
