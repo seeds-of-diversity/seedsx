@@ -6,7 +6,7 @@ include_once( SEEDCOMMON."ev/_ev.php" );
 
 list($kfdb, $sess, $dummyLang) = SiteStartSessionAccount( array( "R events" ) );
 
-$oApp = SiteAppConsole( ['db'=>'seeds2', 'sessPermsRequired'=>['R events'] ] );
+$oApp = SEEDConfig_NewAppConsole( ['db'=>'seeds2', 'sessPermsRequired'=>['R events'] ] );
 
 $year = intval(date("Y",time()+3600*24*60));
 
