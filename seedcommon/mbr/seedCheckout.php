@@ -220,9 +220,9 @@ class SoDMbrOrderCheckout extends MbrOrderCheckout
 
         if( true ) { //$this->oL->GetLang() == "EN" ) {
             $s .= "<tr><td>".$this->oL->S('vend_everyseed')."</td>"
-                 ."<td>Every Seed Tells a Tale</td>"
+                 ."<td>Every Seed Tells a Tale<br/><span style='color:red'>Sorry, out of stock</span></td>"
                  ."<td>$35 plus shipping</td>"
-                 ."<td><input type=text name='".$this->oKForm->oFormParms->sfParmField('pub_everyseed')."' "
+                 ."<td><input disabled type=text name='".$this->oKForm->oFormParms->sfParmField('pub_everyseed')."' "
                  ."value='".$this->myNumber($this->oKForm->oDS->ValueEnt('pub_everyseed'))."' size='3'/></td></tr>"
                  ."<tr><td colspan='4'><hr/></td></tr>";
         }
