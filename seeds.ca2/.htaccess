@@ -49,9 +49,9 @@ Redirect       /member                    https://www.seeds.ca/store
 Redirect       /adopt                     https://www.seeds.ca/store
 Redirect       /adopt-a-seed              https://www.seeds.ca/store
 
-Redirect       /adhesion                  https://www.semences.ca/boutique
-Redirect       /membre                    https://www.semences.ca/boutique
-Redirect       /don                       https://www.semences.ca/boutique
+Redirect       /adhesion                  https://semences.ca/boutique
+Redirect       /membre                    https://semences.ca/boutique
+Redirect       /don                       https://semences.ca/boutique
 
 Redirect       /sl                        http://www.seeds.ca/diversity/seed-library
 
@@ -61,7 +61,7 @@ Redirect       /publications_fr           http://www.semences.ca/nos-livres
 Redirect       /publications-fr           http://www.semences.ca/nos-livres
 
 #Redirect       /seedfinder                http://www.seeds.ca/bauta/seedfinder.php
-Redirect       /localisateur-semences     http://www.semences.ca/seedfinder
+Redirect       /localisateur-semences     http://semences.ca/seedfinder
 Redirect       /localisateurdesemences    http://www.semences.ca/bauta/seedfinder.php
 
 Redirect       /explorer                  http://www.seeds.ca/bauta/explorer.php
@@ -83,7 +83,7 @@ Redirect       /revue-publicites         "http://www.seeds.ca/d?n=mag/Semences-d
 Redirect       /seedexchange             http://www.seeds.ca/app/mbr/msd
 Redirect       /app/seedexchange         http://www.seeds.ca/app/mbr/msd
 Redirect       /seed-directory           http://www.seeds.ca/app/mbr/msd
-Redirect       /catalogue-semences       http://www.semences.ca/app/mbr/msd
+Redirect       /catalogue-semences       http://semences.ca/app/mbr/msd
 
 Redirect       /bautagrowouts            http://www.seedsecurity.ca/en/118-seed-grow-outs
 Redirect       /cropnotes                http://www.seedsecurity.ca/en/118-seed-grow-outs
