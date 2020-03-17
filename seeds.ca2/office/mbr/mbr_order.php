@@ -113,6 +113,7 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
         // that you might do this when adding a note but you might not intend to change the eStatus
         $s = "<div class='statusForm'>";
         foreach( $raActions as $sAction ) {
+if($sAction=='Fill') { $s .= "<button disabled='disabled' style='margin-right:20px;color:#aaa;'>Fill</button>"; continue; }
             $s .= "<button onclick='doSubmitStatus(\"$sAction\", $row, ".'$(this)'.")'>$sAction</button>"
                      ."&nbsp;&nbsp;&nbsp;";
         }
