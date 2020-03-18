@@ -2,11 +2,11 @@
 
 /* Basket manager
  *
- * Copyright (c) 2016-2019 Seeds of Diversity Canada
+ * Copyright (c) 2016-2020 Seeds of Diversity Canada
  */
 
 define( "SITEROOT", "../../" );
-include_once( SITEROOT."site.php" );            // move app out of office
+include_once( SITEROOT."site2.php" );            // authenticating on seeds2.SEEDSession* but uses seeds.SEEDBasket*
 include_once( SEEDCORE."SEEDBasket.php" );
 include_once( SEEDAPP."basket/basketProductHandlers.php" );
 include_once( SEEDAPP."basket/basketProductHandlers_seeds.php" );
@@ -38,9 +38,11 @@ $consoleConfig = [
 ];
 
 
+// Connecting to seeds2 and authenticating with that (same as mbr_order.php)
+// but SEEDBasketDB uses db=>seeds
 
 $oApp = SEEDConfig_NewAppConsole(
-                ['db'=>'seeds1',
+                ['db'=>'seeds2',
                  'sessPermsRequired' => $consoleConfig['TABSETS']['main']['perms'],
                  'consoleConfig' => $consoleConfig,
                  'lang' => 'EN' ] );
@@ -54,7 +56,7 @@ class SEEDBasketFulfilment
     function __construct( SEEDAppSession $oApp )
     {
         $this->oApp = $oApp;
-        $this->oBasketDB = new SEEDBasketDB( $oApp->kfdb, $oApp->sess->GetUID(), SITE_LOG_ROOT );
+        $this->oBasketDB = new SEEDBasketDB( $oApp->kfdb, $oApp->sess->GetUID(), SITE_LOG_ROOT, ['db'=>'seeds'] );
     }
 
     function DrawOrderFulfilment( $raBasket )
@@ -150,6 +152,8 @@ class mbrBasket_Products
         // creates a special KeyframeForm that figures out which product_type it has to update
         $oForm = new SEEDBasket_ProductKeyframeForm( $this->oSB, '' );  // blank product_type means figure it out
         $oForm->Update();
+
+        if( $oForm->GetKey() ) $kCurrProd = $oForm->GetKey();
 
         // Draw the form (if any) first because it Updates the db
         $oCurrProd = null;
@@ -292,8 +296,10 @@ class MyConsole02TabSet extends Console02TabSet
         global $consoleConfig;
         parent::__construct( $oApp->oC, $consoleConfig['TABSETS'] );
 
+        // oApp->kfdb is seeds2 but SEEDBasketDB is created on seeds here
         $this->oApp = $oApp;
-        $this->oSB = new SEEDBasketCore( $oApp->kfdb, $oApp->sess, $oApp, SEEDBasketProducts_SoD::$raProductTypes, array('logdir'=>$oApp->logdir) );
+        $this->oSB = new SEEDBasketCore( $oApp->kfdb, $oApp->sess, $oApp, SEEDBasketProducts_SoD::$raProductTypes,
+                                         ['logdir'=>$oApp->logdir, 'db'=>'seeds'] );
     }
 
     function TabSetInit( $tsid, $tabname )
@@ -357,6 +363,7 @@ function doFulfilButton( jxCmd, kBP )
                  };
     console.log(jxData);
     SEEDJX_bDebug = true;
+
     o = SEEDJXSync( qURL+"index.php", jxData );
 
     location.reload();
