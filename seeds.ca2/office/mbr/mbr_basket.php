@@ -12,6 +12,7 @@ include_once( SEEDAPP."basket/basketProductHandlers.php" );
 include_once( SEEDAPP."basket/basketProductHandlers_seeds.php" );
 include_once( SEEDCORE."SEEDTemplateMaker.php" );
 include_once( SEEDAPP."seedexchange/msdedit.php" );
+include_once( SEEDLIB."mbr/MbrContacts.php" );
 
 //var_dump($_REQUEST);
 
@@ -132,13 +133,35 @@ class mbrBasket_Products
 {
     private $oApp;
     private $oSB;
+    private $oSVA;              // SVA for this TabSet tab
     private $oMSDAppSeedEdit;
+    private $uidSeller;
 
-    function __construct( SEEDAppConsole $oApp, SEEDBasketCore $oSB )
+    function __construct( SEEDAppConsole $oApp, SEEDBasketCore $oSB, SEEDSessionVarAccessor $oSVA )
     {
         $this->oApp = $oApp;
         $this->oSB = $oSB;
+        $this->oSVA = $oSVA;
         $this->oMSDAppSeedEdit = new MSDAppSeedEdit( $oSB );
+
+        $this->uidSeller = intval($this->oSVA->SmartGPC( 'uidSeller', [$this->oApp->sess->GetUID()] ));
+    }
+
+    function DrawControl()
+    {
+        $s = "";
+
+        $oMbrContacts = new Mbr_Contacts($this->oApp);
+
+        $raUid = $this->oApp->kfdb->QueryRowsRA1( "SELECT uid_seller FROM seeds.SEEDBasket_Products WHERE _status='0' GROUP BY 1 ORDER BY 1" );
+        $raSellers = [];
+        foreach( $raUid as $uid ) {
+            $name = $oMbrContacts->GetContactName($uid)." ($uid)";
+            $raSellers[$name] = $uid;
+        }
+        //ksort($raSellers);
+        $oForm = new SEEDCoreForm( 'Plain' );
+        return( "<form method='post'>".$oForm->Select( 'uidSeller', $raSellers, "", ['selected'=>$this->uidSeller, 'attrs'=>"onChange='submit();'"] )."</form>" );
     }
 
     function DrawContent()
@@ -177,7 +200,7 @@ class mbrBasket_Products
         $sList .= "<div><form method='post'>Add a new $sSelect <input type='submit' value='Show Form'/></form></div>";
 
         // Draw the list
-        if( ($oCursor = $this->oSB->CreateCursor( 'product', "uid_seller='1'", ['sSortCol'=>'product_type'] )) ) {
+        if( ($oCursor = $this->oSB->CreateCursor( 'product', "uid_seller='{$this->uidSeller}'", ['sSortCol'=>'product_type'] )) ) {
             while( ($oProduct = $oCursor->GetNext()) ) {
                 $kP = $oProduct->GetKey();
                 $bCurr = ($kCurrProd && $kP == $kCurrProd);
@@ -197,7 +220,7 @@ class mbrBasket_Products
 
         // Draw the seeds
         $oMSDAppSeedEdit = new MSDAppSeedEdit( $this->oSB );
-        $s .= $oMSDAppSeedEdit->Draw( 1, "" ); //$this->kCurrGrower, $this->kCurrSpecies );
+        $s .= $oMSDAppSeedEdit->Draw( $this->uidSeller, "" ); //$this->kCurrGrower, $this->kCurrSpecies );
 
         return( $s );
     }
@@ -306,7 +329,7 @@ class MyConsole02TabSet extends Console02TabSet
     {
         if( $tsid == 'main' ) {
             switch( $tabname ) {
-                case 'products':    $this->oW = new mbrBasket_Products( $this->oApp, $this->oSB );     break;
+                case 'products':    $this->oW = new mbrBasket_Products( $this->oApp, $this->oSB, $this->TabSetGetSVA( $tsid, $tabname ) );     break;
                 case 'store':       $this->oW = new mbrBasket_Store( $this->oApp, $this->oSB );        break;
                 case "fulfilment":  $this->oW = new mbrBasket_Fulfilment( $this->oApp, $this->oSB );  break;
             }
@@ -317,15 +340,14 @@ class MyConsole02TabSet extends Console02TabSet
     {
         $s = "";
         if( $tsid == 'main' ) {
-            $s = "<style>.console02-tabset-controlarea { padding:15px; }</style>"
-                ."AAA";
+            $s = "<style>.console02-tabset-controlarea { padding:15px; }</style>";
             switch( $tabname ) {
-                case 'products':    break;
+                case 'products':    $s .= $this->oW->DrawControl();  break;
                 case 'store':       break;
                 case 'fulfilment':  break;
             }
         }
-        return( "" );
+        return( $s );
     }
 
     function TabSetContentDraw( $tsid, $tabname )

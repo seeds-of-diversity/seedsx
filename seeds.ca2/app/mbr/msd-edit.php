@@ -338,6 +338,7 @@ class MyConsole extends Console01
 
     function GetGrowerName( $kGrower )
     {
+// Mbr_Contacts::GetContactName()
         $ra = $this->oApp->kfdb->QueryRA( "SELECT firstname,lastname,company FROM seeds2.mbr_contacts WHERE _key='$kGrower'" );
         if( !($name = trim($ra['firstname'].' '.$ra['lastname'])) ) {
             $name = $ra['company'];
