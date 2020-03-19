@@ -47,7 +47,7 @@ $oApp = SEEDConfig_NewAppConsole(
                  'sessPermsRequired' => $consoleConfig['TABSETS']['main']['perms'],
                  'consoleConfig' => $consoleConfig,
                  'lang' => 'EN' ] );
-
+$oApp->kfdb->SetDebug(1);
 
 class SEEDBasketFulfilment
 {
@@ -187,6 +187,7 @@ class mbrBasket_Products
             $sDel = "<form method='post'><input type='hidden' name='sfAk' value='$kCurrProd'/><input type='hidden' name='sfAd' value='1'/><input type='submit' value='Delete'/></form>";
         }
         if( $oCurrProd ) {
+            $oCurrProd->SetValue( 'uid_seller', $this->uidSeller );
             $sForm = $oCurrProd->DrawProductForm();
         }
 
