@@ -220,8 +220,8 @@ class QServerSourceCV
              */
 //$this->oSLDBSrc->kfdb->SetDebug(2);
             if( ($kfr = $this->oSLDBSrc->GetKFRC( "SRCCVxPxS", $condDB,
-                                                  array( 'raFieldsOverride'=> array('S__key'=>"S._key",'S_name_en'=>"S.name_en",'S_name_fr'=>"S.name_fr"),
-                                                         'sGroupCol'=>'S._key' ) )) )
+                                                  ['raFieldsOverride'=>['S__key'=>"S._key",'S_name_en'=>"S.name_en",'S_name_fr'=>"S.name_fr"],
+                                                   'sGroupCol'=>'S._key,S.name_en,S.name_fr'] )) )
             {
                 while( $kfr->CursorFetch() ) {
                     $sp = $this->oQ->QCharset($kfr->Value('S_name_en'));
