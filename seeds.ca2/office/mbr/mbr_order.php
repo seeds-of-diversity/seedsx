@@ -22,6 +22,7 @@ $oApp = SEEDConfig_NewAppConsole( ['db'=>'seeds2', 'sessPermsRequired'=>['R MBRO
 
 define( "MBR_ADMIN", "1" ); // DrawTicket shows all the internal stuff
 
+SEEDPRG();
 
 
 // move stuff to SodOrderFulfilUI from here
@@ -297,6 +298,11 @@ if( ($jx = SEEDInput_Str('jx')) ) {
     /* Write commands
      */
     switch( $jx ) {
+        case "changeStatusToPaid":
+            if( !$oUI->SetOrderStatus( $kfr2, MBRORDER_STATUS_PAID  ) ) { $rQ['sErr'] = "Couldn't store"; goto jxDone; }
+            $rQ['bOk'] = true;
+            break;
+
         case 'changeStatus2ToMailed':
             if( !$oUI->SetMailedToday( $kfr2 ) ) { $rQ['sErr'] = "Couldn't store"; goto jxDone; }
             $rQ['sOut'] = "Order mailed ".$kfr2->Value('dMailed');
@@ -422,11 +428,6 @@ function doSubmitForm( $kfr, $action, $action_notes )
             $bUpdate = true;
             break;
 
-        case "changeStatusToPaid":
-            $kfr->SetValue( 'eStatus', MBRORDER_STATUS_PAID );
-            $bUpdate = true;
-            break;
-
         default:
             break;
     }
@@ -513,6 +514,23 @@ class MbrOrderFulfil
     {
     }
 
+    static ChangeStatusToPaid( k )
+    {
+// this just replaces the Change to Paid button with the word Paid. It should use drawOrderSummaryRow to re-load the row to get all the styling too
+        if( !k ) return;
+
+        let jxData = { jx   : 'changeStatusToPaid',
+                       k    : k,
+                       lang : "EN"
+                     };
+
+        SEEDJXAsync2( "mbr_order.php", jxData, function(o) {
+                if( o['bOk'] ) {
+                    $('.doStatusPaid[data-kOrder='+k+']').html("<span style='font-weight:bold;color:green'>Paid</span>");        // remove the Change to Paid button
+                }
+            });
+    }
+
     static MailToday( k )
     {
         if( !k ) return;
@@ -552,6 +570,13 @@ $(document).ready(function() {
      $('.mbrOrderShowTicket').click( function (event) {
          event.preventDefault();
          initClickShowTicket( $(this) );
+     });
+
+     /* Change to Paid button click
+      */
+     $(".doStatusPaid").click(function(event){
+         event.preventDefault();
+         MbrOrderFulfil.ChangeStatusToPaid( $(this).attr('data-kOrder') )
      });
 
     /* Mailed Today button click
