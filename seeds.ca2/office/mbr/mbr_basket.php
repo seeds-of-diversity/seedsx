@@ -371,7 +371,7 @@ $oCTS = new MyConsole02TabSet( $oApp );
 
 $s = $oApp->oC->DrawConsole( "[[TabSet:main]]", ['oTabSet'=>$oCTS] );
 
-$s .= "<script>var qURL = '".Q_URL."';</script>";
+$s .= "<script>var qURL = '".$oApp->UrlQ('index.php')."';</script>";
 
 $s .= <<<SCRIPT
 
@@ -387,7 +387,7 @@ function doFulfilButton( jxCmd, kBP )
     console.log(jxData);
     SEEDJX_bDebug = true;
 
-    o = SEEDJXSync( qURL+"index.php", jxData );
+    o = SEEDJXSync( qURL, jxData );
 
     location.reload();
 
