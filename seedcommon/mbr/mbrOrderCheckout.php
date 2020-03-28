@@ -137,6 +137,7 @@ class MbrOrderCheckout {
         $this->sess = $sess;
         $this->lang =  $lang;
 
+// use SEEDConfig_NewAppConsole_LoginNotRequired()
         $this->oApp = SEEDConfig_NewAppConsole( ['sessPermsRequired'=>['PUBLIC'],
                                                  'sessUIConfig' => ['bTmpActivate'=>false,
                                                                     'bLoginNotRequired'=>true],
