@@ -87,32 +87,45 @@ function D8SeedsModule_NodeView( array &$build, \Drupal\Core\Entity\EntityInterf
 
     if( !@$build['body'][0]['#text'] )  return;
 
-    list($kfdb,$sess) = SiteStartSession();
+    $oApp = SEEDConfig_NewAppConsole_LoginNotRequired( ['db'=>'seeds1'] );
     $uid = 0;
     $lang = "EN";
 
-    // [[SEEDContent:]]
-    $oHandler = new DrupalModTagHandler( $kfdb, $sess );
-    $raTmplParms['raSEEDTemplateMakerParms']['raResolvers'][] = array( 'fn'=>array($oHandler,'ResolveTag'), 'raParms'=>array() );
-
-    // [[DocRep tags]]
-    $raTmplParms['EnableDocRep'] = array( 'site'=>'public', 'flag'=>'PUB' );
-
-    $oMaster = new MasterTemplate( $kfdb, $uid, $lang, $raTmplParms );
-    $oTmpl = $oMaster->GetTmpl();
+    $oTmpl = New_Drupal8Tmpl( $oApp, $uid, $lang, [] );
 
     $build['body'][0]['#text'] = $oTmpl->ExpandStr( $build['body'][0]['#text'] );
     $build['body'][0]['#cache']['max-age'] = 0;
 }
 
 
+function New_Drupal8Tmpl( SEEDAppConsole $oApp, $uid, $lang, $raTmplParms = array() )
+/*******************^************************************************************
+    Make a SEEDTemplate that handles [[SEEDContent:]] tags for our drupal pages
+ */
+{
+    list($kfdb,$sess) = SiteStartSession();
+
+    // [[SEEDContent:]]
+    $oHandler = new DrupalModTagHandler( $oApp, $kfdb, $sess );
+    $raTmplParms['raSEEDTemplateMakerParms']['raResolvers'][] = [ 'fn'=>[$oHandler,'ResolveTag'], 'raParms'=>[] ];
+
+    // [[DocRep tags]]
+    $raTmplParms['EnableDocRep'] = [ 'site'=>'public', 'flag'=>'PUB' ];
+
+    $oMaster = new MasterTemplate( $kfdb, $uid, $lang, $raTmplParms );
+    return( $oMaster->GetTmpl() );
+}
+
+
 class DrupalModTagHandler
 {
+    private $oApp;
     private $kfdb;
     private $sess;      // some UIs use this for session variables
 
-    function __construct( KeyFrameDB $kfdb, SEEDSession $sess )
+    function __construct( SEEDAppConsole $oApp, KeyFrameDB $kfdb, SEEDSession $sess )
     {
+        $this->oApp = $oApp;
         $this->kfdb = $kfdb;
         $this->sess = $sess;
     }
@@ -132,9 +145,25 @@ class DrupalModTagHandler
         $contentName = $raTag['target'];
         $lang = strtolower(@$raTag['raParms']['1'])=='fr' ? "FR" : "EN";  // only defined this way for some tags
 
-        $pathSelf = \Drupal\Core\Url::fromRoute('<current>')->toString();
+        if( method_exists('\Drupal\Core\Url', 'fromRoute') ) {
+            $pathSelf = \Drupal\Core\Url::fromRoute('<current>')->toString();
+        } else {
+            $pathSelf = Site_path_self();
+        }
 
         switch( $contentName ) {
+            case 'home-en':
+                $s .= "Home English";
+                break;
+
+            case 'home-fr':
+                $s .= "Home French";
+                break;
+
+            case 'home-edit':
+                $s .= "<h3>Configure Home Page</h3>";
+                break;
+
             case 'homeimg':       // deprecated 3x4 image with caption
             case 'homeimg_v':     // deprecated image only, vertically centered
             case 'homeimgA':      // 4x3 image with caption
@@ -149,8 +178,8 @@ class DrupalModTagHandler
                 $sWidth = "width:85%";
 
                 // homeimg_v is for images only, vertically centered.  vertical-align is not allowed for bootstrap's settings for display and float
-                $styleVert = $contentName=='homeimg_v1' ? "display:inline-block;float:none;vertical-align:middle" : ""; 
-                
+                $styleVert = $contentName=='homeimg_v1' ? "display:inline-block;float:none;vertical-align:middle" : "";
+
                 if( substr($img,0,4) != 'http' && substr($img,0,1) != '/' ) $img = "//seeds.ca/d?n=".$img;
 
                 $sObjectFit = "cover";
@@ -184,7 +213,7 @@ class DrupalModTagHandler
                         $sPaddingTop = "100%";
                         $sObjectFit = "contain";
                         break;
-               
+
                 }
                 $s = "<div style='width:100%;padding-top:$sPaddingTop;position:relative;'>"
                         ."<a href='$link' style='text-decoration:none;border:none'>"
@@ -206,7 +235,7 @@ class DrupalModTagHandler
                             ."<p style='font-weight:bold;font-size:large;padding-top:10px'><a href='$link' style='text-decoration:none'>$caption</a></p>"
                         ."</div></div>";
                 }
-                
+
                 $s = "<div class='col-xs-12 col-sm-6 col-md-4 col-lg-3' style='text-align:center;'>$s</div>";
                 break;
             case 'helloworld':
