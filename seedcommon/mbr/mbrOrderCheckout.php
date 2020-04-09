@@ -375,7 +375,7 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
 
         $uid = 0;
         if( defined("MbrOrderCheckoutOffice") ) {
-            $uid = SEEDSafeGPC_GetStrPlain( 'mbro_office_mbrid' );    // can be a kMbr or an email
+            $uid = SEEDInput_Str( 'mbro_office_mbrid' );    // can be a kMbr or an email
 
             // defeat the check below so the address form is always populated
             // (because office people might want to search for another person without completing the order)
@@ -391,13 +391,16 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
         }
 
         if( $uid ) {
-            $u = MbrSitePipeGetContactsRA2( $this->kfdb, $uid );    // uid can be a kMbr or an email (but we only use the email for MbrOrderCheckoutOffice)
+            include_once( SEEDLIB."mbr/QServerMbr.php" );
+            
+            // Fetch user information via a non-permissioned cmd; either the user is logged and uid is their GetUID(), or this is an office application.
+            $o = new QServerMbr( $this->oApp, ['config_bUTF8'=>false] );
+            $rQ = $o->Cmd('mbr!getOffice',is_numeric($uid) ? ['kMbr'=>$uid] : ['sEmail'=>$uid]);
 
-            if( @$u['_key'] ) {
+            if( $rQ['bOk'] && ($u = $rQ['raOut']) && $u['_key']) {
                 // the login uid has a record in mbr_contacts
                 $kfr->SetValue('mbrid',          $u['_key'] );
                 $kfr->SetValue('mbrexpires',     @$u['expires'] );
-
 
                 // if the form is basically empty, fill it with info from mbr_contacts
                 if( $kfr->IsEmpty('mail_firstname') &&
@@ -412,16 +415,13 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
                         else                                          $u['province'] .= '2';
                     }
 
-                    $kfr->SetValue('mail_firstname', @$u['firstname'] );  //  'Bob');
-                    $kfr->SetValue('mail_lastname',  @$u['lastname'] );  //  'Wildfong');
-                    $kfr->SetValue('mail_company',   @$u['company'] );  //  'Seeds of Diversity');
-                    $kfr->SetValue('mail_addr',      @$u['address'] );  //   '68 Dunbar Rd South');
-                    $kfr->SetValue('mail_city',      @$u['city'] );  //   'Waterloo');
-                    $kfr->SetValue('mail_prov',      @$u['province'] );  //   'ON1');
-                    $kfr->SetValue('mail_postcode',  @$u['postcode'] );  //   'N2L2E3');
-                    $kfr->SetValue('mail_phone',     @$u['phone'] );  //   '519-505-7814');
-                    $kfr->SetValue('mail_email',     @$u['email'] );  //   'bob@seeds.ca');
-
+                    foreach(['firstname', 'lastname', 'company', 'city', 'postcode','phone', 'email'] as $k ) {
+                        $kfr->SetValue("mail_$k", @$u[$k] );
+                    }
+                    // non-matching keys
+                    $kfr->SetValue('mail_addr',      @$u['address'] );
+                    $kfr->SetValue('mail_prov',      @$u['province'] );
+                    $kfr->SetValue('mail_postcode',  @$u['postcode'] );
                 }
             }
         }
@@ -577,6 +577,13 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
 
         $s .= $this->oKForm->Hidden( "mbrid" );
 
+        if( $this->oKForm->Value('mbrid') ) {
+            $s .= "<p>Membership #: ".$this->oKForm->Value('mbrid')."</p>";
+        }
+        if( $this->oKForm->Value('mbrexpires') ) {
+            $s .= "<p>Membership expiry: ".$this->oKForm->Value('mbrexpires')."</p>";
+        }
+        
         $s .= $this->mbr1_mail_line( "mail_firstname", $this )
              .$this->mbr1_mail_line( "mail_lastname",  $this )
              .$this->mbr1_mail_line( "mail_company",   $this )
