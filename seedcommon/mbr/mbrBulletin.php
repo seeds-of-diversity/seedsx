@@ -31,6 +31,8 @@ class MbrBulletin
     function AddSubscriber( $email, $realname, $lang, $sComment )
     {
 // use the kfrel
+        $lang = SEEDCore_SmartVal( substr($lang, 0, 1), ['','E','F','B'] );     // db uses this enum
+
         if( ($k = $this->kfrelBull->kfdb->Query1( "SELECT _key FROM seeds.bull_list WHERE email='".addslashes($email)."'" )) ) {
             $eRet = "dup";
         } else {
