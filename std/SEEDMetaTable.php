@@ -23,55 +23,6 @@ include( SEEDCORE."SEEDMetaTable.php" );    // some of this file has been moved 
  *            sometimes you just want a place to throw random stuff
  */
 
-/****************************************************************************
- * TablesLite
- */
-define("SEEDMETATABLE_DB_TABLE_SEEDMETATABLE_TABLESLITE",
-"
-CREATE TABLE SEEDMetaTable_TablesLite (
-    # These are the virtual tables in the TablesLite system
-
-        _key        INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-        _created    DATETIME,
-        _created_by INTEGER,
-        _updated    DATETIME,
-        _updated_by INTEGER,
-        _status     INTEGER DEFAULT 0,
-
-    table_name              VARCHAR(200) NOT NULL,
-    permclass               INTEGER NOT NULL,
-
-    INDEX (table_name(20))
-);
-"
-);
-
-define("SEEDMETATABLE_DB_TABLE_SEEDMETATABLE_TABLESLITE_ROWS",
-"
-CREATE TABLE SEEDMetaTable_TablesLite_Rows (
-    # These are the rows of the virtual tables in the TablesLite system
-
-        _key        INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-        _created    DATETIME,
-        _created_by INTEGER,
-        _updated    DATETIME,
-        _updated_by INTEGER,
-        _status     INTEGER DEFAULT 0,
-
-    fk_SEEDMetaTable_TablesLite  INTEGER NOT NULL,
-    k1                      VARCHAR(200) NULL,        # arbitrary indexed key
-    k2                      VARCHAR(200) NULL,        # arbitrary indexed key
-    k3                      VARCHAR(200) NULL,        # arbitrary indexed key
-    vals                    TEXT NOT NULL,            # urlparm of non-indexed values  e.g. field1=val1&field2=val2...
-
-    INDEX (fk_SEEDMetaTable_TablesLite),
-    INDEX (fk_SEEDMetaTable_TablesLite, k1),
-    INDEX (fk_SEEDMetaTable_TablesLite, k2),
-    INDEX (fk_SEEDMetaTable_TablesLite, k3)
-);
-"
-);
-
 
 /****************************************************************************
  * SEEDMetaTables_Tables
@@ -165,134 +116,6 @@ CREATE TABLE SEEDMetaTable_Fields (
 "
 );
 
-class SEEDMetaTable_TablesLite
-/*****************************
-    All rows of all tables are stored in SEEDMetaTables_TableLiteRows.
-    Those rows are grouped by table.
-    The caller can place values in various indexed key columns, which facilitate fast lookups.
-    The caller can place other related named values in an urlparm field, which does not allow lookups.
-
-    This object is stateless, so it can manage any number of open tables simultaneously.
- */
-{
-    public $kfdb;
-
-// uid for _created_by and _updated_by, same as bucket above
-    function __construct( KeyFrameDB $kfdb )
-    {
-        $this->kfdb = $kfdb;
-    }
-
-    function OpenTable( $tablename )
-    {
-        if( !($kTable = $this->kfdb->Query1( "SELECT _key FROM SEEDMetaTable_TablesLite WHERE _status='0' AND table_name='$tablename'" )) ) {
-            $kTable = $this->kfdb->InsertAutoInc( "INSERT INTO SEEDMetaTable_TablesLite (_key, table_name) VALUES (NULL,'$tablename')" );
-        }
-        return( $kTable );
-    }
-
-    function GetRows( $kTable, $k1 = NULL, $k2 = NULL, $k3 = NULL )
-    /**************************************************************
-        Return all rows that match all of the lookup criteria (AND)
-            array( TableLiteRow._key => array( k1 => v1, k2 => v2, k3 => v3, vals => array(...) ), ... )
-     */
-    {
-        $raCond = array( "fk_SEEDMetaTable_TablesLite='$kTable'" );
-        if( $k1 !== NULL )  $raCond[] = "k1='".addslashes($k1)."'";
-        if( $k2 !== NULL )  $raCond[] = "k2='".addslashes($k2)."'";
-        if( $k3 !== NULL )  $raCond[] = "k3='".addslashes($k3)."'";
-        $sCond = implode( " AND ", $raCond );
-
-        $raRet = array();
-        if( ($dbc = $this->kfdb->CursorOpen( "SELECT * from SEEDMetaTable_TablesLite_Rows WHERE _status='0' AND $sCond" ) )) {
-            while( $ra = $this->kfdb->CursorFetch( $dbc ) ) {
-                $raRet[$ra['_key']] = $this->unpackRow($ra);
-            }
-        }
-        return( $raRet );
-    }
-
-    function GetRowByKey2( $kRow, $raMapKeys = array() )
-    /***************************************************
-        Get the row with _key kRow, and return just the values. Optionally map k1, k2, k3 to meaningful names
-     */
-    {
-        $ra = $this->kfdb->QueryRA( "SELECT * FROM SEEDMetaTable_TablesLite_Rows WHERE _key='$kRow'");
-
-        return( @$ra['_key'] ? $this->unpackRow2($ra,$raMapKeys) : NULL );
-    }
-
-    function GetRowByKey( $kRow ) // deprecate
-    {
-        $ra = $this->kfdb->QueryRA( "SELECT * FROM SEEDMetaTable_TablesLite_Rows WHERE _key='$kRow'");
-
-        return( @$ra['_key'] ? array( $ra['_key'] => $this->unpackRow($ra) ) : NULL );
-    }
-
-    function EnumKeys( $kTable, $keyname )
-    {
-        $ra = array();
-
-        if( in_array( $keyname, array('k1','k2','k3')) ) {
-            $ra = $this->kfdb->QueryRowsRA1(
-                    "SELECT distinct $keyname FROM SEEDMetaTable_TablesLite_Rows "
-                   ."WHERE _status='0' AND fk_SEEDMetaTable_TablesLite='$kTable'" );
-        }
-        return( $ra );
-    }
-
-    private function unpackRow( $ra )
-    {
-        $ra1 = array();
-        $ra1['k1'] = $ra['k1'];
-        $ra1['k2'] = $ra['k2'];
-        $ra1['k3'] = $ra['k3'];
-        $ra1['vals'] = SEEDStd_ParmsURL2RA( $ra['vals'] );
-        return( $ra1 );
-    }
-
-    private function unpackRow2( $ra, $raMapKeys = array() )
-    /*******************************************************
-        Unpack all values into a plain array, optionally mapping k1,k2,k3 to meaningful names
-     */
-    {
-        $ra1 = SEEDStd_ParmsURL2RA( $ra['vals'] );
-        if( @$raMapKeys['k1'] ) { $ra1[$raMapKeys['k1']] = $ra['k1']; } else { $ra1['k1'] = $ra['k1']; }
-        if( @$raMapKeys['k2'] ) { $ra1[$raMapKeys['k2']] = $ra['k2']; } else { $ra1['k2'] = $ra['k2']; }
-        if( @$raMapKeys['k3'] ) { $ra1[$raMapKeys['k3']] = $ra['k3']; } else { $ra1['k3'] = $ra['k3']; }
-
-        return( $ra1 );
-    }
-
-
-    function PutRow( $kTable, $kRow, $raVals, $k1 = NULL, $k2 = NULL, $k3 = NULL )
-    /*****************************************************************************
-        Put a row in the table.  If kRow is 0 make a new row else overwrite the existing row.
-        Return the resulting kRow if successful.
-     */
-    {
-        $sVals = SEEDStd_ParmsRA2URL( $raVals );
-        $k1 = ($k1 === NULL ? "NULL" : "'$k1'");
-        $k2 = ($k2 === NULL ? "NULL" : "'$k2'");
-        $k3 = ($k3 === NULL ? "NULL" : "'$k3'");
-        if( $kRow ) {
-            if( !$this->kfdb->Execute( "UPDATE SEEDMetaTable_TablesLite_Rows SET _updated=NOW(),k1=$k1,k2=$k2,k3=$k3,vals='".addslashes($sVals)."' "
-                                         ."WHERE _key='$kRow'" ) ) {
-                $kRow = 0;
-            }
-        } else {
-            $kRow = $this->kfdb->InsertAutoInc( "INSERT INTO SEEDMetaTable_TablesLite_Rows (_key,_created,_updated,fk_SEEDMetaTable_TablesLite,k1,k2,k3,vals) "
-                                               ."VALUES (NULL,NOW(),NOW(),$kTable,$k1,$k2,$k3,'".addslashes($sVals)."')" );
-        }
-        return( $kRow );
-    }
-
-    function DeleteRow( $kRow )
-    {
-        $this->kfdb->Execute( "DELETE FROM SEEDMetaTable_TablesLite_Rows WHERE _key='$kRow'" );
-    }
-
-}
 
 class SEEDMetaTable
 /******************
@@ -399,8 +222,7 @@ function SEEDMetaTable_Setup( $oSetup, &$sReport, $bCreate = false )
 {
     $sReport = "";
     return( $oSetup->SetupTable( "SEEDMetaTable_StringBucket",    SEEDMetaTable_StringBucket::SqlCreate,    $bCreate, $sReport ) &&
-            $oSetup->SetupTable( "SEEDMetaTable_TablesLite",      SEEDMETATABLE_DB_TABLE_SEEDMETATABLE_TABLESLITE,      $bCreate, $sReport ) &&
-            $oSetup->SetupTable( "SEEDMetaTable_TablesLite_Rows", SEEDMETATABLE_DB_TABLE_SEEDMETATABLE_TABLESLITE_ROWS, $bCreate, $sReport ) );
+            $oSetup->SetupTable( "SEEDMetaTable_TablesLite",      SEEDMetaTable_TablesLite::SqlCreate,      $bCreate, $sReport ) );
 }
 
 ?>
