@@ -2,10 +2,11 @@
 
 include_once( SEEDCOMMON."sitePipeCommon.php" );
 
+/*
 function MbrSitePipeGetContactsRA( KeyFrameDB $kfdb, $kMbr )    // DEPRECATE, use the function below
-/***********************************************************
+[***********************************************************
     For use by clients of SitePipe to retrieve mbr_contacts data from seeds2 SitePipe server
- */
+ *]
 {
     $ra = null;
 
@@ -21,7 +22,7 @@ function MbrSitePipeGetContactsRA( KeyFrameDB $kfdb, $kMbr )    // DEPRECATE, us
     }
     return( $ra );
 }
-
+*/
 
 function MbrSitePipeGetContactsRA2( $kfdb1, $id )
 /************************************************
@@ -48,7 +49,7 @@ function MbrSitePipeGetContactsRA2( $kfdb1, $id )
     }
     if( !$raOut ) $raOut = array();
 
-    goto done;
+/*
 
     $oPipe = new SitePipe( $kfdb1 );
 
@@ -73,6 +74,7 @@ function MbrSitePipeGetContactsRA2( $kfdb1, $id )
             }
         }
     }
+*/
 
     done:
     return( $raOut );
