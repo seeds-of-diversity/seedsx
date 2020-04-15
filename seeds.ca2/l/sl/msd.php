@@ -19,11 +19,14 @@ class MSDView extends SEDCommon
         parent::__construct( $oW->kfdb, $oW->sess, $oW->lang, $oW->sess->CanRead("sed") ? 'VIEW-MBR' : 'VIEW-PUB' );
     }
 
+
     function GetMbrContactsRA( $kMbr )   // SEDCommon::drawGrowerBlock calls back here to get the MbrContacts array for the given member
     {
-        $raM = MbrSitePipeGetContactsRA2( $this->kfdb, $kMbr );
+        $raM = $this->kfdb->QueryRA( "SELECT * FROM seeds2.mbr_contacts where _key='".intval($kMbr)."'" );
+        //$raM = MbrSitePipeGetContactsRA2( $this->kfdb, $kMbr );
 
         return( $raM );
     }
+
 }
 

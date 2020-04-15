@@ -26,6 +26,7 @@ $s = "<div style='border:1px solid #aaa;margin-bottom:30px;padding:10px'>"
     ."<div><a href='".Site_path_self()."?test=events'>Events test</a></div>"
     ."<div><a href='".Site_path_self()."?test=csci'>CSCI test</a></div>"
     ."<div><a href='".Site_path_self()."?test=sl-list'>Seed Library List via Drupal test</a></div>"
+    ."<div><a href='".Site_path_self()."?test=bulletin'>bulletin signup test</a></div>"
     ."<div><a href='".Site_path_self()."?test=docrep'>DocRep test</a></div>"
     ."<div><a href='".Site_path_self()."?test=docrep_p'>DocRep test with SEEDSessionAccount_Password enabled</a></div>"
     ."</div>";
@@ -171,6 +172,9 @@ switch( $test ) {
     case 'csci':
         $s .= $oTmpl->ExpandStr( "<div class='container-fluid'><div class='row'><div class='col-md-8'>[[SEEDContent:csci_companies_varieties]]</div><div class='col-md-4'>[[SEEDContent:csci_species]]</div></div></div>" );
         break;
+
+    case 'bulletin':
+        $s .= $oTmpl->ExpandStr( "[[SEEDContent:bulletin-action]] Subscribe to Seeds of Diversity's free monthly e-bulletin! [[SEEDContent:bulletin-control]]" );
 
     case 'docrep':
         $s .= $oTmpl->ExpandStr( $docrep_p );

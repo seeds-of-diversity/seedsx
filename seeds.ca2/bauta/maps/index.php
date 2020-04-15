@@ -4,11 +4,11 @@ include( SITEROOT."site.php" );
 include_once( SEEDCOMMON."googleAPI.php" );
 include( "_maps.php");
 
-list($kfdb) = SiteStart();
+$oApp = new SEEDAppDB( $config_KFDB['seeds1'] );
 
 $lang = site_define_lang();
 
-$oMap = new BautaMap( $kfdb );
+$oMap = new BautaMap( $oApp, 0 );   // uid 0 for this read-only application
 
 $oG = new SEEDSGoogleMaps();
 
@@ -17,6 +17,8 @@ $charset = "utf-8";
 header( "Content-Type:text/html; charset=$charset" );
 
 $sheetname = SEEDInput_Str( 'sheet', '2017' );
+$raMarkers = $oMap->GetMarkers( $sheetname );
+
 $year = null;
 
 ?>
@@ -60,7 +62,6 @@ $year = null;
             */
 
 <?php
-    $raMarkers = $oMap->GetMarkers( $sheetname );
     foreach( $raMarkers as $raM ) {
         if( !$raM['latitude'] ) continue;
 
@@ -135,5 +136,3 @@ $year = null;
   <div id="map-canvas"></div>
   </body>
 </html>
-
-?>

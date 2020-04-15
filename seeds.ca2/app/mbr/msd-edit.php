@@ -48,19 +48,6 @@ class SEDMbr extends SEDCommon  // the member-access derivation of SED object
     {
         $ra = MbrSitePipeGetContactsRA2( $this->kfdb, $kMbr );
 
-/*
-// use /l/mbr/mbrPipe.php::MbrPipeGetContactRA( $this->kfdb, $kMbr )
-        $oPipe = new SitePipe( $this->kfdb );
-        list( $kPipeRow, $sPipeSignature ) = $oPipe->CreatePipeRequest( array('cmd'=>'GetMbrContactsRA', 'kMbr'=>$kMbr) );
-
-        list( $bOk, $hdr, $resp ) = $oPipe->SendPipeRequest( array( "kPipeRow"=>$kPipeRow, "sPipeSignature"=>$sPipeSignature ) );
-
-        if( $bOk ) {
-// remote server should indicate success of its processing, because it always sends a 200 http response
-            $ra = $oPipe->GetAndDeletePipeResponse( $kPipeRow );
-        }
-*/
-
         return( $ra );
     }
 }

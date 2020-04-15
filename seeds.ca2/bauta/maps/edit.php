@@ -7,9 +7,11 @@ include_once( SEEDCOMMON."console/console01.php" );
 include_once( SEEDCOMMON."googleAPI.php" );
 include( "_maps.php" );
 
-list($kfdb, $sess, $lang) = SiteStartSessionAccount( ['W BautaMap'] );
+$oApp = SEEDConfig_NewAppConsole( ['sessPermsRequired' => ['W BautaMap'],
+                                   'consoleConfig' => ['CONSOLE_NAME' => "BautaMap",
+                                                       'HEADER' => "Bauta Map"] ] );
 
-$oMap = new BautaMap( $kfdb );
+$oMap = new BautaMap( $oApp, $oApp->sess->GetUID() );
 
 $oG = new SEEDSGoogleMaps();
 
@@ -19,14 +21,14 @@ $oForm = new SEEDForm( 'A' );
 $oFormB = new SEEDForm( 'B' );
 $oFormB->Update();
 
-if( @$_REQUEST['cmd'] == 'download' ) {
+if( SEEDInput_Str('cmd') == 'download' ) {
     /* Download to spreadsheet
      */
     // N.B. data is stored in utf8, which PHPExcel requires here
     SEEDTable_OutputXLSFromRASheets( $oMap->GetMarkersSheets(),
                                    array( 'columns' => array('cat','note','name','address','latitude','longitude'),
                                           'filename'=>'bautamaps.xls',
-                                          'created_by'=>$sess->GetName(), 'title'=>'Bauta Maps' ) );
+                                          'created_by'=>$oApp->sess->GetName(), 'title'=>'Bauta Maps' ) );
     exit;
 }
 
@@ -43,7 +45,7 @@ if( @$_REQUEST['cmd'] == 'download' ) {
 //$kfdb->SetDebug(2);
 
 
-if( @$_REQUEST['cmd'] == 'upload' ) {
+if( SEEDInput_Str('cmd') == 'upload' ) {
     /* Upload spreadsheet and overwrite the whole oTable
      */
     $def = array( 'raSEEDTableDef' => array( 'headers-required' => array('cat','name','address','latitude','longitude'),
@@ -79,7 +81,7 @@ if( @$_REQUEST['cmd'] == 'upload' ) {
                  * Delete if name is blank
                  */
                 if( @$raR['values']['name']) {
-                    $raT = $oMap->oTable->GetRowByKey2( $k, array('k1'=>'sheet','k2'=>'cat') );
+                    $raT = $oMap->oTable->GetRowByKey( $k, ['k1map'=>'sheet','k2map'=>'cat'] );
 
                     if( $raR['values']['cat']     != $raT['cat']   ||
                         $raR['values']['name']    != $raT['name']  ||
