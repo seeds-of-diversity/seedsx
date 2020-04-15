@@ -1,11 +1,12 @@
 <?php
 
+/*
 include_once( SEEDCOMMON."sitePipeCommon.php" );
 
 function MbrPipeGetContactRA( $kfdb1, $id )
-/******************************************
+[******************************************
     Use a db connection to seeds1 and an id==( kMbr or email ) to fetch an mbr_contact row through a SitePipe
- */
+ *]
 {
     $raOut = null;
 
@@ -28,5 +29,6 @@ function MbrPipeGetContactRA( $kfdb1, $id )
     }
     return( $raOut );
 }
+*/
 
 ?>
