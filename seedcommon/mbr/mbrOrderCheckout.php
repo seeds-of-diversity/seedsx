@@ -392,7 +392,7 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
 
         if( $uid ) {
             include_once( SEEDLIB."mbr/QServerMbr.php" );
-            
+
             // Fetch user information via a non-permissioned cmd; either the user is logged and uid is their GetUID(), or this is an office application.
             $o = new QServerMbr( $this->oApp, ['config_bUTF8'=>false] );
             $rQ = $o->Cmd('mbr!getOffice',is_numeric($uid) ? ['kMbr'=>$uid] : ['sEmail'=>$uid]);
@@ -583,7 +583,7 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
         if( $this->oKForm->Value('mbrexpires') ) {
             $s .= "<p>Membership expiry: ".$this->oKForm->Value('mbrexpires')."</p>";
         }
-        
+
         $s .= $this->mbr1_mail_line( "mail_firstname", $this )
              .$this->mbr1_mail_line( "mail_lastname",  $this )
              .$this->mbr1_mail_line( "mail_company",   $this )
@@ -876,13 +876,13 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
         $raPP['zip']                   = $this->oMbrOrder->kfr->value('mail_postcode');
         $raPP['country']               = ($this->oMbrOrder->kfr->value('mail_country')=='Canada' ? "CA" : "US");
 
-        if( $this->oL->GetLang() == 'FR' )  $raPP["lc"] = "FR";       // language code (assume that English default is reliable)
+        $raPP['lc'] = $raPP['country'] == 'US' ? 'en_US'
+                                               : ($this->oL->GetLang()=='FR' ? 'fr_CA' : 'en_CA');
 
 
 /*
     <input type="hidden" name="tax" value="0">
     <input type="hidden" name="shipping" value="5.00">
-    <input type="hidden" name="lc" value="US">
     <input type="hidden" name="bn" value="PP-DonationsBF">
     <input type="image" src="https://www.paypal.com/en_US/i/btn/x-click-but04.gif" border="0" name="submit" alt="Make payments with PayPal - it's fast, free and secure!">
     <img alt="" border="0" src="https://www.paypal.com/de_DE/i/scr/pixel.gif" width="1" height="1">
