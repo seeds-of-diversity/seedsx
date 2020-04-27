@@ -199,12 +199,12 @@ function drawMSDOrderInfo( MSDBasketCore $oSB, KeyframeRecord $kfrP )
 
     $kP = $kfrP->Key();
     $kM = $kfrP->Value('uid_seller');
-    $raM = $oMSD->GetMbrContactsRA( $kM );                      // mbr_contacts via mbrsitepipe
+    $raM = $oMSDCore->GetGrowerDetails($kM);
     $raPE = $oSB->oDB->GetProdExtraList( $kP );                 // prodExtra
     $kfrG = $oMSD->kfrelG->GetRecordFromDB( "mbr_id='$kM'" );   // sed_growers
     if( !($kfrGxM = $oMSDLib->KFRelGxM()->GetRecordFromDB( "G.mbr_id='$kM'" )) ) goto done;
 
-    if( $bRequestable ) {
+    if( $bRequestable ) {   // this also verifies that the current user can access grower contact info
         if( $raM['firstname'] || $raM['lastname'] ) {
             $who = $kfrGxM->Expand( "[[M_firstname]] [[M_lastname]] in [[M_city]] [[M_province]]" );
         } else {

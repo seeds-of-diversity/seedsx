@@ -20,6 +20,7 @@ include_once( SEEDAPP."seedexchange/msdCommon.php" );
 // Don't ask to login here, and allow the page to be viewed if no login.
 // But $sess->IsLogin() will only be true if the user has sed=>R (i.e. they are a current member)
 list($kfdb, $sess, $lang) = SiteStartSessionAccountNoUI( ["R sed"] );
+// use SEEDConfig_NewAppConsole_LoginNotRequired()
 $oApp = new SEEDAppConsole( $config_KFDB['seeds1']
                             + array( 'sessPermsRequired' => ['R sed'],
                                      'sessUIConfig' => ['bLoginNotRequired'=>true],

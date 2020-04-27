@@ -14,9 +14,9 @@
  * Using SEEDMetaTable_TablesLite, the command/parms are stored in raVals and the signature is stored in k1.
  */
 
-include_once( STDINC."SEEDMetaTable.php" );
+include_once( SEEDCORE."SEEDMetaTable.php" );
 
-class SitePipe
+class SitePipe_obsolete
 {
     private $oTable;
     private $kTable;
@@ -107,7 +107,7 @@ class SitePipe
 
         if( $this->kTable && ($raRow = $this->oTable->GetRowByKey( $kRow )) ) {
             if( isset($raRow[$kRow]) ) {
-                $raResp = $raRow[$kRow]['vals'];
+                $raResp = $raRow[$kRow];
             }
         }
         $this->oTable->DeleteRow( $kRow );
@@ -115,5 +115,3 @@ class SitePipe
         return( $raResp );
     }
 }
-
-?>

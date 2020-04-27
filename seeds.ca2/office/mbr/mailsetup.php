@@ -25,8 +25,8 @@ $consoleConfig = [
                                         'ghost'   => ['label'=>'Ghost']
                                       ],
                             // this doubles as sessPermsRequired and console::TabSetPermissions
-                            'perms' =>[ 'pending' => [],
-                                        'sent'    => [],
+                            'perms' =>[ 'pending' => ['W MBRMAIL'],
+                                        'sent'    => ['W MBRMAIL'],
                                         'ghost'   => ['A notyou'],
                                         '|'  // allows screen-login even if some tabs are ghosted
                                       ],
@@ -34,13 +34,15 @@ $consoleConfig = [
                   'right'=>['tabs' => [ 'mailitem' => ['label'=>'Mail Item'],
                                         'text'     => ['label'=>'Text'],
                                         'controls' => ['label'=>'Controls'],
-                                        'delete'   => ['label'=>'Delete']
+                                        'delete'   => ['label'=>'Delete'],
+                                        'ghost'   =>  ['label'=>'Ghost']
                                       ],
                             // this doubles as sessPermsRequired and console::TabSetPermissions
                             'perms' =>[ 'mailitem' => [],
                                         'text'     => ['PUBLIC'],
                                         'controls' => [],
-                                        'delete'   => [],
+                                        'delete'   => ['A MBRMAIL'],
+                                        'ghost'    => ['A notyou'],
                                       ]
                            ]
     ],
@@ -50,12 +52,9 @@ $consoleConfig = [
 ];
 
 
-$oApp = new SEEDAppConsole( $config_KFDB['seeds2']
-                            + array( 'sessPermsRequired' => $consoleConfig['TABSETS']['main']['perms'],
-                                     'sessUIConfig' => ['bTmpActivate'=>true, 'bLoginNotRequired'=>false, 'fTemplates'=>[SEEDAPP.'templates/seeds_sessionaccount.html'] ],
-                                     'consoleConfig' => $consoleConfig,
-                                     'logdir' => SITE_LOG_ROOT )
-);
+$oApp = SEEDConfig_NewAppConsole( ['db'=>'seeds2',
+                                   'sessPermsRequired' => $consoleConfig['TABSETS']['main']['perms'],
+                                   'consoleConfig' => $consoleConfig] );
 
 $oMail = new SEEDMailerSetup( $oApp );
 

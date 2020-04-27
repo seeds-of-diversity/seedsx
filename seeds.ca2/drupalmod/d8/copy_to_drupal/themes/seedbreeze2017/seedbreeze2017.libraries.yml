@@ -17,10 +17,12 @@ sbz2018:
   css:
     theme:
       css/sbz2018.css: {}
+      '//seeds.ca/wcore/css/SEEDUI.css': { preprocess: false }
       
   header: true
   js:
     js/sbz2018.js: { preprocess: false }
+    '//seeds.ca/wcore/js/SEEDUI.js': { preprocess: false }
    
   dependencies:
     - core/jquery

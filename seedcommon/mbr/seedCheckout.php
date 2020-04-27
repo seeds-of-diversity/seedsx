@@ -220,9 +220,9 @@ class SoDMbrOrderCheckout extends MbrOrderCheckout
 
         if( true ) { //$this->oL->GetLang() == "EN" ) {
             $s .= "<tr><td>".$this->oL->S('vend_everyseed')."</td>"
-                 ."<td>Every Seed Tells a Tale</td>"
+                 ."<td>Every Seed Tells a Tale<br/><span style='color:red'>Sorry, out of stock</span></td>"
                  ."<td>$35 plus shipping</td>"
-                 ."<td><input type=text name='".$this->oKForm->oFormParms->sfParmField('pub_everyseed')."' "
+                 ."<td><input disabled type=text name='".$this->oKForm->oFormParms->sfParmField('pub_everyseed')."' "
                  ."value='".$this->myNumber($this->oKForm->oDS->ValueEnt('pub_everyseed'))."' size='3'/></td></tr>"
                  ."<tr><td colspan='4'><hr/></td></tr>";
         }
@@ -503,9 +503,9 @@ $s .= "<tr valign='top'><td colspan='2' class='mbro_boxheader'>Fundraising Dinne
 
     function addLocalText()
     {
-        $sSiteImg = $this->bDrupal ? (SITEROOT."i/img/") : SITEIMG;
-        $sPubPageEN = $this->bDrupal ? (SITEROOT."publications") : (SITEROOT."vend/forsale.php");
-        $sPubPageFR = $this->bDrupal ? (SITEROOT."publications_fr") : (SITEROOT."vend/vendre.php");
+        $sSiteImg = $this->bDrupal ? ("https://seeds.ca/i/img/") : SITEIMG;
+        $sPubPageEN = "//seeds.ca/books";     //$this->bDrupal ? (SITEROOT."publications") : (SITEROOT."vend/forsale.php");
+        $sPubPageFR = "//semences.ca/livres"; //$this->bDrupal ? (SITEROOT."publications_fr") : (SITEROOT."vend/vendre.php");
 
 $sGarlicVarieties =
 "

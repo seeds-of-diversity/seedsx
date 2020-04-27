@@ -16,10 +16,7 @@ define( "PLANT_COMMON_C", SITEROOT."pollinator/plant_common/c/" );
 define( "BOOTSTRAP", PLANT_COMMON_C."bootstrap/" );
 
 
-$oApp = SEEDConfig_NewAppConsole(['db'=>'floralcal',
-                                  'sessPermsRequired'=>['PUBLIC'],
-                                  'sessUIConfig' => ['bLoginNotRequired'=>true]
-]);
+$oApp = SEEDConfig_NewAppConsole_LoginNotRequired( ['db'=>'floralcal'] );
 
 $kfdb = $oApp->kfdb;
 $sess = $oApp->sess;
@@ -32,5 +29,3 @@ $oTmpl = SEEDTemplateMaker( $raTmplParms );
 $raTmplVars = array( 'sHead' => ViewHead( "Honey Plants", array( 'bLightbox'=>true ) ),
                      'isLogin' => @$_SESSION['user']=="admin",
 );
-
-?>

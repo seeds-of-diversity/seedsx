@@ -30,10 +30,10 @@ if( !defined("SEEDROOT") ) {
     }
 }
 
-if( !defined("W_CORE") ) {
+if( !defined("SEEDW") ) {
     if( substr($_SERVER["SERVER_NAME"],0,9) != "localhost" ) {  // same as SEED_isLocal but that is not defined yet
         // On typical production sytems the seeds/wcore directory has to be copied to public_html/wcore so browsers can see .css, .js, images
-        define( "W_CORE", SITEROOT."wcore/" );
+        define( "SEEDW", SITEROOT."wcore/" );
     } else {
         // On typical development systems wcore doesn't have to be copied because it's in public_html
 
@@ -43,11 +43,12 @@ if( !defined("W_CORE") ) {
         {
             die( "site_config.php can't find wcore" );
         }
-        define( "W_CORE", $f );
+        define( "SEEDW", $f );
     }
 }
 
-if( !defined("Q_URL") )  define( 'Q_URL', SITEROOT."app/q2/" ); // files that include SEEDAPP/q/*
+if( !defined("SEEDQ_URL") )  define( 'SEEDQ_URL', SITEROOT."app/q2/" ); // files that include SEEDAPP/q/*
+
 
 /* Based on SEEDROOT, define everything about seedapp, seedlib, seedcore, wcore
  */

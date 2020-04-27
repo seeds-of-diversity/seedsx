@@ -29,7 +29,7 @@ include_once( SEEDLIB."msd/msdlib.php" );
 
 list($kfdb, $sess, $lang) = SiteStartSessionAccount( ["W sed"] );
 
-$oApp = SiteAppConsole( ['db'=>'seeds1', 'sessPermsRequired' => ["W sed"], 'lang' => $lang ] );
+$oApp = SEEDConfig_NewAppConsole( ['db'=>'seeds1', 'sessPermsRequired' => ["W sed"], 'lang' => $lang ] );
 
 //var_dump($_SESSION);
 //echo "<BR/><BR/>";
@@ -47,19 +47,6 @@ class SEDMbr extends SEDCommon  // the member-access derivation of SED object
     /*protected*/ function GetMbrContactsRA( $kMbr )
     {
         $ra = MbrSitePipeGetContactsRA2( $this->kfdb, $kMbr );
-
-/*
-// use /l/mbr/mbrPipe.php::MbrPipeGetContactRA( $this->kfdb, $kMbr )
-        $oPipe = new SitePipe( $this->kfdb );
-        list( $kPipeRow, $sPipeSignature ) = $oPipe->CreatePipeRequest( array('cmd'=>'GetMbrContactsRA', 'kMbr'=>$kMbr) );
-
-        list( $bOk, $hdr, $resp ) = $oPipe->SendPipeRequest( array( "kPipeRow"=>$kPipeRow, "sPipeSignature"=>$sPipeSignature ) );
-
-        if( $bOk ) {
-// remote server should indicate success of its processing, because it always sends a 200 http response
-            $ra = $oPipe->GetAndDeletePipeResponse( $kPipeRow );
-        }
-*/
 
         return( $ra );
     }
@@ -338,6 +325,7 @@ class MyConsole extends Console01
 
     function GetGrowerName( $kGrower )
     {
+// Mbr_Contacts::GetContactName()
         $ra = $this->oApp->kfdb->QueryRA( "SELECT firstname,lastname,company FROM seeds2.mbr_contacts WHERE _key='$kGrower'" );
         if( !($name = trim($ra['firstname'].' '.$ra['lastname'])) ) {
             $name = $ra['company'];

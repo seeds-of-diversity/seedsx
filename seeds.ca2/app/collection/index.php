@@ -19,7 +19,7 @@ include_once( "controls.php" );
 
 list($kfdb, $sess, $lang) = SiteStartSessionAccountNoUI( [ 'W SLCollection', 'A SL', '|' ] );  // SLCollection:W or SL:A
 
-$oApp = SiteAppConsole( ['sessPerms'=> [ 'W SLCollection', 'A SL', '|' ]] );
+$oApp = SEEDConfig_NewAppConsole( ['sessPermsRequired'=> [ 'W SLCollection', 'A SL', '|' ]] );
 
 //var_dump($_REQUEST);
 //$kfdb->SetDebug(1);

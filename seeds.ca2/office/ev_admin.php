@@ -15,7 +15,7 @@ include_once( SEEDLIB.'events/events.php' );
 
 list($kfdb, $sess, $dummyLang) = SiteStartSessionAccount( array( "W events" ) );
 
-$oApp = SiteAppConsole( ['db'=>'seeds2', 'sessPermsRequired'=>['W events']] );
+$oApp = SEEDConfig_NewAppConsole( ['db'=>'seeds2', 'sessPermsRequired'=>['W events']] );
 
 header( "Content-type: text/html; charset=ISO-8859-1");
 

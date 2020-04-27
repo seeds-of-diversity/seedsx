@@ -1,15 +1,12 @@
 <?php
-    error_reporting(E_ALL | E_STRICT);
-    ini_set('display_errors', 1);
-    ini_set('html_errors', 1);
 define( "SITEROOT", "../../" );
 include_once( SITEROOT."site.php" );
 include_once( SEEDCORE."SEEDCoreForm.php" );
 include_once( SEEDLIB."sl/sldb.php" );
 
-require SEEDROOT."vendor/autoload.php";     // FPDF
+//require SEEDROOT."vendor/autoload.php";     // FPDF
 
-$oApp = SiteAppConsole();  // no perms required for labels but might need perms for further functionality
+$oApp = SEEDConfig_NewAppConsole();  // no perms required for labels but might need perms for further functionality
 
 $oForm = new SEEDCoreForm( 'A' );
 $oForm->Update();

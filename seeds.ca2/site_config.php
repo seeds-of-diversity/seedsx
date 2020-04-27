@@ -49,20 +49,6 @@ if( SEED_isLocal ) {
     define("SITEROOT_URL", "/" );
 }
 
-/* activate full error reporting in development environments, not in production
- */
-if( SEED_isLocal ) {
-    error_reporting(E_ALL | E_STRICT);
-    ini_set('display_errors', 1);
-    ini_set('html_errors', 1);
-
-//    include( SEEDSX_ROOT."std/os/php_error.php" );
-//    \php_error\reportErrors();
-} else {
-    error_reporting(0);
-    ini_set('display_errors', 0);
-    ini_set('html_errors', 0);
-}
 
 $tz = @date_default_timezone_get();
 if( empty($tz) || $tz == 'UTC' ) {

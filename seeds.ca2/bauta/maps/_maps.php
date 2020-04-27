@@ -5,12 +5,12 @@
 // only show the stars that appear on the map
 // category filtering
 
-include_once( STDINC."SEEDMetaTable.php" );
+include_once( SEEDCORE."SEEDMetaTable.php" );
 
 
 class BautaMap
 {
-    private $kfdb;
+    private $oApp;
     public  $oTable;
     public  $kTable;
 
@@ -36,11 +36,11 @@ class BautaMap
     );
 
 
-    function __construct( KeyFrameDB $kfdb )
+    function __construct( SEEDAppDB $oApp, $uid )
     {
-        $this->kfdb = $kfdb;
+        $this->oApp = $oApp;
 
-        $this->oTable = new SEEDMetaTable_TablesLite( $kfdb );
+        $this->oTable = new SEEDMetaTable_TablesLite( $oApp, $uid );
         $this->kTable = $this->oTable->OpenTable( "BautaMaps1" );
 
     }
@@ -51,15 +51,11 @@ class BautaMap
         cat is stored as k2
      */
     {
-        $raTable = $this->oTable->GetRows( $this->kTable, $sheet, $cat );
+        $raTable = $this->oTable->GetRows( $this->kTable, ['k1'=>$sheet, 'k2'=>$cat, 'k1map'=>'sheet', 'k2map'=>'cat'] );
         $raOut = array();
         foreach( $raTable as $k => $ra ) {
-            // $k is the key of the TablesLite row, $ra is array( 'k1'=>..., 'vals'=>array(...) )
-            // Transform that to a straightforward array
-            $vSheet = $ra['k1'];
-            $vCat = $ra['k2'];
-            $raOut[$k] = array_merge( array( 'k'=>$k, 'sheet'=> $vSheet, 'cat'=>$vCat ), $ra['vals'] );
-            $raOut[$k]['icon'] = @$this->raCategories[$vCat]['icon'];
+            // $k is the key of the TablesLite row, $ra is the values with k1/k2 mapped to sheet/cat
+            $raOut[$k] = $ra + ['k'=>$k, 'icon'=>@$this->raCategories[$vCat]['icon']];
         }
         return( $raOut );
     }
@@ -80,17 +76,17 @@ class BautaMap
     }
 
 
-    function StoreMarker( $k, $sheetName, $ra )
-    /******************************************
+    function StoreMarker( $kRow, $sheetName, $ra )
+    /*********************************************
         sheet is stored as k1
         cat is stored as k2
      */
     {
-        $this->oTable->PutRow( $this->kTable, $k, array( 'note'      => @$ra['note'],
-                                                         'name'      => @$ra['name'],
-                                                         'address'   => @$ra['address'],
-                                                         'latitude'  => @$ra['latitude'],
-                                                         'longitude' => @$ra['longitude'] ),
+        $this->oTable->PutRow( $this->kTable, $kRow, ['note'      => @$ra['note'],
+                                                      'name'      => @$ra['name'],
+                                                      'address'   => @$ra['address'],
+                                                      'latitude'  => @$ra['latitude'],
+                                                      'longitude' => @$ra['longitude'] ],
                                $sheetName, $ra['cat'] );
     }
 
@@ -163,11 +159,3 @@ class BautaMap
 */
 
 }
-
-
-
-
-
-
-
-?>

@@ -7,7 +7,7 @@ include_once( STDINC."SEEDTemplate.php" );
 include_once( SEEDCOMMON."mbr/mbrBulletin.php" );    // MbrBulletin
 include_once( SITEROOT."/l/mbr/mbrPipe.php" );       // MbrPipeGetContactRA
 include_once( SEEDCOMMON."siteutil.php" );           // MailFromOffice
-
+include_once( SEEDLIB."mbr/QServerMbr.php" );
 
 class SoDBulletin
 {
@@ -201,7 +201,12 @@ class SoDBulletin
     private function getBullStatus( $email )
     {
         $kfr = $this->oBull->GetKFR( $email );                // bull_list row for this email
-        $raMbr = MbrPipeGetContactRA( $this->kfdb, $email );  // mbr_contacts row for this email
+
+        $oApp = SEEDConfig_NewAppConsole_LoginNotRequired( ['db'=>'seeds1'] );
+        $oQ = new QServerMbr( $oApp, ['config_bUTF8'=>false] );
+        $rQ = $oQ->Cmd( 'mbr!getOffice', ['sEmail'=>$email] );
+        $raMbr = $rQ['raOut'];
+        //$raMbr = MbrPipeGetContactRA( $this->kfdb, $email );  // mbr_contacts row for this email
 
 // Actually, check if the member's expiry is within 2 years
 
