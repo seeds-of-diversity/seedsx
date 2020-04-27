@@ -2,7 +2,7 @@
 
 /* mbrOrder.php
  *
- * Copyright (c) 2009-2015 Seeds of Diversity Canada
+ * Copyright (c) 2009-2020 Seeds of Diversity Canada
  *
  * Definitions common to all mbrOrder components
  */
@@ -846,6 +846,7 @@ function MbrOrderStyle()
 </STYLE>
 
 <script>
+/*
 jQuery(document).ready(function($){
 
     $('.mbro_expand').click( function(e) {
@@ -870,7 +871,7 @@ jQuery(document).ready(function($){
     });
 });
 </script>
-
+*/
 ");
 }
 

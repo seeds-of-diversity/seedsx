@@ -8,7 +8,7 @@
 
 /* mbrOrderCheckout
  *
- * Copyright (c) 2009-2015 Seeds of Diversity Canada
+ * Copyright (c) 2009-2020 Seeds of Diversity Canada
  *
  * Base implementation for an online checkout system
  */
@@ -710,16 +710,23 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
 
     function ValidateDraw()
     {
+        $sTicket = $this->oMbrOrder->DrawTicket( 0, $this->kfrOC );
+        // DrawTicket does computeTicket() so the nTotal is available
+        if( $this->oMbrOrder->nTotal ) {
+            $sConfirm = $this->oL->S('confirm_order')."<br/><br/>".$this->stateTransButton( MBROC_ST_CONFIRM, 'confirm_button' );
+        } else {
+            $sConfirm = "<div style='border:1px solid #aaa;padding:15px'>Nothing has been ordered yet. Please go back to the order form.</div>";
+        }
+
         $s = "<H2>".$this->oL->S('confirm_order')."</H2>"
-            .$this->oMbrOrder->DrawTicket( 0, $this->kfrOC )
+            .$sTicket
             ."<br/>"
             ."<TABLE border='0'><TR>"
             ."<TD valign='top' style='font-size:9pt;'>".$this->oL->S('if_order_not_correct')."<BR/><BR/>"
             .$this->stateTransButton( MBROC_ST_FORM, 'change_button' )
             ."</TD>"
-            ."<TD valign='top' style='font-size:9pt;padding-left:120px'>".$this->oL->S('confirm_order')."<BR/><BR/>"
-            .$this->stateTransButton( MBROC_ST_CONFIRM, 'confirm_button' )
-            ."</TD></TR></TABLE>";
+            ."<TD valign='top' style='font-size:9pt;padding-left:120px'>$sConfirm</TD>"
+            ."</TR></TABLE>";
         return( $s );
     }
 
