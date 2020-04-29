@@ -33,7 +33,7 @@ $raTables1 = array( "ev"     => array( "ev_events" ),
                     "SEEDBasket" => array( "SEEDBasket_Baskets", "SEEDBasket_Products", "SEEDBasket_ProdExtra", "SEEDBasket_BP" ),
 );
 
-$raTables2 = array( "mbr" => array( "mbr_contacts" ),
+$raTables2 = array( "mbr" => array( "mbr_contacts", "mbr_donations" ),
                     "mbrmail" => array( "mbr_mail_send", "mbr_mail_send_recipients" ),
                     "gcgc" => array( "gcgc_growers", "gcgc_varieties", "gcgc_gxv" ),
                     "tasks" => array( "task_tasks" ),
