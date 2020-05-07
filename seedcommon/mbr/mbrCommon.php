@@ -42,7 +42,7 @@ function MbrExpiryDate2Label( $sDate, $lang = "EN" )
 
 function MbrDrawAddressBlockFromRA( $raMbr )
 {
-    return( MbrDrawAddressBlock( $raMbr['firstname'], $raMbr['lastname'], $raMbr['company'], $raMbr['dept'],
+    return( MbrDrawAddressBlock( $raMbr['firstname'], $raMbr['lastname'], $raMbr['firstname2'], $raMbr['lastname2'], $raMbr['company'], $raMbr['dept'],
                                  $raMbr['address'], $raMbr['city'], $raMbr['province'], $raMbr['postcode'], $raMbr['country'] ) );
 }
 
