@@ -63,9 +63,18 @@ function MbrDrawAddressBlock( $firstname, $lastname, $firstname2, $lastname2, $c
         $lnbreak = "\n";
     }
 
-    $name = trim($firstname." ".$lastname);
-    if( ($name2 = trim($firstname2." ".$lastname2)) ) {
-        $name .= ($name ? " & " : "").$name2;
+    // firstname(s)/lastname(s)
+    $f1 = $firstname; $f2 = $firstname2;
+    $l1 = $lastname;  $l2 = $lastname2;
+
+    if( !$f2 && !$l2 ) {                // name1 only (which is blank if all are empty)
+        $name = trim("$f1 $l1");
+    } else if( !$f1 && !$l1 ) {         // name2 only
+        $name = trim("$f2 $l2");
+    } else if( $l1 == $l2 ) {           // both names, lastname is the same
+        $name = trim("$f1 & $f2 $l2");
+    } else {                            // both names, lastnames are different
+        $name = trim("$f1 $l1 & $f2 $l2");
     }
 
     if( $company ) {
