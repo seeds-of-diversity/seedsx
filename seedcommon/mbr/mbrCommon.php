@@ -46,7 +46,7 @@ function MbrDrawAddressBlockFromRA( $raMbr )
                                  $raMbr['address'], $raMbr['city'], $raMbr['province'], $raMbr['postcode'], $raMbr['country'] ) );
 }
 
-function MbrDrawAddressBlock( $firstname, $lastname, $company, $dept, $addr, $city, $prov, $postcode, $country, $fmt = 'HTML' )
+function MbrDrawAddressBlock( $firstname, $lastname, $firstname2, $lastname2, $company, $dept, $addr, $city, $prov, $postcode, $country, $fmt = 'HTML' )
 {
     if( $fmt == 'HTML' ) {
         // The container should use style='white-space: nowrap' to prevent breaking in weird places e.g the middle of a postal code
@@ -63,10 +63,11 @@ function MbrDrawAddressBlock( $firstname, $lastname, $company, $dept, $addr, $ci
         $lnbreak = "\n";
     }
 
-    $name = "";
-    if( $firstname || $lastname ) {
-        $name = $firstname." ".$lastname;
+    $name = trim($firstname." ".$lastname);
+    if( ($name2 = trim($firstname2." ".$lastname2)) ) {
+        $name .= ($name ? " & " : "").$name2;
     }
+
     if( $company ) {
         if( $name ) $name .= $lnbreak.$leftMargin;
         $name .= $company;
