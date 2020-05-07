@@ -3,7 +3,7 @@
 /*
  * Seed Directory member interface
  *
- * Copyright 2011-2019 Seeds of Diversity Canada
+ * Copyright 2011-2020 Seeds of Diversity Canada
  *
  * Gives the current user an interface to their own listings in the Member Seed Directory
  */
@@ -325,12 +325,8 @@ class MyConsole extends Console01
 
     function GetGrowerName( $kGrower )
     {
-// Mbr_Contacts::GetContactName()
-        $ra = $this->oApp->kfdb->QueryRA( "SELECT firstname,lastname,company FROM seeds2.mbr_contacts WHERE _key='$kGrower'" );
-        if( !($name = trim($ra['firstname'].' '.$ra['lastname'])) ) {
-            $name = $ra['company'];
-        }
-        return( $name );
+        $oMbr = new Mbr_Contacts($this->oApp);
+        return( $oMbr->GetContactName($kGrower) );
     }
 
     private function growerSelect()
