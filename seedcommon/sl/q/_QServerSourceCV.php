@@ -131,19 +131,6 @@ class QServerSourceCV
             }
         }
 
-        /* Download ESF/CSCI statistics based on the log files
-         */
-        if( $cmd == 'srcESFStats' ) {
-            $raParms = array( 'v' => intval(@$parms['v']) );    // select the type of report
-
-            $rQ['sLog'] = SEEDCore_ImplodeKeyValue( $raParms, "=", "," );
-
-            if( ($ra = $this->getSrcESFStats( $raParms )) ) {
-                $rQ['bOk'] = true;
-                $rQ['raOut'] = $ra;
-            }
-        }
-
         done:
         return( $rQ );
     }
@@ -757,115 +744,10 @@ if( ($k = intval(@$raParms['kPcvKluge'])) ) {
         return( $ra );
     }
 
-    private function getSrcESFStats( $raParms )
-    {
-        $raOut = array();
-
-        switch( intval(@$raParms['v']) ) {
-            case 1: $raOut = $this->getSrcESFStats1();  break;
-            case 2: $raOut = $this->getSrcESFStats2();  break;
-        }
-
-        return( $raOut );
-    }
-
-    private function getSrcESFStats1()
-    // Report on the contents of the CSCI log (species selected) and ESF log (species searched)
-    {
-        $raOut = array();
-        $raTmp = array();   // collect stats here, then sort and copy them to raOut in Q format
-
-        if( file_exists( ($fname = (SITE_LOG_ROOT."csci_sp.log")) ) &&
-            ($f = fopen( $fname, "r" )) )
-        {
-            while( ($line = fgets($f)) !== false ) {
-                $ra = array();
-                preg_match( "/^([^\s]+) ([^\s]+) ([^\s]+) \| (.*)$/", $line, $ra );
-
-                if( ($kSp = intval($ra[4])) ) {
-                    $sp = $this->oQ->kfdb->Query1( "SELECT name_en FROM seeds.sl_species WHERE _key='$kSp'" );
-                } else {
-                    $sp = substr( $ra[4], 2 );
-                }
-
-                $sp = str_replace( "+", " ", $sp );                 // for some reason some names have + instead of spaces
-                $sp = str_replace( "Broccooli", "Broccoli", $sp );  // typo in earlier logs
-                $sp = str_replace( "Oriental", "Asian", $sp );      // don't call it that
-
-                $raTmp[$sp] = intval(@$raTmp[$sp]) + 1;
-            }
-            fclose( $f );
-        }
-
-        if( file_exists( ($fname = (SITE_LOG_ROOT."q.log")) ) &&
-            ($f = fopen( $fname, "r" )) )
-        {
-            while( ($line = fgets($f)) !== false ) {
-            }
-        }
-
-        /* Species hits have been counted as array( sSp => n )
-         * Sort by sSp and convert to array( 'sp'=>charset(sSp), 'n'=>n )
-         */
-        ksort($raTmp);
-        foreach( $raTmp as $sp => $n ) {
-            $raOut[] = array( 'sp'=>$this->charset($sp), 'n'=>$n );
-        }
-
-        return( $raOut );
-    }
-
-    private function getSrcESFStats2()
-    // Report on the contents of the ESF log
-    {
-        $raOut = array();
-        $raTmp = array();
-
-        if( file_exists( ($fname = (SITE_LOG_ROOT."q.log")) ) &&
-            ($f = fopen( $fname, "r" )) )
-        {
-            while( ($line = fgets($f)) !== false ) {
-                $ra = array();
-                preg_match( "/^([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s*(.*)$/", $line, $ra );
-
-                $cmd = @$ra[5];
-                if( $cmd == 'srcSources' &&
-                    (substr( ($r = @$ra[6]), 0, 5 ) == 'kPcv=') &&
-                    ($kPCV = intval(substr($r,5))) )
-                {
-                    if( $kPCV >= 10000000 ) {
-                        list($kSp,$sCV) = $this->oQ->kfdb->QueryRA( "SELECT fk_sl_species,ocv FROM seeds.sl_cv_sources WHERE _key='".($kPCV-10000000)."'" );
-                    } else {
-                        list($kSp,$sCV) = $this->oQ->kfdb->QueryRA( "SELECT fk_sl_species,name FROM seeds.sl_pcv WHERE _key='$kPCV'" );
-                    }
-                    if( $kSp && $sCV ) {
-                        $psp = $this->oQ->kfdb->Query1( "SELECT psp FROM seeds.sl_species WHERE _key='$kSp'" );
-                        $raTmp[$psp."|".$sCV] = intval(@$raTmp[$psp."|".$sCV]) + 1;
-                    }
-                }
-            }
-        }
-
-        /* CV source hits have been counted as array( psp|pname => n )
-         * Sort by sp,cv and convert to array( 'sp'=>charset(sSp), 'cv'=>charset(pname), 'n'=>n )
-         */
-        ksort($raTmp);
-        foreach( $raTmp as $k => $n ) {
-            list($psp,$pname) = explode( '|', $k );
-            $raOut[] = array( 'sp'=>$this->charset($psp), 'cv'=>$this->charset($pname), 'n'=>$n );
-        }
-
-        return( $raOut );
-    }
-
     private function charset( $s )
     {
         return( $this->bUTF8 ? utf8_encode( $s ) : $s );
     }
-
-
-
-
 }
 
 ?>
