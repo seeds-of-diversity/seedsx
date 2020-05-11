@@ -15,7 +15,7 @@ class QServerCollectionReport
     private $oQ;
     private $oSLDB;
 
-    function __construct( Q $oQ, $raParms = array() )
+    function __construct( Qold $oQ, $raParms = array() )
     {
         $this->oQ = $oQ;
         $this->oSLDB = new SLDB_Collection( $oQ->kfdb, $oQ->sess->GetUID() );

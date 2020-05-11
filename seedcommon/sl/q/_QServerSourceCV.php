@@ -11,14 +11,14 @@
 include_once( SEEDCOMMON."sl/sl_db.php" );
 include_once( "Q.php" );
 
-class QServerSourceCV
+class QServerSourceCV_Old
 {
     private $oQ;
     private $oSLDBSrc;
     private $bUTF8 = false;
 
 // bUTF8 should be defined in Q instead
-    function __construct( Q $oQ, $raParms = array() )
+    function __construct( Qold $oQ, $raParms = array() )
     {
         $this->oQ = $oQ;
         $this->oSLDBSrc = new SLDB_Sources( $oQ->kfdb, $oQ->sess->GetUID() );
@@ -28,13 +28,6 @@ class QServerSourceCV
     function Cmd( $cmd, $parms )
     {
         $rQ = $this->oQ->GetEmptyRQ();
-
-/* Moved to Q2
-        if( $cmd == 'srcHelp' ) {
-            $rQ['bOk'] = true;
-            $rQ['sOut'] = $this->sHelp;
-        }
-*/
 
         /* Seed companies that fit criteria (one row per company)
         */
@@ -89,28 +82,6 @@ class QServerSourceCV
             }
         }
 
-        /* Cultivars X Sources offered by seed companies and/or seed banks (one row per SrcCv)
-
-*** Copied to Q2
-
-         */
-        if( $cmd == 'srcSrcCv' ) {
-            $raParms = $this->normalizeParms( $parms );
-
-            // Currently default is true. This should possibly not be a public user parm. Or maybe it's just not advertised or encouraged.
-            //$raParms['bSanitize'] = intval(@$parms['bSanitize']);
-
-            // you can make app/q work really hard if you try to read too much
-// maybe not needed anymore if normalizeParms is forcing bAllComp when src=""?
-//            if( (@$raParms['bNPGS'] || @$raParms['bPGRC']) && !(@$raParms['kSp'] || @$raParms['kPcv']) )  goto done;
-
-            $rQ['sLog'] = SEEDCore_ImplodeKeyValue( $raParms, "=", "," );
-
-            if( ($ra = $this->getSrcCV( $raParms )) ) {
-                $rQ['bOk'] = true;
-                $rQ['raOut'] = $ra;
-            }
-        }
         /* A variation of srcSrcCv that produces a CSCI update spreadsheet
          */
         if( $cmd == 'srcCSCI' ) {
@@ -394,8 +365,9 @@ class QServerSourceCV
 
         // Why is this grouped by S,P instead of just P?  What does that even mean?
         // Filter by SRC, group by S,P
-        $raKFParms['raFieldsOverride'] = array( 'S_name_en'=>"S.name_en", 'S_name_fr'=>"S.name_fr", 'S__key'=>"S._key", 'P_name'=>"P.name", 'P__key'=>"P._key", 'c'=>"count(*)" );
-        $raKFParms['sGroupCol']     = 'S._key,P._key';
+        $raKFParms['raFieldsOverride'] = ['S_name_en'=>"S.name_en", 'S_name_fr'=>"S.name_fr", 'S__key'=>"S._key",
+                                          'P_name'=>"P.name", 'P__key'=>"P._key", 'c'=>"count(*)"];
+        $raKFParms['sGroupCol']        = 'S.name_en,S.name_fr,S._key,P.name,P._key';
 
         if( @$raParms['mode'] == 'TopChoices' ) {
             $raKFParms['sSortCol'] = "c desc,S.name_en asc,P.name";

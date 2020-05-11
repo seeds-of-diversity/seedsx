@@ -15,7 +15,7 @@ class QServerDesc
     private $oQ;
     private $oSLDBMaster;
 
-    function __construct( Q $oQ )
+    function __construct( Qold $oQ )
     {
         $this->oQ = $oQ;
         //$this->oDescDB     = new SL_DescDB( $oQ->kfdb, $oQ->sess->GetUID() );  will need this for queries about crop records

@@ -88,7 +88,7 @@ class QServerPCV
     private $oSLDBMaster;
     private $oSLDBRosetta;
 
-    function __construct( Q $oQ )
+    function __construct( Qold $oQ )
     {
         $this->oQ = $oQ;
         $this->oSLDBMaster = new SLDB_Master( $oQ->kfdb, $oQ->sess->GetUID() );

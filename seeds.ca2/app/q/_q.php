@@ -23,7 +23,7 @@ if( ($cmd = SEEDSafeGPC_GetStrPlain('qcmd')) || /* deprecate */ ($cmd = SEEDSafe
     }
 
     list($kfdb,$sess,$lang) = SiteStartSessionAccountNoUI();
-    $oQ = new Q( $kfdb, $sess, $oApp, array('lang' => $lang) );
+    $oQ = new Qold( $kfdb, $sess, $oApp, array('lang' => $lang) );
 
     // the charset returned by this query will always be utf8, unless this is reversed below
     $oQ->bUTF8 = true;

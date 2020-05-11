@@ -11,8 +11,8 @@ list($kfdb, $sess, $lang) = SiteStartSessionAccountNoUI();
 
 
     // Make the species <select>
-$oQ = new Q( $kfdb, $sess, null, array('bUTF8'=>true,'klugeESFLang'=>$lang) );  // oApp can be null for now
-$oSrc = new QServerSourceCV( $oQ, array() );
+$oQ = new Qold( $kfdb, $sess, null, array('bUTF8'=>true,'klugeESFLang'=>$lang) );  // oApp can be null for now
+$oSrc = new QServerSourceCV_Old( $oQ, array() );
 $rQ = $oSrc->Cmd( 'srcSpecies', array( 'bAllComp'=>true, 'outFmt'=>'NameKey', 'spMap'=>'ESF' ) );
 
 $spOpts = "";

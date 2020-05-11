@@ -75,7 +75,7 @@ class SLAdminReports
         $qCmd = $bUnionCSCI ? 'collreport-cultivarsummaryUnionCSCI' : 'collreport-cultivarsummary';
         $sTitle = "Summary of All Varieties in the Seed Library Collection" . ($bUnionCSCI ? " + Seed Finder" : "");
 
-        $Q = new Q( $this->oW->kfdb, $this->oW->sess, null, array() );  // oApp null for now
+        $Q = new Qold( $this->oW->kfdb, $this->oW->sess, null, array() );  // oApp null for now
         $rQ = $Q->Cmd( $qCmd, array('kCollection'=>1) );
 
         if( $rQ['bOk'] ) {
@@ -105,7 +105,7 @@ class SLAdminReports
     {
         $s = "";
 
-        $Q = new Q( $this->oW->kfdb, $this->oW->sess, null, array() );    // oApp null for now
+        $Q = new Qold( $this->oW->kfdb, $this->oW->sess, null, array() );    // oApp null for now
         $rQ = $Q->Cmd( 'collreport-adoptedsummary', array('kCollection'=>1) );
 
         if( $rQ['bOk'] ) {
@@ -134,7 +134,7 @@ class SLAdminReports
     {
         $s = "";
 
-        $Q = new Q( $this->oW->kfdb, $this->oW->sess, null, array() );   //oApp null for now
+        $Q = new Qold( $this->oW->kfdb, $this->oW->sess, null, array() );   //oApp null for now
         $rQ = $Q->Cmd( 'collreport-germsummary', array('kCollection'=>1) );
 
         if( $rQ['bOk'] ) {

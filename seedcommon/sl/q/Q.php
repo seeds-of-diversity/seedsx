@@ -1,6 +1,8 @@
 <?php
 
-class Q
+include_once( SEEDLIB."q/Q.php" );
+
+class Qold
 {
     public $oApp;
     public $kfdb;
@@ -29,13 +31,14 @@ class Q
             goto done;
         }
 
-        if( $cmd == 'test' ) {
-            $rQ['bOk'] = true;
-            $rQ['sOut'] = "Test is successful";
-            $rQ['raOut'] = array( array( 'first name' => "Fred", 'last name' => "Flintstone" ),
-                                  array( 'first name' => "Barney", 'last name' => "Rubble" ) );
-            $rQ['raMeta']['title'] = "Test";
-            $rQ['raMeta']['name'] = "qtest";
+        /* Send cmd through SEEDLIB/Q.
+         * If it is not handled there, handle it below.
+         */
+        $oQnew = new Q( $this->oApp, [] );
+        $rQnew = $oQnew->Cmd( $cmd, $parms );
+        if( $rQnew['bHandled'] ) {
+            $rQ = $rQnew;
+            goto done;
         }
 
         if( substr( $cmd, 0, 4 ) == 'desc' ) {
@@ -43,7 +46,6 @@ class Q
 
             $o = new QServerDesc( $this );
             $rQ = $o->Cmd( $cmd, $parms );
-
         }
 
         if( substr( $cmd, 0, 7 ) == 'rosetta' ) {
@@ -55,7 +57,7 @@ class Q
 
         if( substr( $cmd, 0, 3 ) == 'src' ) {
             include_once( "_QServerSourceCV.php" );
-            $o = new QServerSourceCV( $this, array( 'bUTF8' => true ) );
+            $o = new QServerSourceCV_Old( $this, array( 'bUTF8' => true ) );
             $rQ = $o->Cmd( $cmd, $parms );
         }
 

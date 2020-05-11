@@ -52,13 +52,13 @@ $sHead .= "
     </style>";
 
 
-$oQ = new Q( $kfdb, $sess, null, array() );     // oApp null for now
+$oQ = new Qold( $kfdb, $sess, null, array() );     // oApp null for now
 
 $oRosetta = new QServerRosetta( $kfdb );    // change arg to $oQ
 
 
 // Species <select> options
-$oSrc = new QServerSourceCV( $oQ, array() );
+$oSrc = new QServerSourceCV_Old( $oQ, array() );
 $rQ = $oSrc->Cmd( 'srcSpecies', array( 'bAllComp'=>true, 'outFmt'=>'NameKey', 'spMap'=>'ESF' ) );
 $raSp = array_merge( array( "All seed types"=>0 ), $rQ['raOut'] );
 

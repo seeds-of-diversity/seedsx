@@ -14,7 +14,7 @@ class QServerCollection
     private $oQ;
     private $oSLDB;
 
-    function __construct( Q $oQ, SEEDAppSessionAccount $oApp, $raParms = array() )
+    function __construct( Qold $oQ, SEEDAppSessionAccount $oApp, $raParms = array() )
     {
         $this->oQ = $oQ;
         $this->oSLDB = new SLDBCollection( $oApp, array() );
