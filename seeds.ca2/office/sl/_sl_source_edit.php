@@ -28,7 +28,9 @@ class SLSourceEdit extends Console01_Worker
 
     function Main()
     {
-        $s = "";
+        $s = "<p>This has moved to <a href='http://seeds.ca/app/sl/sources.php'>seeds.ca/app/sl/sources.php</a></p>";
+/*
+
 //var_dump($_REQUEST);
 $oSLSrc = $this->oQSLSrc;
 
@@ -100,8 +102,7 @@ $oSLSrc = $this->oQSLSrc;
 
                         if( ($n = count($raCatDiff['inserted'])) ) { $sUpload .= "<br/>Inserted $n"; }
                         if( ($n = count($raCatDiff['changed'])) )  {
-                            /* For every row changed in the uploaded file, write a JS directive
-                             */
+                            // For every row changed in the uploaded file, write a JS directive
                             $sUpload .= "<br/>Changed $n";
 
                             foreach( $raCatDiff['changed'] as $ra ) {
@@ -114,8 +115,7 @@ $oSLSrc = $this->oQSLSrc;
                             }
                         }
                         if( ($n = count($raCatDiff['deleted'])) )  {
-                            /* For every row deleted in the uploaded file, write a JS directive
-                             */
+                            // For every row deleted in the uploaded file, write a JS directive
                             $sUpload .= "<br/>Deleted $n";
 
                             foreach( $raCatDiff['deleted'] as $kDel ) {
@@ -171,6 +171,7 @@ $oSLSrc = $this->oQSLSrc;
             $s .= "<p style='width:60%'>Choose a company to edit. You can only edit one company at a time because the entire list of all companies' seeds "
                 ."would be too long for the screen. However, you can download a complete list of all seeds by clicking on the link above.</p>";
         }
+*/
 
         return( $s );
     }
