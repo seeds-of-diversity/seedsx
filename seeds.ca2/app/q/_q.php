@@ -12,7 +12,7 @@ include_once( "../../bauta/q/QServer.php" );    // deprecate
  *                 &other-cmd-specific-parms
  */
 
-$oApp = SEEDConfig_NewAppConsole( ['db'=>Q_DB] );     // either seeds1 or seeds2 depending on which you are logged into (use index.php or q2.php from your ajax)
+$oApp = SEEDConfig_NewAppConsole_LoginNotRequired( ['db'=>Q_DB] );  // either seeds1 or seeds2 depending on which you are logged into (use index.php or q2.php from your ajax)
 
 if( ($cmd = SEEDSafeGPC_GetStrPlain('qcmd')) || /* deprecate */ ($cmd = SEEDSafeGPC_GetStrPlain('cmd')) ) {
     $raQParms = array();
