@@ -26,6 +26,9 @@ $raPerms = array( 'Reports'       => array('R SL'),
 list($kfdb2, $sess) = SiteStartSessionAccount( $raPerms );
 $kfdb1 = SiteKFDB( SiteKFDB_DB_seeds1 ) or die( "Cannot connect to database" );
 
+$oApp = SEEDConfig_NewAppConsole_LoginNotRequired( ['db'=>'seeds2', 'sessPermsRequired' => ["W SLCollectionReports"] ] );
+
+
 $raKFParms = array( "kfLogFile"=>SITE_LOG_ROOT."sl_admin.log",
                     "bReadonly"=> !($sess->CanWrite( "SL" )) );
 
@@ -45,12 +48,14 @@ class MyConsole extends Console01KFUI
 
     function TabSetInit( $tsid, $tabname )
     {
+        global $oApp;
+
         if( $tsid != 'TFmain' ) return;
 
         $this->oW = new Console01_Worker( $this, $this->kfdb, $this->sess, "EN" );
 
         switch( $tabname ) {
-            case 'Reports': $this->oApp = new SLAdminReports( $this->oW );  break;
+            case 'Reports': $this->oApp = new SLAdminReports( $this->oW, $oApp );  break;
             case 'admin':   $this->oApp = new SLAdmin_Admin( $this->oW );   break;
         }
     }

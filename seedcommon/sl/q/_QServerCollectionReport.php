@@ -2,13 +2,14 @@
 
 /* _QServerCollectionReport
  *
- * Copyright 2017 Seeds of Diversity Canada
+ * Copyright 2017-2020 Seeds of Diversity Canada
  *
  * Serve reports about sl_collection, sl_accession, sl_adoption, etc
  * This is intended mainly for internal use, so permissions are restricted to SoD personnel.
  */
 
 include_once( SEEDCOMMON."sl/sl_db.php" );
+include_once( SEEDLIB."sl/sldb.php" );
 
 class QServerCollectionReport
 {
@@ -231,14 +232,17 @@ class QServerCollectionReport
 
         $oSLDBMaster = new SLDB_Master( $this->oQ->kfdb, $this->oQ->sess->GetUID() );
 
-        // Get a record for every lot in thie collection that has had a germ test
-        $raIRows = $oSLDBMaster->GetList(
+        $oDBColl = new SLDBCollection( $this->oQ->oApp );
+
+        // Get a record for every lot in the collection that has had a germ test
+        $raIRows = $oDBColl->GetList(
                         "IxGxAxPxS",
                         "I.fk_sl_collection='$kCollection' AND NOT I.bDeAcc",
-                        array( 'sGroupCol' => 'I._key',
-                               'raFieldsOverride' => array( 'S_name_en'=>"S.name_en", 'S_name_fr'=>"S.name_fr", 'S_psp'=>'S.psp', 'S__key'=>"S._key",
-                                                            'P_name'=>"P.name", 'P__key'=>"P._key", "I__key"=>"I._key", "I_inv_number"=>"I.inv_number", "I_g_weight"=>"I.g_weight" ),
-                               'sSortCol' => 'S.psp,P.name,I._key' ) );
+                        [ //'sGroupCol' => 'I._key',
+                          'sGroupAliases' => "S_name_en, S_name_fr, S_psp, S__key, P_name, P__key, I__key, I_inv_number, I_g_weight",
+                          //'raFieldsOverride' => array( 'S_name_en'=>"S.name_en", 'S_name_fr'=>"S.name_fr", 'S_psp'=>'S.psp', 'S__key'=>"S._key",
+                          //                             'P_name'=>"P.name", 'P__key'=>"P._key", "I__key"=>"I._key", "I_inv_number"=>"I.inv_number", "I_g_weight"=>"I.g_weight" ),
+                          'sSortCol' => 'S.psp,P.name,I._key' ] );
 
         // Get the germ test information for each lot
         $c = 0;

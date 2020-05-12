@@ -32,10 +32,12 @@ include_once( SEEDCOMMON."console/console01ui.php" );   // DownloadUpload
 class SLAdminReports
 {
     public $oW;
+    private $oApp;
 
-    function __construct( Console01_Worker $oW )
+    function __construct( Console01_Worker $oW, $oApp )
     {
         $this->oW = $oW;
+        $this->oApp = $oApp;
     }
 
     function ReportsContentDraw()
@@ -75,7 +77,7 @@ class SLAdminReports
         $qCmd = $bUnionCSCI ? 'collreport-cultivarsummaryUnionCSCI' : 'collreport-cultivarsummary';
         $sTitle = "Summary of All Varieties in the Seed Library Collection" . ($bUnionCSCI ? " + Seed Finder" : "");
 
-        $Q = new Qold( $this->oW->kfdb, $this->oW->sess, null, array() );  // oApp null for now
+        $Q = new Qold( $this->oW->kfdb, $this->oW->sess, $this->oApp, array() );
         $rQ = $Q->Cmd( $qCmd, array('kCollection'=>1) );
 
         if( $rQ['bOk'] ) {
@@ -105,7 +107,7 @@ class SLAdminReports
     {
         $s = "";
 
-        $Q = new Qold( $this->oW->kfdb, $this->oW->sess, null, array() );    // oApp null for now
+        $Q = new Qold( $this->oW->kfdb, $this->oW->sess, $this->oApp, array() );
         $rQ = $Q->Cmd( 'collreport-adoptedsummary', array('kCollection'=>1) );
 
         if( $rQ['bOk'] ) {
@@ -134,7 +136,7 @@ class SLAdminReports
     {
         $s = "";
 
-        $Q = new Qold( $this->oW->kfdb, $this->oW->sess, null, array() );   //oApp null for now
+        $Q = new Qold( $this->oW->kfdb, $this->oW->sess, $this->oApp, array() );
         $rQ = $Q->Cmd( 'collreport-germsummary', array('kCollection'=>1) );
 
         if( $rQ['bOk'] ) {
