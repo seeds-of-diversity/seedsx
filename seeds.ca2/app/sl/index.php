@@ -47,7 +47,7 @@ $s = "<h3>Seed Labels</h3>"
     )
     ."</form></div>";
 
-echo Console01Static::HTMLPage( $s, "", "" );
+echo Console01Static::HTMLPage( $s, "", "", ['sCharset'=>'cp1252'] );
 exit;
 
 
