@@ -314,7 +314,16 @@ class SLAdminAdoption
             "fnTableItemDraw" => array($this,'AdoptionTableItemDraw'),
             "fnFormDraw" => array($this,'AdoptionFormDraw')
         );
-        global $kfreldef_SL_Adoption;
+        $kfreldef_SL_Adoption =
+            array( "Tables"=>array( array( "Table" => 'sl_adoption',
+                                           "Type"  => 'Base',
+                                           "Fields" => "Auto" ),
+                                    array( "Table" => 'sl_pcv',
+                                           "Alias" => 'P',
+                                           "Type" => 'LEFT JOIN',
+                                           "LeftJoinOn" => "T1.fk_sl_pcv=P._key",
+                                           "Fields" => array( array("col"=>'psp', "type"=>"S"),
+                                                              array("col"=>"name",  "type"=>"S") )) ) );
         $kfrel = new KeyFrameRelation( $this->kfdb1, $kfreldef_SL_Adoption, $this->oConsole->sess->GetUID() );
 
         $this->oConsole->CompInit( $kfrel, $raCompParms );
