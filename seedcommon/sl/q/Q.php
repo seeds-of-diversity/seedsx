@@ -103,37 +103,6 @@ class Qold
     {
         return( array( 'bOk'=>false, 'sOut'=>"", 'sErr'=>"", 'sLog'=>"", 'raOut'=>array(), 'raMeta'=>array() ) );
     }
-
-    function CheckPerms( $cmd, $ePerm, $sPermLabel )
-    /***********************************************
-        cmds containing --- require admin access
-        cmds containing --  require write access
-        cmds containing -   require read access
-
-        Note that any command might check further permissions to allow or deny access
-     */
-    {
-        $bAccess = false;
-        $sErr = "";
-
-        if( strpos( $cmd, "---" ) !== false ) {
-            if( !($bAccess = $this->sess->TestPerm( $ePerm, 'A' )) ) {
-                $sErr = "Command requires $sPermLabel admin permission";
-            }
-        } else
-        if( strpos( $cmd, "--" ) !== false ) {
-            if( !($bAccess = $this->sess->TestPerm( $ePerm, 'W' )) ) {
-                $sErr = "Command requires $sPermLabel write permission";
-            }
-        } else
-        if( strpos( $cmd, "-" ) !== false ) {
-            if( !($bAccess = $this->sess->TestPerm( $ePerm, 'R' )) ) {
-                $sErr = "Command requires $sPermLabel read permission";
-            }
-        }
-
-        return( array($bAccess, $sErr) );
-    }
 }
 
 
@@ -162,8 +131,4 @@ class QCursor
         }
         return( $raOut );
     }
-
-
 }
-
-?>
