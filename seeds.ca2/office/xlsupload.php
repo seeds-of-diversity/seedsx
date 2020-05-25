@@ -18,12 +18,12 @@ switch( ($cmd = SEEDSafeGPC_GetStrPlain( 'cmd' )) ) {
         break;
 
     case 'downloadxls':
-        // use PHPExcel to output the db table as a spreadsheet
+        // use PHPSpreadsheet to output the db table as a spreadsheet
         downloadXLS( $kfdb, $sess );
         goto done;    // function either outputs its error message or outputs xls file
 
     case 'downloadcsv':
-        // use native code to output the db table as a csv file (if PHPExcel imposes memory limits with large table/file)
+        // use native code to output the db table as a csv file (if PHPSpreadsheet imposes memory limits with large table/file)
 //        $s .= downloadCSV( $kfdb );
         break;
 
@@ -60,7 +60,7 @@ switch( ($cmd = SEEDSafeGPC_GetStrPlain( 'cmd' )) ) {
             ."</div>";
 
         $s .= "<div class='ctrl'>"
-            ."Download 'xlsupload' as an xls file using PHPExcel<br/><br/>"
+            ."Download 'xlsupload' as an xls file using PHPSpreadsheet<br/><br/>"
             ."<form action='${_SERVER['PHP_SELF']}'>"
             ."<input type='hidden' name='cmd' value='downloadxls' />"
             ."<input type='submit' value='Download'/>"
@@ -68,7 +68,7 @@ switch( ($cmd = SEEDSafeGPC_GetStrPlain( 'cmd' )) ) {
             ."</div>";
 
         $s .= "<div class='ctrl'>"
-            ."Download 'xlsupload' as a csv file using native code (if PHPExcel can't handle the size)<br/><br/>"
+            ."Download 'xlsupload' as a csv file using native code (if PHPSpreadsheet can't handle the size)<br/><br/>"
             ."<form action='${_SERVER['PHP_SELF']}'>"
             ."<input type='hidden' name='cmd' value='downloadcsv' />"
             ."<input type='submit' value='Download'/>"
@@ -180,22 +180,21 @@ function downloadXLS( KeyFrameDB $kfdb, SEEDSessionAccount $sess )
         return;
     }
 
-    $raRows = $kfdb->QueryRowsRA( "SELECT ".implode( ',', $raCols )." FROM xlsupload" );
+    $raRows = $kfdb->QueryRowsRA( "SELECT ".implode( ',', $raCols )." FROM xlsupload", KEYFRAMEDB_RESULT_ASSOC );
 
-    // PHPExcel requires the data to be in utf8
-// should use a <select> to say whether this is needed.
-// also it can be a closure instead of a function
-    array_walk_recursive( $raRows, 'utf8_my_leaves' );
+    include_once( SEEDCORE."SEEDXLSX.php" );
 
-    SEEDTable_OutputXLSFromRARows( $raRows, array( 'columns' => $raCols,
-                                                   'filename'=>'download.xls',
-                                                   'created_by'=>$sess->GetName(), 'title'=>'XLS Download' ) );
+    $oXLSX = new SEEDXlsWrite();
+
+    // row 0 is the column names
+    $oXLSX->WriteRow( 0, 1, $raCols );
+
+    $iRow = 2;
+    foreach( $raRows as $ra ) {
+        $ra = SEEDCore_CharsetConvert( $ra, 'cp1252', 'utf-8' );    // convert array of strings to utf-8
+        $oXLSX->WriteRow( 0, $iRow++, $ra );
+    }
+
+    $oXLSX->OutputSpreadsheet();
+    exit;
 }
-
-function utf8_my_leaves( &$v, $k )
-{
-    $v = utf8_encode($v);
-}
-
-?>
-
