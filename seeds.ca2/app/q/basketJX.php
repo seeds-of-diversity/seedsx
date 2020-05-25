@@ -44,8 +44,8 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
     $raCmd = $oSB->Cmd( $cmd, $_REQUEST );
     if( $raCmd['bHandled'] ) {
         $raJX = array_merge( $raJX, $raCmd );
-        $raJX['sOut'] = utf8_encode( $raJX['sOut'] );
-        $raJX['sErr'] = utf8_encode( $raJX['sErr'] );
+        $raJX['sOut'] = SEEDCore_utf8_encode( $raJX['sOut'] );
+        $raJX['sErr'] = SEEDCore_utf8_encode( $raJX['sErr'] );
         goto done;
     }
 
@@ -97,8 +97,8 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
                 while( $nLimit-- && $kfrP->CursorFetch() ) {
                     // DrawProduct always returns utf8 now - construct MSDQ with $raConfig['config_bUTF8']=false to get cp1252.
                     // So just utf8_encode the order info
-                    $raJX['sOut'] .= utf8_encode($oSB->DrawProduct( $kfrP, SEEDBasketProductHandler_Seeds::DETAIL_ALL, ['bUTF8'=>false] ));
-                    //$raJX['sOut'] .= utf8_encode(drawMSDOrderInfo( $oSB, $kfrP ));
+                    $raJX['sOut'] .= SEEDCore_utf8_encode($oSB->DrawProduct( $kfrP, SEEDBasketProductHandler_Seeds::DETAIL_ALL, ['bUTF8'=>false] ));
+                    //$raJX['sOut'] .= SEEDCore_utf8_encode(drawMSDOrderInfo( $oSB, $kfrP ));
                     $raJX['sOut'] .= "<div style='display:none' class='msd-order-info msd-order-info-".$kfrP->Key()."'></div>";
                 }
                 $raJX['bOk'] = true;
@@ -125,8 +125,8 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
                 if( ($kfrP = $oSB->oDB->GetKFR( 'P', $ra['_key'] )) ) {
                     // DrawProduct always returns utf8 now - construct MSDQ with $raConfig['config_bUTF8']=false to get cp1252.
                     // So just utf8_encode the order info
-                    $raJX['sOut'] .= utf8_encode($oSB->DrawProduct( $kfrP, SEEDBasketProductHandler_Seeds::DETAIL_ALL, ['bUTF8'=>false] ));
-                    //$raJX['sOut'] .= utf8_encode(drawMSDOrderInfo( $oSB, $kfrP ));
+                    $raJX['sOut'] .= SEEDCore_utf8_encode($oSB->DrawProduct( $kfrP, SEEDBasketProductHandler_Seeds::DETAIL_ALL, ['bUTF8'=>false] ));
+                    //$raJX['sOut'] .= SEEDCore_utf8_encode(drawMSDOrderInfo( $oSB, $kfrP ));
                     $raJX['sOut'] .= "<div style='display:none' class='msd-order-info msd-order-info-{$ra['_key']}'></div>";
                     $raJX['bOk'] = true;
                 }
@@ -156,8 +156,8 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
 
                     // DrawProduct always returns utf8 now - construct MSDQ with $raConfig['config_bUTF8']=false to get cp1252.
                     // So just utf8_encode the order info
-                    $raJX['sOut'] .= utf8_encode($oSB->DrawProduct( $kfrP, SEEDBasketProductHandler_Seeds::DETAIL_VIEW_NO_SPECIES, ['bUTF8'=>false] ));
-                    //$raJX['sOut'] .= utf8_encode(drawMSDOrderInfo( $oSB, $kfrP ));
+                    $raJX['sOut'] .= SEEDCore_utf8_encode($oSB->DrawProduct( $kfrP, SEEDBasketProductHandler_Seeds::DETAIL_VIEW_NO_SPECIES, ['bUTF8'=>false] ));
+                    //$raJX['sOut'] .= SEEDCore_utf8_encode(drawMSDOrderInfo( $oSB, $kfrP ));
                     $raJX['sOut'] .= "<div style='display:none' class='msd-order-info msd-order-info-{$ra['_key']}'></div>";
                     $raJX['bOk'] = true;
                 }
@@ -167,7 +167,7 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
         case 'msdOrderInfo':
             // when you click on a variety description this order info slides open
             if( ($kP = SEEDInput_Int('kP')) && ($kfrP = $oSB->oDB->GetKFR( 'P', $kP )) ) {
-                $raJX['sOut'] .= utf8_encode(drawMSDOrderInfo( $oSB, $kfrP ));
+                $raJX['sOut'] .= SEEDCore_utf8_encode(drawMSDOrderInfo( $oSB, $kfrP ));
                 $raJX['bOk'] = true;
             }
             break;

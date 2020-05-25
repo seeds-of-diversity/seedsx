@@ -718,7 +718,7 @@ if( ($k = intval(@$raParms['kPcvKluge'])) ) {
 
     private function charset( $s )
     {
-        return( $this->bUTF8 ? utf8_encode( $s ) : $s );
+        return( $this->bUTF8 ? SEEDCore_utf8_encode( $s ) : $s );
     }
 }
 

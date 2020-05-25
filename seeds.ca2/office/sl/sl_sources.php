@@ -115,13 +115,13 @@ if( @$_REQUEST['cmd'] == 'company_download' && ($kCompany = SEEDSafeGPC_GetInt('
     $oSLDBSrc = new SLDB_Sources( $kfdb1, 0 );
     if( ($kfrc = $oSLDBSrc->GetKFRC( "SRCCVxSRCxPxS", $sCond, array('sSortCol'=>'S_name_en ASC,P_name') )) ) {
         while( $kfrc->CursorFetch() ) {
-            $raRows[] = array( 'k'        =>             $kfrc->Value('_key'),
-                               'company'  => utf8_encode($kfrc->Value('SRC_name_en')),
-                               'species'  => utf8_encode($kfrc->Value('S_name_en')),
-                               'cultivar' => utf8_encode($kfrc->Value('P_name')),
-                               'organic'  =>             $kfrc->Value('bOrganic') );
+            $raRows[] = array( 'k'        =>                      $kfrc->Value('_key'),
+                               'company'  => SEEDCore_utf8_encode($kfrc->Value('SRC_name_en')),
+                               'species'  => SEEDCore_utf8_encode($kfrc->Value('S_name_en')),
+                               'cultivar' => SEEDCore_utf8_encode($kfrc->Value('P_name')),
+                               'organic'  =>                      $kfrc->Value('bOrganic') );
             if( !$sCompany && $kCompany != -1 ) {
-                $sCompany = utf8_encode($kfrc->Value('SRC_name_en'));
+                $sCompany = SEEDCore_utf8_encode($kfrc->Value('SRC_name_en'));
             }
         }
     }

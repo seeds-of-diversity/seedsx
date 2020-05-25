@@ -94,7 +94,7 @@ class Qold
         If the input is cp1252, the output will be the charset defined by $this->bUTF8
      */
     {
-        return( $this->bUTF8 ? utf8_encode( $s ) : $s );
+        return( $this->bUTF8 ? SEEDCore_utf8_encode( $s ) : $s );
     }
 
     function GetEmptyRQ()

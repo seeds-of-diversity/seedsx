@@ -111,6 +111,6 @@ $oCTS = new MyConsole02TabSet( $oApp );
 $s = $oApp->oC->DrawConsole( $s, ['oTabSet'=>$oCTS] );
 
 
-echo Console02Static::HTMLPage( utf8_encode($s), "", 'EN', array( 'consoleSkin'=>'green') );   // sCharset defaults to utf8
+echo Console02Static::HTMLPage( SEEDCore_utf8_encode($s), "", 'EN', array( 'consoleSkin'=>'green') );   // sCharset defaults to utf8
 
 ?>

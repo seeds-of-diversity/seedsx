@@ -165,8 +165,8 @@ function order2table( MbrOrder $oOrder, $raR )
     $raOrder = $oOrder->raOrder;
 //var_dump($raOrder);
     $ra['order'] = $raR['_key'];
-    if( !($ra['name'] = trim(utf8_encode($raR['mail_firstname']." ".$raR['mail_lastname']))) ) {    // trim removes the " " if no first/last
-        $ra['name'] = utf8_encode($raR['mail_company']);
+    if( !($ra['name'] = trim(SEEDCore_utf8_encode($raR['mail_firstname']." ".$raR['mail_lastname']))) ) {    // trim removes the " " if no first/last
+        $ra['name'] = SEEDCore_utf8_encode($raR['mail_company']);
     }
     $ra['membership'] = (@$raOrder['mbr']=='mbr1_45sed' ? 45 : (@$raOrder['mbr']=='mbr1_35' ? 35 : "") );
     $ra['donation'] = @$raOrder['donation'];

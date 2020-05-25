@@ -344,7 +344,7 @@ class MyConsole extends Console01
                    .($bDone ? " - Done" : "")
                    .($bSkip ? " - Skipped" : "")
                    .($bDelete ? " - Deleted" : "");
-            if( $this->TabSetGetCurrentTab( 'main' ) != 'Growers' )  $name = utf8_encode(trim($name));
+            if( $this->TabSetGetCurrentTab( 'main' ) != 'Growers' )  $name = SEEDCore_utf8_encode(trim($name));
             $raG2[$name] = $kMbr;
         }
         ksort($raG2);

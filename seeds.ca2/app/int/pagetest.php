@@ -74,6 +74,6 @@ function finalReport()
 
 
 
-echo Console02Static::HTMLPage( utf8_encode($s), "", 'EN', array('raScriptFiles'=>array(W_CORE.'js/console02.js')) );   // sCharset defaults to utf8
+echo Console02Static::HTMLPage( SEEDCore_utf8_encode($s), "", 'EN', array('raScriptFiles'=>array(W_CORE.'js/console02.js')) );   // sCharset defaults to utf8
 
 ?>

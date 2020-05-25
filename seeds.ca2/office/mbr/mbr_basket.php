@@ -401,7 +401,7 @@ function doFulfilButton( jxCmd, kBP )
 
 SCRIPT;
 
-echo Console02Static::HTMLPage( utf8_encode($s), "", 'EN',                    // sCharset defaults to utf8
+echo Console02Static::HTMLPage( SEEDCore_utf8_encode($s), "", 'EN',                    // sCharset defaults to utf8
                                 ['consoleSkin'=>'green',
                                  'raScriptFiles' => [W_CORE_URL."js/SEEDCore.js", W_CORE_URL."js/console02.js"],
                                 ] );

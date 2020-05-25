@@ -235,7 +235,7 @@ switch( $p_outFormat ) {
 
             $oXls->WriteRow( 0, $row++,
                              [$ra['_key'], $ra['expires'],
-                             utf8_encode($name1), utf8_encode($name2), utf8_encode($ra['address']), utf8_encode($ra['city']),
+                             SEEDCore_utf8_encode($name1), SEEDCore_utf8_encode($name2), SEEDCore_utf8_encode($ra['address']), SEEDCore_utf8_encode($ra['city']),
                              $ra['province'], $ra['postcode'], $ra['country'],
                              $ra['email'], $ra['phone'] ] );
         }
@@ -271,6 +271,6 @@ $s = "<div class='container-fluid'><div class='row'>"
     ."<div class='col-md-5' style='font-size:small;color:gray'>$sRight</div>"
     ."</div></div>";
 
-echo Console02Static::HTMLPage( utf8_encode($oApp->oC->DrawConsole($s)), "", 'EN', array( 'consoleSkin'=>'green') );   // sCharset defaults to utf8
+echo Console02Static::HTMLPage( SEEDCore_utf8_encode($oApp->oC->DrawConsole($s)), "", 'EN', array( 'consoleSkin'=>'green') );   // sCharset defaults to utf8
 
 ?>

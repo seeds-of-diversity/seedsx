@@ -329,15 +329,15 @@ if( $cmd == 't' ) {
         while( $kfr->CursorFetch() ) {
             $raRowsOut[] = array( '_key' => $kfr->Key(),
                                   'psp' => $kfr->Value('psp'),
-                                  'name_en' => utf8_encode($kfr->Value('name_en')),
-                                  'name_fr' => utf8_encode($kfr->Value('name_fr')),
-                                  'iname_en' => utf8_encode($kfr->Value('iname_en')),
-                                  'iname_fr' => utf8_encode($kfr->Value('iname_fr')),
-                                  'name_bot' => utf8_encode($kfr->Value('name_bot')),
-                                  'family_en' => utf8_encode($kfr->Value('family_en')),
-                                  'family_fr' => utf8_encode($kfr->Value('family_fr')),
-                                  'category' => utf8_encode($kfr->Value('category')),
-                                  'notes' => utf8_encode($kfr->Value('notes')),
+                                  'name_en' => SEEDCore_utf8_encode($kfr->Value('name_en')),
+                                  'name_fr' => SEEDCore_utf8_encode($kfr->Value('name_fr')),
+                                  'iname_en' => SEEDCore_utf8_encode($kfr->Value('iname_en')),
+                                  'iname_fr' => SEEDCore_utf8_encode($kfr->Value('iname_fr')),
+                                  'name_bot' => SEEDCore_utf8_encode($kfr->Value('name_bot')),
+                                  'family_en' => SEEDCore_utf8_encode($kfr->Value('family_en')),
+                                  'family_fr' => SEEDCore_utf8_encode($kfr->Value('family_fr')),
+                                  'category' => SEEDCore_utf8_encode($kfr->Value('category')),
+                                  'notes' => SEEDCore_utf8_encode($kfr->Value('notes')),
                                  );
         }
     }
@@ -361,10 +361,10 @@ if( $cmd == 't' ) {
     if( ($kfr = $oSLDBMaster->GetKfrel("PxS")->CreateRecordCursor( "" )) ) {
         while( $kfr->CursorFetch() ) {
             $raRowsOut[] = array( '_key'     => $kfr->Key(),
-                                  'species'  => utf8_encode($kfr->Value('S_name_en')),
-                                  'cultivar' => utf8_encode($kfr->Value('name')),
+                                  'species'  => SEEDCore_utf8_encode($kfr->Value('S_name_en')),
+                                  'cultivar' => SEEDCore_utf8_encode($kfr->Value('name')),
                                   't'        => $kfr->Value('t'),
-                                  'notes'    => utf8_encode($kfr->Value('notes')),
+                                  'notes'    => SEEDCore_utf8_encode($kfr->Value('notes')),
                                  );
         }
     }
@@ -420,17 +420,17 @@ function doAccessions( $bJoined )
     if( ($kfr = $oSLDBMaster->GetKfrel($rel)->CreateRecordCursor( "" )) ) {
         while( $kfr->CursorFetch() ) {
             $row = array( 'acc-key'       => $kfr->Key(),
-                          'orig-name'     => utf8_encode($kfr->Value('oname')),
+                          'orig-name'     => SEEDCore_utf8_encode($kfr->Value('oname')),
                           'pcv-key'       => $kfr->Value('fk_sl_pcv'),
-                          'grower-source' => utf8_encode($kfr->Value('x_member')),
-                          'date-harvest'  => utf8_encode($kfr->Value('x_d_harvest')),
-                          'date-received' => utf8_encode($kfr->Value('x_d_received')),
-                          'parent'        => utf8_encode($kfr->Value('parent_src')),
-                          'notes'         => utf8_encode($kfr->Value('notes')),
+                          'grower-source' => SEEDCore_utf8_encode($kfr->Value('x_member')),
+                          'date-harvest'  => SEEDCore_utf8_encode($kfr->Value('x_d_harvest')),
+                          'date-received' => SEEDCore_utf8_encode($kfr->Value('x_d_received')),
+                          'parent'        => SEEDCore_utf8_encode($kfr->Value('parent_src')),
+                          'notes'         => SEEDCore_utf8_encode($kfr->Value('notes')),
                         );
             if( $bJoined ) {
-                $row['species'] = utf8_encode($kfr->Value('S_name_en'));
-                $row['cultivar'] = utf8_encode($kfr->Value('P_name'));
+                $row['species'] = SEEDCore_utf8_encode($kfr->Value('S_name_en'));
+                $row['cultivar'] = SEEDCore_utf8_encode($kfr->Value('P_name'));
             }
             $raRowsOut[] = $row;
         }

@@ -274,7 +274,7 @@ if( ($jx = SEEDInput_Str('jx')) ) {
                 if( !($kfr = $oUI->KfrelOrder()->GetRecordFromDBKey( $id )) ) { $rQ['sErr'] = "Couldn't load $id"; goto jxDone; }
 
                 $oMbrOrder = new MbrOrder( $kfdb, "EN", $id );
-                $rQ['sOut'] = utf8_encode($oMbrOrder->DrawTicket());
+                $rQ['sOut'] = SEEDCore_utf8_encode($oMbrOrder->DrawTicket());
                 $rQ['bOk'] = true;
 
                 header( "Content-Type:text/html; charset=utf8" );
@@ -282,12 +282,12 @@ if( ($jx = SEEDInput_Str('jx')) ) {
             break;
 */
         case 'drawStatusForm':
-            $rQ['sOut'] = utf8_encode($oUI->statusForm( $kfr2 ));
+            $rQ['sOut'] = SEEDCore_utf8_encode($oUI->statusForm( $kfr2 ));
             $rQ['bOk'] = true;
             header( "Content-Type:text/html; charset=utf8" );
             break;
         case 'drawOrderSummaryRow':
-            $rQ['sOut'] = utf8_encode($oUI->drawRow($k));
+            $rQ['sOut'] = SEEDCore_utf8_encode($oUI->drawRow($k));
             $rQ['bOk'] = true;
             header( "Content-Type:text/html; charset=utf8" );
             break;
@@ -472,7 +472,7 @@ $s .= "<table border='1' width='100%' cellpadding='2' style='border-collapse:col
      ."</tr>";
 
 while( $kfr->CursorFetch() ) {
-    $s .= utf8_encode($oUI->drawRow($kfr->Key()));
+    $s .= SEEDCore_utf8_encode($oUI->drawRow($kfr->Key()));
 }
 $s .= "</table>";
 

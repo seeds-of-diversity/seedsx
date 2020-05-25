@@ -20,6 +20,6 @@ if( ($kfr = $oCP->oProfilesDB->GetKFRCond( "VISite", "osp='".addslashes($sp)."' 
     $s = $oCP->oProfilesReport->DrawVIRecord( $kfr->Key(), false );
 }
 
-echo json_encode(utf8_encode( $s ));
+echo json_encode(SEEDCore_utf8_encode( $s ));
 
 ?>
