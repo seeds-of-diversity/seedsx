@@ -37,7 +37,7 @@ switch( ($cmd = SEEDInput_Str( 'cmd' )) ) {
 
         $s .= "<div class='ctrl'>"
             ."Upload any spreadsheet to 'xlsupload' using PHPSpreadsheet - the top row will be used as keys<br/><br/>"
-            ."<form action='${_SERVER['PHP_SELF']}' method='post' enctype='multipart/form-data'>"
+            ."<form action='".$oApp->PathToSelf()."' method='post' enctype='multipart/form-data'>"
             ."<input type='hidden' name='MAX_FILE_SIZE' value='10000000' />"
             ."<input type='file' name='uploadfile'/>"
             ."<select name='charset'>"
@@ -52,7 +52,7 @@ switch( ($cmd = SEEDInput_Str( 'cmd' )) ) {
 
         $s .= "<div class='ctrl'>"
             ."Upload a csv file to 'xlsupload' using native code (e.g. in case PHPSpreadsheet doesn't work) - the top row will be used as keys<br/><br/>"
-            ."<form action='${_SERVER['PHP_SELF']}' method='post' enctype='multipart/form-data'>"
+            ."<form action='".$oApp->PathToSelf()."' method='post' enctype='multipart/form-data'>"
             ."<input type='hidden' name='MAX_FILE_SIZE' value='10000000' />"
             ."<input type='file' name='uploadfile'/>"
             ."<select name='charset'>"
@@ -69,7 +69,7 @@ switch( ($cmd = SEEDInput_Str( 'cmd' )) ) {
 
         $s .= "<div class='ctrl'>"
             ."Download 'xlsupload' as an xlsx file using PHPSpreadsheet<br/><br/>"
-            ."<form action='${_SERVER['PHP_SELF']}' method='post'>"
+            ."<form action='".$oApp->PathToSelf()."' method='post'>"
             ."<select name='charset'>"
                 ."<option value='dbWin-fileUtf8'>Windows-1252</option>"
                 ."<option value='dbUtf8-fileUtf8'>UTF-8</option>"
@@ -82,7 +82,7 @@ switch( ($cmd = SEEDInput_Str( 'cmd' )) ) {
 
         $s .= "<div class='ctrl'>"
             ."Download 'xlsupload' as a csv file using native code<br/><br/>"
-            ."<form action='${_SERVER['PHP_SELF']}' method='post'>"
+            ."<form action='".$oApp->PathToSelf()."' method='post'>"
             ."<select name='charset'>"
                 ."<option value='dbWin-fileWin'>db table Windows-1252 -&gt; file Windows-1252</option>"
                 ."<option value='dbWin-fileUtf8'>db table Windows-1252 -&gt; file UTF-8</option>"
