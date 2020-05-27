@@ -2,75 +2,95 @@
 
 define( "SITEROOT", "../" );
 include( SITEROOT."site2.php" );
-include_once( STDINC."SEEDTable.php" );
-include_once( SEEDCOMMON."console/console01.php" );
 
-list($kfdb, $sess, $lang) = SiteStartSessionAccount( array() );  // must have a login account in the office
-
-header( "Content-Type:text/html; charset=Windows-1252" );
+$oApp = SEEDConfig_NewAppConsole( ['db'=>'seeds2', 'sessPermsRequired'=>''] );  // login required on seeds2, but no particular perms
 
 $s = "";
 
-switch( ($cmd = SEEDSafeGPC_GetStrPlain( 'cmd' )) ) {
-    case 'uploadxls':    // use PHPExcel to upload any spreadsheet file to db table
-    case 'uploadcsv':    // use native code to upload a csv file to db table (because large files blow up PHPExcel)
-        $s .= uploadFile( $kfdb, ($cmd == 'uploadcsv') );
+switch( ($cmd = SEEDInput_Str( 'cmd' )) ) {
+    case 'upload':    // use PHPExcel to upload any spreadsheet file to db table
+    case 'upload':    // use native code to upload a csv file to db table (because large files blow up PHPExcel)
+        $fileFmt = SEEDInput_Str( 'fileFmt' );
+        $charset = SEEDInput_Str( 'charset' );
+
+        $s .= uploadFile( $oApp, $charset, ($fileFmt == 'csv') );
         break;
 
-    case 'downloadxls':
-        // use PHPSpreadsheet to output the db table as a spreadsheet
-        downloadXLS( $kfdb, $sess );
-        goto done;    // function either outputs its error message or outputs xls file
+    case 'download':
+        $fileFmt = SEEDInput_Str( 'fileFmt' );
+        $charset = SEEDInput_Str( 'charset' );
 
-    case 'downloadcsv':
-        // use native code to output the db table as a csv file (if PHPSpreadsheet imposes memory limits with large table/file)
-//        $s .= downloadCSV( $kfdb );
-        break;
+        if( $fileFmt == 'csv' ) {
+            // downloadCSV( $oApp, $charset );
+            $oApp->oC->AddErrMsg( "CSV download not implemented" );
+            goto showPage;
+        } else {
+            downloadXLS( $oApp, $charset );
+        }
+        break;    // function either outputs xlsx file and exits, or sets console error message and returns
 
     default:
+        showPage:
         $s .= "<style>"
              .".ctrl {border:1px solid #aaa;margin-bottom:20px;padding:10px;}"
              ."</style>";
 
         $s .= "<div class='ctrl'>"
-            ."Upload any spreadsheet to 'xlsupload' using PHPExcel - the top row will be used as keys<br/><br/>"
+            ."Upload any spreadsheet to 'xlsupload' using PHPSpreadsheet - the top row will be used as keys<br/><br/>"
             ."<form action='${_SERVER['PHP_SELF']}' method='post' enctype='multipart/form-data'>"
             ."<input type='hidden' name='MAX_FILE_SIZE' value='10000000' />"
-            ."<input type='hidden' name='cmd' value='uploadxls' />"
             ."<input type='file' name='uploadfile'/>"
-            ."<select name='uploadcharset'><option value='Windows-1252'>Windows-1252</option></select> Charset in db table (currently hardcoded but easy to make this an option)<br/>"
+            ."<select name='charset'>"
+                ."<option value='fileUtf8-dbWin'>Windows-1252</option>"
+                ."<option value='fileUtf8-dbUtf8'>UTF-8</option>"
+                ."</select> Charset in database table<br/>"
+            ."<input type='hidden' name='fileFmt' value='xlsx' />"
+            ."<input type='hidden' name='cmd' value='upload' />"
             ."<input type='submit' value='Upload'/>"
             ."</form>"
             ."</div>";
 
         $s .= "<div class='ctrl'>"
-            ."Upload a csv file to 'xlsupload' using native code (for large files that PHPExcel can't handle) - the top row will be used as keys<br/><br/>"
+            ."Upload a csv file to 'xlsupload' using native code (e.g. in case PHPSpreadsheet doesn't work) - the top row will be used as keys<br/><br/>"
             ."<form action='${_SERVER['PHP_SELF']}' method='post' enctype='multipart/form-data'>"
             ."<input type='hidden' name='MAX_FILE_SIZE' value='10000000' />"
-            ."<input type='hidden' name='cmd' value='uploadcsv' />"
             ."<input type='file' name='uploadfile'/>"
-            ."<select name='uploadcharset'>"
-                ."<option value='Win/Win'>Windows-1252 / Windows-1252</option>"
-                ."<option value='Win/UTF8'>Windows-1252 / UTF-8</option>"
-                ."<option value='UTF8/Win'>UTF-8 / Windows-1252</option>"
-                ."<option value='UTF8/UTF8'>UTF-8 / UTF-8</option>"
-                ."</select> Charset in file/table<br/>"
+            ."<select name='charset'>"
+                ."<option value='fileWin-dbWin'>file Windows-1252 -&gt; db Windows-1252</option>"
+                ."<option value='fileWin-dbUtf8'>file Windows-1252 -&gt; db UTF-8</option>"
+                ."<option value='fileUtf8-dbWin'>file UTF-8 -&gt; b Windows-1252</option>"
+                ."<option value='fileUtf8-dbUtf8'>file UTF-8 -&gt; db UTF-8</option>"
+                ."</select> Charset in file/database<br/>"
+            ."<input type='hidden' name='fileFmt' value='csv' />"
+            ."<input type='hidden' name='cmd' value='upload' />"
             ."<input type='submit' value='Upload'/>"
             ."</form>"
             ."</div>";
 
         $s .= "<div class='ctrl'>"
-            ."Download 'xlsupload' as an xls file using PHPSpreadsheet<br/><br/>"
-            ."<form action='${_SERVER['PHP_SELF']}'>"
-            ."<input type='hidden' name='cmd' value='downloadxls' />"
+            ."Download 'xlsupload' as an xlsx file using PHPSpreadsheet<br/><br/>"
+            ."<form action='${_SERVER['PHP_SELF']}' method='post'>"
+            ."<select name='charset'>"
+                ."<option value='dbWin-fileUtf8'>Windows-1252</option>"
+                ."<option value='dbUtf8-fileUtf8'>UTF-8</option>"
+                ."</select> Charset in database table<br/>"
+            ."<input type='hidden' name='fileFmt' value='xlsx' />"
+            ."<input type='hidden' name='cmd' value='download' />"
             ."<input type='submit' value='Download'/>"
             ."</form>"
             ."</div>";
 
         $s .= "<div class='ctrl'>"
-            ."Download 'xlsupload' as a csv file using native code (if PHPSpreadsheet can't handle the size)<br/><br/>"
-            ."<form action='${_SERVER['PHP_SELF']}'>"
-            ."<input type='hidden' name='cmd' value='downloadcsv' />"
+            ."Download 'xlsupload' as a csv file using native code<br/><br/>"
+            ."<form action='${_SERVER['PHP_SELF']}' method='post'>"
+            ."<select name='charset'>"
+                ."<option value='dbWin-fileWin'>db table Windows-1252 -&gt; file Windows-1252</option>"
+                ."<option value='dbWin-fileUtf8'>db table Windows-1252 -&gt; file UTF-8</option>"
+                ."<option value='dbUtf8-fileWin'>db table UTF-8 -&gt; file Windows-1252</option>"
+                ."<option value='dbUtf8-fileUtf8'>db table UTF-8 -&gt; file UTF-8</option>"
+                ."</select> Charset in database/file<br/>"
+            ."<input type='hidden' name='fileFmt' value='csv' />"
+            ."<input type='hidden' name='cmd' value='download' />"
             ."<input type='submit' value='Download'/>"
             ."</form>"
             ."</div>";
@@ -78,72 +98,58 @@ switch( ($cmd = SEEDSafeGPC_GetStrPlain( 'cmd' )) ) {
         break;
 }
 
-
-if( $s ) {
-    echo Console01Static::HTMLPage( $s, "", "EN", array('bBootstrap'=>true, 'sCharset'=>"Windows-1252") );
-}
-
-done:
+echo Console02Static::HTMLPage( $oApp->oC->DrawConsole($s), "", "EN", [] );
 
 
-function uploadFile( KeyFrameDB $kfdb, $bCSV )
+
+function uploadFile( SEEDAppConsole $oApp, $charset, $bCSV )
 {
+    include_once( SEEDCORE."SEEDTableSheets.php" );
+
+
     $s = "";
 
-    switch( SEEDSafeGPC_GetStrPlain('uploadcharset') ) {
-        case 'Win/Win':
-            $sCharsetFile  = 'Windows-1252';
-            $sCharsetTable = 'Windows-1252';
-            break;
-        case 'Win/UTF8':
-            $sCharsetFile  = 'Windows-1252';
-            $sCharsetTable = 'utf-8';
-            break;
-        case 'UTF8/UTF8':
-            $sCharsetFile  = 'utf-8';
-            $sCharsetTable = 'utf-8';
-            break;
+    // charset is one of fileWin-dbWin, fileWin-dbUtf8, fileUtf8-dbWin, fileUtf8-dbUtf8
+    $sCharsetFile = SEEDCore_StartsWith( $charset, 'fileWin' ) ? "Windows-1252" : "utf-8";
+    $sCharsetTable = SEEDCore_EndsWith( $charset, 'dbWin' ) ? "Windows-1252" : "utf-8";
 
-        case 'UTF8/Win':    // this is the default since spreadsheets are usually utf-8 and our tables are usually win-1252
-        default:
-            $sCharsetFile  = 'utf-8';
-            $sCharsetTable = 'Windows-1252';
-            break;
-    }
+    $parms = [ // parms for SEEDTableSheetsFile constructor
+               'raSEEDTableSheetsFileParms' => [],
+               // parms for LoadFromFile()
+               'raSEEDTableSheetsLoadParms' => ['fmt' => ($bCSV ? 'csv' : 'xls'),
+                                                'charset-file' => $sCharsetFile,
+                                                'charset-sheet' => $sCharsetTable,
+                                                //'sheets' => [1]                 // just the first sheet
+                                               ]
+             ];
 
-    // parms for SEEDTable
-    $raSEEDTableDef = array( 'charset'=>$sCharsetTable );
+    list($oSheets,$sErr) = SEEDTableSheets_LoadFromUploadedFile( 'uploadfile', $parms );
+    if( !$oSheets ) die( "Error: $sErr" );
 
-    // parms for SEEDTable::LoadFromFile
-    $raSEEDTableLoadParms = array( 'bCSV'=>$bCSV, 'charset-file'=>$sCharsetFile );
-
-
-    list($bOk,$raRows,$sErr) = SEEDTable_LoadFromUploadedFile( 'uploadfile',
-                                                               array( 'raSEEDTableDef'       => $raSEEDTableDef,
-                                                                      'raSEEDTableLoadParms' => $raSEEDTableLoadParms ) );
-    if( !$bOk ) die( "Error: $sErr" );
+    $sheetname = $oSheets->GetSheetList()[0];
+    $raRows = $oSheets->GetSheet($sheetname);
     if( !count($raRows) )  die( "Empty spreadsheet" );
 
     $keys = array_keys($raRows[0]);
-    //var_dump($keys,$raRows);
+    //var_dump($keys,$raData);
 
-    $kfdb->SetDebug(2);
+    $oApp->kfdb->SetDebug(2);
 
     /* Drop the db-table if it was left over from last time
      */
-    $kfdb->Execute( "DROP TABLE IF EXISTS xlsupload" );
+    $oApp->kfdb->Execute( "DROP TABLE IF EXISTS xlsupload" );
 
     /* Create a db-table with the required fields
      */
     $raK = array();
     foreach( $keys as $k ) {
-        // the purpose of addslashes is to prevent sql insertion attacks, not to make this work if a field name contains quotes or other weird characters
+        // the purpose of addslashes is to prevent sql insertion attacks; the sql will still fail if a field name contains quotes or other weird characters
         $raK[] = addslashes($k)." text";
     }
-    $kfdb->Execute( "CREATE TABLE xlsupload (".implode(",",$raK).");" );
+    $oApp->kfdb->Execute( "CREATE TABLE xlsupload (".implode(",",$raK).");" );
 
     // the insert statement is only interesting if something goes wrong
-    $kfdb->SetDebug(1);
+    $oApp->kfdb->SetDebug(1);
 
 
     /* Generate an INSERT statement to fill the db-table.
@@ -161,28 +167,32 @@ function uploadFile( KeyFrameDB $kfdb, $bCSV )
         }
         $raR[] = "(".implode(',',$raV).")";
     }
-    $kfdb->Execute( "INSERT INTO xlsupload (".implode(',',$raK).") VALUES ".implode(',',$raR) );
+    $oApp->kfdb->Execute( "INSERT INTO xlsupload (".implode(',',$raK).") VALUES ".implode(',',$raR) );
 
-    $s .= "xlsupload is ready with ".$kfdb->Query1( "SELECT count(*) FROM xlsupload" )." rows!";
+    $s .= "xlsupload is ready with ".$oApp->kfdb->Query1( "SELECT count(*) FROM xlsupload" )." rows!";
 
     return( $s );
 }
 
-function downloadXLS( KeyFrameDB $kfdb, SEEDSessionAccount $sess )
+function downloadXLS( SEEDAppConsole $oApp, $charset )
 {
+    include_once( SEEDCORE."SEEDXLSX.php" );
+
     $raCols = array();
-    $raColsRA = $kfdb->QueryRowsRA( "SHOW COLUMNS FROM xlsupload" );
+    $raColsRA = $oApp->kfdb->QueryRowsRA( "SHOW COLUMNS FROM xlsupload" );
     foreach( $raColsRA as $ra ) {
         $raCols[] = $ra[0];
     }
     if( !count($raCols) ) {
-        echo "Table xlsupload not found or has no columns";
+        $oApp->oC->AddErrMsg( "Table xlsupload not found or has no columns" );
         return;
     }
 
-    $raRows = $kfdb->QueryRowsRA( "SELECT ".implode( ',', $raCols )." FROM xlsupload", KEYFRAMEDB_RESULT_ASSOC );
+    // charset is one of dbWin-fileWin, dbWin-fileUtf8, dbUtf8-fileWin, dbUtf8-fileUtf8
+    $sCharsetTable = SEEDCore_StartsWith( $charset, 'dbWin' ) ? "Windows-1252" : "utf-8";
+    $sCharsetFile = SEEDCore_EndsWith( $charset, 'fileWin' ) ? "Windows-1252" : "utf-8";
 
-    include_once( SEEDCORE."SEEDXLSX.php" );
+    $raRows = $oApp->kfdb->QueryRowsRA( "SELECT ".implode( ',', $raCols )." FROM xlsupload", KEYFRAMEDB_RESULT_ASSOC );
 
     $oXLSX = new SEEDXlsWrite();
 
@@ -191,7 +201,9 @@ function downloadXLS( KeyFrameDB $kfdb, SEEDSessionAccount $sess )
 
     $iRow = 2;
     foreach( $raRows as $ra ) {
-        $ra = SEEDCore_CharsetConvert( $ra, 'cp1252', 'utf-8' );    // convert array of strings to utf-8
+        if( $sCharsetTable != $sCharsetFile ) {
+            $ra = SEEDCore_CharsetConvert( $ra, $sCharsetTable, $sCharsetFile );    // convert array of strings
+        }
         $oXLSX->WriteRow( 0, $iRow++, $ra );
     }
 
