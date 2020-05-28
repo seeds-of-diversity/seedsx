@@ -2,7 +2,7 @@
 
 /* Contact and Login manager
 
-   Copyright (c) 2009-2017 Seeds of Diversity Canada
+   Copyright (c) 2009-2020 Seeds of Diversity Canada
 
    Contact database:
        Read only view of the mbr_contacts database
@@ -22,6 +22,8 @@ include_once( SEEDCOMMON."mbr/mbrBulletin.php" );
 include_once( "_mbr.php" );
 include_once( "_mbr_mail.php" );
 
+include_once( SEEDAPP."mbr/mbr_ts_ebulletin.php" );
+include_once( SEEDCORE."SEEDTableSheets.php" );
 
 define( "MBRCONTACTS_TABNAME_BULLETIN", "Bulletin" );    // so per-tab TabSetGetSVA knows its name
 
@@ -1116,158 +1118,23 @@ class mbrContacts_Bulletin extends Console01_Worker1
 
     function __construct( Console01 $oC, KeyFrameDB $kfdb2, SEEDSessionAccount $sess )
     {
-        include_once( STDINC."SEEDTable.php" );
+//        include_once( STDINC."SEEDTable.php" );
 
         parent::__construct( $oC, $kfdb2, $sess );
+
+        $this->oApp = SEEDConfig_NewAppConsole_LoginNotRequired( ['db'=>'seeds2'] );
+        $this->oEbull = new MbrUIEbulletin( $this->oApp );
     }
 
     function Init()
     {
-        switch( SEEDSafeGPC_GetStrPlain( 'action' ) ) {
-            case 'Add':    $this->doAdd();     break;
-            case 'Delete': $this->doDelete();  break;
-            case 'Upload': $this->doUpload();  break;
-            default:                           break;
+        if( ($action = SEEDInput_Str('action')) ) {
+            list($s,$raEmails) = $this->oEbull->DoAction( $action );
+            $this->sOut .= $s;
+            if( $raEmails !== null ) $this->raEmails = $raEmails;
         }
-    }
-
-    private function doAdd()
-    {
-        $this->sOut .= "<h3>Adding email addresses</h3>";
-
-        $oBull = new MbrBulletin( $this->kfdb, $this->sess->GetUID() );
-
-        foreach( $_REQUEST as $k => $v ) {
-            if( substr($k,0,1) == 'e' && ($i = intval(substr($k,1))) ) {
-                $e = SEEDSafeGPC_GetStrPlain( "e".$i );  // should be the same as $v
-                if( empty($e) ) continue;
-
-                $kMbr = $this->kfdb->Query1( "SELECT _key FROM seeds2.mbr_contacts WHERE email='".addslashes($e)."'" );
-                if( false ) { // Decided to allow duplicates so expired members can get the ebulletin  // if( $kMbr ) {
-                    $this->sOut .= "<span style='color:red'>$e is #$kMbr in the member database. You should sign them up there instead.</span><br/>";
-                    continue;
-                }
-
-                $sName = SEEDSafeGPC_GetStrPlain( "n".$i );
-                $sLang = SEEDSafeGPC_GetStrPlain( "l".$i );
-                $sComment = SEEDSafeGPC_GetStrPlain( "c".$i );
-                $s = "$e ".($sName ? "($sName)" : "")." :";
-                switch( ($eRet = $oBull->AddSubscriber( $e, $sName, $sLang, $sComment )) ) {
-                    case 'ok':  $this->sOut .= "<span style='color:green'>$s successful</span><br/>"; break;
-                    case 'dup': $this->sOut .= "<span style='color:red'>$s duplicate, not added</span><br/>"; break;
-                    default:    die( "<p>Sorry, unable to update the email list.  Try again or get Bob to help.<br/>".$this->kfdb->GetErrMsg()."</p>" );
-                }
-            }
-        }
-    }
-
-    private function doDelete()
-    {
-        $this->sOut .= "<h3>Deleting email addresses</h3>";
-
-        $oBull = new MbrBulletin( $this->kfdb, $this->sess->GetUID() );
-
-        foreach( $_REQUEST as $k => $v ) {
-            if( substr($k,0,1) == 'e' && ($i = intval(substr($k,1))) ) {
-                $e = SEEDSafeGPC_GetStrPlain( "e".$i );
-                if( empty($e) ) continue;
-
-                $kMbr = $this->kfdb->Query1( "SELECT _key FROM seeds2.mbr_contacts WHERE email='".addslashes($e)."'" );
-
-                $s = "$e :";
-                switch( ($eRet = $oBull->RemoveSubscriber( $e )) ) {
-                    case 'ok':
-                        if( $kMbr ) {
-                            $this->sOut .= "<span style='color:red'>$s successful, but also #$kMbr in the member database.</span><br/>";
-                        } else {
-                            $this->sOut .= "<span style='color:green'>$s successful</span><br/>";
-                        }
-                        break;
-                    case 'notfound':
-                        $this->sOut .= "<span style='color:red'>$s not found in subscriber list."
-                                      .($kMbr ? (" They are #$kMbr in the member database, so unsubscribe them there too.") : "")
-                                      ."</span><br/>";
-                        break;
-                    default:
-                        die( "<p>Sorry, unable to update email list.  Try again or get Bob to help.<br/>".$this->kfdb->GetErrMsg()."</p>" );
-                }
-            }
-        }
-    }
-
-    private function doUpload()
-    /**************************
-        This uploads a spreadsheet file and puts the contents into the form of ContentDraw
-     */
-    {
-        list($bOk,$raRows,$sErrMsg) = SEEDTable_LoadFromUploadedFile( 'upfile', array( 'raSEEDTableDef'=> $this->seedTableDef ) );
-
-        if( !$bOk ) {
-            $this->oC->ErrMsg( $sErrMsg );
-            return;
-        }
-
-        //var_dump($raRows); exit;
-
-        /* Anonymous functions are supported at PHP 5.3
-         */
-        // join first name and last name
-        //array_walk( $raRows, create_function( '&$r', 'if( isset($r["first name"]) && isset($r["last name"]) ) $r["name"] = trim($r["first name"]." ".$r["last name"] );' ) );
-        array_walk( $raRows, function (&$r){ if( isset($r['first name']) && isset($r['last name']) ) $r['name'] = trim( $r['first name']." ".$r['last name'] ); } );
-
-        // remove blank rows (or at least those that don't have name or email)
-        $raRows = array_filter( $raRows, function ($r){ return(!empty($r['name']) || !empty($r['email'])); } );
-
-        // fill empty fields
-        array_walk( $raRows, function (&$r){ if( !isset($r['name']) )     $r['name'] = '';
-                                             if( !isset($r['email']) )    $r['email'] = '';
-                                             if( !isset($r['language']) ) $r['language'] = '';
-                                             if( !isset($r['comment']) )  $r['comment'] = '';
-                                           } );
-
-        // Forgivingly convert errant language codes to expected format (E,F,B)   e.g. e -> E, EN -> E
-        array_walk( $raRows, function (&$r){ $r['language'] = strtoupper( substr($r['language'],0,1) ); } );
-
-
-        /* Warn about upload issues
-         */
-        if( !($nRows = count($raRows)) ) {
-            $this->oC->ErrMsg( "The file uploaded, but there didn't seem to be anything in it. Either it's an empty file, or there's something wrong with the columns." );
-        }
-        // PHP has a limit on the number of post-vars you can send at once.  If the file is too big, you won't be able to submit the form.
-        $maxRows = ($miv = ini_get( 'max_input_vars' )) ? ($miv - 20)/4 : 200;    // 20 is arbitrary for what the UI might use, 200 because the miv default is probably 1000
-        if( $nRows > $maxRows ) {
-            $this->oC->ErrMsg( "Sorry, this program can only handle a max of $miv lines at a time. Please split this into smaller files." );
-        }
-
-
-        /* Warn about funny rows
-         */
-        $bErr = false;
-        $bBadLang = false;
-        foreach( $raRows as $r ) {
-            if( empty($r['email']) && !empty($r['name']) ) { $this->oC->ErrMsg( "Warning: ${r['name']} has a blank email.<br/>" ); }
-
-            // a tricky way to check for non-allowed chars without using regex: convert those chars to one particular non-allowed char and check for it
-            $raNonEmailChars = array( "\r", "\n", "\t", ',', ';', ':', '"', "'", '(', ')', '<', '>', '[', ']', '|' );
-            $e = str_replace( $raNonEmailChars, ' ', $r['email'] );
-
-            if( strpos($r['email'], '@') === false || strpos($r['email'], ' ') !== false ) {
-                $this->oC->ErrMsg( "Warning: ${r['email']} doesn't look like a valid email address.<br/>" );
-            }
-
-            if( !$bBadLang && !in_array( $r['language'], array('E','F','B') ) ) {
-                $bBadLang = true;
-                $bErr = true;
-                $this->oC->ErrMsg( "Language code '{$r['language']}' is not allowed. Use E, F, or B." );
-            }
-        }
-
-        if( !$bErr ) {
-            $this->oC->UserMsg( "The upload looks good ($nRows rows loaded below), but it isn't saved yet. Check the information below, fix it as needed, and click Add to save it." );
-            $this->raEmails = $raRows;
-        }
-    }
+        $this->oC->UserMsg($this->oApp->oC->GetUserMsg());
+        $this->oC->ErrMsg($this->oApp->oC->GetErrMsg());      }
 
     function ControlDraw()
     {
@@ -1296,7 +1163,7 @@ class mbrContacts_Bulletin extends Console01_Worker1
         }
         $bEmailColFirst = ($sOrderNameEmail == 'E-N');
 
-        $oTable = new SEEDTable( $this->seedTableDef );
+        //$oTable = new SEEDTable( $this->seedTableDef );
 
         $sInstructions =
               "<div class='console01_instructions' style=''>"
@@ -1305,7 +1172,7 @@ class mbrContacts_Bulletin extends Console01_Worker1
              ."<p><b>To Upload</b> a spreadsheet file:</p>"
              ."<div style='margin:0 0 10px 30px'>"
              ."<ul>"
-             ."<li>The first row of the spreadsheet must have these names (in any order).".$oTable->SampleHead()."</li>"
+             ."<li>The first row of the spreadsheet must have these names (in any order).".SEEDTableSheets::SampleHead($this->seedTableDef)."</li>"
              ."<li>The values in the <b>language</b> column can be E, F, or B (for English, French, Both/bilingual).</li>"
              ."<li>Instead of <B>name</B> you can have <B>first name</B> and <B>last name</B> columns if you like. (There's no advantage: they will just be joined to make the name).</li>"
              ."<li>The Upload button just puts the information from the file into the form. Check that it looks right, then click the Add button.</li>"
