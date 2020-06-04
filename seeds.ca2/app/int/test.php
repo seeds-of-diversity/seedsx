@@ -25,6 +25,7 @@ $s = "<div style='border:1px solid #aaa;margin-bottom:30px;padding:10px'>"
     ."<div><a href='".Site_path_self()."?test=store'>Store test</a></div>"
     ."<div><a href='".Site_path_self()."?test=events'>Events test</a></div>"
     ."<div><a href='".Site_path_self()."?test=csci'>CSCI test</a></div>"
+    ."<div><a href='".Site_path_self()."?test=sl-search'>Seed Library Search test</a></div>"
     ."<div><a href='".Site_path_self()."?test=sl-list'>Seed Library List via Drupal test</a></div>"
     ."<div><a href='".Site_path_self()."?test=bulletin'>bulletin signup test</a></div>"
     ."<div><a href='".Site_path_self()."?test=docrep'>DocRep test</a></div>"
@@ -167,6 +168,10 @@ switch( $test ) {
 
     case 'sl-list':
         $s .= $oTmpl->ExpandStr( "[[SEEDContent:diversity/seed-library-list]]" );
+        break;
+
+    case 'sl-search':
+        $s .= $oTmpl->ExpandStr( "[[SEEDContent:diversity/seed-library-search]]" );
         break;
 
     case 'csci':

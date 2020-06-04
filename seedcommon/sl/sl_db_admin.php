@@ -7,6 +7,7 @@
  * Statistics and integrity management for Seed Library database
  */
 
+// see QServerRosetta::cultivarOverview
 class SLDB_Admin_Stats
 {
     private $raReferencesToPCV = array();

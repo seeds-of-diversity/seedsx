@@ -16,6 +16,7 @@ class SLAdminReports
         $this->oQCollReports = new QServerSLCollectionReports( $this->oApp, ['config_bUTF8'=>false] );
     }
 
+//see QServerRosetta::cultivarOverview
     function ReportsContentDraw()
     {
         $s = "<div>"

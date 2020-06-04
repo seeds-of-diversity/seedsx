@@ -310,6 +310,12 @@ class DrupalModTagHandler
                 $s = iconv( 'Windows-1252', 'UTF-8//IGNORE', $s );
                 break;
 
+            case 'diversity/seed-library-search':
+                include_once( SEEDAPP."sl/search.php" );
+                $o = new SLSearchApp( $this->oApp );
+                $s = SEEDCore_utf8_encode( $o->Draw() );
+                break;
+
             case 'diversity/seed-library-list':
             case 'diversite/bibliotheque-semences-liste':
                 include_once( SITEROOT."l/sl/sl_public.php" );
