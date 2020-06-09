@@ -24,7 +24,7 @@ if( $rQ['bOk'] ) {
     }
 }
 
-    $raTmplVars = array( 'lang'=>$lang, 'spOptions'=>$spOpts );
+    $raTmplVars = array( 'lang'=>$lang, 'spOptions'=>$spOpts, 'yCurrent'=>date('Y') );
 
     $o = new SEEDTemplate_Generator( array( 'fTemplates' => array(SITEROOT."seedfinder/seedfinder.html"),
                                             'SEEDTagParms' => array(),
