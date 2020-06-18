@@ -56,10 +56,12 @@ $(document).ready(function() {
     /************
       Variables
      */
- 
-    var cvblock_default =
-            '<div class="col default col-lg-2 col-md-2 col-sm-12 col-xs-12">'
-               +'<a class="get_details" data-target=".default" data-kPcv="[[P__key]]">'
+
+    /* data-backto records whether we got to the companies screen from TopChoices or from Search Results, so the Back button can go back there.
+     */
+    var cvblock_topChoices =
+            '<div class="col topChoices col-lg-2 col-md-3 col-sm-4 col-xs-12">'
+               +'<a class="get_details" data-backto=".topChoices" data-kPcv="[[P__key]]">'
                    +'<div class="widget-block panel-block">'
                        +'<div class="panel panel-default">'
                            +'<div class="panel-heading"><h3 class="panel-title">[[S_name_en]]</h3></div>'
@@ -69,8 +71,8 @@ $(document).ready(function() {
                +'</a>'
            +'</div>';
     var cvblock = 
-            '<div class="col species col-lg-2 col-md-2 col-sm-12 col-xs-12">'
-               +'<a class="get_details" data-target=".species" data-kPcv="[[P__key]]">'
+            '<div class="col species col-lg-2 col-md-3 col-sm-4 col-xs-12">'
+               +'<a class="get_details" data-backto=".species" data-kPcv="[[P__key]]">'
                    +'<div class="widget-block panel-block">'
                        +'<div class="panel panel-default">'
                            +'<div class="panel-heading"><h3 class="panel-title">[[S_name_en]]</h3></div>'
@@ -87,17 +89,18 @@ $(document).ready(function() {
 
     var qurl  = bProxy ? "qcurl.php" : "http://seeds.ca/app/q/index.php";  
                                        //"http://localhost/~bob/seeds.ca2/app/q/index.php";
+    var qurl2  = "http://seeds.ca/app/q2/index.php";  
+    //qurl2 = "http://localhost/~bob/seedsx/seeds.ca2/app/q2/index.php";
 
     /************
       Initialize the display with Popular Varieties
      */
-    var qdata1 = bProxy ? { cmd: 'topchoices' } : { qcmd: "srcCultivarSearch", sMode: "TopChoices" };
     $.ajax({
         type: "POST",
-        url: qurl,
-        data : qdata1,
+        url: qurl2,
+        data : { qcmd: "srcSrcCvCultivarList", sMode: "TopChoices" },
         success: function(data){
-            if( !bProxy ) data = window.JSON.parse(data);
+            data = window.JSON.parse(data);
             //console.log(data);
             
             var wrapper = $('<div class="sub-header col-lg-12 col-md-12 col-sm-12 col-xs-12"></div>');
@@ -106,9 +109,9 @@ $(document).ready(function() {
                             +'</p></div>');
 
             $('.seeds-results').append(wrapper.append(message));
-
+            
             $.each(data.raOut, function(key,value) {
-                var b = cvblock_default;
+                var b = cvblock_topChoices;
                 b = b.replace( "[[P_name]]", value.P_name );
                 b = b.replace( "[[P__key]]", value.P__key );
                 b = b.replace( "[[S_name_en]]", sfLang=="EN" ? value.S_name_en : value.S_name_fr );
@@ -116,7 +119,10 @@ $(document).ready(function() {
             });
 
             $('.seeds-results .panel').matchHeight();
-        }
+        },
+        error : function( jqXHR, textStatus, errorThrown ) { console.log(errorThrown); }
+    }).done(function() {
+        $.scrollTo(0, 0);
     });
 
 
@@ -127,7 +133,7 @@ $(document).ready(function() {
 	$("#finder").submit(function(e) {
 		var $this = $(this);
 		$('.seeds-results .species').remove();
-		$('.seeds-results .default').remove();
+		$('.seeds-results .topChoices').remove();
 		$('.seeds-results .sub-header').remove();
 		$('.seeds-results .details').remove();
 		$('.seeds-results .details-header').remove();
@@ -164,7 +170,7 @@ $(document).ready(function() {
 //					$.each(data.raOut, function(key,value) {
 					
 					
-//						var block = $('<div class="col species col-lg-2 col-md-2 col-sm-12 col-xs-12"><a class="get_details" data-kPcv="' + value.P__key + '" data-target=".species"><div class="widget-block panel-block"><div class="panel panel-default"><div class="panel-body">' + value.P_name + '</div></div></div></a></div>');
+//						var block = $('<div class="col species col-lg-2 col-md-2 col-sm-12 col-xs-12"><a class="get_details" data-kPcv="' + value.P__key + '" data-backto=".species"><div class="widget-block panel-block"><div class="panel panel-default"><div class="panel-body">' + value.P_name + '</div></div></div></a></div>');
 //						$('.seeds-results').append(block);
 //					});
 		            $.each(data.raOut, function(key,value) {
@@ -181,7 +187,9 @@ $(document).ready(function() {
 					$('.seeds-results .panel').matchHeight();
 				}
 			}
-		});
+		}).done(function() {
+            $.scrollTo($('.results').position().top - 80, 500);
+        });
 		e.preventDefault();
 	});
 	
@@ -190,8 +198,9 @@ $(document).ready(function() {
 		$('.seeds-results .details-header').remove();
 	    $(".fmt1").show();
 	    $(".fmt2").hide();
-		$('.seeds-results ' + $(e.target).data('target')).css('display', 'block');
+		$('.seeds-results ' + $(e.target).data('backto')).css('display', 'block');
 		$('.seeds-results .sub-header').css('display', 'block');
+        $.scrollTo($('.results').position().top - 80, 200);
 	});
 	
 	
@@ -199,11 +208,11 @@ $(document).ready(function() {
 	 */
 	$('.seeds-results').delegate("a.get_details", "click", function(e) {
 		var $this = $(this);
-		$('.seeds-results ' + $this.attr('data-target')).css('display', 'none');
+		$('.seeds-results ' + $this.attr('data-backto')).css('display', 'none');
 		$('.seeds-results .sub-header').css('display', 'none');
 		$('.seeds-results .details').remove();
 		$('.seeds-results .details-header').remove();
-		
+
         var qdata3 = bProxy ? { cmd : "suppliers", kPcv: $(this).attr('data-kPcv') } : { qcmd: "srcSources", kPcv: $(this).attr('data-kPcv') };
         $.ajax({
             type: "POST",
@@ -247,7 +256,7 @@ $(document).ready(function() {
                 var headAvailable = '<h2 align="center">' + $this.find('.panel-body').text() 
                                   + ', available from <strong>' + data.raOut.length + '</strong> suppliers</h2>';
 
-                var button = '<p align="center"><a href="#" onclick="return false;" data-target="' + $this.attr('data-target') + '" '
+                var button = '<p align="center"><a href="#" onclick="return false;" data-backto="' + $this.attr('data-backto') + '" '
                            + 'class="btn btn-success btn-lg back">Back</a></p><br />';
                           
                 $('.seeds-results').append( $(fullwidth).append($(headAvailable)),
