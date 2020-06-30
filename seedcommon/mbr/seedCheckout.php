@@ -715,7 +715,7 @@ $sGarlicVarieties =
                           "FR" => "Bulbilles d'ails disponibles" ),
 
             "Garlic-bulbils-instr"
-                => array( "EN" => "<p>Garlic bulbils are available for autumn 2019. These are not garlic bulbs! See our article "
+                => array( "EN" => "<p>Garlic bulbils are available for autumn planting. These are not garlic bulbs! See our article "
                                  ."<a href='http://www.seeds.ca/d?n=web/ebulletin/2016-08-en/articles/garlic' target='_blank'>"
                                  ."How to Grow Garlic from Bulbils</a> if you're not sure what bulbils are or what to do with them.</p>"
                                  ."<p>We will send 5 varieties for $15, with at least 10 bulbils of each variety. We cannot ensure "
