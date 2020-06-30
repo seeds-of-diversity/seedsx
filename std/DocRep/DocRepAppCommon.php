@@ -36,10 +36,10 @@ function DocRep_GetDocGPC( $prefix = '', $hashSeed = '', $kfdb = NULL )
         list($kDoc,$t) = DocRep_HashTrack2Key( $t, $hashSeed );
         // save the tracking key
         if( $t ) {
-            $oMT = new SEEDMetaTable_TablesLite( $kfdb );
-            if( ($kTable = $oMT->OpenTable( 'DRTrackEmail' )) ) {
-                $oMT->PutRow( $kTable, 0, array(), $kDoc, $t );
-            }
+//            $oMT = new SEEDMetaTable_TablesLite( $kfdb );
+//            if( ($kTable = $oMT->OpenTable( 'DRTrackEmail' )) ) {
+//                $oMT->PutRow( $kTable, 0, array(), $kDoc, $t );
+//            }
         }
     }
     return( $kDoc );
