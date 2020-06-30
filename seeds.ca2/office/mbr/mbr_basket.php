@@ -54,7 +54,7 @@ class SEEDBasketFulfilment
     private $oApp;
     private $oBasketDB;
 
-    function __construct( SEEDAppSession $oApp )
+    function __construct( SEEDAppSessionAccount $oApp )
     {
         $this->oApp = $oApp;
         $this->oBasketDB = new SEEDBasketDB( $oApp->kfdb, $oApp->sess->GetUID(), SITE_LOG_ROOT, ['db'=>'seeds'] );
@@ -63,6 +63,7 @@ class SEEDBasketFulfilment
     function DrawOrderFulfilment( $raBasket )
     {
         $s = "";
+
         $s .= SEEDCore_ArrayExpand( $raBasket, "<tr><td valign='top'>[[buyer_firstname]] [[buyer_lastname]]</td><td valign='top'>" );
 
         if( ($kfrc = $this->oBasketDB->GetKFRC( "BxP", "B._key='{$raBasket['_key']}'" )) ) {
@@ -166,7 +167,7 @@ class mbrBasket_Products
 
     function DrawContent()
     {
-        $s = "";
+        $s = "<p>Add product type Special Item and special:bulbils15</p>";
 
         $sList = $sForm = $sDel = "";
 
@@ -290,6 +291,17 @@ class mbrBasket_Fulfilment
     function DrawContent()
     {
 $s = "";
+
+
+        if( SEEDInput_Int('doRebuildAllBaskets') ) {
+            include_once( SEEDAPP."basket/sodBasketFulfil.php" );
+            $o = new SoDOrder_MbrOrder( $this->oApp );
+            $n = $o->UpdateBasketsForAllOrders();
+            $s .= "<div class='alert alert-success'>Updated $n baskets</div>";
+        }
+
+        $s .= "<p><a href='?doRebuildAllBaskets=1'><button>Update All Baskets</button></p>";
+
 
 
 $oBasket = new SEEDBasketFulfilment( $this->oApp );

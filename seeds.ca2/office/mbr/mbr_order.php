@@ -53,7 +53,11 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
 
 // this part has to be modernized before moving this method to SodOrderFulfil
         $oMbrOrder = new MbrOrder( $this->kfdb, "EN", $row );
-        $sCol1 = $oMbrOrder->DrawTicket();
+        $fTotalDummy = 0.0;
+        $sCol1 = $oMbrOrder->DrawTicket()
+                ."<div style='margin:15px;padding:15px;background-color:#ddd'>"
+                .$this->DrawBasketTmp( $kfrOrder->Value("kBasket"), $fTotalDummy )
+                ."</div>";
         $sCol2 = "";
 
         $s = "";
