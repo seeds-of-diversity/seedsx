@@ -151,7 +151,7 @@ class QSRCCVA
 {
     private $oApp;
 
-    function __construct( SEEDAppSession $oApp )
+    function __construct( SEEDAppSessionAccount $oApp )
     {
         $this->oApp = $oApp;
         $this->oSrc = new SLDBSources( $oApp );
