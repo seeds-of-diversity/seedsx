@@ -340,9 +340,10 @@ class MyConsole02TabSet extends Console02TabSet
 
     function TabSetInit( $tsid, $tabname )
     {
+        $oT = new Console02TabSet_TabInfo( $this, $tsid, $tabname );    // clearly should be the argument from TabSetInit
         if( $tsid == 'main' ) {
             switch( $tabname ) {
-                case 'products':    $this->oW = new mbrBasket_Products( $this->oApp, $this->oSB, $this->TabSetGetSVA( $tsid, $tabname ) );     break;
+                case 'products':    $this->oW = new mbrBasket_Products( $this->oApp, $this->oSB, $oT->oSVA );     break;
                 case 'store':       $this->oW = new mbrBasket_Store( $this->oApp, $this->oSB );        break;
                 case "fulfilment":  $this->oW = new mbrBasket_Fulfilment( $this->oApp, $this->oSB );  break;
             }
