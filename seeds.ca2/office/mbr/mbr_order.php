@@ -53,11 +53,7 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
 
 // this part has to be modernized before moving this method to SodOrderFulfil
         $oMbrOrder = new MbrOrder( $this->kfdb, "EN", $row );
-        $fTotalDummy = 0.0;
-        $sCol1 = $oMbrOrder->DrawTicket()
-                ."<div style='margin:15px;padding:15px;background-color:#ddd'>"
-                .$this->DrawBasketTmp( $kfrOrder->Value("kBasket"), $fTotalDummy )
-                ."</div>";
+        $sCol1 = $oMbrOrder->DrawTicket();
         $sCol2 = "";
 
         $s = "";
@@ -341,6 +337,9 @@ if( ($jx = SEEDInput_Str('jx')) ) {
             if( ($kMbr = SEEDInput_Int('kMbr')) ) {
                 $kfr2->UrlParmSet( 'sExtra', 'mbrid', $kMbr );
                 $rQ['bOk'] = $kfr2->PutDBRow();
+                // this is a brute force way to set oBasket.uid_seller
+                $o = new SoDOrder_MbrOrder( $oApp );
+                $o->CreateFromMbrOrder( $k );
             }
             break;
         case 'doContactFormSubmit':
@@ -378,6 +377,7 @@ $s = "<style>"
     ."</style>";
 
 $s .=  MbrOrderStyle();
+$s .= $oUI->Style();
 
 $s .= "<table border='0' width='100%'><tr><td><h2>Online Order Summary</h2></td>"
      ."<td align='right'><a href='".SITE_LOGIN_ROOT."'>Home</a>&nbsp;&nbsp;&nbsp;<a href='mbr_order_stats.php'>Statistics</a>&nbsp;&nbsp;&nbsp;<a href='mbr_order_deposit.php'>Deposit</a></td></tr></table>";
@@ -654,6 +654,7 @@ $(document).ready(function() {
 
     /* Membership item click
      */
+// Obsolete?
     $(".doShowMembershipForm").click(function(event){
         event.preventDefault();
         let tr = $(this).closest(".mbro-row");
@@ -723,25 +724,32 @@ function doSubmitStatus( sAction, kRow, jButton )
 
     // replace the previous <tr> with its new state
     let prevTr = tmpRowDiv.closest("tr").prev();
-    $.get( 'mbr_order.php',
-           "jx=drawOrderSummaryRow&k="+kRow,
-           function (data) {
-               let d = SEEDJX_ParseJSON( data );
-               //console.log(d);
-               if( d['bOk'] ) {
-                   newTr = $(d['sOut']);
-                   prevTr.replaceWith( newTr );
-                   // rebind the Show Ticket link in the replaced <tr>
-                   newTr.find('.mbrOrderShowTicket').click( function (event) {
-                       event.preventDefault();
-                       initClickShowTicket( $(this) );
-                   });
-                   // remind it that the submitForm is open
-                   newTr.find('.mbrOrderShowTicket').attr('data-expanded',1);
-               }
-           });
+    redrawOrderSummaryRow( kRow, 1 );
 
     return( false );
+}
+
+function redrawOrderSummaryRow( kRow, bTicketOpen )
+{
+    $.get( 'mbr_order.php',
+            "jx=drawOrderSummaryRow&k="+kRow,
+            function (data) {
+                let d = SEEDJX_ParseJSON( data );
+                //console.log(d);
+                if( d['bOk'] ) {
+                    newTr = $(d['sOut']);
+
+                    prevTr = $("tr[data-korder="+kRow+"]");
+                    prevTr.replaceWith( newTr );
+                    // rebind the Show Ticket link in the replaced <tr>
+                    newTr.find('.mbrOrderShowTicket').click( function (event) {
+                        event.preventDefault();
+                        initClickShowTicket( $(this) );
+                    });
+                    // remind it that the submitForm is open
+                    newTr.find('.mbrOrderShowTicket').attr('data-expanded',bTicketOpen);
+                }
+            });
 }
 
 function doMbrSelect( jButton, kOrder )
@@ -758,6 +766,7 @@ function doMbrSelect( jButton, kOrder )
 
         let tmpRowDiv = jButton.closest(".tmpRowDiv");
         fillTmpRowDiv( tmpRowDiv, kOrder, "" );
+        redrawOrderSummaryRow( kOrder, 1 );
     }
 
     return( false );
@@ -781,6 +790,9 @@ function doContactFormSubmit( jButton, kMbr, kOrder )
     // replace the statusForm with its new state
     let tmpRowDiv = jButton.closest(".tmpRowDiv");
     fillTmpRowDiv( tmpRowDiv, kOrder, feedback );
+
+    // redraw the order summary row e.g. the notice about contact being needed
+    redrawOrderSummaryRow( kOrder, 1 );
 }
 
 </script>
