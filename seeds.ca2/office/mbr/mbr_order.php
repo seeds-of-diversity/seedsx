@@ -646,9 +646,7 @@ $(document).ready(function() {
 
         o = SEEDJX( "mbr_order.php", jxData );
         if( o['bOk'] ) {
-//            $(this).html("");
-//            $('#status2_'+thisId).html("");  // remove the other button
-//            $("#mailed"+thisId).html("");    // "Order not mailed" changes to ""
+            redrawOrderSummaryRow( k, 0 ); alert("rebuilt basket - buttons are now unbound");    // redrawOrderSummaryRow doesn't rebind js to buttons
         }
     });
 
