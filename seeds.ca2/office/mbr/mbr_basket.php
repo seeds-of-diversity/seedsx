@@ -167,7 +167,7 @@ class mbrBasket_Products
 
     function DrawContent()
     {
-        $s = "<p>Add product type Special Item and special:bulbils15</p>";
+        $s = "";
 
         $sList = $sForm = $sDel = "";
 
