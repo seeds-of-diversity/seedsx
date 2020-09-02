@@ -107,10 +107,12 @@ class SEEDBasketFulfilment
                 break;
         }
         $s .= "</div>";
+
+        $bAccountingDone = $raP['PUR_flagsWorkflow'] & 1;
         $s .= "<div style='float:right;width:100px;display:inline-block;'>"
-             .($raP['PUR_bAccountingDone'] ? "<div style='text-align:center' onclick='doFulfilButton(\"basketPurchaseUnaccount\",{$raP['PUR__key']});'>"
-                                            ."<img style='margin-left:40px' src='".W_CORE_URL."img/ctrl/checkmark01.png' height='20'/></div>"
-                                           : $this->drawFulfilButton( "Account", "basketPurchaseAccount", $raP['PUR__key']))
+             .($bAccountingDone ? ("<div style='text-align:center' onclick='doFulfilButton(\"basketPurchaseUnaccount\",{$raP['PUR__key']});'>"
+                                  ."<img style='margin-left:40px' src='".W_CORE_URL."img/ctrl/checkmark01.png' height='20'/></div>")
+                                : $this->drawFulfilButton( "Account", "basketPurchaseAccount", $raP['PUR__key']))
              ."</div>";
 
         $s .= "</div>";
