@@ -327,6 +327,11 @@ if( ($jx = SEEDInput_Str('jx')) ) {
             $rQ['sOut'] = "";
             $rQ['bOk'] = true;
             break;
+        case 'doRecordDonation':
+            $o = new SoDOrder_MbrOrder( $oApp );
+            $rQ['bOk'] = $o->RecordDonations( $k );
+            $rQ['sOut'] = "";
+            break;
         case 'doSubmitStatus':
             $sAction = SEEDInput_Str('action');
             $sNote   = SEEDInput_Str('note');
@@ -649,6 +654,24 @@ $(document).ready(function() {
             redrawOrderSummaryRow( k, 0 ); alert("rebuilt basket - buttons are now unbound");    // redrawOrderSummaryRow doesn't rebind js to buttons
         }
     });
+
+    /* Record donation button click
+     */
+    $(".doRecordDonation").click(function(event){
+        event.preventDefault();
+        let k = $(this).attr('data-kOrder');
+
+        jxData = { jx     : 'doRecordDonation',
+                   k      : k,
+                   lang   : "EN"
+                 };
+
+        o = SEEDJX( "mbr_order.php", jxData );
+        if( o['bOk'] ) {
+            redrawOrderSummaryRow( k, 0 ); alert("recorded donation - buttons are now unbound");    // redrawOrderSummaryRow doesn't rebind js to buttons
+        }
+    });
+
 
     /* Membership item click
      */
