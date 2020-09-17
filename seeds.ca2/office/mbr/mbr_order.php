@@ -79,10 +79,22 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
                     die( "<h3><font color='red'>Undefined payment status.  Inform Bob immediately, with the order number ($row).</font></h3>" );
             }
             $sCol2 = "<h3>This order is $sState - last update ".$kfrOrder->value("_updated")."</h3>";
+$sCol2 .= "<p>SEEDBasket._created must be set == mbrorder._created</p>";
 
             /* This tool manages the eStatus of the order, independently of the rest of this form
              */
             $sCol2 .= $this->drawStatusFormEStatus( $row, $raActions );
+
+            $sCol2 .= "<hr style='border-color:#aaa;margin:30px 0px'/>";
+
+            /* This tool manages the fulfilment of each purchase in the basket
+             */
+            if( ($kB = $kfrOrder->value('kBasket')) ) {
+                list($sContents,$fTotal,$bContactNeeded,$bDonNotRecorded) = $this->oSoDBasket->ShowBasketContents( $kB, true );
+                $sCol2 .= $sContents;
+            } else {
+                $sCol2 .= "<p class='alert alert-danger'>This order doesn't have a basket number</p>";
+            }
 
             $sCol2 .= "<hr style='border-color:#aaa;margin:30px 0px'/>";
 
