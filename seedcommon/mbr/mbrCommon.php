@@ -40,12 +40,17 @@ function MbrExpiryDate2Label( $sDate, $lang = "EN" )
     return( ($lang ? "Dec" : "D&eacute;c")." ".$y );
 }
 
-function MbrDrawAddressBlockFromRA( $raMbr )
+include_once( SEEDLIB."mbr/MbrContacts.php" );
+
+// deprecated: use MbrContacts::DrawAddressBlockFromRA
+function MbrDrawAddressBlockFromRA( $raMbr, $prefix = "" )
 {
-    return( MbrDrawAddressBlock( $raMbr['firstname'], $raMbr['lastname'], $raMbr['firstname2'], $raMbr['lastname2'], $raMbr['company'], $raMbr['dept'],
-                                 $raMbr['address'], $raMbr['city'], $raMbr['province'], $raMbr['postcode'], $raMbr['country'] ) );
+    return( MbrDrawAddressBlock( $raMbr[$prefix.'firstname'], $raMbr[$prefix.'lastname'], $raMbr[$prefix.'firstname2'], $raMbr[$prefix.'lastname2'],
+                                 $raMbr[$prefix.'company'], $raMbr[$prefix.'dept'], $raMbr[$prefix.'address'], $raMbr[$prefix.'city'],
+                                 $raMbr[$prefix.'province'], $raMbr[$prefix.'postcode'], $raMbr[$prefix.'country'] ) );
 }
 
+// deprecated: use MbrContacts::DrawAddressBlockFromRA
 function MbrDrawAddressBlock( $firstname, $lastname, $firstname2, $lastname2, $company, $dept, $addr, $city, $prov, $postcode, $country, $fmt = 'HTML' )
 {
     if( $fmt == 'HTML' ) {
