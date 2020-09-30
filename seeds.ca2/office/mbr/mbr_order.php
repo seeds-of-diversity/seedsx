@@ -79,7 +79,6 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
                     die( "<h3><font color='red'>Undefined payment status.  Inform Bob immediately, with the order number ($row).</font></h3>" );
             }
             $sCol2 = "<h3>This order is $sState - last update ".$kfrOrder->value("_updated")."</h3>";
-$sCol2 .= "<p>SEEDBasket._created must be set == mbrorder._created</p>";
 
             /* This tool manages the eStatus of the order, independently of the rest of this form
              */
