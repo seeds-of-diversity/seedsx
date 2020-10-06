@@ -43,6 +43,9 @@ header( "Content-type: text/html; charset=ISO-8859-1");    // this should be on 
 
 $kfdb2->SetDebug(1);
 
+$oApp = SEEDConfig_NewAppConsole_LoginNotRequired( ['db'=>'seeds2'] );
+
+
 // Implement Post-Redirect-Get paradigm.
 SEEDPRG();
 //var_dump($_REQUEST);  // after SEEDPRG because that resets _REQUEST to contain any _POST from prior to an http 303
