@@ -124,7 +124,7 @@ class mbr_mail_DocRepWiki extends DocRepWiki_Site
             // Instead, see [[SeedSessionPasswordTest:]], which just sets the variable bSeedSessionPasswordAutoGen so the MSD notice can tell whether a password
             // is one of our auto-generated passwords, or whether it has been changed.
             if( !($kMbr = $this->oMail->oMbr->kMbr) ) return( "" );
-            $pwd = $this->oMail->kfdb1->Query1( "SELECT password FROM seeds.SEEDSession_Users WHERE _key='$kMbr'" );
+            $pwd = $this->oMail->kfdb1->Query1( "SELECT password FROM seeds_1.SEEDSession_Users WHERE _key='$kMbr'" );
             return( $pwd );
         }
 */
@@ -339,7 +339,7 @@ $raDRVars['kMailSend'] = $kfrRecipient->Key();
             } else if( ($k = $this->kfdb2->Query1( "SELECT _key FROM mbr_contacts WHERE email='$eDB'")) ) {
                 $raMbr[] = $k;
             // is it a bulletin email?
-            } else if( ($k = $this->kfdb2->Query1( "SELECT _key FROM seeds.bull_list WHERE email='$eDB'")) ) {
+            } else if( ($k = $this->kfdb2->Query1( "SELECT _key FROM seeds_1.bull_list WHERE email='$eDB'")) ) {
                 // It doesn't matter if this is a valid bulletin subscription. The point is that someone assigned this
                 // email address to the send list, and this _key is a short way to look up that email address.
                 $raBull[] = $k;
@@ -404,7 +404,7 @@ $raDRVars['kMailSend'] = $kfrRecipient->Key();
         // get bulletin emails
         foreach( $raBull as $k ) {
             $k = addslashes($k);
-            if( ($sE = $this->kfdb2->Query1( "SELECT email FROM seeds.bull_list where _key='$k'")) ) {
+            if( ($sE = $this->kfdb2->Query1( "SELECT email FROM seeds_1.bull_list where _key='$k'")) ) {
                 $raEmails[] = $sE;
             }
         }
@@ -432,7 +432,7 @@ $raDRVars['kMailSend'] = $kfrRecipient->Key();
         This cleans up the old address and recipient records to save db space.
      */
     {
-        $this->kfdb2->Execute( "UPDATE seeds2.mbr_mail_send SET sExtra='' WHERE _key='$kMail" );
+        $this->kfdb2->Execute( "UPDATE seeds_2.mbr_mail_send SET sExtra='' WHERE _key='$kMail" );
         if( ($kfrc = $this->kfrelRecipients->CreateRecordCursor( "fk_mbr_mail_send='$kMail'" )) ) {
             while( $kfrc->CursorFetch() ) {
                 $ts = $kfrc->Value('ts_sent');
@@ -442,7 +442,7 @@ $raDRVars['kMailSend'] = $kfrRecipient->Key();
                        ."{".($ts ? date( "Y-M-d hh:mm:ss", $ts) : "")."}";
                 Site_Log( "mbr_mailsend_finalizesent", $line );
             }
-            //$this->kfdb2->Execute( "DELETE FROM seeds2.mbr_mail_send_recipients WHERE fk_mbr_mail_send='$kMail'" );
+            //$this->kfdb2->Execute( "DELETE FROM seeds_2.mbr_mail_send_recipients WHERE fk_mbr_mail_send='$kMail'" );
         }
     }
 

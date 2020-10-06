@@ -102,7 +102,7 @@ $s .= "<div><form action='".$oApp->PathToSelf()."' method='post'>"
 
 $raSp = $o->GetSpecies();
 
-$raYears = $oApp->kfdb->QueryRowsRA1( "SELECT year FROM seeds.sl_cv_sources_archive WHERE fk_sl_sources>='3' AND _status='0' GROUP BY 1 ORDER BY 1" );
+$raYears = $oApp->kfdb->QueryRowsRA1( "SELECT year FROM seeds_1.sl_cv_sources_archive WHERE fk_sl_sources>='3' AND _status='0' GROUP BY 1 ORDER BY 1" );
 
 $s .= "
 <style>
@@ -132,8 +132,8 @@ foreach( $raSp as $ra ) {
     $s .= "<td valign='top'>".(count($ra['raYears']) ? SEEDCore_MakeRangeStr($ra['raYears']) : "")."</td>";
     foreach( $raYears as $y ) {
         $sCond = $ra['kSp'] ? "fk_sl_species='{$ra['kSp']}'" : "osp='{$ra['name']}'";
-        $nSrc = $oApp->kfdb->Query1( "SELECT count(distinct fk_sl_sources) FROM seeds.sl_cv_sources_archive WHERE $sCond AND fk_sl_sources>='3' AND year='$y'" );
-        $nCV  = $oApp->kfdb->Query1( "SELECT count(distinct ocv) FROM seeds.sl_cv_sources_archive WHERE $sCond AND fk_sl_sources>='3' AND year='$y'" );
+        $nSrc = $oApp->kfdb->Query1( "SELECT count(distinct fk_sl_sources) FROM seeds_1.sl_cv_sources_archive WHERE $sCond AND fk_sl_sources>='3' AND year='$y'" );
+        $nCV  = $oApp->kfdb->Query1( "SELECT count(distinct ocv) FROM seeds_1.sl_cv_sources_archive WHERE $sCond AND fk_sl_sources>='3' AND year='$y'" );
         $s .= "<td valign='top'>";
         if( $nSrc )  $s .= "$nSrc companies<br/>";
         if( $nCV )   $s .= "$nCV varieties<br/>";

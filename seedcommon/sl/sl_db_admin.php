@@ -22,13 +22,13 @@ class SLDB_Admin_Stats
     {
         if( !isset($this->raReferencesToPCV[$kPCV]) ) {
             $ra = array();
-            $ra['nAcc']    = $this->kfdb->Query1( "SELECT count(*) FROM seeds.sl_accession WHERE _status='0' AND fk_sl_pcv='$kPCV'" );
-            $ra['nAdopt']  = $this->kfdb->Query1( "SELECT count(*) FROM seeds.sl_adoption WHERE _status='0' AND fk_sl_pcv='$kPCV'" );
-            $ra['nDesc']   = $this->kfdb->Query1( "SELECT count(*) FROM seeds.sl_varinst WHERE _status='0' AND fk_sl_pcv='$kPCV'" );
+            $ra['nAcc']    = $this->kfdb->Query1( "SELECT count(*) FROM seeds_1.sl_accession WHERE _status='0' AND fk_sl_pcv='$kPCV'" );
+            $ra['nAdopt']  = $this->kfdb->Query1( "SELECT count(*) FROM seeds_1.sl_adoption WHERE _status='0' AND fk_sl_pcv='$kPCV'" );
+            $ra['nDesc']   = $this->kfdb->Query1( "SELECT count(*) FROM seeds_1.sl_varinst WHERE _status='0' AND fk_sl_pcv='$kPCV'" );
 
-            $ra['nSrcCv1'] = $this->kfdb->Query1( "SELECT count(*) FROM seeds.sl_cv_sources WHERE _status='0' AND fk_sl_pcv='$kPCV' AND fk_sl_sources='1'" );
-            $ra['nSrcCv2'] = $this->kfdb->Query1( "SELECT count(*) FROM seeds.sl_cv_sources WHERE _status='0' AND fk_sl_pcv='$kPCV' AND fk_sl_sources='2'" );
-            $ra['nSrcCv3'] = $this->kfdb->Query1( "SELECT count(*) FROM seeds.sl_cv_sources WHERE _status='0' AND fk_sl_pcv='$kPCV' AND fk_sl_sources>='3'" );
+            $ra['nSrcCv1'] = $this->kfdb->Query1( "SELECT count(*) FROM seeds_1.sl_cv_sources WHERE _status='0' AND fk_sl_pcv='$kPCV' AND fk_sl_sources='1'" );
+            $ra['nSrcCv2'] = $this->kfdb->Query1( "SELECT count(*) FROM seeds_1.sl_cv_sources WHERE _status='0' AND fk_sl_pcv='$kPCV' AND fk_sl_sources='2'" );
+            $ra['nSrcCv3'] = $this->kfdb->Query1( "SELECT count(*) FROM seeds_1.sl_cv_sources WHERE _status='0' AND fk_sl_pcv='$kPCV' AND fk_sl_sources>='3'" );
 
             $ra['nTotal'] = $ra['nAcc'] + $ra['nAdopt'] + $ra['nDesc'] +
                             $ra['nSrcCv1'] + $ra['nSrcCv2'] + $ra['nSrcCv3'];

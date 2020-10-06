@@ -277,7 +277,7 @@ function eOfferChange() {
         $s .= "<DIV class='sed_edit_form'>"
              ."<H2>".($oKForm->GetKey() ? ("Edit: ".$oKForm->Value('type')." - ".$oKForm->ValueEnt('variety')) : "New Seed Offer")."</H2>";
 
-        $sMbrCode = $oKForm->kfrel->kfdb->Query1("SELECT mbr_code FROM seeds.sed_curr_growers WHERE mbr_id='".$oKForm->oDS->Value('mbr_id')."'" );
+        $sMbrCode = $oKForm->kfrel->kfdb->Query1("SELECT mbr_code FROM seeds_1.sed_curr_growers WHERE mbr_id='".$oKForm->oDS->Value('mbr_id')."'" );
 
         $nSize = 30;
         $raTxtParms = array('size'=>$nSize);
@@ -447,7 +447,7 @@ class SEDGrowerWorker extends Console01_Worker1
             }
 
 // *** Do this for seeds too
-            //kluge: prior to proofreading we did "update seeds.sed_curr_growers set _updated_by_mbr=_updated where _updated_by=mbr_id"
+            //kluge: prior to proofreading we did "update seeds_1.sed_curr_growers set _updated_by_mbr=_updated where _updated_by=mbr_id"
             //This is handy if we want to see what the member might have done, but office editing overwrote the timestamps
             $oDS->SetValue( '_updated_by_mbr', date("y-m-d") );  // this really should be the new _updated but that's hard to get
         }
@@ -532,14 +532,14 @@ class SEDSeedsWorker extends Console01_Worker1
         poststore_mirror_seedbasket( $kfrS );
 
 /*
-        $kfdb->Execute( "DELETE PE FROM seeds.SEEDBasket_ProdExtra PE, seeds.SEEDBasket_Products P  "
+        $kfdb->Execute( "DELETE PE FROM seeds_1.SEEDBasket_ProdExtra PE, seeds_1.SEEDBasket_Products P  "
                        ."WHERE P._key=PE.fk_SEEDBasket_Products AND P.product_type='seeds'" );
-        $kfdb->Execute( "DELETE FROM seeds.SEEDBasket_Products WHERE product_type='seeds'" );
+        $kfdb->Execute( "DELETE FROM seeds_1.SEEDBasket_Products WHERE product_type='seeds'" );
 
-        $sSql1 = "INSERT INTO seeds.SEEDBasket_Products (_key,uid_seller,product_type,quant_type,item_price"
+        $sSql1 = "INSERT INTO seeds_1.SEEDBasket_Products (_key,uid_seller,product_type,quant_type,item_price"
                 .",img,v_t1,v_t2,v_t3,sExtra" // text fields need explicit defaults
                 .") VALUES ";
-        $sSql2 = "INSERT INTO seeds.SEEDBasket_ProdExtra (fk_SEEDBasket_Products,k,v) VALUES ";
+        $sSql2 = "INSERT INTO seeds_1.SEEDBasket_ProdExtra (fk_SEEDBasket_Products,k,v) VALUES ";
         $kP = 1000;
 
         if( ($kfrc = $this->oC->oSed->GetKfrcS( "1=1", array(), "VIEW" )) ) {   // not bSkip and not bDelete
@@ -585,8 +585,8 @@ class SEDSeedsWorker extends Console01_Worker1
         $kfdb->Execute( $sSql1 );
         $kfdb->Execute( $sSql2 );
 
-        $kfdb->Execute( "UPDATE seeds.SEEDBasket_Products SET item_price='3.50' WHERE product_type='seeds'" );
-        $kfdb->Execute( "UPDATE seeds.SEEDBasket_Products P, seeds.SEEDBasket_ProdExtra PE SET P.item_price='12.00' "
+        $kfdb->Execute( "UPDATE seeds_1.SEEDBasket_Products SET item_price='3.50' WHERE product_type='seeds'" );
+        $kfdb->Execute( "UPDATE seeds_1.SEEDBasket_Products P, seeds_1.SEEDBasket_ProdExtra PE SET P.item_price='12.00' "
                        ."WHERE P.product_type='seeds' AND P._key=PE.fk_SEEDBasket_Products AND PE.k='species' AND "
                        ."(PE.V IN ('POTATO','JERUSALEM ARTICHOKE','ONION','GARLIC'))" );
 */
@@ -692,16 +692,16 @@ return;
 /*
 
 // Copy year_1st_listed for ACTIVE seed because that was missed in the initial copy
-insert into seeds.SEEDBasket_ProdExtra (fk_SEEDBasket_Products,k,v )
+insert into seeds_1.SEEDBasket_ProdExtra (fk_SEEDBasket_Products,k,v )
         select PE.fk_SEEDBasket_Products,
         'year_1st_listed',year_1st_listed
-        from seeds.sed_curr_seeds S, seeds.SEEDBasket_ProdExtra PE WHERE PE.k='kSED' AND PE.v=S._key AND S._status='0' AND not bDelete AND not bSkip;
+        from seeds_1.sed_curr_seeds S, seeds_1.SEEDBasket_ProdExtra PE WHERE PE.k='kSED' AND PE.v=S._key AND S._status='0' AND not bDelete AND not bSkip;
 
 
 
 // Copy all skipped seeds into seedbasket (eStatus='INACTIVE' where bSkip
 
-insert into seeds.SEEDBasket_Products (_created,_created_by,_updated,_updated_by,
+insert into seeds_1.SEEDBasket_Products (_created,_created_by,_updated,_updated_by,
                                        product_type,quant_type,img,v_t1,v_t2,v_t3,sExtra,
                                        item_price,
                                        uid_seller,
@@ -713,68 +713,68 @@ insert into seeds.SEEDBasket_Products (_created,_created_by,_updated,_updated_by
                                        mbr_id,
                                        _key,
                                        'INACTIVE'
-                                from seeds.sed_curr_seeds
+                                from seeds_1.sed_curr_seeds
                                 where _status='0' AND not bDelete
                                       AND bSkip;
 
 // For each of those (kSED stored in v_i1) copy the prodextras
 
-insert into seeds.SEEDBasket_ProdExtra (fk_SEEDBasket_Products,k,v )
+insert into seeds_1.SEEDBasket_ProdExtra (fk_SEEDBasket_Products,k,v )
         select P._key,
         'category',category
-        from seeds.SEEDBasket_Products P,seeds.sed_curr_seeds S WHERE P.v_i1=S._key AND S._status='0' AND not bDelete AND bSkip;
-insert into seeds.SEEDBasket_ProdExtra (fk_SEEDBasket_Products,k,v )
+        from seeds_1.SEEDBasket_Products P,seeds_1.sed_curr_seeds S WHERE P.v_i1=S._key AND S._status='0' AND not bDelete AND bSkip;
+insert into seeds_1.SEEDBasket_ProdExtra (fk_SEEDBasket_Products,k,v )
         select P._key,
         'species',type
-        from seeds.SEEDBasket_Products P,seeds.sed_curr_seeds S WHERE P.v_i1=S._key AND S._status='0' AND not bDelete AND bSkip;
-insert into seeds.SEEDBasket_ProdExtra (fk_SEEDBasket_Products,k,v )
+        from seeds_1.SEEDBasket_Products P,seeds_1.sed_curr_seeds S WHERE P.v_i1=S._key AND S._status='0' AND not bDelete AND bSkip;
+insert into seeds_1.SEEDBasket_ProdExtra (fk_SEEDBasket_Products,k,v )
         select P._key,
         'variety',variety
-        from seeds.SEEDBasket_Products P,seeds.sed_curr_seeds S WHERE P.v_i1=S._key AND S._status='0' AND not bDelete AND bSkip;
-insert into seeds.SEEDBasket_ProdExtra (fk_SEEDBasket_Products,k,v )
+        from seeds_1.SEEDBasket_Products P,seeds_1.sed_curr_seeds S WHERE P.v_i1=S._key AND S._status='0' AND not bDelete AND bSkip;
+insert into seeds_1.SEEDBasket_ProdExtra (fk_SEEDBasket_Products,k,v )
         select P._key,
         'bot_name',bot_name
-        from seeds.SEEDBasket_Products P,seeds.sed_curr_seeds S WHERE P.v_i1=S._key AND S._status='0' AND not bDelete AND bSkip;
-insert into seeds.SEEDBasket_ProdExtra (fk_SEEDBasket_Products,k,v )
+        from seeds_1.SEEDBasket_Products P,seeds_1.sed_curr_seeds S WHERE P.v_i1=S._key AND S._status='0' AND not bDelete AND bSkip;
+insert into seeds_1.SEEDBasket_ProdExtra (fk_SEEDBasket_Products,k,v )
         select P._key,
         'days_maturity',days_maturity
-        from seeds.SEEDBasket_Products P,seeds.sed_curr_seeds S WHERE P.v_i1=S._key AND S._status='0' AND not bDelete AND bSkip;
-insert into seeds.SEEDBasket_ProdExtra (fk_SEEDBasket_Products,k,v )
+        from seeds_1.SEEDBasket_Products P,seeds_1.sed_curr_seeds S WHERE P.v_i1=S._key AND S._status='0' AND not bDelete AND bSkip;
+insert into seeds_1.SEEDBasket_ProdExtra (fk_SEEDBasket_Products,k,v )
         select P._key,
         'quantity',quantity
-        from seeds.SEEDBasket_Products P,seeds.sed_curr_seeds S WHERE P.v_i1=S._key AND S._status='0' AND not bDelete AND bSkip;
-insert into seeds.SEEDBasket_ProdExtra (fk_SEEDBasket_Products,k,v )
+        from seeds_1.SEEDBasket_Products P,seeds_1.sed_curr_seeds S WHERE P.v_i1=S._key AND S._status='0' AND not bDelete AND bSkip;
+insert into seeds_1.SEEDBasket_ProdExtra (fk_SEEDBasket_Products,k,v )
         select P._key,
         'origin',origin
-        from seeds.SEEDBasket_Products P,seeds.sed_curr_seeds S WHERE P.v_i1=S._key AND S._status='0' AND not bDelete AND bSkip;
-insert into seeds.SEEDBasket_ProdExtra (fk_SEEDBasket_Products,k,v )
+        from seeds_1.SEEDBasket_Products P,seeds_1.sed_curr_seeds S WHERE P.v_i1=S._key AND S._status='0' AND not bDelete AND bSkip;
+insert into seeds_1.SEEDBasket_ProdExtra (fk_SEEDBasket_Products,k,v )
         select P._key,
         'description',description
-        from seeds.SEEDBasket_Products P,seeds.sed_curr_seeds S WHERE P.v_i1=S._key AND S._status='0' AND not bDelete AND bSkip;
-insert into seeds.SEEDBasket_ProdExtra (fk_SEEDBasket_Products,k,v )
+        from seeds_1.SEEDBasket_Products P,seeds_1.sed_curr_seeds S WHERE P.v_i1=S._key AND S._status='0' AND not bDelete AND bSkip;
+insert into seeds_1.SEEDBasket_ProdExtra (fk_SEEDBasket_Products,k,v )
         select P._key,
         'eOffer',eOffer
-        from seeds.SEEDBasket_Products P,seeds.sed_curr_seeds S WHERE P.v_i1=S._key AND S._status='0' AND not bDelete AND bSkip;
-insert into seeds.SEEDBasket_ProdExtra (fk_SEEDBasket_Products,k,v )
+        from seeds_1.SEEDBasket_Products P,seeds_1.sed_curr_seeds S WHERE P.v_i1=S._key AND S._status='0' AND not bDelete AND bSkip;
+insert into seeds_1.SEEDBasket_ProdExtra (fk_SEEDBasket_Products,k,v )
         select P._key,
         'year_1st_listed',year_1st_listed
-        from seeds.SEEDBasket_Products P,seeds.sed_curr_seeds S WHERE P.v_i1=S._key AND S._status='0' AND not bDelete AND bSkip;
-insert into seeds.SEEDBasket_ProdExtra (fk_SEEDBasket_Products,k,v )
+        from seeds_1.SEEDBasket_Products P,seeds_1.sed_curr_seeds S WHERE P.v_i1=S._key AND S._status='0' AND not bDelete AND bSkip;
+insert into seeds_1.SEEDBasket_ProdExtra (fk_SEEDBasket_Products,k,v )
         select P._key,
         'kSED',S._key
-        from seeds.SEEDBasket_Products P,seeds.sed_curr_seeds S WHERE P.v_i1=S._key AND S._status='0' AND not bDelete AND bSkip;
+        from seeds_1.SEEDBasket_Products P,seeds_1.sed_curr_seeds S WHERE P.v_i1=S._key AND S._status='0' AND not bDelete AND bSkip;
 
 
 
 // Convert old categories to new categories
 
-update seeds.SEEDBasket_ProdExtra set v='flowers' where k='category' and v='FLOWERS AND WILDFLOWERS';
-update seeds.SEEDBasket_ProdExtra set v='fruit' where k='category' and v='FRUIT';
-update seeds.SEEDBasket_ProdExtra set v='grain' where k='category' and v='GRAIN';
-update seeds.SEEDBasket_ProdExtra set v='misc' where k='category' and v='MISC';
-update seeds.SEEDBasket_ProdExtra set v='herbs' where k='category' and v='HERBS AND MEDICINALS';
-update seeds.SEEDBasket_ProdExtra set v='trees' where k='category' and v='TREES AND SHRUBS';
-update seeds.SEEDBasket_ProdExtra set v='vegetables' where k='category' and v='VEGETABLES';
+update seeds_1.SEEDBasket_ProdExtra set v='flowers' where k='category' and v='FLOWERS AND WILDFLOWERS';
+update seeds_1.SEEDBasket_ProdExtra set v='fruit' where k='category' and v='FRUIT';
+update seeds_1.SEEDBasket_ProdExtra set v='grain' where k='category' and v='GRAIN';
+update seeds_1.SEEDBasket_ProdExtra set v='misc' where k='category' and v='MISC';
+update seeds_1.SEEDBasket_ProdExtra set v='herbs' where k='category' and v='HERBS AND MEDICINALS';
+update seeds_1.SEEDBasket_ProdExtra set v='trees' where k='category' and v='TREES AND SHRUBS';
+update seeds_1.SEEDBasket_ProdExtra set v='vegetables' where k='category' and v='VEGETABLES';
 
  */
 
@@ -793,8 +793,8 @@ update seeds.SEEDBasket_ProdExtra set v='vegetables' where k='category' and v='V
             // The seed record is not active, so if there is a Product record delete it.
             // Some day you will just change the _status of the Product record but for now keep it simple.
             if( $kProd ) {
-                $kfdb->Execute( "DELETE FROM seeds.SEEDBasket_Products WHERE _key='$kProd'" );
-                $kfdb->Execute( "DELETE FROM seeds.SEEDBasket_ProdExtra WHERE fk_SEEDBasket_Products='$kProd'" );
+                $kfdb->Execute( "DELETE FROM seeds_1.SEEDBasket_Products WHERE _key='$kProd'" );
+                $kfdb->Execute( "DELETE FROM seeds_1.SEEDBasket_ProdExtra WHERE fk_SEEDBasket_Products='$kProd'" );
             }
         } else {
             // If the Product record exists, update it. If not, insert one.

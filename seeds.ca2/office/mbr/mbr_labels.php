@@ -181,7 +181,7 @@ if( ($n = intval(@$_REQUEST['offset']) ) ) {
 }
 
 foreach( $raOrders as $k ) {
-    $ra = $kfdb->QueryRA( "SELECT * FROM seeds.mbr_order_pending WHERE _key='{$k}'" );
+    $ra = $kfdb->QueryRA( "SELECT * FROM seeds_1.mbr_order_pending WHERE _key='{$k}'" );
     if( $ra['_key'] ) {
         $text = MbrDrawAddressBlock( $ra['mail_firstname'], $ra['mail_lastname'], "", "", $ra['mail_company'], "",
                                      $ra['mail_addr'], $ra['mail_city'], $ra['mail_prov'], $ra['mail_postcode'], $ra['mail_country'], "PDF" );
@@ -190,7 +190,7 @@ foreach( $raOrders as $k ) {
 }
 
 foreach( $raMbrs as $k ) {
-    $ra = $kfdb->QueryRA( "SELECT * FROM seeds2.mbr_contacts WHERE _key='{$k}'" );
+    $ra = $kfdb->QueryRA( "SELECT * FROM seeds_2.mbr_contacts WHERE _key='{$k}'" );
     if( $ra['_key'] ) {
         $text = MbrDrawAddressBlock( $ra['firstname'], $ra['lastname'], $ra['firstname2'], $ra['lastname2'], $ra['company'], $ra['dept'],
                                      $ra['address'], $ra['city'], $ra['province'], $ra['postcode'], $ra['country'], "PDF" );

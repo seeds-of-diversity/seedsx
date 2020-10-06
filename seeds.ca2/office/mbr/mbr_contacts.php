@@ -8,7 +8,7 @@
        Read only view of the mbr_contacts database
 
    Login manager:
-       Management of seeds.SEEDSession_Users
+       Management of seeds_1.SEEDSession_Users
        Does not allow fine management of user logins (see SEEDSessionUGP).
        Instead, this does high level diagnostics and repairs based on Contact database and user login policies.
  */
@@ -796,8 +796,8 @@ class mbrContacts_Logins extends Console01_Worker2
             if( SEEDSafeGPC_GetInt('localaction_deactivate') ) {
 // TODO: use DeactivateLogin -- no it just sets INACTIVE, we actually want to delete it
 //                if( $this->oMbrDB->DeactivateLogin( $kMbr ) ) {
-                $this->kfdb2->Execute( "UPDATE seeds.SEEDSession_Users SET eStatus='INACTIVE' WHERE _key='$kMbr'" );
-                $this->kfdb2->Execute( "UPDATE seeds.SEEDSession_Users SET _status=1 WHERE _key='$kMbr'" );
+                $this->kfdb2->Execute( "UPDATE seeds_1.SEEDSession_Users SET eStatus='INACTIVE' WHERE _key='$kMbr'" );
+                $this->kfdb2->Execute( "UPDATE seeds_1.SEEDSession_Users SET _status=1 WHERE _key='$kMbr'" );
                     $s .= "<p>$kMbr deactivated</p>";
                 //}
             }
@@ -814,7 +814,7 @@ class mbrContacts_Logins extends Console01_Worker2
         foreach( $raTests as $test ) {
             switch( $test ) {
                 case "AccountExists":
-                    if( !$this->kfdb1->Query1( "SELECT _key FROM seeds.SEEDSession_Users WHERE _key='$kMbr'" ) ) {
+                    if( !$this->kfdb1->Query1( "SELECT _key FROM seeds_1.SEEDSession_Users WHERE _key='$kMbr'" ) ) {
                         $this->oC->ErrMsg( "Member $kMbr does not have a login account." );
                         return( false );
                     }
@@ -889,7 +889,7 @@ class mbrContacts_Logins extends Console01_Worker2
             return( false );
         }
 
-        $bOk = $this->kfdb1->Execute( "UPDATE seeds.SEEDSession_Users SET email='".addslashes($raMbr['email'])."' WHERE _key='$kMbr'" );
+        $bOk = $this->kfdb1->Execute( "UPDATE seeds_1.SEEDSession_Users SET email='".addslashes($raMbr['email'])."' WHERE _key='$kMbr'" );
         if( !$bOk ) {
             $this->oC->ErrMsg( "Database error updating email for member $kMbr : ".$this->kfdb1->GetErrMsg() );
         }
@@ -904,7 +904,7 @@ class mbrContacts_Logins extends Console01_Worker2
         if( ($raMbr = $this->validate( $kMbr, "CurrentMember AccountExists EmailExists" )) === false ) {
             return( false );
         }
-        $sEmail1 = $this->kfdb1->Query1( "SELECT email FROM seeds.SEEDSession_Users WHERE _key='$kMbr'" );
+        $sEmail1 = $this->kfdb1->Query1( "SELECT email FROM seeds_1.SEEDSession_Users WHERE _key='$kMbr'" );
         if( empty($sEmail1) ) {
             $this->oC->ErrMsg( "Member # $kMbr does not have an email address in their login account" );
             return( false );
@@ -919,8 +919,8 @@ class mbrContacts_Logins extends Console01_Worker2
             $edb = addslashes($sEmail1);
             // Sending an MSD email to an arbitrary email. If we know who it is, that's helpful.
             // Might not be a real contact; it's okay if it's zero after this.
-            if( !($kMbr = $this->kfdb1->Query1( "SELECT _key FROM seeds2.mbr_contacts WHERE email='$edb'")) ) {
-                $kMbr = $this->kfdb1->Query1( "SELECT _key FROM seeds.SEEDSession_Users WHERE email='$edb'");
+            if( !($kMbr = $this->kfdb1->Query1( "SELECT _key FROM seeds_2.mbr_contacts WHERE email='$edb'")) ) {
+                $kMbr = $this->kfdb1->Query1( "SELECT _key FROM seeds_1.SEEDSession_Users WHERE email='$edb'");
             }
         }
 
@@ -976,11 +976,11 @@ class mbrContacts_Logins extends Console01_Worker2
          );
 
         $s = "Checking login # $kMbr.<br/>";
-        $s .= $this->kfdb2->Query1( "SELECT count(*) FROM seeds.sed_curr_growers WHERE $sCUCond OR mbr_id='$kMbr'" )." sed_curr_growers<br/>";
-        $s .= $this->kfdb2->Query1( "SELECT count(*) FROM seeds.sed_curr_seeds   WHERE $sCUCond OR mbr_id='$kMbr'" )." sed_curr_seeds<br/>";
+        $s .= $this->kfdb2->Query1( "SELECT count(*) FROM seeds_1.sed_curr_growers WHERE $sCUCond OR mbr_id='$kMbr'" )." sed_curr_growers<br/>";
+        $s .= $this->kfdb2->Query1( "SELECT count(*) FROM seeds_1.sed_curr_seeds   WHERE $sCUCond OR mbr_id='$kMbr'" )." sed_curr_seeds<br/>";
 
         foreach( $raDBTables as $t ) {
-            $s .= $this->kfdb2->Query1( "SELECT count(*) FROM seeds.$t WHERE $sCUCond" )." $t<br/>";
+            $s .= $this->kfdb2->Query1( "SELECT count(*) FROM seeds_1.$t WHERE $sCUCond" )." $t<br/>";
         }
 
         return( $s );
@@ -1013,28 +1013,28 @@ class mbrContacts_Summary extends Console01_Worker1
 
         $s .= $this->summaryWindow();
 
-        $s .= "<p>There are ".$this->kfdb->Query1( "SELECT count(*) FROM seeds2.mbr_contacts WHERE _status='0'" )." people in the Contacts database.</p>";
-        $s .= "<p>There are ".$this->kfdb->Query1( "SELECT count(*) FROM seeds.SEEDSession_Users WHERE _status='0'" )." Logins for members and non-members.</p>";
+        $s .= "<p>There are ".$this->kfdb->Query1( "SELECT count(*) FROM seeds_2.mbr_contacts WHERE _status='0'" )." people in the Contacts database.</p>";
+        $s .= "<p>There are ".$this->kfdb->Query1( "SELECT count(*) FROM seeds_1.SEEDSession_Users WHERE _status='0'" )." Logins for members and non-members.</p>";
         $s .= "<p>&nbsp;</p>";
 
 
         /* Full Outer Join of mbr_contacts and SEEDSession_Users
          */
-        $this->kfdb->Execute( "CREATE TEMPORARY TABLE seeds2.MbrSummary ( km INTEGER, ku INTEGER, email_m TEXT, email_u TEXT, yExpires INTEGER )" );
+        $this->kfdb->Execute( "CREATE TEMPORARY TABLE seeds_2.MbrSummary ( km INTEGER, ku INTEGER, email_m TEXT, email_u TEXT, yExpires INTEGER )" );
 
 
         $this->kfdb->Execute(
-            "INSERT INTO seeds2.MbrSummary (km,ku,email_m,email_u,yExpires) "
+            "INSERT INTO seeds_2.MbrSummary (km,ku,email_m,email_u,yExpires) "
            ."SELECT M._key,U._key,M.email,U.email,year(M.expires) "
-            //."FROM seeds2.mbr_contacts M FULL OUTER JOIN seeds.SEEDSession_Users U ON (M._key=U._key) "
+            //."FROM seeds_2.mbr_contacts M FULL OUTER JOIN seeds_1.SEEDSession_Users U ON (M._key=U._key) "
             // Because mysql doesn't have full joins, this is the same thing iff there are no rows that
             // are full duplicates (otherwise it seems you can use UNION ALL to preserve duplicate rows)
-           ."FROM seeds2.mbr_contacts M LEFT JOIN seeds.SEEDSession_Users U ON (M._key=U._key) "
+           ."FROM seeds_2.mbr_contacts M LEFT JOIN seeds_1.SEEDSession_Users U ON (M._key=U._key) "
            ."UNION "
            ."SELECT M._key,U._key,M.email,U.email,year(M.expires) "
-           ."FROM seeds2.mbr_contacts M RIGHT JOIN seeds.SEEDSession_Users U ON (M._key=U._key) "
+           ."FROM seeds_2.mbr_contacts M RIGHT JOIN seeds_1.SEEDSession_Users U ON (M._key=U._key) "
         );
-        $raRows = $this->kfdb->QueryRowsRA( "SELECT * from seeds2.MbrSummary" );
+        $raRows = $this->kfdb->QueryRowsRA( "SELECT * from seeds_2.MbrSummary" );
 
         $s .= "<h4>Contacts Database and User Logins</h4>"
              ."<p>There are ".count($raRows)." combined rows.</p>";
@@ -1222,7 +1222,7 @@ class mbrContacts_Bulletin extends Console01_Worker1
 
         $s .= "<p>".$this->sOut."</p><hr/>"
              ."<p>There are "
-             .$this->kfdb->Query1( "SELECT count(*) FROM seeds.bull_list WHERE status='1'" )
+             .$this->kfdb->Query1( "SELECT count(*) FROM seeds_1.bull_list WHERE status='1'" )
              ." subscribers in the ebulletin list.</p>"
              .$sInstructions;
 

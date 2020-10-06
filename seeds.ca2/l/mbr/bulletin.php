@@ -159,7 +159,7 @@ class SoDBulletin
              *
              * Issue 1: When we sent the link we checked that the email wasn't in bull_list or mbr_contacts, but this person might have joined as
              *          a member in the meantime. Not worth worrying about since bull_list and mbr_contacts.bNoEBull will be handled by
-             *          seeds.SEEDSession_UsersMetaData some day anyway.
+             *          seeds_1.SEEDSession_UsersMetaData some day anyway.
              * Issue 2: If the email belongs to a bNoEBull member, we should uncheck that preference.
              * Issue 3: If an expired member subscribes, that should override their 2-year contact limit. Also, if a current member subscribes
              *          this way they should remain subscribed more than 2 years after their membership expires, if we retain proof that they

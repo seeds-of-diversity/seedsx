@@ -328,7 +328,7 @@ class QServerPCV
             if( $kfr->PutDBRow() ) {
                 $raOut['kPCV'] = $kfr->Key();
 
-                $this->oQ->kfdb->Execute( "UPDATE seeds.sl_pcv
+                $this->oQ->kfdb->Execute( "UPDATE seeds_1.sl_pcv
                                            SET sound_soundex=soundex(name),sound_metaphone=metaphone(name)
                                            WHERE _key='".$kfr->Key()."'" );
             }

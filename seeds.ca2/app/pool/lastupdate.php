@@ -9,7 +9,7 @@ list($kfdb) = SiteStart();
 $oBucket = new SEEDMetaTable_StringBucket( $kfdb );
 $t = $oBucket->GetStr( "PoolController", "t" );
 
-$t = $kfdb->Query1( "SELECT _updated FROM seeds.SEEDMetaTable_StringBucket WHERE ns='PoolController' AND k='t'" );
+$t = $kfdb->Query1( "SELECT _updated FROM seeds_1.SEEDMetaTable_StringBucket WHERE ns='PoolController' AND k='t'" );
 
 $t = strtotime($t);
 $t = $t - 14400;  // four hours time zone difference

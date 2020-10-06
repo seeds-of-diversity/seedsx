@@ -111,7 +111,7 @@ class sedAdmin {
              .$this->summaryByYear("sed_curr_growers")
              ."</TD><TD style='padding-left:3em;'>Expiry<BR/><BR/>";
 
-        if(($dbc = $this->sed->kfdb2->KFDB_CursorOpen("SELECT YEAR(M.expires) AS y,count(*) AS c FROM seeds2.mbr_contacts M, seeds.sed_curr_growers G WHERE G._status=0 and G.mbr_id=M._key GROUP BY 1 ORDER BY 1 DESC"))) {
+        if(($dbc = $this->sed->kfdb2->KFDB_CursorOpen("SELECT YEAR(M.expires) AS y,count(*) AS c FROM seeds_2.mbr_contacts M, seeds.sed_curr_growers G WHERE G._status=0 and G.mbr_id=M._key GROUP BY 1 ORDER BY 1 DESC"))) {
             while($ra = $this->sed->kfdb2->KFDB_CursorFetch($dbc)) {
                 $s .= $ra['y'].":&nbsp;".$ra['c']."<BR/>";
             }
@@ -661,11 +661,11 @@ function TmpPSDefs( $currentYear )
                        'bNonFatal' => true,
                        'testSql' =>
                            "SELECT G.mbr_code as mc, G.mbr_id as mid1, G2.mbr_id as mid2, 'current' as y1, G2.year as y2, M1.firstname as fn1,M1.lastname as ln1,M2.firstname as fn2,M2.lastname as ln2 "
-                              ."FROM seeds.sed_curr_growers G, seeds.sed_growers G2, seeds2.mbr_contacts M1, seeds2.mbr_contacts M2 "
+                              ."FROM seeds.sed_curr_growers G, seeds.sed_growers G2, seeds_2.mbr_contacts M1, seeds_2.mbr_contacts M2 "
                               ."WHERE G.mbr_code=G2.mbr_code AND G.mbr_id <> G2.mbr_id AND M1._key=G.mbr_id AND M2._key=G2.mbr_id"
                           ." UNION "
                           ."SELECT G.mbr_code as mc, G.mbr_id as mid1, G2.mbr_id as mid2, 'current' as y1, 'current' as y2, M1.firstname as fn1,M1.lastname as ln1,M2.firstname as fn2,M2.lastname as ln2 "
-                              ."FROM seeds.sed_curr_growers G, seeds.sed_curr_growers G2, seeds2.mbr_contacts M1, seeds2.mbr_contacts M2 "
+                              ."FROM seeds.sed_curr_growers G, seeds.sed_curr_growers G2, seeds_2.mbr_contacts M1, seeds_2.mbr_contacts M2 "
                               ."WHERE G.mbr_code=G2.mbr_code AND G.mbr_id <> G2.mbr_id AND M1._key=G.mbr_id AND M2._key=G2.mbr_id ORDER BY 1",
                      ),
 
@@ -675,7 +675,7 @@ function TmpPSDefs( $currentYear )
                        'failLabel' => "Growers are not in mbr_contacts",
                        'failShowRow' => "mbr_id=[[mbr_id]]",
                        'testSql' =>
-                           "SELECT G.mbr_id as mbr_id FROM seeds.sed_curr_growers G LEFT JOIN seeds2.mbr_contacts M "
+                           "SELECT G.mbr_id as mbr_id FROM seeds.sed_curr_growers G LEFT JOIN seeds_2.mbr_contacts M "
                           ."ON (G.mbr_id=M._key) WHERE M._key IS NULL OR G.mbr_id=0 OR M._status<>0",
                      ),
 

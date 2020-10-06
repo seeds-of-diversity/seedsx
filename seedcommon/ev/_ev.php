@@ -375,7 +375,7 @@ class EV_Events {
      */
     {
         $def =
-            array( "Tables"=>array( array( "Table" => 'seeds.ev_events',
+            array( "Tables"=>array( array( "Table" => 'seeds_1.ev_events',
                                            "Type"  => 'Base',
                                            "Fields" => array( array("col"=>"type",        "type"=>"S"),
                                                               array("col"=>"date_start",  "type"=>"S"),

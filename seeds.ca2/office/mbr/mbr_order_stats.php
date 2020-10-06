@@ -43,7 +43,7 @@ class MbrOrderStats
     {
         if( empty($cond) ) $cond = "1=1";
 
-        $q = "SELECT count(*) from seeds.mbr_order_pending "
+        $q = "SELECT count(*) from seeds_1.mbr_order_pending "
             ."WHERE ($cond) AND eStatus IN ('".MBRORDER_STATUS_PAID."','".MBRORDER_STATUS_FILLED."')"
             .($year ? " AND (_created >= '${year}-08-01' AND _created < '".($year + 1)."-08-01')" : "");
 
@@ -57,7 +57,7 @@ class MbrOrderStats
     {
         if( empty($cond) ) $cond = "1=1";
 
-        $q = "SELECT sum($field) from seeds.mbr_order_pending "
+        $q = "SELECT sum($field) from seeds_1.mbr_order_pending "
             ."WHERE ($cond) AND eStatus IN ('".MBRORDER_STATUS_PAID."','".MBRORDER_STATUS_FILLED."')"
             .($year ? " AND (_created >= '${year}-08-01' AND _created < '".($year + 1)."-08-01')" : "");
 
@@ -157,7 +157,7 @@ function getStats2( $ps, $pt, $year = 0 )
 {
     global $kfdb;
 
-    $q = "SELECT count(*),sum(pay_total) from seeds.mbr_order_pending where eStatus='$ps' and ePayType='$pt'";
+    $q = "SELECT count(*),sum(pay_total) from seeds_1.mbr_order_pending where eStatus='$ps' and ePayType='$pt'";
     if( $year ) {
         $q .= " AND _created >= '${year}-08-01' AND _created < '".($year + 1)."-08-01'";
     }
@@ -185,7 +185,7 @@ function getBreak2a( $field, $year = 0 )
 {
     global $kfdb;
 
-    $q = "SELECT count(*),sum($field) from seeds.mbr_order_pending where (eStatus='".MBRORDER_STATUS_PAID."' OR eStatus='".MBRORDER_STATUS_FILLED."')";
+    $q = "SELECT count(*),sum($field) from seeds_1.mbr_order_pending where (eStatus='".MBRORDER_STATUS_PAID."' OR eStatus='".MBRORDER_STATUS_FILLED."')";
     if( $year ) {
         $q .= " AND _created >= '${year}-08-01' AND _created < '".($year + 1)."-08-01'";
     }
@@ -211,7 +211,7 @@ function getBreak3a( $field, $n, $year = 0 )
 {
     global $kfdb;
 
-    $q = "SELECT count(*),sum($field) from seeds.mbr_order_pending where (eStatus='".MBRORDER_STATUS_PAID."' OR eStatus='".MBRORDER_STATUS_FILLED."')";
+    $q = "SELECT count(*),sum($field) from seeds_1.mbr_order_pending where (eStatus='".MBRORDER_STATUS_PAID."' OR eStatus='".MBRORDER_STATUS_FILLED."')";
     if( $year ) {
         $q .= " AND _created >= '${year}-08-01' AND _created < '".($year + 1)."-08-01'";
     }
@@ -310,11 +310,11 @@ $s .= "<p>Regularly paid ".$oStats->yCurrent." members = $nCurrent</p>";
 $s .= "<p>Recent (after $dRecent) = $nRecent</p>";
 
 // Get recent new/renewed memberships from the member database
-$raMbrRecent = $kfdb->QueryRowsRA( "SELECT * FROM seeds2.mbr_contacts "
+$raMbrRecent = $kfdb->QueryRowsRA( "SELECT * FROM seeds_2.mbr_contacts "
                                   ."WHERE year(expires)>='".$oStats->yCurrent."' AND year(expires)<'2100' "
                                   ."AND lastrenew >= '$dRecent'" );
 // Get recent new/renewed memberships from the online orders
-$raOrdersRecent = $kfdb->QueryRowsRA( "SELECT * FROM seeds.mbr_order_pending "
+$raOrdersRecent = $kfdb->QueryRowsRA( "SELECT * FROM seeds_1.mbr_order_pending "
                                      ."WHERE _created >= '$dRecent' AND mbr_type<>'' AND eStatus='Filled'" );
 
 
@@ -323,7 +323,7 @@ foreach( $raMbrRecent as $ra ) {
     if( ($t = strtotime($ra['lastrenew']) - $tRecent) > 0 ) {
 
         // this could return zero indicating a new membership
-        $previousExpires = $kfdb->Query1( "SELECT year(expires) FROM seeds2.mbr_contacts_old WHERE _key='{$ra['_key']}'" );
+        $previousExpires = $kfdb->Query1( "SELECT year(expires) FROM seeds_2.mbr_contacts_old WHERE _key='{$ra['_key']}'" );
 
         // was this an online order?
         $bOnline = false;

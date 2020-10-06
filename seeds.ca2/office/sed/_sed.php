@@ -122,7 +122,7 @@ $kfrelDef_SEDCurrGrowersXContacts =    // Need to create cursor with G.mbr_id=M.
                                    "Type" => "Base",
                                    "Alias" => "G",
                                    "Fields" => $kfFields_G ),
-                            array( "Table"=> 'seeds2.mbr_contacts',
+                            array( "Table"=> 'seeds_2.mbr_contacts',
                                    "Type" => "Related",
                                    "Alias" => "M",
                                    "Fields" => array( array("col"=>"firstname",       "type"=>"S"),

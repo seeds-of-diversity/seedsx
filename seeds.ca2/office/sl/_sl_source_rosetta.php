@@ -67,8 +67,8 @@ class SLSourceRosetta extends Console01_Worker
 //$this->kfdb->SetDebug(2);
         $cmd = SEEDSafeGPC_GetStrPlain('cmd');
         switch( $cmd ) {
-            case 'rebuild_srccv':          $sResult = SLSourceCV_Build::BuildAll( $this->kfdb, 'seeds.sl_cv_sources' );            break;
-            case 'rebuild_srccv_archive':  $sResult = SLSourceCV_Build::BuildAll( $this->kfdb, 'seeds.sl_cv_sources_archive' );    break;
+            case 'rebuild_srccv':          $sResult = SLSourceCV_Build::BuildAll( $this->kfdb, 'seeds_1.sl_cv_sources' );            break;
+            case 'rebuild_srccv_archive':  $sResult = SLSourceCV_Build::BuildAll( $this->kfdb, 'seeds_1.sl_cv_sources_archive' );    break;
             case 'pcvAdd':                 $sResult = $this->doPCVAdd();     break;
         }
 //$this->kfdb->SetDebug(0);
@@ -97,7 +97,7 @@ class SLSourceRosetta extends Console01_Worker
             'slcv_no_kSpecies' => array(
                 'title'    => "Unknown species",
                 'testType' => 'rows0',
-                'testSql'  => "SELECT osp FROM seeds.sl_cv_sources WHERE _status='0' AND fk_sl_species='0' GROUP BY osp ORDER BY osp",
+                'testSql'  => "SELECT osp FROM seeds_1.sl_cv_sources WHERE _status='0' AND fk_sl_species='0' GROUP BY osp ORDER BY osp",
                 'failLabel' => "[[n]] species unknown",
                 'failShowFn' => array($this,'fn_no_kSpecies_FailShow'),
                 'remedyFn'   => array($this,'fn_no_kSpecies_Remedy'),
@@ -107,7 +107,7 @@ class SLSourceRosetta extends Console01_Worker
             'slcv_no_kPCV' => array(
                 'title'    => "Unknown cultivars",
                 'testType' => 'rows0',
-                'testSql'  => "SELECT ocv,fk_sl_species FROM seeds.sl_cv_sources WHERE _status='0' AND fk_sl_species AND fk_sl_pcv='0' GROUP BY fk_sl_species,ocv ORDER BY ocv DESC",
+                'testSql'  => "SELECT ocv,fk_sl_species FROM seeds_1.sl_cv_sources WHERE _status='0' AND fk_sl_species AND fk_sl_pcv='0' GROUP BY fk_sl_species,ocv ORDER BY ocv DESC",
                 'failLabel' => "[[n]] cultivars unknown",
                 'failShowFn' => array($this,'fn_no_kPCV_FailShow'),
                 'remedyFn'   => array($this,'fn_no_kPCV_Remedy'),
@@ -118,7 +118,7 @@ class SLSourceRosetta extends Console01_Worker
                 'title'    => "Unmatched cultivars with similar names",
                 'testType' => 'rows0',
                 'testSql'  => "SELECT C.ocv as C_ocv,S.name_en as S_name_en,P.name as P_name,C._key as C__key,P._key as P__key "
-                             ."FROM seeds.sl_cv_sources C, seeds.sl_pcv P, seeds.sl_species S "
+                             ."FROM seeds_1.sl_cv_sources C, seeds_1.sl_pcv P, seeds_1.sl_species S "
                              ."WHERE C._status='0' AND P._status='0' AND S._status='0' AND "
                              ."C.fk_sl_species<>'0' AND C.fk_sl_pcv='0' AND "   // known sp but unknown cv
                              ."C.fk_sl_species=P.fk_sl_species AND "
@@ -144,32 +144,32 @@ class SLSourceRosetta extends Console01_Worker
 
         $sTestOut .= "<h4>Sources</h4>"
                     ."<p>There are "
-                    .$this->kfdb->Query1( "SELECT count(*) FROM seeds.sl_cv_sources WHERE _status='0'" )
+                    .$this->kfdb->Query1( "SELECT count(*) FROM seeds_1.sl_cv_sources WHERE _status='0'" )
                     ." seed source records.</p>"
                     ."<ul>"
                     ."<li>"
-                    .$this->kfdb->Query1( "SELECT count(*) FROM seeds.sl_cv_sources WHERE _status='0' AND fk_sl_sources>=3" )
+                    .$this->kfdb->Query1( "SELECT count(*) FROM seeds_1.sl_cv_sources WHERE _status='0' AND fk_sl_sources>=3" )
                     ." from seed companies"
                     ."</li><li>"
-                    .$this->kfdb->Query1( "SELECT count(*) FROM seeds.sl_cv_sources WHERE _status='0' AND fk_sl_sources=1" )
+                    .$this->kfdb->Query1( "SELECT count(*) FROM seeds_1.sl_cv_sources WHERE _status='0' AND fk_sl_sources=1" )
                     ." from PGRC "
                     ."</li><li>"
-                    .$this->kfdb->Query1( "SELECT count(*) FROM seeds.sl_cv_sources WHERE _status='0' AND fk_sl_sources=2" )
+                    .$this->kfdb->Query1( "SELECT count(*) FROM seeds_1.sl_cv_sources WHERE _status='0' AND fk_sl_sources=2" )
                     ." from NPGS"
                     ."</li></ul>"
                     ."<h4>Species</h4>"
                     ."<p>"
-                    .$this->kfdb->Query1( "SELECT count(*) FROM seeds.sl_cv_sources WHERE _status='0' AND fk_sl_species='0'" )
+                    .$this->kfdb->Query1( "SELECT count(*) FROM seeds_1.sl_cv_sources WHERE _status='0' AND fk_sl_species='0'" )
                     ." don't have species keys.</p>"
                     ."<p>Those involve "
-                    .$this->kfdb->Query1( "SELECT count(distinct osp) FROM seeds.sl_cv_sources WHERE _status='0' AND fk_sl_species='0'" )
+                    .$this->kfdb->Query1( "SELECT count(distinct osp) FROM seeds_1.sl_cv_sources WHERE _status='0' AND fk_sl_species='0'" )
                     ." distinct unknown species names.</p>"
                     ."<h4>Cultivars</h4>"
                     ."<p>"
-                    .$this->kfdb->Query1( "SELECT count(*) FROM seeds.sl_cv_sources WHERE _status='0' AND fk_sl_species AND fk_sl_pcv='0'" )
+                    .$this->kfdb->Query1( "SELECT count(*) FROM seeds_1.sl_cv_sources WHERE _status='0' AND fk_sl_species AND fk_sl_pcv='0'" )
                     ." have species keys but not cultivar keys.</p>"
                     ."<p>Those involve "
-                    .$this->kfdb->Query1( "SELECT count(distinct fk_sl_species,ocv) FROM seeds.sl_cv_sources WHERE _status='0' AND fk_sl_species AND fk_sl_pcv='0'" )
+                    .$this->kfdb->Query1( "SELECT count(distinct fk_sl_species,ocv) FROM seeds_1.sl_cv_sources WHERE _status='0' AND fk_sl_species AND fk_sl_pcv='0'" )
                     ." distinct unknown cultivar names.</p>"
                     ;
 
@@ -233,7 +233,7 @@ class SLSourceRosetta extends Console01_Worker
                 // Species name $osp has to map to $kSp. Add it to sl_species_syn unless it's somehow already there.
                 $dbOsp = addslashes($osp);
 
-                if( !$this->kfdb->Query1( "SELECT _key FROM seeds.sl_species_syn WHERE name='$dbOsp' AND _status='0'") ) {
+                if( !$this->kfdb->Query1( "SELECT _key FROM seeds_1.sl_species_syn WHERE name='$dbOsp' AND _status='0'") ) {
                     if( ($kfr = $oSLDB->GetKfrel( "SY" )->CreateRecord()) ) {
                         $kfr->SetValue( 'fk_sl_species', $kSp );
                         $kfr->SetValue( 'name', $osp );
@@ -409,7 +409,7 @@ class SLSourceRosetta extends Console01_Worker
             if( !$bAdd )  continue;           // no action on this cultivar
 
             // The ocv-synonym is propagated via kSrcCV. Get the name info from that.
-            list($kSp,$ocv) = $this->kfdb->QueryRA( "SELECT fk_sl_species,ocv FROM seeds.sl_cv_sources WHERE _key='$kC'" );
+            list($kSp,$ocv) = $this->kfdb->QueryRA( "SELECT fk_sl_species,ocv FROM seeds_1.sl_cv_sources WHERE _key='$kC'" );
 
             // Make sure the name isn't already there.
             // This shouldn't happen unless someone simultaneously added the name.
@@ -445,7 +445,7 @@ TODO: if kSp is not given, look it up from kPCV
               : "<p style='color:red'>Error adding $ocv as synonym of $kPCV : {$rQAdd['sErr']}</p>";
 
         if( $rQAdd['bOk'] && $kSp ) {
-            $this->kfdb->Execute( "UPDATE seeds.sl_cv_sources SET fk_sl_pcv='$kPCV' WHERE fk_sl_species='$kSp' AND ocv='".addslashes($ocv)."'" );
+            $this->kfdb->Execute( "UPDATE seeds_1.sl_cv_sources SET fk_sl_pcv='$kPCV' WHERE fk_sl_species='$kSp' AND ocv='".addslashes($ocv)."'" );
         }
 
         return( $s );

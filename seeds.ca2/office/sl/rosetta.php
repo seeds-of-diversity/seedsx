@@ -144,7 +144,7 @@ class MyConsole extends Console01KFUI
     function CultivarsDSPreStore( KeyFrameDataStore $oDS )
     {
         if( !($kSp = $oDS->value('fk_sl_species')) )  return( false );
-        if( !($psp = $this->kfdb->Query1( "SELECT psp FROM seeds.sl_species WHERE _key='$kSp'" )) )  return( false );
+        if( !($psp = $this->kfdb->Query1( "SELECT psp FROM seeds_1.sl_species WHERE _key='$kSp'" )) )  return( false );
 // deprecate, just rely on fk_sl_species because people can easily change sl_species.psp
 $oDS->SetValue( 'psp', $psp );
 
@@ -188,7 +188,7 @@ $oDS->SetValue( 'psp', $psp );
         $s = "";
 
         if( ($kPCV = $oForm->GetKey()) ) {
-            $raSyn = $this->kfdb->QueryRowsRA( "SELECT * FROM seeds.sl_pcv_syn WHERE _status='0' AND fk_sl_pcv='$kPCV'" );
+            $raSyn = $this->kfdb->QueryRowsRA( "SELECT * FROM seeds_1.sl_pcv_syn WHERE _status='0' AND fk_sl_pcv='$kPCV'" );
             $sTmpl = "[[name]]";
             $sSyn = SEEDCore_ArrayExpandRows( $raSyn, ", $sTmpl", true, array('sTemplateLast'=>$sTmpl) );
 
@@ -262,9 +262,9 @@ $oDS->SetValue( 'psp', $psp );
     private function speciesGetStats( $kSp )
     {
         $ra = array();
-        $ra['nSLAcc'] = $this->kfdb->Query1( "SELECT count(*) FROM seeds.sl_accession A,seeds.sl_pcv P WHERE P.fk_sl_species='$kSp' AND P._key=A.fk_sl_pcv" );
+        $ra['nSLAcc'] = $this->kfdb->Query1( "SELECT count(*) FROM seeds_1.sl_accession A,seeds_1.sl_pcv P WHERE P.fk_sl_species='$kSp' AND P._key=A.fk_sl_pcv" );
 
-        $sSql = "SELECT count(*) FROM seeds.sl_cv_sources CV,seeds.sl_pcv P WHERE P._key=CV.fk_sl_pcv AND P.fk_sl_species='$kSp'";
+        $sSql = "SELECT count(*) FROM seeds_1.sl_cv_sources CV,seeds_1.sl_pcv P WHERE P._key=CV.fk_sl_pcv AND P.fk_sl_species='$kSp'";
         $ra['nSLCV1'] = $this->kfdb->Query1( $sSql." AND fk_sl_sources='1'" );
         $ra['nSLCV2'] = $this->kfdb->Query1( $sSql." AND fk_sl_sources='2'" );
         $ra['nSLCV3'] = $this->kfdb->Query1( $sSql." AND fk_sl_sources>='3'" );
@@ -370,7 +370,7 @@ class Rosetta_Admin extends Console01_Worker1
                           'failLabel' => "Species identifiers missing",
                           'failShowRow' => "k=[[_key]], psp=[[psp]], en=[[name_en]], fr=[[name_fr]], bot=[[name_bot]]",
                           'testSql' =>
-                              "SELECT _key,psp,name_en,name_fr,name_bot FROM seeds.sl_species"
+                              "SELECT _key,psp,name_en,name_fr,name_bot FROM seeds_1.sl_species"
                              ." WHERE _status=0 AND (psp='' OR name_en='' OR name_fr='' OR name_bot='')" ),
             'species_unique'
                 // Join sl_species to itself to find names duplicated across rows
@@ -385,7 +385,7 @@ class Rosetta_Admin extends Console01_Worker1
                           'testSql' =>
                               "SELECT S1.psp as psp1,S1.name_en as en1,S1.name_fr as fr1,S1.name_bot as bot1, "
                                     ."S2.psp as psp2,S2.name_en as en2,S2.name_fr as fr2,S2.name_bot as bot2 "
-                             ." FROM seeds.sl_species S1, seeds.sl_species S2"
+                             ." FROM seeds_1.sl_species S1, seeds_1.sl_species S2"
                              ." WHERE S1._key < S2._key AND "
                                     ."S1._status='0' AND S2._status='0' AND"
                                     ."(S1.psp=S2.psp OR"
@@ -420,7 +420,7 @@ class Rosetta_Admin extends Console01_Worker1
                           'failShowRow' => "syn=[[name]], psp1=[[psp1]], psp2=[[psp2]], k1=[[k1]], k2=[[k2]]",
                           'testSql' =>
                               "SELECT SY1._key as k1,SY2._key as k2, SY1.name as name, S1.psp as psp1, S2.psp as psp2"
-                             ." FROM seeds.sl_species_syn SY1, seeds.sl_species_syn SY2, seeds.sl_species S1, seeds.sl_species S2"
+                             ." FROM seeds_1.sl_species_syn SY1, seeds_1.sl_species_syn SY2, seeds_1.sl_species S1, seeds_1.sl_species S2"
                              ." WHERE SY1._key < SY2._key AND "
                                     ."SY1.name=SY2.name AND "
                                     ."S1._key=SY1.fk_sl_species AND "
@@ -436,7 +436,7 @@ class Rosetta_Admin extends Console01_Worker1
                           'failShowRow' => "syn=[[syn]], psp=[[psp]], name_en=[[name_en]], name_fr=[[name_fr]], name_bot=[[name_bot]], kSyn=[[kSyn]]",
                           'testSql' =>
                               "SELECT SY._key as kSyn,SY.name as syn,S.psp as psp,S.name_en as name_en,S.name_fr as name_fr,S.name_bot as name_bot"
-                             ." FROM seeds.sl_species_syn SY,seeds.sl_species S"
+                             ." FROM seeds_1.sl_species_syn SY,seeds_1.sl_species S"
                              ." WHERE (SY.name=S.psp OR "
                                      ."SY.name=S.name_en OR "
                                      ."SY.name=S.name_fr OR "
@@ -450,7 +450,7 @@ class Rosetta_Admin extends Console01_Worker1
                           'failLabel' => "pcv identifiers missing",
                           'failShowRow' => "k=[[_key]], psp=[[psp]], name=[[name]]",
                           'testSql' =>
-                              "SELECT _key,psp,name FROM seeds.sl_pcv WHERE _status=0 AND (psp='' OR name='')" ),
+                              "SELECT _key,psp,name FROM seeds_1.sl_pcv WHERE _status=0 AND (psp='' OR name='')" ),
             'pcv_unique'
                 // Join sl_pcv to itself to find (fk_sl_species,name) duplicated
                 => array( 'title' => "Check for duplicate cultivar names",
@@ -460,7 +460,7 @@ class Rosetta_Admin extends Console01_Worker1
                           'failShowRow' => "psp=[[psp]], name=[[name]], k1=[[k1]], k2=[[k2]]",
                           'testSql' =>
                               "SELECT P1._key as k1,P2._key as k2, P1.name as name, S.psp as psp"
-                             ." FROM seeds.sl_pcv P1, seeds.sl_pcv P2, seeds.sl_species S"
+                             ." FROM seeds_1.sl_pcv P1, seeds_1.sl_pcv P2, seeds_1.sl_species S"
                              ." WHERE P1._key < P2._key AND "
                                     ."P1.name=P2.name AND P1.fk_sl_species=P2.fk_sl_species AND "
                                     ."P1.fk_sl_species=S._key AND "
@@ -475,7 +475,7 @@ class Rosetta_Admin extends Console01_Worker1
                           'failShowRow' => "syn=[[syn]] ([[psp]]:[[pcv]]) k1=[[k1]], k2=[[k2]]",
                           'testSql' =>
                               "SELECT SY1._key as k1,SY2._key as k2, SY1.name as syn, P.name as pcv, S.psp as psp"
-                             ." FROM seeds.sl_pcv_syn SY1, seeds.sl_pcv_syn SY2, seeds.sl_pcv P, seeds.sl_species S"
+                             ." FROM seeds_1.sl_pcv_syn SY1, seeds_1.sl_pcv_syn SY2, seeds_1.sl_pcv P, seeds_1.sl_species S"
                              ." WHERE SY1._key < SY2._key AND "
                                     ."SY1.name=SY2.name AND SY1.fk_sl_pcv=SY2.fk_sl_pcv AND "
                                     ."SY1.fk_sl_pcv=P._key AND "

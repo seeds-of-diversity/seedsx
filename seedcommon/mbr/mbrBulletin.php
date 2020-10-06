@@ -33,10 +33,10 @@ class MbrBulletin
 // use the kfrel
         $lang = SEEDCore_SmartVal( substr($lang, 0, 1), ['','E','F','B'] );     // db uses this enum
 
-        if( ($k = $this->kfrelBull->kfdb->Query1( "SELECT _key FROM seeds.bull_list WHERE email='".addslashes($email)."'" )) ) {
+        if( ($k = $this->kfrelBull->kfdb->Query1( "SELECT _key FROM seeds_1.bull_list WHERE email='".addslashes($email)."'" )) ) {
             $eRet = "dup";
         } else {
-            $id = $this->kfrelBull->kfdb->InsertAutoInc( "INSERT INTO seeds.bull_list (_key,name,email,lang,comment,hash,status,ts1)"
+            $id = $this->kfrelBull->kfdb->InsertAutoInc( "INSERT INTO seeds_1.bull_list (_key,name,email,lang,comment,hash,status,ts1)"
                                                         ." VALUES (NULL,'".addslashes($realname)."','".addslashes($email)."',"
                                                         ."'".addslashes($lang)."','".addslashes($sComment)."',"
                                                         ."'Added by {$this->uid}',1,NOW())" );
@@ -47,10 +47,10 @@ class MbrBulletin
 
     function RemoveSubscriber( $email )
     {
-        if( !($k = $this->kfrelBull->kfdb->Query1( "SELECT _key FROM seeds.bull_list WHERE email='".addslashes($email)."'" )) ) {
+        if( !($k = $this->kfrelBull->kfdb->Query1( "SELECT _key FROM seeds_1.bull_list WHERE email='".addslashes($email)."'" )) ) {
             $eRet = 'notfound';
         } else {
-            $eRet = $this->kfrelBull->kfdb->Execute( "DELETE FROM seeds.bull_list WHERE _key='$k'" )
+            $eRet = $this->kfrelBull->kfdb->Execute( "DELETE FROM seeds_1.bull_list WHERE _key='$k'" )
                         ? 'ok' : 'err';
         }
         return( $eRet );
@@ -58,7 +58,7 @@ class MbrBulletin
 
     private function initKfrel( $kfdb )
     {
-        $def = array( "Tables" => array( array( "Table" => "seeds.bull_list",
+        $def = array( "Tables" => array( array( "Table" => "seeds_1.bull_list",
                                                 "Alias" => "BL",
                                                 "Type"  => "Base",
                                                 "Fields" => array( array("col"=>"email",   "type"=>"S"),

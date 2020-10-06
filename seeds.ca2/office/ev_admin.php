@@ -136,7 +136,7 @@ function EV2_drawFilterControl()
     $raYearOpts[0] = "-- Future --";
     $raYearOpts[1] = $iCurrYear;
     $raYearOpts[2] = "-- All --";
-    if( ($ra = $kfdb->QueryRowsRA( "SELECT distinct(YEAR(date_start)) FROM seeds.ev_events ORDER BY 1 DESC" )) ) {
+    if( ($ra = $kfdb->QueryRowsRA( "SELECT distinct(YEAR(date_start)) FROM seeds_1.ev_events ORDER BY 1 DESC" )) ) {
         foreach( $ra as $ra1 ) {
             $y = $ra1[0];
             if( $y && $y != $iCurrYear ) $raYearOpts[$y] = $y;
@@ -175,7 +175,7 @@ function EV2_listTranslate( $kfr )
 
     // look up volunteer name
     if( ($kMbr = $ra['vol_kMbr']) ) {
-        $ra['vol_kMbr'] = $kfr->kfrel->kfdb->Query1( "SELECT concat(firstname,' ',lastname,' in ',city) FROM seeds2.mbr_contacts WHERE _key='$kMbr'" );
+        $ra['vol_kMbr'] = $kfr->kfrel->kfdb->Query1( "SELECT concat(firstname,' ',lastname,' in ',city) FROM seeds_2.mbr_contacts WHERE _key='$kMbr'" );
     }
 
     return( $ra );

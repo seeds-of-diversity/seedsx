@@ -117,7 +117,7 @@ $s .= "<h3>Deposits</h3>"
 
 /* Show all the deposits
  */
-$raCodes = $kfdb->QueryRowsRA1( "SELECT depositCode FROM seeds.mbr_order_pending WHERE depositCode<>'' GROUP BY 1 ORDER BY 1 DESC" );
+$raCodes = $kfdb->QueryRowsRA1( "SELECT depositCode FROM seeds_1.mbr_order_pending WHERE depositCode<>'' GROUP BY 1 ORDER BY 1 DESC" );
 foreach( $raCodes as $code ) {
     $fTotal = 0.0;
     $raOrders = $oOrder->kfrelOrder->GetRecordSetRA( "depositCode='".addslashes($code)."'" );

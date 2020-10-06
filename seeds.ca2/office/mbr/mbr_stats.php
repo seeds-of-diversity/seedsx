@@ -137,12 +137,12 @@ function sed_stats_basic()
 
     echo "<H4>Annual counts</H4>";
 
-    list($y_min, $y_max) = $kfdb->KFDB_QueryRA( "SELECT MIN(year),MAX(year) FROM seeds.sed_growers" );
+    list($y_min, $y_max) = $kfdb->KFDB_QueryRA( "SELECT MIN(year),MAX(year) FROM seeds_1.sed_growers" );
 
     echo "<TABLE class='stat' border='1'><TR><TH>Year</TH><TH>Growers</TH><TH>Types</TH><TH>Varieties</TH><TH>Offers</TH></TR>";
     for( $y = $y_min; $y <= $y_max; ++$y ) {
-        $g = $kfdb->KFDB_Query1( "SELECT count(*) FROM seeds.sed_growers WHERE year='$y'" );
-        $ra = $kfdb->KFDB_QueryRA( "SELECT count(distinct type),count(distinct type,variety),count(*) FROM seeds.sed_seeds WHERE year='$y'" );
+        $g = $kfdb->KFDB_Query1( "SELECT count(*) FROM seeds_1.sed_growers WHERE year='$y'" );
+        $ra = $kfdb->KFDB_QueryRA( "SELECT count(distinct type),count(distinct type,variety),count(*) FROM seeds_1.sed_seeds WHERE year='$y'" );
         echo "<TR><TD class='stat_num'>$y</TD>"
                 ."<TD class='stat_num'>$g</TD>"
                 ."<TD class='stat_num'>${ra[0]}</TD>"
@@ -159,7 +159,7 @@ function sed_varieties_compare()
 {
     global $kfdb, $sess, $year;
 
-    list($y_min, $y_max) = $kfdb->KFDB_QueryRA( "SELECT MIN(year),MAX(year) FROM seeds.sed_growers" );
+    list($y_min, $y_max) = $kfdb->KFDB_QueryRA( "SELECT MIN(year),MAX(year) FROM seeds_1.sed_growers" );
 
 
     // Can't do this with the database easily, because there are multiple records with the same types and varieties.
@@ -167,7 +167,7 @@ function sed_varieties_compare()
 
     $raDistinct = array();
     for( $y = $y_min; $y <= $y_max; ++$y ) {
-        if( ($dbc = $kfdb->KFDB_CursorOpen("SELECT type,variety FROM seeds.sed_seeds WHERE year='$y' GROUP BY type,variety")) ) {
+        if( ($dbc = $kfdb->KFDB_CursorOpen("SELECT type,variety FROM seeds_1.sed_seeds WHERE year='$y' GROUP BY type,variety")) ) {
             while( $ra = $kfdb->KFDB_CursorFetch($dbc) ) {
                 $raDistinct[$y][] = $ra['type'].":".$ra['variety'];
             }

@@ -121,9 +121,9 @@ $sTransfer = "\n\nTransfers to newsite:\n"
 /* Dump all tables of seeds1 and seeds2
 */
 $sCommands =
-     dumpTables( $raTables1, "seeds", $pass1, "seeds" )
+     dumpTables( $raTables1, "seeds_user", $pass1, "seeds_1" )
     ."\n"
-    .dumpTables( $raTables2, "seeds", $pass1, "seeds2" )
+    .dumpTables( $raTables2, "seeds_user", $pass1, "seeds_2" )
     ."\n";
 
 

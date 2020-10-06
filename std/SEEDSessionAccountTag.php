@@ -76,7 +76,7 @@ class SEEDSessionAccountTag
                 if( $bAllowPwd ) {
                     // Tell the template whether the user still has the auto-generated password, because a template might legitimately show that
                     // but really shouldn't show their own chosen password
-                    $pwd = $this->kfdb->Query1( "SELECT password FROM seeds.SEEDSession_Users WHERE _key='$uid'" );
+                    $pwd = $this->kfdb->Query1( "SELECT password FROM seeds_1.SEEDSession_Users WHERE _key='$uid'" );
                     if( strlen($pwd) == 5 ) {
                         $oTagParser->SetVar( 'bSEEDSessionPasswordAutoGen', 1 );
                     }

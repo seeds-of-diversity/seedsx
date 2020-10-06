@@ -506,27 +506,27 @@ class SEDCommonDB
     {
         $kfrelDef_SEDCurrSeeds =
             array( "ver" => 2,
-                   "Tables"=>array( "S" => array( "Table" => 'seeds.sed_curr_seeds',
+                   "Tables"=>array( "S" => array( "Table" => 'seeds_1.sed_curr_seeds',
                                                   "Fields" => "Auto" ) ) );
         $kfrelDef_SEDCurrGrowers =
-            array( "Tables"=>array( array( "Table" => 'seeds.sed_curr_growers',
+            array( "Tables"=>array( array( "Table" => 'seeds_1.sed_curr_growers',
                                            "Fields" => "Auto" )));
 // TODO: instead of requiring the cursor to be created with S.mbr_id=G.mbr_id, can we add a Condition section to this def
         $kfrelDef_SEDCurrSeedsXGrowers =    // Need to create cursor with S.mbr_id=G.mbr_id
-            array( "Tables"=>array( array( "Table" => 'seeds.sed_curr_seeds',
+            array( "Tables"=>array( array( "Table" => 'seeds_1.sed_curr_seeds',
                                            "Type" => "Base",
                                            "Alias" => "S",
                                            "Fields" => "Auto" ),
-                                    array( "Table"=> 'seeds.sed_curr_growers',
+                                    array( "Table"=> 'seeds_1.sed_curr_growers',
                                            "Type" => "Parent",
                                            "Alias" => "G",
                                            "Fields" => "Auto" )));
         $kfrelDef_SEDCurrGrowersXContacts =    // Need to create cursor with G.mbr_id=M._key  (and of course it will only work with kfdb2)
-            array( "Tables"=>array( array( "Table" => 'seeds.sed_curr_growers',
+            array( "Tables"=>array( array( "Table" => 'seeds_1.sed_curr_growers',
                                            "Type" => "Base",
                                            "Alias" => "G",
                                            "Fields" => "Auto" ),
-                                    array( "Table"=> 'seeds2.mbr_contacts',
+                                    array( "Table"=> 'seeds_2.mbr_contacts',
                                            "Type" => "Related",
                                            "Alias" => "M",
                                            "Fields" => array( array("col"=>"firstname",       "type"=>"S"),

@@ -14,7 +14,7 @@ from rl_companies where _disabled=0;
 
 // COPY sl_sources to xlsupload
 
-create table seeds2.xlsupload (
+create table seeds_2.xlsupload (
 k integer,
 _deleted integer,
 name text,
@@ -37,7 +37,7 @@ score_capacity integer,
 latitude decimal(12,7),
 longitude decimal(12,7) );
 
-insert into seeds2.xlsupload select
+insert into seeds_2.xlsupload select
 _key,
 _status,
 name_en,
@@ -253,7 +253,7 @@ class MyConsole extends Console01KFUI
             case 1:  $ra['fk_sl_sources'] = "PGRC";   break;
             case 2:  $ra['fk_sl_sources'] = "NPGS";   break;
             default:
-                $ra['fk_sl_sources'] = $this->oW->kfdb->Query1( "SELECT name_en FROM seeds.sl_sources WHERE _key='$kSrc'" );
+                $ra['fk_sl_sources'] = $this->oW->kfdb->Query1( "SELECT name_en FROM seeds_1.sl_sources WHERE _key='$kSrc'" );
         }
 
         return( $ra );

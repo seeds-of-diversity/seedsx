@@ -125,8 +125,8 @@ if( ($pSp = $oForm->Value('sp')) ) {
         }
     } else if( substr($pSp,0,5) == 'spapp' ) {
         if( ($kMap = intval(substr($pSp,5))) ) {
-            $sSpeciesName = $kfdb->Query1( "SELECT appname_en FROM seeds.sl_species_map WHERE _status='0' AND _key='$kMap'" );
-            $raR = $kfdb->QueryRowsRA( "SELECT fk_sl_species FROM seeds.sl_species_map WHERE _status='0' AND appname_en='".addslashes($sSpeciesName)."' AND ns='ESF'" );
+            $sSpeciesName = $kfdb->Query1( "SELECT appname_en FROM seeds_1.sl_species_map WHERE _status='0' AND _key='$kMap'" );
+            $raR = $kfdb->QueryRowsRA( "SELECT fk_sl_species FROM seeds_1.sl_species_map WHERE _status='0' AND appname_en='".addslashes($sSpeciesName)."' AND ns='ESF'" );
             $raMap = array();
             foreach( $raR as $ra ) {
                 $raMap[] = $ra[0];

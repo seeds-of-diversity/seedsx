@@ -9,16 +9,16 @@
 
 /*
 
-delete from seeds.sl_cv_sources where fk_sl_sources >= 3;
+delete from seeds_1.sl_cv_sources where fk_sl_sources >= 3;
 
-insert into seeds.sl_cv_sources (_key,_created,_updated,_status,
+insert into seeds_1.sl_cv_sources (_key,_created,_updated,_status,
                                  fk_sl_sources,fk_sl_species,fk_sl_pcv,
                                  company_name,osp,ocv,bOrganic
                                 )
 select k,now(),now(),0,
        fk_sl_sources,fk_sl_species,fk_sl_pcv,
        company,species,cultivar,organic
-from seeds.sl_tmp_cv_sources;
+from seeds_1.sl_tmp_cv_sources;
 
  */
 
@@ -206,13 +206,13 @@ class SLSourceDownload
             case 'sound_status':
                 $nMatch1 = $nMatch2 = 0;
 
-                $sqlMatch = "SELECT count(*) FROM seeds.sl_cv_sources C, seeds.sl_pcv P "
+                $sqlMatch = "SELECT count(*) FROM seeds_1.sl_cv_sources C, seeds_1.sl_pcv P "
                            ."WHERE C._status='0' AND P._status='0' AND "
                            ."C.fk_sl_species<>0 AND C.ocv<>'' AND "        // skip blanks
                            ."C.fk_sl_species=P.fk_sl_species ";
 //$this->oW->kfdb->Setdebug(2);
-                $nPCV    = $this->oW->kfdb->Query1( "SELECT count(*) FROM seeds.sl_pcv WHERE _status='0'" );
-                $nCVSrc  = $this->oW->kfdb->Query1( "SELECT count(*) FROM seeds.sl_cv_sources WHERE _status='0'     AND fk_sl_species<>0 AND ocv<>''" );
+                $nPCV    = $this->oW->kfdb->Query1( "SELECT count(*) FROM seeds_1.sl_pcv WHERE _status='0'" );
+                $nCVSrc  = $this->oW->kfdb->Query1( "SELECT count(*) FROM seeds_1.sl_cv_sources WHERE _status='0'     AND fk_sl_species<>0 AND ocv<>''" );
                 $nMatch0 = $this->oW->kfdb->Query1( $sqlMatch."AND C.ocv=P.name" );
                 $nMatch1 = $this->oW->kfdb->Query1( $sqlMatch."AND C.sound_soundex<>'' AND C.sound_soundex=P.sound_soundex" ); //C.ocv<>P.name AND
                 $nMatch2 = $this->oW->kfdb->Query1( $sqlMatch."AND C.sound_metaphone<>'' AND C.sound_metaphone=P.sound_metaphone" ); //C.ocv<>P.name AND
@@ -1358,7 +1358,7 @@ class SLUploadCVSources
     const ReplaceWholeCSCI = 3;          // replace all companies (i.e. delete old companies not mentioned in the spreadsheet)
 
     private $oW;
-    private $tmpTable = "seeds.sl_tmp_cv_sources";
+    private $tmpTable = "seeds_1.sl_tmp_cv_sources";
 
     public $kUpload = 0;    // unique value placed in sl_tmp_cv_sources.kUpload to group the rows of this upload (0 means Load failed)
     public $eReplace;
@@ -1422,12 +1422,12 @@ class SLUploadCVSources
         $uid = $this->oW->sess->GetUID();
 
         $ok = $this->oW->kfdb->Execute(
-                "INSERT INTO seeds.sl_cv_sources_archive "
+                "INSERT INTO seeds_1.sl_cv_sources_archive "
                     ."(sl_cv_sources_key,fk_sl_sources,fk_sl_pcv,fk_sl_species,osp,ocv,bOrganic,year,notes,op,"
                     ." _created,_updated,_created_by,_updated_by) "
                ."SELECT C._key,C.fk_sl_sources,C.fk_sl_pcv,C.fk_sl_species,C.osp,C.ocv,C.bOrganic,C.year,C.notes,T.op,"
                       ."now(),now(),'$uid','$uid' "
-               ."FROM seeds.sl_cv_sources C, {$this->tmpTable} T "
+               ."FROM seeds_1.sl_cv_sources C, {$this->tmpTable} T "
                ."WHERE C._key=T.k AND kUpload='{$this->kUpload}' AND T.op IN ('U','Y','D','X')" );
         if( !$ok ) {
             $sErr = $this->oW->kfdb->GetErrMsg();

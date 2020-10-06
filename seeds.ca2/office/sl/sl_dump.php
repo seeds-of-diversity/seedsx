@@ -39,8 +39,8 @@ class MyDumpAdoptions extends KFTableDump
         global $kfdb1;
 
         // add computed value
-        $raVal['X_have'] = intval( $kfdb1->Query1("SELECT sum(g_have) FROM seeds.sl_accession WHERE fk_sl_pcv ='".$raVal['fk_sl_pcv']."'") );
-        $raVal['X_pgrc'] = intval( $kfdb1->Query1("SELECT sum(g_pgrc) FROM seeds.sl_accession WHERE fk_sl_pcv ='".$raVal['fk_sl_pcv']."'") );
+        $raVal['X_have'] = intval( $kfdb1->Query1("SELECT sum(g_have) FROM seeds_1.sl_accession WHERE fk_sl_pcv ='".$raVal['fk_sl_pcv']."'") );
+        $raVal['X_pgrc'] = intval( $kfdb1->Query1("SELECT sum(g_pgrc) FROM seeds_1.sl_accession WHERE fk_sl_pcv ='".$raVal['fk_sl_pcv']."'") );
 
         return( $raVal );
     }
@@ -80,16 +80,16 @@ if( $cmd == 't' ) {
 
 } else if( $cmd == 'adoptions') {
 // this kfreldef should be provided by SLDB, except it would need to be in an office-level derived class
-    $kfreldef = array( "Tables" => array(array( "Table" => "seeds.sl_adoption",
+    $kfreldef = array( "Tables" => array(array( "Table" => "seeds_1.sl_adoption",
                                                 "Alias" => "D",
                                                 "Type"  => "Base",
                                                 "Fields" => _sldb_base::kfrelFldSLAdoption() ),
-                                         array( "Table" => "seeds.sl_pcv",
+                                         array( "Table" => "seeds_1.sl_pcv",
                                                 "Alias" => "P",
                                                 "Type"  => "LEFT JOIN",
                                                 "LeftJoinOn" => "D.fk_sl_pcv=P._key",
                                                 "Fields" => _sldb_base::kfrelFldSLPCV() ),
-                                         array( "Table" => "seeds2.mbr_contacts",
+                                         array( "Table" => "seeds_2.mbr_contacts",
                                                 "Alias" => "M",
                                                 "Type"  => "LEFT JOIN",
                                                 "LeftJoinOn" => "D.fk_mbr_contacts=M._key",
@@ -137,7 +137,7 @@ if( $cmd == 't' ) {
     $ra = array();
     $ra[] = array( "_key"=>"1", "type"=>"tomato", "variety"=>"fooey" );
 
-    $ra = $kfdb1->QueryRowsRA( "SELECT * FROM seeds.sed_curr_seeds S LEFT JOIN csci_seeds C on S.variety=C.icv LEFT JOIN sl_pcv P ON S.variety=P.name "
+    $ra = $kfdb1->QueryRowsRA( "SELECT * FROM seeds_1.sed_curr_seeds S LEFT JOIN csci_seeds C on S.variety=C.icv LEFT JOIN sl_pcv P ON S.variety=P.name "
                               ." WHERE S.category='VEGETABLES' AND NOT S.bSkip AND NOT S.bDelete"
                               ." AND C._key IS NULL AND P._key IS NULL"
                                );

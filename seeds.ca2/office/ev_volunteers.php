@@ -20,7 +20,7 @@ foreach( $raEvents as $ra ) {
     $sMbrName = "";
     $sMbrLabel = "";
     if( ($kMbr = $ra['vol_kMbr']) ) {
-        $raMbr = $oApp->kfdb->QueryRA( "SELECT * FROM seeds2.mbr_contacts WHERE _key='$kMbr'" );
+        $raMbr = $oApp->kfdb->QueryRA( "SELECT * FROM seeds_2.mbr_contacts WHERE _key='$kMbr'" );
         $sMbrName = SEEDCore_ArrayExpand( $raMbr, "[[firstname]] [[lastname]] in [[city]]" );
 
         $sMbrLabel = "<div style='display:inline-block;margin-left:10px;font-size:9pt'>"

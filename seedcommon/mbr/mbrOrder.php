@@ -123,7 +123,7 @@ class MbrOrderCommon {
 
     private function kfreldefMbrOrder()
     {
-        return( array( "Tables"=>array( array( "Table" => 'seeds.mbr_order_pending',
+        return( array( "Tables"=>array( array( "Table" => 'seeds_1.mbr_order_pending',
                                    "Fields" => array( array("col"=>"mail_firstname",  "type"=>"S"),
                                                       array("col"=>"mail_lastname",   "type"=>"S"),
                                                       array("col"=>"mail_company",    "type"=>"S"),

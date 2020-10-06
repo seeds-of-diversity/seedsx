@@ -187,11 +187,11 @@ class SEDMbrGrower extends SEDGrowerWorker
         $ra = $this->oC->oApp->kfdb->QueryRA(
                 "SELECT _updated,_updated_by FROM
                      (
-                     (SELECT _updated,_updated_by FROM seeds.SEEDBasket_Products
+                     (SELECT _updated,_updated_by FROM seeds_1.SEEDBasket_Products
                          WHERE product_type='seeds' AND _status='0' AND
                                uid_seller='$kGrower' ORDER BY _updated DESC LIMIT 1)
                      UNION
-                     (SELECT PE._updated,PE._updated_by FROM seeds.SEEDBasket_ProdExtra PE,seeds.SEEDBasket_Products P
+                     (SELECT PE._updated,PE._updated_by FROM seeds_1.SEEDBasket_ProdExtra PE,seeds_1.SEEDBasket_Products P
                          WHERE P.product_type='seeds' AND _status='0' AND
                                P.uid_seller='$kGrower' AND P._key=PE.fk_SEEDBasket_Products ORDER BY 1 DESC LIMIT 1)
                      ) as A
@@ -201,11 +201,11 @@ class SEDMbrGrower extends SEDGrowerWorker
 */
         list($kP_dummy,$dSUpdated,$kSUpdatedBy) = $this->oC->oSB->oDB->ProductLastUpdated( "P.product_type='seeds' AND P.uid_seller='$kGrower'" );
 
-        $nSActive = $this->oC->oApp->kfdb->Query1( "SELECT count(*) FROM seeds.SEEDBasket_Products
+        $nSActive = $this->oC->oApp->kfdb->Query1( "SELECT count(*) FROM seeds_1.SEEDBasket_Products
                                                     WHERE product_type='seeds' AND _status='0' AND
                                                           uid_seller='$kGrower' AND eStatus='ACTIVE'" );
 
-        $dMbrExpiry = $this->oC->oApp->kfdb->Query1( "SELECT expires FROM seeds2.mbr_contacts WHERE _key='$kGrower'" );
+        $dMbrExpiry = $this->oC->oApp->kfdb->Query1( "SELECT expires FROM seeds_2.mbr_contacts WHERE _key='$kGrower'" );
 
         $sSkip = $kfrG->Value('bSkip')
                     ? ("<div style='background-color:#ee9'><span style='font-size:12pt'>Skipped</span>"
@@ -331,7 +331,7 @@ class MyConsole extends Console01
 
     private function growerSelect()
     {
-        $raG = $this->oApp->kfdb->QueryRowsRA( "SELECT mbr_id,bSkip,bDelete,bDone FROM seeds.sed_curr_growers WHERE _status='0'" );
+        $raG = $this->oApp->kfdb->QueryRowsRA( "SELECT mbr_id,bSkip,bDelete,bDone FROM seeds_1.sed_curr_growers WHERE _status='0'" );
         $raG2 = array( '-- All Growers --' => 0 );
         foreach( $raG as $ra ) {
             $kMbr = $ra['mbr_id'];

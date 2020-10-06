@@ -95,7 +95,7 @@ class QServerSourceCV_Old
                 $rQ['raOut'] = $ra;
 
                 if( ($k = intval(@$parms['kSrc'])) ) {
-                    $rQ['raMeta']['name'] = $this->oQ->kfdb->Query1( "SELECT name_en FROM seeds.sl_sources WHERE _key='$k'" );
+                    $rQ['raMeta']['name'] = $this->oQ->kfdb->Query1( "SELECT name_en FROM seeds_1.sl_sources WHERE _key='$k'" );
                 } else if( $raParms['bAllComp'] ) {
                     $rQ['raMeta']['name'] = "All Companies";
                 }
@@ -204,7 +204,7 @@ class QServerSourceCV_Old
                 // If multiple rows have the same fk_sl_species they will overwrite each other so one
                 // random row will remain (any map._key is equivalent)
                 $raMap = array();
-                $raR = $this->oQ->kfdb->QueryRowsRA( "SELECT _key,fk_sl_species,appname_en FROM seeds.sl_species_map WHERE ns='".addslashes($raParms['spMap'])."'" );
+                $raR = $this->oQ->kfdb->QueryRowsRA( "SELECT _key,fk_sl_species,appname_en FROM seeds_1.sl_species_map WHERE ns='".addslashes($raParms['spMap'])."'" );
                 foreach( $raR as $ra ) {
                     $raMap[$ra['fk_sl_species']] = $ra;
                 }
@@ -418,8 +418,8 @@ class QServerSourceCV_Old
         if( $kPcv ) {
 // kluge: some kPcv are fakes, actually SRCCV._key+10,000,000 representing the ocv at that row
 if( $kPcv > 10000000 ) {
-    if( ($ocv = $this->oSLDBSrc->kfdb->Query1("SELECT ocv FROM seeds.sl_cv_sources WHERE _key='".($kPcv-10000000)."'")) &&
-        ($osp = $this->oSLDBSrc->kfdb->Query1("SELECT osp FROM seeds.sl_cv_sources WHERE _key='".($kPcv-10000000)."'")) ) {
+    if( ($ocv = $this->oSLDBSrc->kfdb->Query1("SELECT ocv FROM seeds_1.sl_cv_sources WHERE _key='".($kPcv-10000000)."'")) &&
+        ($osp = $this->oSLDBSrc->kfdb->Query1("SELECT osp FROM seeds_1.sl_cv_sources WHERE _key='".($kPcv-10000000)."'")) ) {
         $raCond[] = "SRCCV.osp='".addslashes($osp)."' AND SRCCV.ocv='".addslashes($ocv)."'";
     }
 } else {
@@ -659,7 +659,7 @@ if( ($k = intval(@$parms['kPcv'])) && $k > 10000000 ) $raParms['kPcvKluge'] = $k
 
 if( ($k = intval(@$raParms['kPcvKluge'])) ) {
 // kluge: some kPcv are fakes, actually SRCCV._key+10,000,000 representing the ocv at that row
-    if( ($ra = $this->oSLDBSrc->kfdb->QueryRA("SELECT osp,ocv FROM seeds.sl_cv_sources WHERE _key='".($k-10000000)."'")) ) {
+    if( ($ra = $this->oSLDBSrc->kfdb->QueryRA("SELECT osp,ocv FROM seeds_1.sl_cv_sources WHERE _key='".($k-10000000)."'")) ) {
         $raCond[] = "SRCCV.osp='".addslashes($ra['osp'])."' AND SRCCV.ocv='".addslashes($ra['ocv'])."'";
     }
 }

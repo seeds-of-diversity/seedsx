@@ -26,9 +26,9 @@ if( ($pCmd = $request->variable('seeds-admin','')) ) {
          */
         $nAdded = 0;
 
-        $raUsers = $kfdb->QueryRowsRA( "SELECT * FROM seeds.SEEDSession_Users WHERE eStatus='ACTIVE' AND gid1 IN (1,2,4)" );
+        $raUsers = $kfdb->QueryRowsRA( "SELECT * FROM seeds_1.SEEDSession_Users WHERE eStatus='ACTIVE' AND gid1 IN (1,2,4)" );
         foreach( $raUsers as $ra ) {
-            $bb_id = intval( $kfdb->Query1( "SELECT v FROM seeds.SEEDSession_UsersMetadata WHERE _status='0' AND uid='{$ra['_key']}' AND k='phpbb_id'" ) );
+            $bb_id = intval( $kfdb->Query1( "SELECT v FROM seeds_1.SEEDSession_UsersMetadata WHERE _status='0' AND uid='{$ra['_key']}' AND k='phpbb_id'" ) );
 
             if( $bb_id )  continue;
 
@@ -53,8 +53,8 @@ if( ($pCmd = $request->variable('seeds-admin','')) ) {
                 if( ($sErr = group_user_add( $groupid, $phpbb_userid )) ) {
 	            echo "<div style='color:red'>Warning adding $uname to group $groupid: $sErr</div>";
                 }
-                $kfdb->Execute( "DELETE FROM seeds.SEEDSession_UsersMetadata WHERE uid='$uid' AND k='phpbb_id'");
-                $kfdb->Execute( "INSERT INTO seeds.SEEDSession_UsersMetadata (_created,_updated,uid,k,v) VALUES (NOW(),NOW(),$uid,'phpbb_id',$phpbb_userid)" );
+                $kfdb->Execute( "DELETE FROM seeds_1.SEEDSession_UsersMetadata WHERE uid='$uid' AND k='phpbb_id'");
+                $kfdb->Execute( "INSERT INTO seeds_1.SEEDSession_UsersMetadata (_created,_updated,uid,k,v) VALUES (NOW(),NOW(),$uid,'phpbb_id',$phpbb_userid)" );
                 echo "Added $phpbb_userid : {$user_row['username']} {$user_row['user_email']}<br/>";
                 ++$nAdded;
             }
@@ -70,15 +70,15 @@ if( $nAdded == 50 ) exit;
         }
 
         if( is_numeric($pUser) ) {
-            $raUser = $kfdb->QueryRA( "SELECT * FROM seeds.SEEDSession_Users WHERE _key='".intval($pUser)."'" );
+            $raUser = $kfdb->QueryRA( "SELECT * FROM seeds_1.SEEDSession_Users WHERE _key='".intval($pUser)."'" );
         } else {
-            $raUser = $kfdb->QueryRA( "SELECT * FROM seeds.SEEDSession_Users WHERE email='".addslashes($pUser)."'" );
+            $raUser = $kfdb->QueryRA( "SELECT * FROM seeds_1.SEEDSession_Users WHERE email='".addslashes($pUser)."'" );
         }
         if( !($kUser = @$raUser['_key']) ) {
             echo "Unknown user $pUser";
             exit;
         }
-        $kBB = intval( $kfdb->Query1( "SELECT v FROM seeds.SEEDSession_UsersMetadata WHERE uid='$kUser' AND k='phpbb_id'" ) );
+        $kBB = intval( $kfdb->Query1( "SELECT v FROM seeds_1.SEEDSession_UsersMetadata WHERE uid='$kUser' AND k='phpbb_id'" ) );
 
         echo "Member $kUser, forum id $kBB<br/>";
 

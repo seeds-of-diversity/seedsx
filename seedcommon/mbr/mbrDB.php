@@ -22,9 +22,9 @@ class Mbr_DB
 {
     public $kfrelContacts = NULL;
 
-    public $kfrelCxU1 = NULL;           // contacts x seeds.users
-    public $kfrelC_U1 = NULL;           // contacts left join seeds.users
-    public $kfrelU1_C = NULL;           // seeds.users left join contacts
+    public $kfrelCxU1 = NULL;           // contacts x seeds_1.users
+    public $kfrelC_U1 = NULL;           // contacts left join seeds_1.users
+    public $kfrelU1_C = NULL;           // seeds_1.users left join contacts
 
     public $yCurrent;
 
@@ -163,9 +163,9 @@ class Mbr_DB
 
 // KFRelation
         $sql = "SELECT C._key as kMbr,C.email as email,C.firstname as firstname,C.lastname as lastname,C.company as company "
-              ."FROM seeds2.mbr_contacts C "
-              ."JOIN seeds.SEEDSession_Users U ON (C._key=U._key) "
-              ."LEFT JOIN seeds.SEEDSession_UsersMetadata UM ON (U._key=UM.uid AND UM.k='dSentMSD' AND UM._status='0') "
+              ."FROM seeds_2.mbr_contacts C "
+              ."JOIN seeds_1.SEEDSession_Users U ON (C._key=U._key) "
+              ."LEFT JOIN seeds_1.SEEDSession_UsersMetadata UM ON (U._key=UM.uid AND UM.k='dSentMSD' AND UM._status='0') "
               ."WHERE C._status='0' AND U._status='0' " // don't put UM._status='0' here or no null rows will be returned
               ."AND C.expires >= '{$this->yCurrent}' "
               ."AND C.email <> '' "
@@ -200,7 +200,7 @@ class Mbr_DB
             foreach( explode( " ", $sTests ) as $test ) {
                 switch( $test ) {
                     case "AccountExists":
-                        if( !$this->kfdb->Query1( "SELECT _key FROM seeds.SEEDSession_Users WHERE _key='$kMbr'" ) ) {
+                        if( !$this->kfdb->Query1( "SELECT _key FROM seeds_1.SEEDSession_Users WHERE _key='$kMbr'" ) ) {
                             $bOk = false;
                             $sErr .= "Contact $kMbr does not have a login account. ";
                         }
@@ -256,14 +256,14 @@ class Mbr_DB
 
 // put this in GetMemberInfoAndValidate - or is it only ever needed here
         // The login must not exist
-        if( $this->kfdb->Query1( "SELECT _key FROM seeds.SEEDSession_Users WHERE _key='$kMbr'" ) ) {
+        if( $this->kfdb->Query1( "SELECT _key FROM seeds_1.SEEDSession_Users WHERE _key='$kMbr'" ) ) {
             $bOk = false;
             $sErr = "Member $kMbr already has a login account. If the report here says otherwise, it might be inactivated?<br/>";
             goto done;
         }
 
         // Another login may not have the same email address (CreateUser checks this, but doesn't report an error - it should)
-        if( ($kDup = $this->kfdb->Query1( "SELECT _key FROM seeds.SEEDSession_Users WHERE email='$sdbEmail' and _status='0'" )) ) {
+        if( ($kDup = $this->kfdb->Query1( "SELECT _key FROM seeds_1.SEEDSession_Users WHERE email='$sdbEmail' and _status='0'" )) ) {
             $bOk = false;
             $sErr = "Member $kMbr already has a login account ($kDup). If the report here says otherwise, it might be inactivated?<br/>";
             goto done;
@@ -284,7 +284,7 @@ class Mbr_DB
         $bOk = ($kMbr != 0);
 
         //$bOk = $this->kfdb1->Execute(
-        //        "INSERT INTO seeds.SEEDSession_Users (_key,_created,_created_by,_status,"
+        //        "INSERT INTO seeds_1.SEEDSession_Users (_key,_created,_created_by,_status,"
         //                                            ."email,password,realname,gid1,eStatus,dSentmsd)"
         //       ." VALUES ".SEEDStd_ArrayExpand($raMbr, "('[[_key]]',now(),0,0,'[[email]]',left(md5('[[email]]'),6),"
         //                                              ."trim('[[firstname]] [[lastname]] [[company]]'),2,'ACTIVE',0)") );
@@ -319,11 +319,11 @@ class Mbr_DB
             goto done;
         }
 
-        $raAccount = $this->kfdb->QueryRA( "SELECT * FROM seeds.SEEDSession_Users WHERE _key='$kMbr'" );
+        $raAccount = $this->kfdb->QueryRA( "SELECT * FROM seeds_1.SEEDSession_Users WHERE _key='$kMbr'" );
 
         // if the account has not been deleted or hidden, and it is ACTIVE, make it INACTIVE
         if( $raAccount['_status'] == 0 && $raAccount['eStatus'] == "ACTIVE" ) {
-            if( !$this->kfdb->Execute( "UPDATE seeds.SEEDSession_Users SET eStatus='INACTIVE' WHERE _key='$kMbr'" ) ) {
+            if( !$this->kfdb->Execute( "UPDATE seeds_1.SEEDSession_Users SET eStatus='INACTIVE' WHERE _key='$kMbr'" ) ) {
                 $bOk = false;
                 $sErr = "Database error activating login account for member $kMbr : ".$this->kfdb->GetErrMsg();
                 goto done;
@@ -361,47 +361,47 @@ class Mbr_DB
 
     private function init( $kfdb, $uid ) {
         $kdefC =
-            array( "Tables" => array( array( "Table" => 'seeds2.mbr_contacts',
+            array( "Tables" => array( array( "Table" => 'seeds_2.mbr_contacts',
                                              "Alias" => "C",
                                              "Type" => "Base",
                                              "Fields" => "Auto" ) ) );
         $kdefCxU1 =
-            array( "Tables" => array( array( "Table" => 'seeds2.mbr_contacts',
+            array( "Tables" => array( array( "Table" => 'seeds_2.mbr_contacts',
                                              "Alias" => "C",
                                              "Type" => "Base",
                                              "Fields" => "Auto" ),
-                                      array( "Table" => 'seeds.SEEDSession_Users',
+                                      array( "Table" => 'seeds_1.SEEDSession_Users',
                                              "Alias" => "U",
                                              "Type" => "Other",
                                              "Fields" => "Auto" ) ),
                    "Condition" => "C._key=U._key" );
         $kdefC_U1 =
-            array( "Tables" => array( array( "Table" => 'seeds2.mbr_contacts',
+            array( "Tables" => array( array( "Table" => 'seeds_2.mbr_contacts',
                                              "Alias" => "C",
                                              "Type" => "Base",
                                              "Fields" => "Auto" ),
-                                      array( "Table" => 'seeds.SEEDSession_Users',
+                                      array( "Table" => 'seeds_1.SEEDSession_Users',
                                              "Alias" => "U",
                                              "Type"  => "LEFT JOIN",
                                              "LeftJoinOn" => "C._key=U._key",
                                              "Fields" => "Auto" ) ) );
         $kdefU1_C =
-            array( "Tables" => array( array( "Table" => 'seeds.SEEDSession_Users',
+            array( "Tables" => array( array( "Table" => 'seeds_1.SEEDSession_Users',
                                              "Alias" => "U",
                                              "Type" => "Base",
                                              "Fields" => "Auto" ),
-                                      array( "Table" => 'seeds2.mbr_contacts',
+                                      array( "Table" => 'seeds_2.mbr_contacts',
                                              "Alias" => "C",
                                              "Type"  => "LEFT JOIN",
                                              "LeftJoinOn" => "C._key=U._key",
                                              "Fields" => "Auto" ) ) );
         $kdefP =
-            array( "Tables" => array( array( "Table" => 'seeds.mbr_profile',
+            array( "Tables" => array( array( "Table" => 'seeds_1.mbr_profile',
                                              "Alias" => "P",
                                              "Type" => "Base",
                                              "Fields" => "Auto" ) ) );
         $kdefPX =
-            array( "Tables" => array( array( "Table" => 'seeds.mbr_profile_extra',
+            array( "Tables" => array( array( "Table" => 'seeds_1.mbr_profile_extra',
                                              "Alias" => "PX",
                                              "Type" => "Base",
                                              "Fields" => "Auto" ) ) );

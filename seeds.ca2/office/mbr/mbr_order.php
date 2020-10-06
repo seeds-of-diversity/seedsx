@@ -89,7 +89,8 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
             /* This tool manages the fulfilment of each purchase in the basket
              */
             if( ($kB = $kfrOrder->value('kBasket')) ) {
-                list($sContents,$fTotal,$bContactNeeded,$bDonNotRecorded) = $this->oSoDBasket->ShowBasketContents( $kB, true );
+                $bFulfilControls = in_array( $this->oApp->sess->GetUID(), [1,1499] );
+                list($sContents,$fTotal,$bContactNeeded,$bDonNotRecorded) = $this->oSoDBasket->ShowBasketContents( $kB, $bFulfilControls );
                 $sCol2 .= $sContents;
             } else {
                 $sCol2 .= "<p class='alert alert-danger'>This order doesn't have a basket number</p>";
@@ -266,7 +267,17 @@ $oOrder = new MbrOrderCommon( $kfdb, "EN", $sess->GetUID() );
 $kfrel = $oOrder->kfrelOrder;
 
 if( ($jx = SEEDInput_Str('jx')) ) {
-    $rQ = ['bOk'=>false, 'sOut'=>"", 'sErr'=>""];
+    $rQ = ['bOk'=>false, 'sOut'=>"", 'sErr'=>"", 'raOut'=>[] ];
+
+    $o = new SoDOrder_MbrOrder( $oApp );
+    $raSBCmd = $o->ProcessCmd( $jx, $_REQUEST );
+    if( $raSBCmd['bHandled'] ) {
+        $rQ = array_merge( $rQ, $raSBCmd );
+        //$rQ['sOut'] = SEEDCore_utf8_encode( $rQ['sOut'] );
+        //$rQ['sErr'] = SEEDCore_utf8_encode( $rQ['sErr'] );
+        goto jxDone;
+    }
+
 
     if( !($k = SEEDInput_Int('k')) ||
         !($kfr = $kfrel->GetRecordFromDBKey( $k )) ||
@@ -684,6 +695,22 @@ $(document).ready(function() {
     });
 
 
+    /* Purchase Fulfil - every product type's button will say something different but they all execute SEEDBasket_Purchase::Fulfil()
+     */
+    $(".doPurchaseFulfil").click(function(event){
+        event.preventDefault();
+        let k = $(this).attr('data-kPurchase');
+
+        jxData = { jx     : 'sb--purchaseFulfil',
+                   k      : k,
+                   lang   : "EN"
+                 };
+
+        o = SEEDJX( "mbr_order.php", jxData );
+        if( o['bOk'] ) {
+            redrawOrderSummaryRow( k, 0 ); alert("recorded donation - buttons are now unbound");    // redrawOrderSummaryRow doesn't rebind js to buttons
+        }
+    });
     /* Membership item click
      */
 // Obsolete?
