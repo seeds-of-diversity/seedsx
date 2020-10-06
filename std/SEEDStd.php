@@ -2,7 +2,7 @@
 
 /* SEEDStd
  *
- * Copyright 2006-2015 Seeds of Diversity Canada
+ * Copyright 2006-2020 Seeds of Diversity Canada
  *
  * Standard functions useful to most applications
  */
@@ -251,7 +251,7 @@ function SEEDSafeGPC_MagicAddSlashes( $s )
     Escape quotes in the given string if magic quotes are turned off
  */
 {
-    return( get_magic_quotes_gpc() ? $s : addslashes($s) );
+    return($s); // no longer available return( get_magic_quotes_gpc() ? $s : addslashes($s) );
 }
 
 function SEEDSafeGPC_MagicStripSlashes( $s )
@@ -259,7 +259,7 @@ function SEEDSafeGPC_MagicStripSlashes( $s )
     Unescape quotes in the given string if magic quotes are turned on
  */
 {
-    return( get_magic_quotes_gpc() ? stripslashes($s) : $s );
+    return($s); // no longer available return( get_magic_quotes_gpc() ? stripslashes($s) : $s );
 }
 
 function SEEDStd_UniqueId( $iTruncateLen = 0 )
