@@ -41,7 +41,9 @@ class Mbr_DB
         $this->yCurrent = intval($yCurrent);
 
         $this->init( $kfdb, $uid );
-        $this->oSessUGP = new SEEDSessionAuthDB( $kfdb, $uid, 'seeds' );
+
+        global $config_KFDB;
+        $this->oSessUGP = new SEEDSessionAuthDB( $kfdb, $uid, $config_KFDB['seeds1']['kfdbDatabase'] );  // 'seeds' );
     }
 
     function GetMembersWithoutLogins()
