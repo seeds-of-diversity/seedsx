@@ -20,7 +20,8 @@ class MbrAccount
     function __construct( KeyFrameDB $kfdb, $uid )    // works with kfdb1 or kfdb2
     {
         $this->kfdb = $kfdb;
-        $this->oSessUGP = new SEEDSessionAuthDB( $kfdb, $uid, 'seeds' );
+        global $config_KFDB;
+        $this->oSessUGP = new SEEDSessionAuthDB( $kfdb, $uid, $config_KFDB['seeds1']['kfdbDatabase'] );
     }
 
 

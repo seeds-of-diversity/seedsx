@@ -57,7 +57,7 @@ class SEEDBasketFulfilment
     function __construct( SEEDAppSessionAccount $oApp )
     {
         $this->oApp = $oApp;
-        $this->oBasketDB = new SEEDBasketDB( $oApp->kfdb, $oApp->sess->GetUID(), SITE_LOG_ROOT, ['db'=>'seeds'] );
+        $this->oBasketDB = new SEEDBasketDB( $oApp->kfdb, $oApp->sess->GetUID(), SITE_LOG_ROOT, ['sbdb'=>'seeds1'] );
     }
 
     function DrawOrderFulfilment( $raBasket )
@@ -337,7 +337,7 @@ class MyConsole02TabSet extends Console02TabSet
         // oApp->kfdb is seeds2 but SEEDBasketDB is created on seeds here
         $this->oApp = $oApp;
         $this->oSB = new SEEDBasketCore( $oApp->kfdb, $oApp->sess, $oApp, SEEDBasketProducts_SoD::$raProductTypes,
-                                         ['logdir'=>$oApp->logdir, 'db'=>'seeds'] );
+                                         ['logdir'=>$oApp->logdir, 'sbdb'=>'seeds1'] );
     }
 
     function TabSetInit( $tsid, $tabname )
