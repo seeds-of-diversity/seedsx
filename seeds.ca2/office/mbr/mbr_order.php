@@ -695,22 +695,6 @@ $(document).ready(function() {
     });
 
 
-    /* Purchase Fulfil - every product type's button will say something different but they all execute SEEDBasket_Purchase::Fulfil()
-     */
-    $(".doPurchaseFulfil").click(function(event){
-        event.preventDefault();
-        let k = $(this).attr('data-kPurchase');
-
-        jxData = { jx     : 'sb--purchaseFulfil',
-                   k      : k,
-                   lang   : "EN"
-                 };
-
-        o = SEEDJX( "mbr_order.php", jxData );
-        if( o['bOk'] ) {
-            redrawOrderSummaryRow( k, 0 ); alert("recorded donation - buttons are now unbound");    // redrawOrderSummaryRow doesn't rebind js to buttons
-        }
-    });
     /* Membership item click
      */
 // Obsolete?
@@ -852,6 +836,62 @@ function doContactFormSubmit( jButton, kMbr, kOrder )
 
     // redraw the order summary row e.g. the notice about contact being needed
     redrawOrderSummaryRow( kOrder, 1 );
+}
+
+
+
+class SoDBasketFulfilment
+{
+    constructor()
+    {
+    }
+
+     /* A button in a div.basketDetail is clicked to fulfil a purchase. Works for any product_type.
+      */
+    static doPurchaseFulfil( jButton, kPurchase )
+    {
+        //$(".doPurchaseFulfil").click(function(event)
+        //event.preventDefault();
+        // let k = $(this).attr('data-kPurchase');alert(k);
+
+        let tmpRowDiv = jButton.closest('.tmpRowDiv');
+        let kOrder = jButton.closest('.mbro-tmp-row').prev().attr('data-korder');
+
+        let jxData = { jx     : 'sb--purchaseFulfil',
+                       k      : kPurchase,
+                       lang   : "EN"
+                     };
+
+        let o = SEEDJX( "mbr_order.php", jxData );console.log(o);
+        if( o['bOk'] ) {
+            this.redrawBasketSummaryRow( kOrder, 0 );
+            fillTmpRowDiv( tmpRowDiv, kOrder, "" );
+        }
+    }
+
+    static redrawBasketSummaryRow( kOrder, bTicketOpen )
+    {
+        $.get( 'mbr_order.php',
+                "jx=drawOrderSummaryRow&k="+kOrder,
+                function (data) {
+                    let rQ = SEEDJX_ParseJSON( data );
+                    //console.log(d);
+                    if( rQ['bOk'] ) {
+                        let newTr = $(rQ['sOut']);
+
+                        let prevTr = $("tr[data-korder="+kOrder+"]");
+                        prevTr.replaceWith( newTr );
+                        // rebind the Show Ticket link in the replaced <tr>
+                        newTr.find('.mbrOrderShowTicket').click( function (event) {
+                            event.preventDefault();
+                            initClickShowTicket( $(this) );
+                        });
+                        // remind it that the submitForm is open
+                        newTr.find('.mbrOrderShowTicket').attr('data-expanded',bTicketOpen);
+                    }
+                });
+    }
+
 }
 
 </script>
