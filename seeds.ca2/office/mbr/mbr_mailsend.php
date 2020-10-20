@@ -26,14 +26,14 @@ $n = $kfdb2->Query1("SELECT count(*) FROM mbr_mail_send_recipients WHERE _status
 $sBody = "<h2>Seeds of Diversity Bulk Mailer</h2>"
         ."<p>There are $n emails ready to send.</p>";
 if( $n ) {
-    $sBody .= "<p>Sending one email every second.</p>"
+    $sBody .= "<p>Sending one email every 20 seconds.</p>"
              ."<p>You can see the progress in the Bulk Mailer table by clicking the Refresh link.</p>";
 }
 
 $sBody .= "<br/><br/>";
 $oSend = new mbr_mailsend( $kfdb1, $kfdb2, 1499 );   /* **************  UID ************************************/
 
-for( $i = 0; $i < 10; ++$i ) {
+for( $i = 0; $i < 1; ++$i ) {
     list($kRec,$sMsg) = $oSend->sendOne();
     $sBody .= $kRec." ".microtime()."<br/>".($sMsg ? "$sMsg<br/>" : "");
     if( !$kRec )  break;
@@ -43,7 +43,7 @@ for( $i = 0; $i < 10; ++$i ) {
     //set_time_limit( 30 );
     //usleep( 500000 ); // half of a second
 }
-sleep( 5 );
+sleep( 20 );
 
 
 echo "<html><head>"
