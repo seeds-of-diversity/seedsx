@@ -136,7 +136,7 @@ class MbrGetList
             $ra[] = $kfr->value('phone');
             $ra[] = $kfr->value('lang');
             $yearMbr = substr( $kfr->value('expires'), 0, 4 );
-            $ra[] = ($yearMbr=='2020' ? "Complimentary"
+            $ra[] = ($yearMbr=='2300' ? "Complimentary"
                   : ($yearMbr=='2100' ? "Auto"
                   : ($yearMbr=='2200' ? "Lifetime" : $yearMbr)));
             $ra[] = substr( $kfr->value('donation_date'), 0, 4 );
