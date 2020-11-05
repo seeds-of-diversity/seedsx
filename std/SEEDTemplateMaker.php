@@ -75,6 +75,8 @@ function SEEDTemplateMaker( $raParms )
 
     $raGen['SEEDTagParms'] = $tagParms;
     $raGen['vars'] = isset($raParms['raVars']) ? $raParms['raVars'] : array();
+
+    $raGen['SEEDTagParms']['bEatUnknownTags'] = !@$raParms['kluge_dontEatMyTag'];
     $o = new SEEDTemplate_Generator( $raGen );
     $oTmpl = $o->MakeSEEDTemplate();
 

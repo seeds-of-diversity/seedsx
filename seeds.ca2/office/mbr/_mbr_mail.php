@@ -291,6 +291,7 @@ $raDRVars['kMailSend'] = $kfrRecipient->Key();
         include_once( STDINC."SEEDSessionAccountTag.php" );
         $raMT['EnableSEEDSession']['oSessTag'] = new SEEDSessionAccountTag( $this->kfdb1, $uid, array( 'bAllowKMbr'=>true, 'bAllowPwd'=>true ) );
 
+        $raMT['raSEEDTemplateMakerParms'] = ['kluge_dontEatMyTag'=>true];
         $oMaster = new MasterTemplate( $this->kfdb1, $uid, $lang, $raMT );
         if( ($oTmpl = $oMaster->GetTmpl()) ) {
             $sDoc = $oTmpl->ExpandStr( $sDoc, array( 'kMbrTo' => $kMbr, 'lang'=>$lang ) );
