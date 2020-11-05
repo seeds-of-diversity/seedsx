@@ -150,6 +150,7 @@ class MasterTemplate
                 }
                 break;
 
+/*
             case 'msd':
             case 'sed':     // deprecated
                 // [[msd:seedlist|kMbr]]
@@ -170,7 +171,7 @@ class MasterTemplate
                     $s =
                     "<style>.sed_seed_skip {background-color:#ccc} .sed_seed {margin:10px}</style>"
                     .$rQ['sOut'];
-/*
+[*
                     include_once( SEEDCOMMON."sl/sed/sedCommon.php" );
                     $oSed = new SEDCommonDraw( $this->kfdb, 0, $this->lang, "REVIEW" );    // uid == 0
 
@@ -181,9 +182,10 @@ class MasterTemplate
                             $s .= "<div style='$sSeedListStyle'>".$oSed->DrawSeedFromKFR( $kfrc )."</div>";
                         }
                     }
-*/
+*]
                     $bHandled = true;
                 }
+*/
                 break;
 
             case 'cd':
