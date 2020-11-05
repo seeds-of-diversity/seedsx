@@ -296,8 +296,13 @@ $raDRVars['kMailSend'] = $kfrRecipient->Key();
         if( ($oTmpl = $oMaster->GetTmpl()) ) {
             $sDoc = $oTmpl->ExpandStr( $sDoc, array( 'kMbrTo' => $kMbr, 'lang'=>$lang ) );
         }
-// MasterTemplate's SEEDTag turns all unrecognized tags into "" so there can't be a new MasterTemplate2 to continue processing here.
-// Instead move MasterTemplate to seedlib/SEEDTemplate/masterTemplate.php
+
+        include( SEEDLIB."SEEDTemplate/masterTemplate.php" );
+        $oApp = SEEDConfig_NewAppConsole_LoginNotRequired( [] );   // seeds1 and no perms required
+        $oMaster2 = new SoDMasterTemplate( $oApp, [] );
+        if( ($oTmpl = $oMaster2->GetTmpl()) ) {
+            $sDoc = $oTmpl->ExpandStr( $sDoc, array( 'kMbrTo' => $kMbr, 'lang'=>$lang ) );
+        }
 
         return( $sDoc );
     }
