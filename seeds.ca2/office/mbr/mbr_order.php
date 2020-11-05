@@ -846,7 +846,7 @@ class SoDBasketFulfilment
     {
     }
 
-     /* A button in a div.basketDetail is clicked to fulfil a purchase. Works for any product_type.
+     /* A button in a div.basketDetail has been clicked to fulfil a purchase. Works for any product_type.
       */
     static doPurchaseFulfil( jButton, kPurchase )
     {
@@ -858,6 +858,25 @@ class SoDBasketFulfilment
         let kOrder = jButton.closest('.mbro-tmp-row').prev().attr('data-korder');
 
         let jxData = { jx     : 'sb--purchaseFulfil',
+                       k      : kPurchase,
+                       lang   : "EN"
+                     };
+
+        let o = SEEDJX( "mbr_order.php", jxData );
+        if( o['bOk'] ) {
+            this.redrawBasketSummaryRow( kOrder, 0 );
+            fillTmpRowDiv( tmpRowDiv, kOrder, "" );
+        }
+    }
+
+    /* A button in a div.basketDetail has been clicked to undo the fulfilment of a purchase. Works for any product_type.
+     */
+    static doPurchaseFulfilUndo( jButton, kPurchase )
+    {
+        let tmpRowDiv = jButton.closest('.tmpRowDiv');
+        let kOrder = jButton.closest('.mbro-tmp-row').prev().attr('data-korder');
+
+        let jxData = { jx     : 'sb--purchaseFulfilUndo',
                        k      : kPurchase,
                        lang   : "EN"
                      };

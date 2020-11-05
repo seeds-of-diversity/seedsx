@@ -95,7 +95,8 @@ class sldb__base
 
     static function kfrelFldSLAdoption()
     {
-        return( array( array( "col"=>"fk_mbr_contacts",     "type"=>"K" ),
+        return( array( array( "col"=>"kDonation",           "type"=>"K" ),  // fk_mbr_donations with an outer join
+                       array( "col"=>"fk_mbr_contacts",     "type"=>"K" ),
                        array( "col"=>"donor_name",          "type"=>"S" ),
                        array( "col"=>"public_name",         "type"=>"S" ),
                        array( "col"=>"amount",              "type"=>"F" ),
@@ -1378,6 +1379,7 @@ CREATE TABLE IF NOT EXISTS sl_adoption (
         _updated_by INTEGER,
         _status     INTEGER DEFAULT 0,
 
+    kDonation       INTEGER  NOT NULL DEFAULT 0,        # fk_mbr_donations with an outer join
     fk_mbr_contacts INTEGER  NOT NULL DEFAULT 0,        # the mbr_contact of the donor
     donor_name      VARCHAR(200) NOT NULL DEFAULT '',
     public_name     VARCHAR(200) NOT NULL DEFAULT '',
