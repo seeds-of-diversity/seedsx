@@ -164,8 +164,7 @@ class MasterTemplate
                     if( !($sSeedListStyle = $this->oTmpl->GetVar('sSeedListStyle')) ) {
                         $sSeedListStyle="font-family:verdana,arial,helvetica,sans serif;margin-bottom:15px";
                     }
-
-                    $oApp = SEEDConfig_NewAppConsole();   // seeds1 and no perms required
+                    $oApp = SEEDConfig_NewAppConsole_LoginNotRequired( [] );   // seeds1 and no perms required
                     $o = new MSDQ( $oApp, ['config_bUTF8'=>false, 'config_bAllowCanSeedRead'=>true] );
                     $rQ = $o->Cmd( 'msdSeedList-Draw', ['kUidSeller'=>$kMbr, 'eStatus'=>'ALL'] );
                     $s =
