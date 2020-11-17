@@ -4,6 +4,7 @@ include_once( SEEDCOMMON."siteStart.php" );
 //include_once( SEEDCORE."SEEDTag.php");    // SEEDTagParser
 //include_once( SEEDCOMMON."doc/docUtil.php" );
 include_once( SEEDCOMMON."siteTemplate.php" );
+include_once( SEEDLIB."SEEDTemplate/masterTemplate.php" );
 
 
 /*
@@ -88,49 +89,60 @@ function D8SeedsModule_NodeView( array &$build, \Drupal\Core\Entity\EntityInterf
     if( !@$build['body'][0]['#text'] )  return;
 
     $oApp = SEEDConfig_NewAppConsole_LoginNotRequired( ['db'=>'seeds1'] );
-    $uid = 0;
-    $lang = "EN";
 
-    $oTmpl = New_Drupal8Tmpl( $oApp, $uid, $lang, [] );
+    $oTmpl = new Drupal8Template( $oApp );
 
-    $build['body'][0]['#text'] = $oTmpl->ExpandStr( $build['body'][0]['#text'] );
+    $build['body'][0]['#text'] = $oTmpl->ExpandStr( $build['body'][0]['#text'], [] );
     $build['body'][0]['#cache']['max-age'] = 0;
 }
 
 
-function New_Drupal8Tmpl( SEEDAppConsole $oApp, $uid, $lang, $raTmplParms = array() )
-/*******************^************************************************************
+class Drupal8Template
+/********************
     Make a SEEDTemplate that handles [[SEEDContent:]] tags for our drupal pages
  */
-{
-    list($kfdb,$sess) = SiteStartSession();
-
-    // [[SEEDContent:]]
-    $oHandler = new DrupalModTagHandler( $oApp, $kfdb, $sess );
-    $raTmplParms['raSEEDTemplateMakerParms']['raResolvers'][] = [ 'fn'=>[$oHandler,'ResolveTag'], 'raParms'=>[] ];
-
-    // [[DocRep tags]]
-    $raTmplParms['EnableDocRep'] = [ 'site'=>'public', 'flag'=>'PUB' ];
-
-    $oMaster = new MasterTemplate( $kfdb, $uid, $lang, $raTmplParms );
-    return( $oMaster->GetTmpl() );
-}
-
-
-class DrupalModTagHandler
-{
+ {
     private $oApp;
     private $kfdb;
     private $sess;      // some UIs use this for session variables
 
-    function __construct( SEEDAppConsole $oApp, KeyFrameDB $kfdb, SEEDSession $sess )
+    private $oTmplOld;  // MasterTemplate
+    private $oTmplNew;  // SoDMasterTemplate
+
+    function __construct( SEEDAppConsole $oApp, $raConfig = [] )
     {
         $this->oApp = $oApp;
+        list($kfdb,$sess) = SiteStartSession();
         $this->kfdb = $kfdb;
         $this->sess = $sess;
+
+        $uid = 0;
+        $lang = "EN";
+
+        $raMT = $raConfig + [
+            // [[SEEDContent:]]
+            'raSEEDTemplateMakerParms' =>
+                    [ 'raResolvers' => [[ 'fn'=>[$this,'ResolveTagOld'], 'raParms'=>[] ]],
+                      'kluge_dontEatMyTag'=>true
+                    ],
+            // [[DocRep tags]]
+            'EnableDocRep' => [ 'site'=>'public', 'flag'=>'PUB' ]
+        ];
+        $this->oTmplOld = (new MasterTemplate( $kfdb, $uid, $lang, $raMT ))->GetTmpl();
+
+        $raMT2 = [];    // SoDMasterTemplate shouldn't need any setup parms, just variables
+        $this->oTmplNew = (new SoDMasterTemplate( $oApp, $raMT2 ))->GetTmpl();
     }
 
-    function ResolveTag( $raTag, SEEDTagParser $oTagDummy, $raParmsDummy )
+    function ExpandStr( $s, $raParms )
+    {
+        if( $this->oTmplOld )  $s = $this->oTmplOld->ExpandStr( $s, $raParms );
+        if( $this->oTmplNew )  $s = $this->oTmplNew->ExpandStr( $s, $raParms );
+
+        return( $s );
+    }
+
+    function ResolveTagOld( $raTag, SEEDTagParser $oTagDummy, $raParmsDummy )
     /****************************
         [[SEEDContent: target | {EN or FR}]]
      */
@@ -152,18 +164,6 @@ class DrupalModTagHandler
         }
 
         switch( $contentName ) {
-            case 'home-en':
-                $s .= "Home English";
-                break;
-
-            case 'home-fr':
-                $s .= "Home French";
-                break;
-
-            case 'home-edit':
-                $s .= "<h3>Configure Home Page</h3>";
-                break;
-
             case 'homeimg':       // deprecated 3x4 image with caption
             case 'homeimg_v':     // deprecated image only, vertically centered
             case 'homeimgA':      // 4x3 image with caption
@@ -333,12 +333,12 @@ class DrupalModTagHandler
         return( array($bHandled,$s) );
     }
 
+/*
     function HandleTag( $raTag )
     {
         $s = parent::HandleTag( $raTag );
 
         return( $s );
     }
+*/
 }
-
-?>

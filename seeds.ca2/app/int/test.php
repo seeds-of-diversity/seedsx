@@ -15,21 +15,22 @@ list($kfdb, $sess, $lang) = SiteStartSessionAccountNoUI();
 
 $oApp = SEEDConfig_NewAppConsole_LoginNotRequired( ['db'=>'seeds1'] );
 
-$oTmpl = New_Drupal8Tmpl( $oApp, $oApp->sess->GetUID(), $lang, [] );
+$oTmpl = new Drupal8Template( $oApp, [] );
 
 $s = "<div style='border:1px solid #aaa;margin-bottom:30px;padding:10px'>"
-    ."<div><a href='".Site_path_self()."?test='>Generic test</a></div>"
-    ."<div><a href='".Site_path_self()."?test=home-en'>Home page test - English</a></div>"
-    ."<div><a href='".Site_path_self()."?test=home-fr'>Home page test - French</a></div>"
-    ."<div><a href='".Site_path_self()."?test=home-edit'>Home page configuration</a></div>"
-    ."<div><a href='".Site_path_self()."?test=store'>Store test</a></div>"
-    ."<div><a href='".Site_path_self()."?test=events'>Events test</a></div>"
-    ."<div><a href='".Site_path_self()."?test=csci'>CSCI test</a></div>"
-    ."<div><a href='".Site_path_self()."?test=sl-search'>Seed Library Search test</a></div>"
-    ."<div><a href='".Site_path_self()."?test=sl-list'>Seed Library List via Drupal test</a></div>"
-    ."<div><a href='".Site_path_self()."?test=bulletin'>bulletin signup test</a></div>"
-    ."<div><a href='".Site_path_self()."?test=docrep'>DocRep test</a></div>"
-    ."<div><a href='".Site_path_self()."?test=docrep_p'>DocRep test with SEEDSessionAccount_Password enabled</a></div>"
+    ."<div><a href='{$oApp->PathToSelf()}?test='>Generic test</a></div>"
+    ."<div><a href='{$oApp->PathToSelf()}?test=home-en'>Home page test - English</a></div>"
+    ."<div><a href='{$oApp->PathToSelf()}?test=home-fr'>Home page test - French</a></div>"
+    ."<div><a href='{$oApp->PathToSelf()}?test=home-edit'>Home page configuration</a></div>"
+    ."<div><a href='{$oApp->PathToSelf()}?test=store'>Store test</a></div>"
+    ."<div><a href='{$oApp->PathToSelf()}?test=events'>Events test</a></div>"
+    ."<div><a href='{$oApp->PathToSelf()}?test=csci'>CSCI test</a></div>"
+    ."<div><a href='{$oApp->PathToSelf()}?test=sl-search'>Seed Library Search test</a></div>"
+    ."<div><a href='{$oApp->PathToSelf()}?test=sl-list'>Seed Library List via Drupal test</a></div>"
+    ."<div><a href='{$oApp->PathToSelf()}?test=bulletin'>bulletin signup test</a></div>"
+    ."<div><a href='{$oApp->PathToSelf()}?test=docrep'>DocRep test</a></div>"
+    ."<div><a href='{$oApp->PathToSelf()}?test=docrep_p'>DocRep test with SEEDSessionAccount_Password enabled</a></div>"
+    ."<div><a href='{$oApp->PathToSelf()}?test=msd'>MSD my seeds</a></div>"
     ."</div>";
 
 
@@ -153,8 +154,8 @@ TmpHome;
 
 switch( $test ) {
     case 'home-en':    $s .= $oTmpl->ExpandStr( $sTmpHome, ['lang'=>'EN'] );    break;
-    case 'home-fr':    $s .= $oTmpl->ExpandStr( "[[SEEDContent:home-fr]]" );    break;
-    case 'home-edit':  $s .= $oTmpl->ExpandStr( "[[SEEDContent:home-edit]]" );  break;
+    case 'home-fr':    $s .= $oTmpl->ExpandStr( "[[SEEDContent:home-fr]]", [] );    break;
+    case 'home-edit':  $s .= $oTmpl->ExpandStr( "[[SEEDContent:home-edit]]", [] );  break;
 
     case 'store':
 //        $s .= $oTagParser->ProcessTags( "[[SEEDContent:store]]" );
@@ -163,37 +164,41 @@ switch( $test ) {
         break;
 
     case 'events':
-        $s .= $oTmpl->ExpandStr( "[[SEEDContent:events]]" );
+        $s .= $oTmpl->ExpandStr( "[[SEEDContent:events]]", [] );
         break;
 
     case 'sl-list':
-        $s .= $oTmpl->ExpandStr( "[[SEEDContent:diversity/seed-library-list]]" );
+        $s .= $oTmpl->ExpandStr( "[[SEEDContent:diversity/seed-library-list]]", [] );
         break;
 
     case 'sl-search':
-        $s .= $oTmpl->ExpandStr( "[[SEEDContent:diversity/seed-library-search]]" );
+        $s .= $oTmpl->ExpandStr( "[[SEEDContent:diversity/seed-library-search]]", [] );
         break;
 
     case 'csci':
-        $s .= $oTmpl->ExpandStr( "<div class='container-fluid'><div class='row'><div class='col-md-8'>[[SEEDContent:csci_companies_varieties]]</div><div class='col-md-4'>[[SEEDContent:csci_species]]</div></div></div>" );
+        $s .= $oTmpl->ExpandStr( "<div class='container-fluid'><div class='row'><div class='col-md-8'>[[SEEDContent:csci_companies_varieties]]</div><div class='col-md-4'>[[SEEDContent:csci_species]]</div></div></div>", [] );
         break;
 
     case 'bulletin':
-        $s .= $oTmpl->ExpandStr( "[[SEEDContent:bulletin-action]] Subscribe to Seeds of Diversity's free monthly e-bulletin! [[SEEDContent:bulletin-control]]" );
+        $s .= $oTmpl->ExpandStr( "[[SEEDContent:bulletin-action]] Subscribe to Seeds of Diversity's free monthly e-bulletin! [[SEEDContent:bulletin-control]]", [] );
 
     case 'docrep':
-        $s .= $oTmpl->ExpandStr( $docrep_p );
+        $s .= $oTmpl->ExpandStr( $docrep_p, [] );
         break;
 
     case 'docrep_p':
         include_once( STDINC."SEEDSessionAccountTag.php" );
         $oSessTag = new SEEDSessionAccountTag( $kfdb, $oApp->sess->GetUID(), array('bAllowKMbr'=>true,'bAllowPwd'=>true) );
-        $oTmplP = New_Drupal8Tmpl( $oApp, $oApp->sess->GetUID(), $lang, array("EnableSEEDSession"=>array('oSessTag'=>$oSessTag)) );
-        $s .= $oTmplP->ExpandStr( $docrep_p );
+        $oTmplP = new Drupal8Template( $oApp, ['EnableSEEDSession'=>['oSessTag'=>$oSessTag]] );
+        $s .= $oTmplP->ExpandStr( $docrep_p, [] );
+        break;
+
+    case 'msd':
+        $s .= $oTmpl->ExpandStr( "[[msd:seedlist|1499]]", [] );
         break;
 
     default:
-        $s .= $oTmpl->ExpandStr( "[[lower:Foo]] [[upper:Foo]] <br/><br/> [[Image://www.seeds.ca/i/img/logo/logoA_h-en-750x.png|{width=100}]]<br/><br/> [[docreptest:]] " );
+        $s .= $oTmpl->ExpandStr( "[[lower:Foo]] [[upper:Foo]] <br/><br/> [[Image://www.seeds.ca/i/img/logo/logoA_h-en-750x.png|{width=100}]]<br/><br/> [[docreptest:]]", [] );
         break;
 }
 
@@ -203,5 +208,3 @@ $raParms = [
 ];
 
 echo Console02Static::HTMLPage( $s, "", $lang, $raParms );
-
-?>
