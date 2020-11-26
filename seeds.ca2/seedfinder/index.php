@@ -4,20 +4,19 @@
 
 include_once("../site.php");
 include_once(STDINC."SEEDTemplate.php");
-include_once(SEEDCOMMON."sl/q/_QServerSourceCV.php");
-
+include_once(SEEDLIB."q/QServerSources.php");
 
 list($kfdb, $sess, $lang) = SiteStartSessionAccountNoUI();
 
-
-    // Make the species <select>
-$oQ = new Qold( $kfdb, $sess, null, array('bUTF8'=>true,'klugeESFLang'=>$lang) );  // oApp can be null for now
-$oSrc = new QServerSourceCV_Old( $oQ, array() );
-$rQ = $oSrc->Cmd( 'srcSpecies', array( 'bAllComp'=>true, 'outFmt'=>'NameKey', 'spMap'=>'ESF' ) );
+// Make the species <select>
+$oApp = SEEDConfig_NewAppConsole_LoginNotRequired([]);
+$oSrc = new QServerSourceCV( $oApp, array() );
+$rQ = $oSrc->Cmd( 'srcSpecies', ['bAllComp'=>true, 'outFmt'=>'NameKey', 'opt_spMap'=>'ESF'] );
 
 $spOpts = "";
 if( $rQ['bOk'] ) {
     foreach( $rQ['raOut'] as $sSp => $kSp ) {
+// this should process spapp keys too
         if( substr($kSp,0,3) == 'spk' ) {
             $spOpts .= "<option value='".substr($kSp,3)."'>$sSp</option>";
         }

@@ -285,10 +285,15 @@ class Drupal8Template
                            (($kSp = SEEDSafeGPC_GetInt('psp'))
                              // kluge to pass non-indexed sp names
                              || ($sSp = SEEDSafeGPC_GetStrPlain('psp'))) ) {
-
-                    $s .= "<p><a href='$pathSelf'>Back to Companies</a></p>"
-                         .$oSLSrc->DrawCompaniesVarieties( $kSp, $sSp, $lang,
-                              array( /*'sTemplate' => "<div style=''><a href='".Site_path_self()."?psp=[[var:k]]'>[[var:name]] ([[var:n]])</a></div>"*/ ) );
+// this should process spapp keys too
+                    if( $sSp && SEEDCore_StartsWith($sSp, 'spk') ) {
+                        $kSp = intval(substr($sSp,3));
+                    }
+                    if( $kSp ) {
+                        $s .= "<p><a href='$pathSelf'>Back to Companies</a></p>"
+                             .$oSLSrc->DrawCompaniesVarieties( $kSp, $sSp, $lang,
+                                  array( /*'sTemplate' => "<div style=''><a href='".Site_path_self()."?psp=[[var:k]]'>[[var:name]] ([[var:n]])</a></div>"*/ ) );
+                    }
                 } else {
                     $s .= $oSLSrc->DrawCompanies( $lang );
                 }
