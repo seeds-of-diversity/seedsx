@@ -76,7 +76,7 @@ class QServerCollection
         $nInv  = intval(@$parms['nInv']);
 
         if( $kInv ) {
-            $cond = "_key='$kInv'";
+            $cond = "I._key='$kInv'";
         } else if( $kColl && $nInv ) {
             $cond = "(I.fk_sl_collection='$kColl' AND I.inv_number='$nInv')";
         } else {
