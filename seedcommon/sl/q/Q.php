@@ -74,9 +74,10 @@ class Qold
         }
 
         if( substr( $cmd, 0, 10 ) == 'collreport' ) {
-            include_once( "_QServerCollectionReport.php" );
-            $o = new QServerCollectionReport( $this, array( ) );
-            $rQ = $o->Cmd( $cmd, $parms );
+// moved to SEEDLIB
+//            include_once( "_QServerCollectionReport.php" );
+//            $o = new QServerCollectionReport( $this, array( ) );
+//            $rQ = $o->Cmd( $cmd, $parms );
         }
 
         if( SEEDCore_StartsWith( $cmd, 'mbr' ) ) {
