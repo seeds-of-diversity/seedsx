@@ -34,7 +34,7 @@ if( (!$oForm->Value('cvName') || !$oForm->Value('desc')) && $oForm->Value('kLot'
 if( !$oForm->Value('nLabels') )  $oForm->SetValue( 'nLabels', 30 );
 
 $oFE = new SEEDFormExpand( $oForm );
-$s = "<h3>Seed Labels</h3>"
+$s = "<h3>Seed Labels - <a href='index.php'>Use this instead</a></h3>"
     ."<form method='post' target='_blank'>"
     ."<div class='container'>"
     .$oFE->ExpandForm(
