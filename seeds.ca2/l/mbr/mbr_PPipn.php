@@ -67,7 +67,11 @@ class SoD_PP_IPN {
 
     function mail( $s ) {
         $date = date( "D M j G:i:s T Y", time() );
-        mail( "bob@seeds.ca", "[$date] PayPal Payment Notification", $s );
+        if( SEED_isLocal ) {
+            echo "[$date] PayPal Payment Notification - $s";
+        } else {
+            mail( "bob@seeds.ca", "[$date] PayPal Payment Notification", $s );
+        }
     }
 
     function postedParms() {
@@ -103,18 +107,18 @@ if( $ipn->response != "VERIFIED" ) {
  */
 
 $kfdb = SiteKFDB(); // or die( "Cannot connect to database" );
+$oApp = new SEEDAppDB( $config_KFDB['seeds1'] );
 if( !$kfdb ) {
     $ipn->log( "Can't connect to database" );
     $ipn->mail( "PPIPN: Can't connect to database" );
     die;
 }
-$oOrder = new MbrOrderCommon( $kfdb, "EN", 0 );
+$oOrder = new MbrOrderCommon( $oApp, $kfdb, "EN", 0 );
 $kfrel = $oOrder->kfrelOrder;
 
 $kfrel->SetLogFile( SITE_LOG_ROOT."ppipn.log" );   // write kfr log to the same log file that parms go to
 
-$rowid = intval($_POST['invoice']);
-if( !$kfr = $kfrel->GetRecordFromDBKey($rowid) ) {
+if( !($rowid = SEEDInput_Int('invoice')) || !($kfr = $kfrel->GetRecordFromDBKey($rowid)) ) {
     $ipn->log( "Can't get row $rowid" );
     $ipn->mail( "PPIPN: Can't get row $rowid" );
     die;

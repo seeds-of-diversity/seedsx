@@ -41,7 +41,7 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
 
     function drawRow( $k )
     {
-        $oOrder = new MbrOrder( $this->kfdb, "EN", $k );
+        $oOrder = new MbrOrder( $this->oApp, $this->kfdb, "EN", $k );
         $sConciseSummary = $oOrder->conciseSummary( $k );     // this also computes $oOrder->raOrder for DrawOrderSummaryRow()
         $kfr2 = $this->KfrelOrder()->GetRecordFromDBKey( $k );
         return( $kfr2 ? $this->DrawOrderSummaryRow( $kfr2, $sConciseSummary, $oOrder->raOrder ) : "" );
@@ -52,7 +52,7 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
         $row = $kfrOrder->Key();
 
 // this part has to be modernized before moving this method to SodOrderFulfil
-        $oMbrOrder = new MbrOrder( $this->kfdb, "EN", $row );
+        $oMbrOrder = new MbrOrder( $this->oApp, $this->kfdb, "EN", $row );
         $sCol1 = $oMbrOrder->DrawTicket();
         $sCol2 = "";
 
@@ -263,7 +263,7 @@ class drawFormContact
 $oUI = new mbrOrderFulfilUI( $kfdb, $sess, $oApp );
 
 
-$oOrder = new MbrOrderCommon( $kfdb, "EN", $sess->GetUID() );
+$oOrder = new MbrOrderCommon( $oApp, $kfdb, "EN", $sess->GetUID() );
 $kfrel = $oOrder->kfrelOrder;
 
 if( ($jx = SEEDInput_Str('jx')) ) {

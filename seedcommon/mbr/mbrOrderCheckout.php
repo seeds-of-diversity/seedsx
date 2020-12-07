@@ -144,7 +144,7 @@ class MbrOrderCheckout {
                                                  'lang'=>$lang] );    // no perms required but will detect current login if any
 
 //      $this->kfrelMbrOrder = new KeyFrameRelation( $kfdb, $kfrdef_mbrOrder, 0 );      // $sess might have GetUID(), or it might not
-        $this->oMbrOrder = new MbrOrder( $kfdb, $lang );
+        $this->oMbrOrder = new MbrOrder( $this->oApp, $kfdb, $lang );
         $this->_setLocalText( $lang );
         $this->oKForm = new KeyFrameUIForm($this->oMbrOrder->kfrelOrder, "A");
         $this->oTmpl = $this->makeTemplate();

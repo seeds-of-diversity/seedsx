@@ -32,7 +32,9 @@ class MbrOrderStats
     function __construct( KeyFrameDB $kfdb )
     {
         $this->kfdb = $kfdb;
-        $this->oMbr = new MbrOrder( $kfdb, 'EN' );
+
+        $oApp = new SEEDAppDB( $config_KFDB['seeds2'] );
+        $this->oMbr = new MbrOrder( $oApp, $kfdb, 'EN' );
         $this->yCurrent = intval( date("Y") );
     }
 
