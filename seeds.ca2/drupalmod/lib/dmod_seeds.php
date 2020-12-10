@@ -1,5 +1,7 @@
 <?php
 
+// Drupal 7 only
+
 /* Included from sites/all/modules/seeds/seeds.module
  *
  * To include() files from here, the include path is probably ./;{drupal root}/
