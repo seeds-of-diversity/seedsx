@@ -7,7 +7,7 @@ if( !defined("SITEROOT") )  define("SITEROOT", "../../");
 include_once( SITEROOT."site.php" );
 include_once( SEEDCOMMON."mbr/seedCheckout.php" );
 
-//include( SITEROOT."drupalmod/lib/dmod_seeds.php" );
+//include( SITEROOT."drupalmod/lib/dmod_seeds.php" );  Drupal 7
 include_once( SITEROOT."drupalmod/lib/d8_seedbreeze.php" );
 
 
