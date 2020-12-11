@@ -61,7 +61,7 @@ class SoDMbrOrderCheckout extends MbrOrderCheckout
              ."</TR></TABLE>"
              ."</div><br/>";    // donation ctrl
 
-$s .= "<div style='margin:-20px 30px 30px 20px'><table><tr><td><img src='http://seeds.ca/photos/upload/2020/10/14/20201014174744-1771830c.jpg' width='250'/></td><td style='padding-left:20px'>To designate a donation to our <a target='_blank' href='http://schoolfoodgardens.ca'>School Food Gardens</a> fall campaign, just tell us in the notes section at the bottom.</td></tr></table></div>";
+//$s .= "<div style='margin:-20px 30px 30px 20px'><table><tr><td><img src='http://seeds.ca/photos/upload/2020/10/14/20201014174744-1771830c.jpg' width='250'/></td><td style='padding-left:20px'>To designate a donation to our <a target='_blank' href='http://schoolfoodgardens.ca'>School Food Gardens</a> fall campaign, just tell us in the notes section at the bottom.</td></tr></table></div>";
 
         /* Gift Membership
          */
