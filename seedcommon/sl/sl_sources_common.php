@@ -79,7 +79,7 @@ class SLSourcesCommon
                        .($bCount ? ",count(*) as n" : "")
                        ." FROM sl_species S,sl_cv_sources C"
                        ." WHERE S._key=C.fk_sl_species AND C.fk_sl_species <> 0".($sCond ? " AND ($sCond)" : "")
-                       ." GROUP BY S._key")) ) {
+                       ." GROUP BY S._key,S.name_en,S.name_fr,S.iname_en,S.iname_fr")) ) {
             while( $ra = $this->kfdb->CursorFetch( $dbc ) ) {
                 $kSp = $ra['k'];
 
@@ -93,7 +93,9 @@ class SLSourcesCommon
                                   );
             }
         }
+
         uasort( $raSp, array($this,'fnSpSortCallback') );    // sort the values, keeping the keys associated
+
         return( $raSp );
     }
 
@@ -266,56 +268,19 @@ Actually these styles are just defined in drupal page-tpl because it isn't neces
         $bIndex = intval(@$raParms['bIndex']);  // true: get Index names; false: get regular names
 
         $oTag = null;
-        if( @$raParms['sTemplate'] ) {
-            $oTagParser = new SEEDTagParser();
+        $oTagParser = new SEEDTagParser();
+
+        //$raParms['bCount'] = false;
+        //$raSp = $this->oSrcCommon->GetSpeciesRA( $sCond, $lang, $raParms );
+        include_once( SEEDLIB."q/QServerSources.php");
+        $oApp = SEEDConfig_NewAppConsole_LoginNotRequired([]);
+        $oSrc = new QServerSourceCV( $oApp, ['config_bUTF8'=>false] );  // get species names in cp1252
+        $rQ = $oSrc->Cmd( 'srcSpecies', ['bAllComp'=>true, 'outFmt'=>'KeyName', 'opt_spMap'=>'ESF', 'opt_bIndex'=>$bIndex] );
+
+        foreach( $rQ['raOut'] as $k=>$spName ) {
+            $oTagParser->SetVars( ['k' => $k, 'name' => $spName, 'n' => 0] );
+            $s .= $oTagParser->ProcessTags( $raParms['sTemplate'] );
         }
-
-        $raSp = $this->oSrcCommon->GetSpeciesRA( $sCond, $lang, $raParms );
-
-        // kluge to allow non-indexed species names in csci
-        $raSpKluge = array();
-        $raSp2 = $this->oSrcCommon->kfdb->QueryRowsRA( "SELECT distinct(osp) as osp FROM sl_cv_sources WHERE _status=0 AND fk_sl_sources>=3 AND fk_sl_species=0" );
-        foreach( $raSp2 as $raRow ) {
-            $osp = @$raRow['osp'];
-            if( !$osp ) continue;
-            $oTagParser->SetVars( array( 'k'       => urlencode($osp),
-                                         'name'    => $osp,
-                                         'name_en' => $osp,
-                                         'name_fr' => $osp,
-                                         'n'       => 0 ) );
-            $raSpKluge[$osp] = $oTagParser->ProcessTags( $raParms['sTemplate'] );
-        }
-        foreach( $raSp as $k=>$ra ) {
-            $oTagParser->SetVars( array( 'k'       => $k,
-                                         'name'    => $ra['name'],
-                                         'name_en' => $ra['name_en'],
-                                         'name_fr' => $ra['name_fr'],
-                                         'n'       => intval($ra['n']) ) );
-            $raSpKluge[$ra['name']] = $oTagParser->ProcessTags( $raParms['sTemplate'] );
-        }
-
-        ksort( $raSpKluge );
-
-        $s = implode( ' ', $raSpKluge );
-
-        //$sUrlParms = isset($raParms['raURLExtraParms']) ? ("&".SEEDStd_ParmsRA2URL( $raParms['raURLExtraParms'] )) : "";
-        //$s .= "<A HREF='${_SERVER['PHP_SELF']}?psp=".urlencode($kfr->value('psp'))."$sUrlParms'>{$kfr->value('psp')}</A><BR/>";
-        //$s .= "<A HREF='${_SERVER['PHP_SELF']}?q=CSCI&psp=".urlencode($kfr->value('psp'))."$sUrlParms'>{$kfr->value('psp')}</A><BR/>";
-
-/* This should be the code that does the job, when non-indexed species are gone
-        foreach( $raSp as $k => $ra ) {
-            if( $oTagParser ) {
-                $oTagParser->SetVars( array( 'k'       => $k,
-                                             'name'    => $ra['name'],
-                                             'name_en' => $ra['name_en'],
-                                             'name_fr' => $ra['name_fr'],
-                                             'n'       => $ra['n'] ) );
-                $s .= $oTagParser->ProcessTags( $raParms['sTemplate'] );
-            } else {
-                $s .= "${ra['name']} ($k)<br/>";
-            }
-        }
-*/
 
         return( $s );
     }

@@ -430,6 +430,8 @@ class SL_Public
                 $g = $this->kfdb->Query1( "SELECT sum(I.g_weight) FROM sl_inventory I,sl_accession A "
                                          ."WHERE I._status='0' AND A._status='0' AND I.fk_sl_accession=A._key AND "
                                                 ."NOT I.bDeAcc AND NOT A.bDeAcc AND "
+                                                // include varieties adopted OR that have seeds less than 6 years old
+                                                .(!$bAdopt ? "(year(now())-year(I.dCreation) <= 6) AND " : "")
                                                 ."A.fk_sl_pcv='{$ra['_key']}'" );
 
                 if( !$bAdopt && floatval($g) <= 0.1 ) continue;

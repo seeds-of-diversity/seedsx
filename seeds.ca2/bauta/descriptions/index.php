@@ -9,6 +9,8 @@
  *
  * UI entry point for the direct web page (use iframe.php for applications hosted through an iframe)
  */
+header("Location: https://seeds.ca");
+exit;
 
 define( "SITEROOT", "../../" );
 include_once( SITEROOT."site.php" );
