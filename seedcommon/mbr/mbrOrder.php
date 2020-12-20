@@ -114,16 +114,18 @@ class MbrOrderCommon {
     public $kfrelOrder = NULL;
     public $oL = NULL;
 
+    private $oApp;
 
-    function __construct( $kfdb, $lang, $uid )
+    function __construct( SEEDAppDB $oApp, $kfdb, $lang, $uid )
     {
-        $this->kfrelOrder = new KeyFrameRelation( $kfdb, $this->kfreldefMbrOrder(), $uid );
+        $this->oApp = $oApp;
+        $this->kfrelOrder = new KeyFrameRelation( $kfdb, $this->kfreldefMbrOrder($oApp), $uid );
         $this->setLocalText( $lang );
     }
 
-    private function kfreldefMbrOrder()
+    private function kfreldefMbrOrder( SEEDAppDB $oApp )
     {
-        return( array( "Tables"=>array( array( "Table" => 'seeds_1.mbr_order_pending',
+        return( array( "Tables"=>array( array( "Table" => "{$this->oApp->GetDBName('seeds1')}.mbr_order_pending",
                                    "Fields" => array( array("col"=>"mail_firstname",  "type"=>"S"),
                                                       array("col"=>"mail_lastname",   "type"=>"S"),
                                                       array("col"=>"mail_company",    "type"=>"S"),
@@ -242,11 +244,11 @@ class MbrOrder extends MbrOrderCommon {
     var $nTotal = 0;
 
 
-    function __construct( KeyFrameDB $kfdb, $lang, $kOrder = 0 )
+    function __construct( SEEDAppDB $oApp, KeyFrameDB $kfdb, $lang, $kOrder = 0 )
     /***********************************************************
      */
     {
-        parent::__construct( $kfdb, $lang, 0 );
+        parent::__construct( $oApp, $kfdb, $lang, 0 );
         $this->setKOrder( $kOrder );
     }
 

@@ -2,7 +2,7 @@
 
 /* mbr_mailsend.php
  *
- * Copyright 2009-2018 Seeds of Diversity Canada
+ * Copyright 2009-2020 Seeds of Diversity Canada
  *
  * Send mail to members / donors / subscribers.
  * Use mbr_mailsetup to prepare the mailing.
@@ -21,36 +21,40 @@ $kfdb1 = SiteKFDB( SiteKFDB_DB_seeds1 ) or die( "Cannot connect to database" );
 //$kfdb->KFDB_SetDebug(2);
 //print_r($_REQUEST);
 
-$n = $kfdb2->Query1("SELECT count(*) FROM mbr_mail_send_recipients WHERE _status='0' AND eStatus='READY'");
+$oApp = SEEDConfig_NewAppConsole_LoginNotRequired( ['db'=>'seeds2'] );
+
+$n = $oApp->kfdb->Query1("SELECT count(*) FROM {$oApp->GetDBName('seeds2')}.mbr_mail_send_recipients WHERE _status='0' AND eStatus='READY'");
 
 $sBody = "<h2>Seeds of Diversity Bulk Mailer</h2>"
         ."<p>There are $n emails ready to send.</p>";
-if( $n ) {
+
+list($bTestOk,$sTest) = testMailHistory( $oApp );
+$sBody .= $sTest;
+
+$bSendMail = ($bTestOk && $n);
+
+if( $bSendMail ) {
     $sBody .= "<p>Sending one email every 20 seconds.</p>"
              ."<p>You can see the progress in the Bulk Mailer table by clicking the Refresh link.</p>";
+    $sBody .= "<br/><br/>";
+    $oSend = new mbr_mailsend( $kfdb1, $kfdb2, 1499 );   /* **************  UID ************************************/
+
+    for( $i = 0; $i < 1; ++$i ) {
+        list($kRec,$sMsg) = $oSend->sendOne();
+        $sBody .= $kRec." ".microtime()."<br/>".($sMsg ? "$sMsg<br/>" : "");
+        if( !$kRec )  break;
+
+        /* Send 10 emails in a burst, then refresh the page after a 5-second delay.
+         */
+        //set_time_limit( 30 );
+        //usleep( 500000 ); // half of a second
+    }
+    sleep( 20 );
 }
 
-$sBody .= "<br/><br/>";
-$oSend = new mbr_mailsend( $kfdb1, $kfdb2, 1499 );   /* **************  UID ************************************/
-
-for( $i = 0; $i < 1; ++$i ) {
-    list($kRec,$sMsg) = $oSend->sendOne();
-    $sBody .= $kRec." ".microtime()."<br/>".($sMsg ? "$sMsg<br/>" : "");
-    if( !$kRec )  break;
-
-    /* Send 10 emails in a burst, then refresh the page after a 5-second delay.
-     */
-    //set_time_limit( 30 );
-    //usleep( 500000 ); // half of a second
-}
-sleep( 20 );
-
-
-echo "<html><head>"
-    .($n ? "<meta http-equiv='refresh' CONTENT='1; URL=http://seeds.ca/office/mbr/mbr_mailsend.php'>" : "")
-    ."</head><body>"
-    .$sBody
-    ."</body></html>";
+echo Console02Static::HTMLPage( $sBody,
+                                ($bSendMail ? "<meta http-equiv='refresh' CONTENT='1; URL=https://seeds.ca/office/mbr/mbr_mailsend.php'>" : ""),
+                                'EN', [] );
 
 
 class mbr_mailsend {
@@ -141,4 +145,58 @@ class mbr_mailsend {
     }
 }
 
-?>
+
+function testMailHistory( SEEDAppConsole $oApp )
+{
+    $bOk = true;
+    $s = "";
+
+    $dirMail = (SEED_isLocal ? "/home/bob/" : "/home/seeds/")."mail/new";
+    $dirArchive = (SEED_isLocal ? "/home/bob/" : "/home/seeds/")."mail/seed_mail_archive";
+
+    if( !is_dir($dirMail) ) {
+        $s = "<p class='alert alert-warning'>$dirMail does not exist</p>";  // not a failure, return bOk==true
+        goto done;
+    }
+
+    $nFiles = 0;
+    $raEmailsDiscarded = [];
+    $raEmailsFailed = [];
+
+    foreach( new DirectoryIterator($dirMail) as $f ) {
+        if( $f->isDot() || $f->isDir() || !SEEDCore_StartsWith($f->getFilename(),'1') ) continue;
+
+        $sFile = file_get_contents($f->getPathname());
+
+        $email = "";
+        // Check for discards first because they have the same headers as fails
+        if( ($r = preg_match( "/exceeded the max defers and failures per hour .* discarded.\n/", $sFile)) ) {
+            if( ($r = preg_match( "/\nX-Failed-Recipients: (.*)\n/", $sFile, $match)) ) {
+                $raEmailsDiscarded[] = $match[1];
+                $bOk = false;
+            }
+        }
+        else
+        if( ($r = preg_match( "/\nAction: failed\n/", $sFile)) ) {
+            if( ($r = preg_match( "/\nX-Failed-Recipients: (.*)\n/", $sFile, $match)) ) {
+                $raEmailsFailed[] = $match[1];
+                $bOk = false;
+            }
+        }
+
+        ++$nFiles;
+    }
+
+    $s .= "<div class='alert' style='float:right;width:40%'>"
+            ."<div>$nFiles files</div>"
+            ."<div class='alert' style='float:left'>".count($raEmailsDiscarded)." emails were discarded:"
+                ."<pre>".SEEDCore_ArrayExpandSeries( $raEmailsDiscarded, "<br/>[[]]" )."</pre>"
+            ."</div>"
+            ."<div class='alert' style='float:left'>".count($raEmailsFailed)." emails failed:"
+                ."<pre>".SEEDCore_ArrayExpandSeries( $raEmailsFailed, "<br/>[[]]" )."</pre>"
+            ."</div>"
+         ."</div>";
+
+    done:
+    return( [$bOk,$s] );
+}
