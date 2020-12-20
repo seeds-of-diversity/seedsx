@@ -114,7 +114,7 @@ class mbr_mailsend {
             $kfrRec->SetValue( "iResult", $i );
             $kfrRec->SetValue( "eStatus", $i==1 ? "SENT" : "FAILED");
             $kfrRec->PutDBRow();
-            $this->oMail->kfdb2->Execute( "UPDATE mbr_mail_sent_recipients SET ts_sent=NOW() WHERE _key='".$kfrRec->Key()."'");
+            $this->oMail->kfdb2->Execute( "UPDATE mbr_mail_send_recipients SET ts_sent=NOW() WHERE _key='".$kfrRec->Key()."'");
             Site_Log( "mbr_mailsend", $kfrRec->Expand( "[[_key]] [[eStatus]] [[email_to]] [[fk_mbr_contacts]] ").time() );
         }
 
