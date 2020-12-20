@@ -26,7 +26,7 @@ $oApp = SEEDConfig_NewAppConsole_LoginNotRequired( ['db'=>'seeds2'] );
 $n = $oApp->kfdb->Query1("SELECT count(*) FROM {$oApp->GetDBName('seeds2')}.mbr_mail_send_recipients WHERE _status='0' AND eStatus='READY'");
 
 $sBody = "<h2>Seeds of Diversity Bulk Mailer</h2>"
-        ."<p>There are $n emails ready to send.</p>";
+        ."<p>There are $n emails ready to send at ".date('Y-m-d H:i:s').".</p>";
 
 list($bTestOk,$sTest) = testMailHistory( $oApp );
 $sBody .= $sTest;
@@ -180,7 +180,7 @@ function testMailHistory( SEEDAppConsole $oApp )
         if( ($r = preg_match( "/\nAction: failed\n/", $sFile)) ) {
             if( ($r = preg_match( "/\nX-Failed-Recipients: (.*)\n/", $sFile, $match)) ) {
                 $raEmailsFailed[] = $match[1];
-                $bOk = false;
+                //$bOk = false;
             }
         }
 
