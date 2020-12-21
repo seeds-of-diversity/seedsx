@@ -438,7 +438,7 @@ $raDRVars['kMailSend'] = $kfrRecipient->Key();
         This cleans up the old address and recipient records to save db space.
      */
     {
-        $this->kfdb2->Execute( "UPDATE seeds_2.mbr_mail_send SET sExtra='' WHERE _key='$kMail" );
+        $this->kfdb2->Execute( "UPDATE seeds_2.mbr_mail_send SET sExtra='' WHERE _key='$kMail'" );
         if( ($kfrc = $this->kfrelRecipients->CreateRecordCursor( "fk_mbr_mail_send='$kMail'" )) ) {
             while( $kfrc->CursorFetch() ) {
                 $ts = $kfrc->Value('ts_sent');
