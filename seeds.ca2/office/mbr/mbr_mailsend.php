@@ -49,11 +49,13 @@ if( $bSendMail ) {
         //set_time_limit( 30 );
         //usleep( 500000 ); // half of a second
     }
-    sleep( 20 );
+    // don't delay here so results appear right away, refresh browser every 20 seconds
+    //sleep( 20 );
 }
 
 echo Console02Static::HTMLPage( $sBody,
-                                ($bSendMail ? "<meta http-equiv='refresh' CONTENT='1; URL=https://seeds.ca/office/mbr/mbr_mailsend.php'>" : ""),
+                                //($bSendMail ? "<meta http-equiv='refresh' CONTENT='20; URL=https://seeds.ca/office/mbr/mbr_mailsend.php'>" : ""),
+                                ($bSendMail ? "<meta http-equiv='refresh' content='20'>" : ""),
                                 'EN', [] );
 
 
