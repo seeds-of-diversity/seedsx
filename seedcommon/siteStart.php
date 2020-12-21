@@ -533,7 +533,7 @@ function _doSSL()
     if( $_SERVER['HTTP_HOST'] == 'localhost' || $_SERVER['HTTP_HOST']=='heritageseeds.ca'
                                              || $_SERVER['HTTP_HOST']=='pollinationcanada.ca' ) return;              // can't do SSL on my development machine
 
-    if( $_SERVER['HTTPS'] != "on" ) {
+    if( @$_SERVER['HTTPS'] != "on" ) {
         $ra = array();
         foreach( $_GET  as $k => $v )   $ra[] = $k."=".urlencode($v);
         foreach( $_POST as $k => $v )   $ra[] = $k."=".urlencode($v);
