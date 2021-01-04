@@ -15,7 +15,8 @@ SEEDPRG();
 $s = "";
 
 //$oMOR = new MbrOrderReport( new SEEDApp_Worker( $kfdb, $sess, 'EN' ) );
-$oOrder = new MbrOrder( $kfdb, "EN" );
+$oApp = new SEEDAppDB( $config_KFDB['seeds1'] );
+$oOrder = new MbrOrder( $oApp, $kfdb, "EN" );
 
 $cmd = SEEDInput_Str('cmd');
 if( $cmd == 'new' ) {
