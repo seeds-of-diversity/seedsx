@@ -215,7 +215,16 @@ class SEDMbrGrower extends SEDGrowerWorker
                     ? ("<div style='background-color:#fdf'><span style='font-size:12pt'>Deleted</span>"
                       ." <a href='{$_SERVER['PHP_SELF']}?gdelete=$kGrower'>UnDelete this grower</a></div>")
                     : ("<div><a href='{$_SERVER['PHP_SELF']}?gdelete=$kGrower'>Delete this grower</a></div>");
-
+        
+        // days since GUpdate
+        if( (new DateTime())->diff(new DateTime($dGUpdated))->days < 90 ) {
+            $dGUpdated = "<span style='color:green;background-color:#cdc'>$dGUpdated</span>";
+        }
+        // days since SUpdate
+        if( (new DateTime())->diff(new DateTime($dSUpdated))->days < 90 ) {
+            $dSUpdated = "<span style='color:green;background-color:#cdc'>$dSUpdated</span>";
+        }
+       
         $s = "<div style='border:1px solid black; margin:10px; padding:10px'>"
             ."<p>Seeds active: $nSActive</p>"
             ."<p>Membership expiry: $dMbrExpiry</p>"
