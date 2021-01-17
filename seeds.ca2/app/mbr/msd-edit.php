@@ -3,7 +3,7 @@
 /*
  * Seed Directory member interface
  *
- * Copyright 2011-2020 Seeds of Diversity Canada
+ * Copyright 2011-2021 Seeds of Diversity Canada
  *
  * Gives the current user an interface to their own listings in the Member Seed Directory
  */
@@ -201,11 +201,15 @@ class SEDMbrGrower extends SEDGrowerWorker
 */
         list($kP_dummy,$dSUpdated,$kSUpdatedBy) = $this->oC->oSB->oDB->ProductLastUpdated( "P.product_type='seeds' AND P.uid_seller='$kGrower'" );
 
-        $nSActive = $this->oC->oApp->kfdb->Query1( "SELECT count(*) FROM seeds_1.SEEDBasket_Products
+        global $config_KFDB;
+        $dbname1 = $config_KFDB['seeds1']['kfdbDatabase'];
+        $dbname2 = $config_KFDB['seeds2']['kfdbDatabase'];
+
+        $nSActive = $this->oC->oApp->kfdb->Query1( "SELECT count(*) FROM {$dbname1}.SEEDBasket_Products
                                                     WHERE product_type='seeds' AND _status='0' AND
                                                           uid_seller='$kGrower' AND eStatus='ACTIVE'" );
 
-        $dMbrExpiry = $this->oC->oApp->kfdb->Query1( "SELECT expires FROM seeds_2.mbr_contacts WHERE _key='$kGrower'" );
+        $dMbrExpiry = $this->oC->oApp->kfdb->Query1( "SELECT expires FROM {$dbname2}.mbr_contacts WHERE _key='$kGrower'" );
 
         $sSkip = $kfrG->Value('bSkip')
                     ? ("<div style='background-color:#ee9'><span style='font-size:12pt'>Skipped</span>"
@@ -331,7 +335,7 @@ class MyConsole extends Console01
 
     private function growerSelect()
     {
-        $raG = $this->oApp->kfdb->QueryRowsRA( "SELECT mbr_id,bSkip,bDelete,bDone FROM seeds_1.sed_curr_growers WHERE _status='0'" );
+        $raG = $this->oApp->kfdb->QueryRowsRA( "SELECT mbr_id,bSkip,bDelete,bDone FROM {$this->oApp->GetDBName('seeds1')}.sed_curr_growers WHERE _status='0'" );
         $raG2 = array( '-- All Growers --' => 0 );
         foreach( $raG as $ra ) {
             $kMbr = $ra['mbr_id'];
@@ -381,11 +385,18 @@ class MyConsole extends Console01
 
             $s .= $this->oMSDLib->AdminNormalizeStuff();
 
-            $s .= "<p><a href='?doIntegrityTests=1'>Do integrity tests</a></p>";
-            if( SEEDInput_Int('doIntegrityTests') ) {
-                include_once( SEEDLIB."msd/msdlibIntegrity.php" );
-                $oIntegrity = new MSDLibIntegrity( $this->oMSDLib );
+            /* Integrity tests
+             */
+            include_once( SEEDLIB."msd/msdlibIntegrity.php" );
+            $oIntegrity = new MSDLibIntegrity( $this->oMSDLib );
 
+            $s .= "<p><a href='?doIntegrityTests=1'>Do integrity tests</a></p>";
+
+            // Draw the Solve This Problem UI if a SEEDProblemSolver link has been clicked
+            $s .= $oIntegrity->DrawMSDTestUI();
+
+            // Perform integrity tests and show results
+            if( SEEDInput_Int('doIntegrityTests') ) {
                 $sTest = "<h4><strong>Integrity Tests</strong></h4>"
                         .$oIntegrity->AdminIntegrityTests()
                         ."<h4><strong>Workflow Tests</strong></h4>"

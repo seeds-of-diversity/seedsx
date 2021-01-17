@@ -41,11 +41,12 @@ function MbrSitePipeGetContactsRA2( $kfdb1, $id )
         goto done;
     }
 
-    $kfdb2 = SiteKFDB( SiteKFDB_DB_seeds2 );
+    $dbname2 = SiteKFDB_DB_seeds2;
+    $kfdb2 = SiteKFDB( $dbname2 );
     if( is_numeric($id) ) {
-        $raOut = $kfdb2->QueryRA( "SELECT * FROM seeds_2.mbr_contacts WHERE _key='$id'" );
+        $raOut = $kfdb2->QueryRA( "SELECT * FROM {$dbname2}.mbr_contacts WHERE _key='$id'" );
     } else {
-        $raOut = $kfdb2->QueryRA( "SELECT * FROM seeds_2.mbr_contacts WHERE email='".addslashes($id)."'" );
+        $raOut = $kfdb2->QueryRA( "SELECT * FROM {$dbname2}.mbr_contacts WHERE email='".addslashes($id)."'" );
     }
     if( !$raOut ) $raOut = array();
 
