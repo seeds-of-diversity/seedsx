@@ -17,7 +17,7 @@ require_once( SEEDCOMMON."mbr/mbrOrder.php" );
 class SoD_PP_IPN {
     var $response = "";
 
-    function SoD_PP_IPN() {
+    function __construct() {
 
     }
 
