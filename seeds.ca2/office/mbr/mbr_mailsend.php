@@ -62,7 +62,7 @@ echo Console02Static::HTMLPage( $sBody,
 class mbr_mailsend {
     private $oMail;
 
-    function mbr_mailsend( $kfdb1, $kfdb2, $uid )
+    function __construct( $kfdb1, $kfdb2, $uid )
     {
         $this->oMail = new mbr_mail( $kfdb1, $kfdb2, $uid );
     }

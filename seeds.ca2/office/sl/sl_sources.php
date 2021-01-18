@@ -305,7 +305,7 @@ window.history.replaceState({}, document.title, clean_uri);
 // end
 
 
-class CSCICultivars
+class CSCICultivars_obsolete
 {
     var $kfdb;    // kfdb1 on seeds db
     var $sess;
@@ -313,7 +313,7 @@ class CSCICultivars
     private $oFormCtrl;  // SessionNS form in the control area - searching, sorting, and filtering
     private $oForm;      // KFUI form in the content area for data rows
 
-    function CSCICultivars( &$kfdb, &$sess )
+    function __construct( &$kfdb, &$sess )
     {
         $this->kfdb = &$kfdb;
         $this->sess = &$sess;
