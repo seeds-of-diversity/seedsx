@@ -301,7 +301,7 @@ function eOfferChange() {
 
              ."<tr style='margin-top:10px'><td valign='top'>Price</td><td valign='top'>$"
                  .$oKForm->Text( 'price', "", $raTxtParms )
-                 ."<div id='priceInstructions' style='display:inline-block;margin-left:20px'>We recommend $3.50 for seeds and $12.00 for roots and tubers. That is the default if you leave this field blank. Members who offer seeds (like you!) get an automatic discount of $1 per item.</div>"
+                 ."<div id='priceInstructions' style='display:inline-block;margin-left:20px'>We recommend $3.50 for seeds and $18.00 for roots and tubers. That is the default if you leave this field blank. Members who offer seeds (like you!) get an automatic discount of $1 per item.</div>"
                  ."</td></tr>"
 
              ."<tr><td colspan='2'>&nbsp;</td></tr>"
@@ -805,7 +805,7 @@ update seeds_1.SEEDBasket_ProdExtra set v='vegetables' where k='category' and v=
             $kfrP->SetValue( 'product_type', "seeds" );
             $kfrP->SetValue( 'quant_type', "ITEM-1" );
             if( !($price = floatval($kfrS->Value('price'))) ) {     // floatval because "0.00" is not false if it's a string
-                $price = in_array( $kfrS->Value('type'), array('POTATO','JERUSALEM ARTICHOKE','ONION','GARLIC') ) ? "12.00" : "3.50";
+                $price = in_array( $kfrS->Value('type'), array('POTATO','JERUSALEM ARTICHOKE','ONION','GARLIC') ) ? "18.00" : "3.50";
             }
             $kfrP->SetValue( 'item_price', $price );
             $kfrP->PutDBRow();
