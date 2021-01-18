@@ -219,7 +219,7 @@ class SEDMbrGrower extends SEDGrowerWorker
                     ? ("<div style='background-color:#fdf'><span style='font-size:12pt'>Deleted</span>"
                       ." <a href='{$_SERVER['PHP_SELF']}?gdelete=$kGrower'>UnDelete this grower</a></div>")
                     : ("<div><a href='{$_SERVER['PHP_SELF']}?gdelete=$kGrower'>Delete this grower</a></div>");
-        
+
         // days since GUpdate
         if( (new DateTime())->diff(new DateTime($dGUpdated))->days < 90 ) {
             $dGUpdated = "<span style='color:green;background-color:#cdc'>$dGUpdated</span>";
@@ -228,7 +228,7 @@ class SEDMbrGrower extends SEDGrowerWorker
         if( (new DateTime())->diff(new DateTime($dSUpdated))->days < 90 ) {
             $dSUpdated = "<span style='color:green;background-color:#cdc'>$dSUpdated</span>";
         }
-       
+
         $s = "<div style='border:1px solid black; margin:10px; padding:10px'>"
             ."<p>Seeds active: $nSActive</p>"
             ."<p>Membership expiry: $dMbrExpiry</p>"
@@ -367,8 +367,6 @@ class MyConsole extends Console01
 
     private function officeTabDraw()
     {
-        $Y = date('Y');     // typically better than oMSDLib->GetCurrYear() unless you want a forward-looking date in late fall
-
         $s = "<style>"
             ."h4         { font-weight: bold }"
             ."p          { margin-left:30px }"
@@ -376,6 +374,21 @@ class MyConsole extends Console01
             ."</style>";
 
         if( !$this->oMSDLib->PermOfficeW() )  goto done;
+
+        $Y = date('Y');     // typically better than oMSDLib->GetCurrYear() unless you want a forward-looking date in late fall
+
+        /* Show statistics box
+         */
+        $oMSDQ = new MSDQ($this->oMSDLib->oApp, [] );
+        $raQStats = $oMSDQ->Cmd( 'msd-getStats', [] );
+        $s .= "<div style='float:right;margin:10px;padding:10px;border:1px solid #aaa'>"
+             ."Active growers: {$raQStats['raOut']['nGrowersActive']}<br/>"
+             ."Skipped growers: {$raQStats['raOut']['nGrowersSkipped']}<br/>"
+             ."Deleted growers: {$raQStats['raOut']['nGrowersDeleted']}<br/>"
+             .""
+             ."</div>";
+
+
 
         $s .= "<h4>Printed Directory</h4>"
              ."<p><a href='?doReport=JanGrowers' target='_blank'>Grower list</a></p>"
