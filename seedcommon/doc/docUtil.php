@@ -16,7 +16,7 @@ include_once( SEEDCOMMON."siteTemplate.php" );
 include_once( SEEDCORE."SEEDTag.php" );                 // SEEDTagBasicHandler
 
 
-// replace this with a SEEDSessionPerms function that takes the DOCREP_SEEDPERMS_APP as an argument
+// use New_SEEDPermsFromUID( SEEDAppDB $oApp, $uid, DOCREP_SEEDPERMS_APP ) instead
 function New_DocRepSEEDPermsFromUID( SEEDAppDB $oApp, $uid )
 {
 // kluge: $uid should never be 0 but if it is we undoubtedly mean the anonymous user
