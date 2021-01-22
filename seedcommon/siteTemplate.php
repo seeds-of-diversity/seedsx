@@ -77,6 +77,7 @@ class MasterTemplate
             $raTmplParms['raResolvers'][] = array( 'fn'=>array($oLocal,'ResolveTag'), 'raParms'=>array() );
         }
 
+// Deprecated: use SEEDCORE:SEEDSessionAccountTagHandler
         if( isset($raParms['EnableSEEDSession']) ) {
             include_once( STDINC."SEEDSessionAccountTag.php" );
 
