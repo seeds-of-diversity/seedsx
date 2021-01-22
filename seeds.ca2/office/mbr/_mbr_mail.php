@@ -297,7 +297,7 @@ $raDRVars['kMailSend'] = $kfrRecipient->Key();
             $sDoc = $oTmpl->ExpandStr( $sDoc, array( 'kMbrTo' => $kMbr, 'lang'=>$lang ) );
         }
 
-        include( SEEDLIB."SEEDTemplate/masterTemplate.php" );
+        include_once( SEEDLIB."SEEDTemplate/masterTemplate.php" );
         $oApp = SEEDConfig_NewAppConsole_LoginNotRequired( [] );   // seeds1 and no perms required
         $oMaster2 = new SoDMasterTemplate( $oApp, [] );
         if( ($oTmpl = $oMaster2->GetTmpl()) ) {
