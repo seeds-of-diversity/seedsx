@@ -930,7 +930,7 @@ class mbrContacts_Logins extends Console01_Worker2
         $sSubject = "Your Member Seed Directory is on-line! - Votre Catalogue de semences est disponible par Internet!";
 
         $oMail = new mbr_mail( $this->kfdb1, $this->kfdb2, 1499 );    // USING Bob's perms to make sure we can see the document in DocRep
-        $sDoc = $oMail->DrawMail( 345, 'office', $sEmail1, $kMbr, $sSubject, array() );
+        $sDoc = $oMail->DrawMail( 368, 'office', $sEmail1, $kMbr, $sSubject, array() );
         $sDoc = trim($sDoc);
         if( empty($sDoc) ) {
             $this->oC->ErrMsg( "Error drafting email for $kMbr : $sEmail1. " );
