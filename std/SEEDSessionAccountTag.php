@@ -10,6 +10,9 @@
 //include_once( "SEEDSession.php" );
 include_once( "SEEDSessionAuthDB.php" );
 
+/* Deprecated: use SEEDCORE:SEEDSessionAccountTagHandler
+ */
+
 class SEEDSessionAccountTag
 {
     private $kfdb;
