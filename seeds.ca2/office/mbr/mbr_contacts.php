@@ -2,7 +2,7 @@
 
 /* Contact and Login manager
 
-   Copyright (c) 2009-2020 Seeds of Diversity Canada
+   Copyright (c) 2009-2021 Seeds of Diversity Canada
 
    Contact database:
        Read only view of the mbr_contacts database
@@ -273,6 +273,9 @@ class mbrContacts_Logins extends Console01_Worker2
 
     private $oSessUGP;
 
+    private $dbname1;
+    private $dbname2;
+
     function __construct( Console01 $oC, KeyFrameDB $kfdb1, KeyFrameDB $kfdb2, SEEDSessionAccount $sess )
     {
         parent::__construct( $oC, $kfdb1, $kfdb2, $sess );
@@ -295,6 +298,10 @@ class mbrContacts_Logins extends Console01_Worker2
             reset($this->raSections);
             $this->eSection = key($this->raSections);
         }
+
+        global $config_KFDB;
+        $this->dbname1 = $config_KFDB['seeds1']['kfdbDatabase'];
+        $this->dbname2 = $config_KFDB['seeds2']['kfdbDatabase'];
     }
 
     function Init()
@@ -592,7 +599,7 @@ class mbrContacts_Logins extends Console01_Worker2
                                'bActionEmails' => true,
                                'action'  => "sendMSDEmail",
                                'actionFn' => array($this,'doSendMSDEmail'),
-                               'outputGood' => "Sent MSD notice for email",
+                               'outputGood' => "",//"Sent MSD notice for email",    doSendMSDEmail uses UserMsg
                                'outputBad'  => "Error sending MSD notice for email",
         ),
         'mbrIndStatus' => array(
@@ -799,8 +806,8 @@ class mbrContacts_Logins extends Console01_Worker2
             if( SEEDSafeGPC_GetInt('localaction_deactivate') ) {
 // TODO: use DeactivateLogin -- no it just sets INACTIVE, we actually want to delete it
 //                if( $this->oMbrDB->DeactivateLogin( $kMbr ) ) {
-                $this->kfdb2->Execute( "UPDATE seeds_1.SEEDSession_Users SET eStatus='INACTIVE' WHERE _key='$kMbr'" );
-                $this->kfdb2->Execute( "UPDATE seeds_1.SEEDSession_Users SET _status=1 WHERE _key='$kMbr'" );
+                $this->kfdb2->Execute( "UPDATE {$this->dbname1}.SEEDSession_Users SET eStatus='INACTIVE' WHERE _key='$kMbr'" );
+                $this->kfdb2->Execute( "UPDATE {$this->dbname1}.SEEDSession_Users SET _status=1 WHERE _key='$kMbr'" );
                     $s .= "<p>$kMbr deactivated</p>";
                 //}
             }
@@ -817,7 +824,7 @@ class mbrContacts_Logins extends Console01_Worker2
         foreach( $raTests as $test ) {
             switch( $test ) {
                 case "AccountExists":
-                    if( !$this->kfdb1->Query1( "SELECT _key FROM seeds_1.SEEDSession_Users WHERE _key='$kMbr'" ) ) {
+                    if( !$this->kfdb1->Query1( "SELECT _key FROM {$this->dbname1}.SEEDSession_Users WHERE _key='$kMbr'" ) ) {
                         $this->oC->ErrMsg( "Member $kMbr does not have a login account." );
                         return( false );
                     }
@@ -892,7 +899,7 @@ class mbrContacts_Logins extends Console01_Worker2
             return( false );
         }
 
-        $bOk = $this->kfdb1->Execute( "UPDATE seeds_1.SEEDSession_Users SET email='".addslashes($raMbr['email'])."' WHERE _key='$kMbr'" );
+        $bOk = $this->kfdb1->Execute( "UPDATE {$this->dbname1}.SEEDSession_Users SET email='".addslashes($raMbr['email'])."' WHERE _key='$kMbr'" );
         if( !$bOk ) {
             $this->oC->ErrMsg( "Database error updating email for member $kMbr : ".$this->kfdb1->GetErrMsg() );
         }
@@ -907,7 +914,7 @@ class mbrContacts_Logins extends Console01_Worker2
         if( ($raMbr = $this->validate( $kMbr, "CurrentMember AccountExists EmailExists" )) === false ) {
             return( false );
         }
-        $sEmail1 = $this->kfdb1->Query1( "SELECT email FROM seeds_1.SEEDSession_Users WHERE _key='$kMbr'" );
+        $sEmail1 = $this->kfdb1->Query1( "SELECT email FROM {$this->dbname1}.SEEDSession_Users WHERE _key='$kMbr'" );
         if( empty($sEmail1) ) {
             $this->oC->ErrMsg( "Member # $kMbr does not have an email address in their login account" );
             return( false );
@@ -923,10 +930,19 @@ class mbrContacts_Logins extends Console01_Worker2
             // Sending an MSD email to an arbitrary email. If we know who it is, that's helpful.
             // Might not be a real contact; it's okay if it's zero after this.
             if( !($kMbr = $this->kfdb1->Query1( "SELECT _key FROM seeds_2.mbr_contacts WHERE email='$edb'")) ) {
-                $kMbr = $this->kfdb1->Query1( "SELECT _key FROM seeds_1.SEEDSession_Users WHERE email='$edb'");
+                $kMbr = $this->kfdb1->Query1( "SELECT _key FROM {$this->dbname1}.SEEDSession_Users WHERE email='$edb'");
             }
         }
 
+        include_once( SEEDLIB."mail/SEEDMail.php" );
+        $oApp = SEEDConfig_NewAppConsole_LoginNotRequired( ['db'=>'seeds2'] );   // anonymous access
+        $oMail = new SEEDMail($oApp, 'MSDLoginInstructions');
+        $oMail->AddRecipient($sEmail1);
+        $oMail->StageMail();
+
+        $bOk = true;
+
+/*
         $sSubject = "Your Member Seed Directory is on-line! - Votre Catalogue de semences est disponible par Internet!";
 
         $oMail = new mbr_mail( $this->kfdb1, $this->kfdb2, 1499 );    // USING Bob's perms to make sure we can see the document in DocRep
@@ -943,12 +959,14 @@ class mbrContacts_Logins extends Console01_Worker2
         if( $bOk ) {
             MailFromOffice( "bob@seeds.ca", "$sSubject -- $sEmail1", "", $sDoc, array( "from"=>array("eBulletin@seeds.ca") ) );
         }
+*/
+
 
         if( $bOk ) {
             if( $kMbr ) {
                 $this->oSessUGP->SetUserMetadata( $kMbr, 'dSentMSD', date('Y-m-d') );
             }
-            $this->oC->UserMsg( "Sent Member Seed Directory email to $kMbr : $sEmail1<br/>" );
+            $this->oC->UserMsg( "Staged Member Seed Directory email to $kMbr : $sEmail1<br/>" );
          // don't show my password here            ."<DIV style='border:1px solid black'>$sDoc</DIV>" );
         } else {
             $this->oC->ErrMsg( "Error mailing Seed Directory email to $kMbr : $sEmail1" );
@@ -979,11 +997,11 @@ class mbrContacts_Logins extends Console01_Worker2
          );
 
         $s = "Checking login # $kMbr.<br/>";
-        $s .= $this->kfdb2->Query1( "SELECT count(*) FROM seeds_1.sed_curr_growers WHERE $sCUCond OR mbr_id='$kMbr'" )." sed_curr_growers<br/>";
-        $s .= $this->kfdb2->Query1( "SELECT count(*) FROM seeds_1.sed_curr_seeds   WHERE $sCUCond OR mbr_id='$kMbr'" )." sed_curr_seeds<br/>";
+        $s .= $this->kfdb2->Query1( "SELECT count(*) FROM {$this->dbname1}.sed_curr_growers WHERE $sCUCond OR mbr_id='$kMbr'" )." sed_curr_growers<br/>";
+        $s .= $this->kfdb2->Query1( "SELECT count(*) FROM {$this->dbname1}.sed_curr_seeds   WHERE $sCUCond OR mbr_id='$kMbr'" )." sed_curr_seeds<br/>";
 
         foreach( $raDBTables as $t ) {
-            $s .= $this->kfdb2->Query1( "SELECT count(*) FROM seeds_1.$t WHERE $sCUCond" )." $t<br/>";
+            $s .= $this->kfdb2->Query1( "SELECT count(*) FROM {$this->dbname1}.$t WHERE $sCUCond" )." $t<br/>";
         }
 
         return( $s );
