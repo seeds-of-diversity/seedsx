@@ -467,9 +467,9 @@ class mbrContacts_Logins extends Console01_Worker2
              .$this->drawSectionA( 'mbrExpired', $raMbrNoPerm )
              .$this->drawSectionA( 'mbrInactivated', $raMbrNoActive )
              .$this->drawSectionA( 'mbrNonMembersHavePerms', $raAcctNoMbr )
-             .$this->drawSectionA( 'emailChanged', $raMbrAddrChange )
+             .$this->drawSectionA( 'emailChanged', $raMbrAddrChange );
 
-
+/*
              ."<div class='well'>";
         $n = count($raAcctNoMbr);
         $s .="<P".($n?" style='color:red'":"").">$n people have login accounts with membership permission but aren't current members (membership expired)</P>";
@@ -481,7 +481,7 @@ class mbrContacts_Logins extends Console01_Worker2
             $s .= "</DIV>";
         }
         $s .= "</div>";
-
+*/
         $s .= $this->drawSectionA( 'mbrOrphan', $raAcctOrphan )
              .$this->drawSectionA( 'msdNotice', $raOldMSD )
              .$this->drawSectionA_SendMSDEmail()
