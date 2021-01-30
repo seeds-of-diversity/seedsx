@@ -227,7 +227,7 @@ class DocRepWiki extends SEEDWikiParser
         Output: a full url that retrieves the target image
      */
     {
-        if( substr( $raLink['target'], 0, 5 ) == "http:" ) {
+        if( substr( $raLink['target'], 0, 4 ) == "http" ) {
             return( $raLink['target'] );
         }
 
