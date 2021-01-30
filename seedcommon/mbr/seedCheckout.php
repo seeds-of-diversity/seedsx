@@ -106,7 +106,7 @@ class SoDMbrOrderCheckout extends MbrOrderCheckout
         //$this->oKForm->SetValue('bBulbils',0);
         //$_SESSION['mbrocdata']['sExtra'] = "";
 
-        $bGarlicAdvertised = true;
+        $bGarlicAdvertised = false;
         $bGarlicAdvertisedButGone = false;
 
         if( $bGarlicAdvertised ) {
