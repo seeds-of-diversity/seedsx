@@ -160,7 +160,7 @@ class msdBasket extends SEEDBasketStore
                 ."with the larger seed saving community. We hope that everyone will try saving their own seeds, and when they feel ready to "
                 ."share their saved seeds with other members, they will offer them here.</p>"
                 ."<p>Members, please login to your Seeds of Diversity account to make your seed requests.</p>"
-                ."<p>If you are not a member of Seeds of Diversity, <a href='http://seeds.ca/store' target='_blank'>you can join today</a>!</p>";
+                ."<p>If you are not a member of Seeds of Diversity, <a href='https://seeds.ca/store' target='_blank'>you can join today</a>!</p>";
         }
 
         $s = json_encode( $s );
@@ -226,7 +226,7 @@ class msdBasket extends SEEDBasketStore
                                 ."<div class='sb_basket_td'>"
                                         // Use full url instead of W_ROOT because this html can be generated via ajax (so not a relative url)
                 // Only draw the Remove icon for items with kBP because discounts, etc, are coded with kBP==0 and those shouldn't be removable on their own
-                .($raItem['kBP'] ? ("<img height='14' onclick='RemoveFromBasket(".$raItem['kBP'].");' src='http://seeds.ca/wcore/img/ctrl/delete01.png'/>") : "")
+                .($raItem['kBP'] ? ("<img height='14' onclick='RemoveFromBasket(".$raItem['kBP'].");' src='https://seeds.ca/wcore/img/ctrl/delete01.png'/>") : "")
                 ."</div>"
                         ."</div>";
             }

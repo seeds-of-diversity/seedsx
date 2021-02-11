@@ -24,7 +24,7 @@ foreach( $raEvents as $ra ) {
         $sMbrName = SEEDCore_ArrayExpand( $raMbr, "[[firstname]] [[lastname]] in [[city]]" );
 
         $sMbrLabel = "<div style='display:inline-block;margin-left:10px;font-size:9pt'>"
-                    ."<form action='http://seeds.ca/office/mbr/mbr_labels.php' target='MbrLabels' method='get'>"
+                    ."<form action='https://seeds.ca/office/mbr/mbr_labels.php' target='MbrLabels' method='get'>"
                     ."<input type='hidden' name='mbradd' value='$kMbr'/><input type='submit' value='Label'/></form>"
                     ."</div>";
     }

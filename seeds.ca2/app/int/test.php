@@ -38,7 +38,7 @@ $docrep_p = "<p>Your user id is [[SEEDSessionAccount_email:3]]</p>"
            ."[[SEEDSessionAccount_TrustTest:3]] "
            ."[[if: \$bSEEDSessionPasswordAutoGen "
                ."| <p>Your password is [[SEEDSessionAccount_password:3]]</p> "  // password is original auto-gen so show it (the tag only works in _mbr_mail)
-               ."| <p>Forgot your password? <a href='http://www.seeds.ca/login?sessioncmd=sendPwd' target='_blank'>Click here to get it back</a></p>"
+               ."| <p>Forgot your password? <a href='https://seeds.ca/login?sessioncmd=sendPwd' target='_blank'>Click here to get it back</a></p>"
            ."]]";
 
 

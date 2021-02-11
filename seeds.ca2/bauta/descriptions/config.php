@@ -285,7 +285,7 @@ CREATE TABLE IF NOT EXISTS sl_desc_cfg_forms (
 
         if( $oForm->GetKey() ) {
 // use localhost for development site
-            $sWindow = "window.open('http://seeds.ca/bauta/descriptions/popup.php?cmd=CDForm&k=".$oForm->GetKey()."',"
+            $sWindow = "window.open('https://seeds.ca/bauta/descriptions/popup.php?cmd=CDForm&k=".$oForm->GetKey()."',"
                       ."'_blank','width=800,height=600,scrollbars=yes');";
 
             $s .= "<div style='float:right; border:1px solid #555; padding:20px;border-radius:5px;background-color:#eee;margin-right:20px'>"
@@ -337,7 +337,7 @@ CREATE TABLE IF NOT EXISTS sl_desc_cfg_forms (
 $raConsoleParms = array(
     'HEADER' => "Crop Description Config on ${_SERVER['SERVER_NAME']}",
     'HEADER_LINKS' => array( array( 'href'=>"#",
-                                    'onclick'=>'window.open("http://seeds.ca/d?n=web/sl/doc/descCfgInstructions","_blank","width=600,height=800,scrollbars=yes")', 'label'=>"Instructions"
+                                    'onclick'=>'window.open("https://seeds.ca/d?n=web/sl/doc/descCfgInstructions","_blank","width=600,height=800,scrollbars=yes")', 'label'=>"Instructions"
                                   )),
     'CONSOLE_NAME' => "SLDescCfg",
     'TABSETS' => array( "TFmain" => array( 'tabs' => array( 'Descriptors' => array( 'label' => "Descriptors" ),

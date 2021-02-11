@@ -327,7 +327,7 @@ class DocRepWiki extends SEEDWikiParser
             $sTxt .= "<p style='text-align:right'>"
                     // kMailSend is set by the mail_send script: it is the key of the recipient-email row.
                     // That means it is zero whenever you aren't looking at an actual email in an inbox.
-                    ."<a href='http://www.seeds.ca/d?t=".DocRep_Key2HashTrack($kDoc,DOCREP_KEY_HASH_SEED,$this->GetVar('kMailSend'))."' target='_blank'>"
+                    ."<a href='https://seeds.ca/d?t=".DocRep_Key2HashTrack($kDoc,DOCREP_KEY_HASH_SEED,$this->GetVar('kMailSend'))."' target='_blank'>"
                     .($this->Lang() == 'FR' ? "Lisez plus..." : "Read more...")."</a></p>";
         }
 

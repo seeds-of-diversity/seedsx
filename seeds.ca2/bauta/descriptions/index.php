@@ -37,7 +37,7 @@ $sBody =
     ."<tr><td class='CropDescSheetRowTop' colspan='2'>&nbsp;</td></tr>"
     ."<tr><td class='CropDescSheetColLeft' valign='top'>&nbsp;</td>"
     ."<td class='CropDescSheetBody' valign='top'>"
-    ."<img src='http://www.seeds.ca/bauta/logo/BFICSS-logo-en-300.png' height='60'"
+    ."<img src='https://seeds.ca/bauta/logo/BFICSS-logo-en-300.png' height='60'"
     ." style='float:right;margin:20px;'/>"
     ."<h2 style='margin-left:1em'>".($oCD->lang=='EN'?"Record Your Own Crop Descriptions":"Enregister une description de culture")."</h2>"
     ."<div style='padding:10%;'>"

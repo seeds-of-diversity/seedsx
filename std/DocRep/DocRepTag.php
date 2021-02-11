@@ -140,7 +140,7 @@ class DocRepTagHandler
             $sTxt .= "<p style='text-align:right'>"
                     // kMailSend is set by the mail_send script: it is the key of the recipient-email row.
                     // That means it is zero whenever you aren't looking at an actual email in an inbox.
-                    ."<a href='http://www.seeds.ca/d?t=".DocRep_Key2HashTrack($oDoc->GetKey(),DOCREP_KEY_HASH_SEED,$oTagParser->GetVar('kMailSend'))."' target='_blank'>"
+                    ."<a href='https://seeds.ca/d?t=".DocRep_Key2HashTrack($oDoc->GetKey(),DOCREP_KEY_HASH_SEED,$oTagParser->GetVar('kMailSend'))."' target='_blank'>"
                     .($this->lang() == 'FR' ? "Lisez plus..." : "Read more...")."</a></p>";
         }
 

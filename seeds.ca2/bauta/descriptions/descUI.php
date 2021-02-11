@@ -281,7 +281,7 @@ class CropDesc
                  function getPrintable() {
                      var v = jQuery('#descPrintable').val();
 
-                     var d = 'http://www.seeds.ca/d?n=seedlibrary/desc/en/'+v+'.doc';
+                     var d = 'https://seeds.ca/d?n=seedlibrary/desc/en/'+v+'.doc';
 
                      window.open(d,'_blank','width=800,height=1200,scrollbars=yes');
                  }

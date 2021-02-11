@@ -233,7 +233,7 @@ class SoDBulletin
         if( !in_array( $sCmd, array('subscribe','unsubscribe') ) )  return( false );
 
         $md5 = md5( $email.self::hashSeed );
-        $link = "http://seeds.ca/ebulletin?$sCmd=".urlencode($email)."&id=$md5";
+        $link = "https://seeds.ca/ebulletin?$sCmd=".urlencode($email)."&id=$md5";
 
         $sEmailBody = $this->oTmpl->ExpandTmpl( $sCmd=='subscribe' ? 'emailConfirmSubscribe' : 'emailConfirmUnsubscribe', array('link'=>$link) );
         $sSubject = $this->oTmpl->ExpandTmpl( $sCmd=='subscribe' ? 'emailConfirmSubscribe-subject' : 'emailConfirmUnsubscribe-subject' );

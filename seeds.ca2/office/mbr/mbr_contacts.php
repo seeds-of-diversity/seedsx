@@ -108,7 +108,7 @@ class MyConsole extends Console01KFUI
                     $s = "";
                     if( ($kMbr = ($this->oComp && $this->oComp->oForm ) ? $this->oComp->oForm->GetKey() : 0) ) {
                         $s .= "<div style='float:right'>"
-                             ."<form action='http://seeds.ca/office/mbr/mbr_labels.php' target='MbrLabels' method='get'>"
+                             ."<form action='https://seeds.ca/office/mbr/mbr_labels.php' target='MbrLabels' method='get'>"
                              ."<input type='hidden' name='mbradd' value='$kMbr'/><input type='submit' value='Add $kMbr to Label Maker'/></form></div>";
                     }
                     return( $s.$this->oComp->SearchToolDraw() );
@@ -199,7 +199,7 @@ class mbrContacts_Contacts extends Console01_Worker1
             ."<TD>First / last name 2</TD><TD>".$oForm->Text( 'firstname2', "", array( 'size'=>15 ) )
                 ."&nbsp;&nbsp;".$oForm->Text( 'lastname2', "", array( 'size'=>19 ) )."</TD>"
             ."<TD>City</TD><TD>".$oForm->Text( 'city', "", $raP )
-                    ." <A HREF='http://maps.google.ca/?q=".urlencode($oForm->ValueEnt('city')." ".$oForm->ValueEnt('province'))."' target='_blank'>Where's that?</A>"
+                    ." <A HREF='https://maps.google.ca/?q=".urlencode($oForm->ValueEnt('city')." ".$oForm->ValueEnt('province'))."' target='_blank'>Where's that?</A>"
                     ."</TD>"
             ."</TR>"
             ."<TR valign='top'>"
