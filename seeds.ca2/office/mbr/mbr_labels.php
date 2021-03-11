@@ -175,7 +175,9 @@ class MbrLabelsApp
             }
         }
         foreach( preg_split('/\s+/', $this->oForm->Value('mbrcontacts')) as $v ) {
-            $raOut[] = $oMbr->DrawAddressBlock( $v, $format );
+            if( ($a = $oMbr->DrawAddressBlock( $v, $format )) ) {
+                $raOut[] = $a;
+            }
         }
 
         return( $raOut );
