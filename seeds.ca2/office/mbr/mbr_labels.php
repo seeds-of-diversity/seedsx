@@ -17,6 +17,8 @@
     orderdel=k                  : remove order k
     orderdel[]=k1&orderdel[]=k2 : remove orders k1 and k2
 
+    mbr k can be: k, email, "k,k,..", "email,email,..."
+
     mbradd=k                    : add mbr k
     mbradd[]=k1&mbradd[]=k2     : add mbrs k1 and k2
     mbrdel=k                    : remove mbr k
@@ -27,7 +29,149 @@ define( "SITEROOT", "../../" );
 include_once( SITEROOT."site2.php" );
 include_once( SEEDCOMMON."mbr/mbrCommon.php" ); // MbrDrawAddressBlock
 
-list($kfdb,$sess,$lang) = SiteStartSessionAccount( ['R MBR', '&', 'R MBRORDER'] );   // both are required because both are revealed
+include_once( SEEDCORE."SEEDCoreFormSession.php" );
+
+
+//list($kfdb,$sess,$lang) = SiteStartSessionAccount( ['R MBR', '&', 'R MBRORDER'] );   // both are required because both are revealed
+
+$oApp = SEEDConfig_NewAppConsole( ['db'=>'seeds2', 'sessPermsRequired' => ['R MBR', '&', 'R MBRORDER'] ] );  // both are required because both are revealed
+$kfdb = $oApp->kfdb;
+$sess = $oApp->sess;
+$lang = $oApp->lang;
+
+
+class MbrLabelsApp
+{
+    private $oApp;
+    private $oForm;
+
+    function __construct( SEEDAppConsole $oApp )
+    {
+        $this->oApp = $oApp;
+
+        /* Orders and Mbrs are stored in SVA:MbrLabels
+         * First update the oForm to get any changes made by user on the labels form.
+         * Then check cmds to get any additions/deletions from other apps.
+         */
+        $this->oForm = new SEEDCoreFormSession( $oApp->sess, "MbrLabels", "A" );
+        $this->oForm->Update();
+
+        if( ($p = @$_REQUEST['orderadd']) )  $this->add( $p, 'mbrorders' );
+        if( ($p = @$_REQUEST['mbradd']) )    $this->add( $p, 'mbrcontacts' );
+    }
+
+    private function add( $p, $fld )
+    {
+        if( is_array($p) ) {
+            foreach( $p as $v ) {
+                //list($raRange,$sRange) = SEEDCore_ParseRangeStr( $v );
+                //$ra = array_merge( $ra, $raRange );
+                $this->oForm->SetValue( $fld, $this->oForm->GetValue($fld)."\n$v" );
+            }
+        } else if( ($v = intval($p)) ) {
+            //list($raRange,$sRange) = SEEDCore_ParseRangeStr( $p );
+            //$ra = array_merge( $ra, $raRange );
+            $this->oForm->SetValue( $fld, $this->oForm->GetValue($fld)."\n$v" );
+        }
+    }
+
+
+    function Draw()
+    {
+        $x = "";
+
+        $oMbr = new Mbr_Contacts( $this->oApp );
+
+        $raX = array_merge( preg_split('/\s+/', $this->oForm->Value('mbrorders')),
+                            preg_split('/\s+/', $this->oForm->Value('mbrcontacts')) );
+
+        $skip = $this->oForm->ValueInt('nSkip');
+
+        $sTable = "";
+        for( $r = 0; $r < 10; ++$r ) {
+            $sTable .= "<tr>";
+            for( $c = 0; $c < 3; ++$c ) {
+                $sTable .= "<td style='width:300px;height:60px;font-size:10pt;padding:0px 3px'>";
+                if( $skip ) {
+                    --$skip;
+                } else if( ($v = current($raX)) !== false ) {
+                    $sTable .= $oMbr->DrawAddressBlock( $v );
+                    next($raX);
+                }
+                $sTable .= "</td>";
+            }
+            $sTable .= "</tr>";
+        }
+        $sTable = "<table border='1' style='width:100%'>$sTable</table>";
+
+
+$sList = ""// "<form method='post'>"
+        ."<div>"
+        ."<h4>Orders</h4>"
+        .$this->oForm->TextArea( 'mbrorders', ['width'=>'350px'] )
+        ."</div><div>"
+        ."<h4>Contacts</h4>"
+        ."<p style='font-size:8pt'>Member numbers or email addresses: separated by commas or spaces</p>"
+        .$this->oForm->TextArea( 'mbrcontacts', ['width'=>'350px'] )
+        ."</div>"
+      //  ."</form>"
+;
+
+$sFormat =
+  ""//  "<form method='post' target='MbrLabelsPDF'>"
+   //."<input type='hidden' name='cmd' value='pdf'/>"
+//   .(is_array($raOrders) ? SEEDCore_ArrayExpandSeries( $raOrders, "<input type='hidden' name='orders[]' value='[[]]'/>" ) : "")
+//   .(is_array($raMbrs)   ? SEEDCore_ArrayExpandSeries( $raMbrs,   "<input type='hidden' name='mbrs[]'   value='[[]]'/>" ) : "")
+   ."<div style='margin:5px; text-align:right'>"
+   ."Skip # labels ".$this->oForm->Text( 'nSkip', "", ['size'=>10] )
+   ."</div>"
+   ."<div style='text-align:right'><input type='submit' value='Update'/></div>"
+  // ."</form>"
+       ;
+
+
+ //  ."<input type='hidden' name='cmd' value='pdf'/>"
+
+
+$clearButton =
+         "<div style='margin-top:10px'>"
+        ."<form method='post'>"
+        ."<input type='hidden' name='cmd' value='clear'/>"
+        ."<input type='submit' value='Clear all'/>"
+        ."</form>"
+        ."</div>";
+$printButton =
+         "<div style='margin-top:10px'>"
+        ."<form method='post'>"
+        ."<input type='hidden' name='cmd' value='pdf'/>"
+        ."<input type='submit' value='Print Labels'/>"
+        ."</form>"
+        ."</div>";
+
+
+$s = "<div class='container'>"
+    ."<div class='row'>"
+        ."<div class='col-sm-4'>$clearButton</div>"
+    ."</div>"
+    ."<div class='row'>"
+        ."<form method='post'>"
+        ."<div class='col-sm-3'>$sList</div>"
+        ."<div class='col-sm-3'>$sFormat</div>"
+        ."<div class='col-sm-6'>$sTable</div>"
+        ."</form>"
+    ."</div>"
+    ."<div class='row'>"
+        ."<div class='col-sm-4'>$printButton</div>"
+    ."</div>"
+    ."</div>";
+
+        return( $s );
+    }
+}
+
+
+$oLA = new MbrLabelsApp( $oApp );
+
 
 if( @$_REQUEST['cmd'] == 'pdf' )  goto drawPDF_Labels;
 
@@ -35,6 +179,8 @@ if( @$_REQUEST['cmd'] == 'pdf' )  goto drawPDF_Labels;
  */
 
 //var_dump($_REQUEST);
+
+
 
 $oSVA = new SEEDSessionVarAccessor( $sess, "MbrLabels" );
 
@@ -75,52 +221,28 @@ if( ($p = @$_REQUEST['orderdel']) ) {
 if( ($p = @$_REQUEST['mbrdel']) ) {
 }
 
-
 //var_dump(@$_SESSION['MbrLabels']);
+
 
 
 $raOrders = $oSVA->VarGet( "raOrders" );
 $raMbrs   = $oSVA->VarGet( "raMbrs" );
 
-$sList = "<div>"
-        ."<h4>Orders</h4>"
-        .(is_array($raOrders) ? SEEDCore_ArrayExpandSeries( $raOrders, "[[]]<br/>" ) : "")
-        ."</div><div>"
-        ."<h4>Contacts</h4>"
-        .(is_array($raMbrs) ? SEEDCore_ArrayExpandSeries( $raMbrs, "[[]]<br/>" ) : "")
-        ."</div><div style='margin-top:10px'>"
-        ."<form method='post'>"
-        ."<input type='hidden' name='cmd' value='clear'/>"
-        ."<input type='submit' value='Clear all'/>"
-        ."</form>"
-        ."</div>";
 
+//$oForm->SetValue( 'mbrorders',   (is_array($raOrders) ? SEEDCore_ArrayExpandSeries( $raOrders, "[[]]\n" ) : "") );
+//$oForm->SetValue( 'mbrcontacts', (is_array($raMbrs)   ? SEEDCore_ArrayExpandSeries( $raMbrs,   "[[]]\n" ) : "") );
+
+
+/*
 $sForm = "<div><form method='post'>"
         ."<input type='text' name='orderadd' /> <input type='submit' value='Add Order'/>"
         ."</form></div>"
         ."<div><form method='post'>"
         ."<input type='text' name='mbradd' /> <input type='submit' value='Add Contact'/>"
         ."</form></div>";
+*/
 
-$sPrintButton =
-    "<form method='post' target='MbrLabelsPDF'>"
-   ."<input type='hidden' name='cmd' value='pdf'/>"
-   .(is_array($raOrders) ? SEEDCore_ArrayExpandSeries( $raOrders, "<input type='hidden' name='orders[]' value='[[]]'/>" ) : "")
-   .(is_array($raMbrs)   ? SEEDCore_ArrayExpandSeries( $raMbrs,   "<input type='hidden' name='mbrs[]'   value='[[]]'/>" ) : "")
-   ."<div style='margin:5px'>"
-   ."Skip # labels <input type='text' name='offset' />"
-   ."</div>"
-   ."<input type='submit' value='Format Labels'/>"
-   ."</form>";
-
-
-$s = "<div class='container'><div class='row'>"
-    ."<div class='col-sm-4'>$sList</div>"
-    ."<div class='col-sm-4'>$sForm</div>"
-    ."<div class='col-sm-4'>$sPrintButton</div>"
-    ;
-
-echo Console01Static::HTMLPage( $s, "", "" );
+echo Console02Static::HTMLPage( $oLA->Draw(), "", "EN" );
 
 
 // for some reason when other apps launch this page via a post with a target, the url keeps the parameters like a get
@@ -174,7 +296,7 @@ $pdf = new PDF_Label( '5160' );
 $pdf->Set_Font_Size(9);  // default is 8pt which is pretty small; though this might be too big for long addresses
 $pdf->AddPage();
 
-if( ($n = intval(@$_REQUEST['offset']) ) ) {
+if( ($n = intval(@$_REQUEST['skip']) ) ) {
     for( $i = 0; $i < $n; ++$i ) {
         $pdf->Add_Label("");
     }
@@ -200,5 +322,3 @@ foreach( $raMbrs as $k ) {
 
 
 $pdf->Output();
-
-?>
