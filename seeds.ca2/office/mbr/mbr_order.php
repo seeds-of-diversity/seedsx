@@ -15,10 +15,10 @@ include_once( SEEDCOMMON."mbr/mbrOrder.php" );
 include_once( SEEDAPP."basket/sodBasketFulfil.php" );
 include_once( SEEDLIB."mbr/QServerMbr.php" );
 
-// kfdb is seeds2 - same as mbr_basket.php because they go together
-list($kfdb, $sess) = SiteStartSessionAccount( array("R MBRORDER") );
-
 $oApp = SEEDConfig_NewAppConsole( ['db'=>'seeds2', 'sessPermsRequired'=>['R MBRORDER'] ] );     // uses seeds2 for SEEDSession authentication
+
+// kfdb is seeds2 - same as mbr_basket.php because they go together
+list($kfdb,$sess,$lang) = SiteStartSessionAccountNoUI( ["R MBRORDER"] );
 
 define( "MBR_ADMIN", "1" ); // DrawTicket shows all the internal stuff
 
