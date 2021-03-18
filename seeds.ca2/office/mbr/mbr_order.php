@@ -88,15 +88,16 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
 
             /* This tool manages the fulfilment of each purchase in the basket
              */
-            if( ($kB = $kfrOrder->value('kBasket')) ) {
-                $bFulfilControls = in_array( $this->oApp->sess->GetUID(), [1,1499] );
-                list($sContents,$fTotal,$bContactNeeded,$bDonNotRecorded) = $this->oSoDBasket->ShowBasketContents( $kB, $bFulfilControls );
-                $sCol2 .= $sContents;
-            } else {
-                $sCol2 .= "<p class='alert alert-danger'>This order doesn't have a basket number</p>";
+            if( in_array( $kfrOrder->value('eStatus'), [MBRORDER_STATUS_PAID,MBRORDER_STATUS_FILLED] ) ) {
+                if( ($kB = $kfrOrder->value('kBasket')) ) {
+                    $bFulfilControls = in_array( $this->oApp->sess->GetUID(), [1,1499] );
+                    list($sContents,$fTotal,$bContactNeeded,$bDonNotRecorded) = $this->oSoDBasket->ShowBasketContents( $kB, $bFulfilControls );
+                    $sCol2 .= $sContents;
+                } else {
+                    $sCol2 .= "<p class='alert alert-danger'>This order doesn't have a basket number</p>";
+                }
+                $sCol2 .= "<hr style='border-color:#aaa;margin:30px 0px'/>";
             }
-
-            $sCol2 .= "<hr style='border-color:#aaa;margin:30px 0px'/>";
 
             /* This tool controls the kMbr of the order, independently of the rest of this form
              */
