@@ -156,7 +156,7 @@ class mbrBasket_Products
 
         $oMbrContacts = new Mbr_Contacts($this->oApp);
 
-        $raUid = $this->oApp->kfdb->QueryRowsRA1( "SELECT uid_seller FROM seeds_1.SEEDBasket_Products WHERE _status='0' GROUP BY 1 ORDER BY 1" );
+        $raUid = $this->oApp->kfdb->QueryRowsRA1( "SELECT uid_seller FROM {$this->oApp->GetDBName('seeds1')}.SEEDBasket_Products WHERE _status='0' GROUP BY 1 ORDER BY 1" );
         $raSellers = [];
         foreach( $raUid as $uid ) {
             $name = $oMbrContacts->GetContactName($uid)." ($uid)";
@@ -310,7 +310,7 @@ $oBasket = new SEEDBasketFulfilment( $this->oApp );
 
 $s .= "<table style='width:100%;border:1px solid #aaa'>";
 $raOrders = array();
-if( ($dbc = $this->oApp->kfdb->CursorOpen( "SELECT * FROM seeds_1.SEEDBasket_Baskets WHERE _status='0' AND eStatus<>'NEW'" ) ) ) {
+if( ($dbc = $this->oApp->kfdb->CursorOpen( "SELECT * FROM {$this->oApp->GetDBName('seeds1')}.SEEDBasket_Baskets WHERE _status='0' AND eStatus<>'NEW'" ) ) ) {
     while( ($raB = $this->oApp->kfdb->CursorFetch($dbc)) ) {
         $s .= $oBasket->DrawOrderFulfilment( $raB );
     }
