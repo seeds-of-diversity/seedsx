@@ -5,8 +5,10 @@
   [[include:sf-head]]
   </head>
   <body>
-  [[setvarmap:sodlink|$lang|EN|https://seeds.ca|FR|http://semences.ca]]
-  [[setvarmap:usclink|$lang|EN|http://weseedchange.org|FR|http://onsemelavenir.org]]
+  [[setvarmap:sodlink|$lang|EN|https://seeds.ca|FR|https://semences.ca]]
+  [[setvarmap:usclink|$lang|EN|https://weseedchange.org|FR|https://onsemelavenir.org]]
+  [[setvarmap:westonlink|$lang|EN|https://westonfoundation.org|FR|https://westonfoundation.org]]
+  
   [[setvar:sodlogo|//seeds.ca/i/img/logo/logoA_h-[[ifeq:$lang|EN|en|fr]]-300x.png]]
   [[setvar:usclogo|images/logos/seedchange-[[ifeq:$lang|EN|en|fr]].svg]]
   [[setvar:westonlogo|images/logos/w-garfield-weston-foundation-[[ifeq:$lang|EN|en|fr]].png]]
@@ -91,7 +93,7 @@
     <a href='[[var:usclink]]' target='_blank'><img class="img-responsive" src="[[var:usclogo]]" width="100%" height="auto"/></a>
   </div>
   <div class="col col-lg-4 col-md-4 col-sm-12 col-xs-12">
-    <a href='[[var:usclink]]' target='_blank'><img class="img-responsive" src="[[var:westonlogo]]" width="100%" height="auto"/></a>
+    <a href='[[var:westonlink]]' target='_blank'><img class="img-responsive" src="[[var:westonlogo]]" width="100%" height="auto"/></a>
   </div>
 </div></div>
 </section>
@@ -209,13 +211,13 @@
         <div class="content">
           {% if lang=='EN' %}
           <h1>Thank you:</h1>
-          <p><img class="img-responsive" src="images/logos/w-garfield-weston-foundation.png" width="100%" height="auto"></p>
-          <p>The Ecological Seed Finder is brought to you by Seeds of Diversity and SeedChange, through the generous support of The W. Garfield Weston Foundation</p>
+          <p><img class="img-responsive" src="[[var:westonlogo]]" width="100%" height="auto"></p>
+          <p>The Ecological Seed Finder is brought to you by Seeds of Diversity and SeedChange, through the generous support of the Weston Family Foundation</p>
           {% else %}
           <h1>Merci:</h1>
-          <p><img class="img-responsive" src="images/logos/w-garfield-weston-foundation.png" width="100%" height="auto"></p>
+          <p><img class="img-responsive" src="[[var:westonlogo]]" width="100%" height="auto"></p>
           <p>Le Localisateur de semences &eacute;cologiques vous est pr&eacute;sent&eacute; par Semences du patrimoine et S&egrave;me l'avenir, 
-          gr&acirc;ce au soutien g&eacute;n&eacute;reux de la Fondation W. Garfield Weston.</p>
+          gr&acirc;ce au soutien g&eacute;n&eacute;reux de la Fondation de la famille Weston.</p>
           {% endif %}
         </div>
       </div>
