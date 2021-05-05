@@ -50,6 +50,8 @@ if( !defined("SEEDW") ) {
 if( !defined("SEEDQ_URL") )  define( 'SEEDQ_URL', SITEROOT."app/q2/" ); // files that include SEEDAPP/q/*
 
 
+define( "SEEDCONFIG_DIR", SEED_isLocal ? (SEEDSX_ROOT."../../_config/") : (SEEDSX_ROOT."_config/") );
+
 /* Based on SEEDROOT, define everything about seedapp, seedlib, seedcore, wcore
  */
 include_once( SEEDROOT."seedConfig.php" );
