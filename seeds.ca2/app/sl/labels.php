@@ -128,9 +128,27 @@ if( ($n = intval($oForm->Value('offset'))) ) {
     }
 }
 
+$oSLDB = new SLDBCollection( $oApp );
+
+$kLot = $oForm->Value('kLot');
+
+if( ($bIsRange = !is_numeric($kLot)) ) {
+    $raKLotRange = SEEDCore_ParseRangeStrToRA($kLot);
+    $kLot = reset($raKLotRange);
+}
+
 // Print the labels
-for( $i = 0; $i < intval($oForm->Value('nLabels')); ++$i ) {
-    $cvName = $oForm->Value('cvName').(($kLot = $oForm->Value('kLot')) ? " ($kLot)" : "");
+for( $i = 0; $kLot && $i < intval($oForm->Value('nLabels')); ++$i ) {
+    if( $bIsRange ) {
+        // kluge: allow kLot to be a range - look up cvName and desc for each member of range and print one label
+        if( ($kfrLot = $oSLDB->GetKFRCond( 'IxAxPxS', "fk_sl_collection='1' AND inv_number='$kLot'" )) ) {
+            $oForm->SetValue( 'cvName', $kfrLot->Value('P_name').' '.strtolower($kfrLot->Value('S_name_en')) );
+            $oForm->SetValue( 'desc', $kfrLot->Value('P_packetLabel') );
+        }
+    }
+
+
+    $cvName = $oForm->Value('cvName').($kLot ? " ($kLot)" : "");
     $desc = $oForm->Value('desc');
     $xMarginText = 18;   // x position of cvname and description (beside logo)
     $yMarginText = 2;    // y position of cvname and description (beside logo)
@@ -153,13 +171,18 @@ for( $i = 0; $i < intval($oForm->Value('nLabels')); ++$i ) {
     // set position to the top with left padding for the logo, and write the cvname in bold
     $pdf->AddLabel2( $xMarginText, $yMarginText );
     $pdf->SetFont( '', 'B', $fontsizeText );
+$y1 = $pdf->GetY();
     $pdf->AddLabel3( $cvName, $xMarginText );
-
+$y2 = $pdf->GetY();
     // set position to the top-left with additional left padding for the logo and one line of top padding for the cvname,
     // and write the description
     $pdf->SetFont( '', '', $fontsizeText );
     $pdf->AddLabel2( $xMarginText, $yMarginText );
-    $pdf->AddLabel3( "\n".$desc, $xMarginText );
+    $pdf->AddLabel3( ($y2-$y1 > $pdf->GetLineHeight() ? "\n" : "")."\n".$desc, $xMarginText );
+
+    if( $bIsRange ) {
+        $kLot = next($raKLotRange);
+    }
 }
 
 $pdf->Output();
