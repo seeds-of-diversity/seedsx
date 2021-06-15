@@ -21,6 +21,10 @@ $kfdb1 = SiteKFDB( SiteKFDB_DB_seeds1 ) or die( "Cannot connect to database" );
 //$kfdb->KFDB_SetDebug(2);
 //print_r($_REQUEST);
 
+
+$iDelay = 90;   // seconds to delay between sends
+
+
 $oApp = SEEDConfig_NewAppConsole_LoginNotRequired( ['db'=>'seeds2'] );
 
 $n = $oApp->kfdb->Query1("SELECT count(*) FROM {$oApp->GetDBName('seeds2')}.mbr_mail_send_recipients WHERE _status='0' AND eStatus='READY'");
@@ -34,7 +38,7 @@ $sBody .= $sTest;
 $bSendMail = ($bTestOk && $n);
 
 if( $bSendMail ) {
-    $sBody .= "<p>Sending one email every 20 seconds.</p>"
+    $sBody .= "<p>Sending one email every $iDelay seconds.</p>"
              ."<p>You can see the progress in the Bulk Mailer table by clicking the Refresh link.</p>";
     $sBody .= "<br/><br/>";
     $oSend = new mbr_mailsend( $kfdb1, $kfdb2, 1499 );   /* **************  UID ************************************/
@@ -43,19 +47,14 @@ if( $bSendMail ) {
         list($kRec,$sMsg) = $oSend->sendOne();
         $sBody .= $kRec." ".microtime()."<br/>".($sMsg ? "$sMsg<br/>" : "");
         if( !$kRec )  break;
-
-        /* Send 10 emails in a burst, then refresh the page after a 5-second delay.
-         */
-        //set_time_limit( 30 );
-        //usleep( 500000 ); // half of a second
     }
     // don't delay here so results appear right away, refresh browser every 20 seconds
     //sleep( 20 );
 }
 
 echo Console02Static::HTMLPage( $sBody,
-                                //($bSendMail ? "<meta http-equiv='refresh' CONTENT='20; URL=https://seeds.ca/office/mbr/mbr_mailsend.php'>" : ""),
-                                ($bSendMail ? "<meta http-equiv='refresh' content='20'>" : ""),
+                                //($bSendMail ? "<meta http-equiv='refresh' CONTENT='${iDelay}; URL=https://seeds.ca/office/mbr/mbr_mailsend.php'>" : ""),
+                                ($bSendMail ? "<meta http-equiv='refresh' CONTENT='${iDelay}'>" : ""),      // refresh self after $iDelay seconds
                                 'EN', [] );
 
 

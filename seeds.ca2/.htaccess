@@ -22,86 +22,96 @@
 Options -Indexes
 Options +FollowSymLinks
 
-RedirectMatch ^/int/doc/docpub.php(.*)$   http://www.seeds.ca/d$1
-Redirect       /int/doc/docedit.php       http://www.seeds.ca/d/docedit.php
-Redirect       /doc                       http://www.seeds.ca/d/docedit.php
+RedirectMatch ^/int/doc/docpub.php(.*)$   https://seeds.ca/d$1
+Redirect       /int/doc/docedit.php       https://seeds.ca/d/docedit.php
+Redirect       /doc                       https://seeds.ca/d/docedit.php
 
-Redirect       /ecosgn/speaker            http://www.seeds.ca/ecosgn/speaker.php
+Redirect       /ecosgn/speaker            https://seeds.ca/ecosgn/speaker.php
 
-Redirect       /en.php                    http://www.seeds.ca
-Redirect       /fr.php                    http://www.semences.ca
-Redirect       /ev/events.php             http://www.seeds.ca/events
-Redirect       /ev/evenements.php         http://www.semences.ca/evenements
-Redirect       /sources                   http://www.seeds.ca/diversity/seed-catalogue-index
-Redirect       /indice-catalogues         http://www.semences.ca/diversite/indice-catalogues-semences
-Redirect       /csci                      http://www.seeds.ca/diversity/seed-catalogue-index
-Redirect       /seedysaturdays            http://www.seeds.ca/events
-Redirect       /fetes                     http://www.semences.ca/evenements
-RedirectMatch ^/mbr/m.*$                  https://www.seeds.ca/store
+Redirect       /en.php                    https://seeds.ca
+Redirect       /fr.php                    https://semences.ca
+Redirect       /ev/events.php             https://seeds.ca/events
+Redirect       /ev/evenements.php         https://semences.ca/evenements
+Redirect       /sources                   https://seeds.ca/diversity/seed-catalogue-index
+Redirect       /indice-catalogues         https://semences.ca/diversite/indice-catalogues-semences
+Redirect       /csci                      https://seeds.ca/diversity/seed-catalogue-index
+Redirect       /seedysaturdays            https://seeds.ca/events
+Redirect       /fetes                     https://semences.ca/evenements
+RedirectMatch ^/mbr/m.*$                  https://seeds.ca/store
 
 
-Redirect       /checkout                  https://www.seeds.ca/store
-Redirect       /donate                    https://www.seeds.ca/store
-Redirect       /donation                  https://www.seeds.ca/store
-Redirect       /subscribe                 https://www.seeds.ca/store
-Redirect       /register                  https://www.seeds.ca/store
-Redirect       /member                    https://www.seeds.ca/store
-Redirect       /adopt                     https://www.seeds.ca/store
-Redirect       /adopt-a-seed              https://www.seeds.ca/store
+Redirect       /checkout                  https://seeds.ca/store
+Redirect       /donate                    https://seeds.ca/store
+Redirect       /donation                  https://seeds.ca/store
+Redirect       /subscribe                 https://seeds.ca/store
+Redirect       /register                  https://seeds.ca/store
+Redirect       /member                    https://seeds.ca/store
+Redirect       /adopt                     https://seeds.ca/store
+Redirect       /adopt-a-seed              https://seeds.ca/store
 
 Redirect       /adhesion                  https://semences.ca/boutique
 Redirect       /membre                    https://semences.ca/boutique
 Redirect       /don                       https://semences.ca/boutique
 
-Redirect       /sl                        http://www.seeds.ca/diversity/seed-library
+Redirect       /sl                        https://seeds.ca/diversity/seed-library
 
-Redirect       /saveyourseeds             http://www.seeds.ca/publications
-Redirect       /conservezvossemences      http://www.semences.ca/nos-livres
-Redirect       /publications_fr           http://www.semences.ca/nos-livres
-Redirect       /publications-fr           http://www.semences.ca/nos-livres
+Redirect       /saveyourseeds             https://seeds.ca/publications
+Redirect       /conservezvossemences      https://semences.ca/nos-livres
+Redirect       /publications_fr           https://semences.ca/nos-livres
+Redirect       /publications-fr           https://semences.ca/nos-livres
 
-#Redirect       /seedfinder                http://www.seeds.ca/bauta/seedfinder.php
-Redirect       /localisateur-semences     http://semences.ca/seedfinder
-Redirect       /localisateurdesemences    http://www.semences.ca/bauta/seedfinder.php
+#Redirect       /seedfinder                https://seeds.ca/bauta/seedfinder.php
+Redirect       /localisateur-semences     https://semences.ca/seedfinder
+Redirect       /localisateurdesemences    https://semences.ca/bauta/seedfinder.php
 
-Redirect       /explorer                  http://www.seeds.ca/bauta/explorer.php
-Redirect       /explorateur               http://www.seeds.ca/bauta/explorateur.php
+Redirect       /explorer                  https://seeds.ca/bauta/explorer.php
+Redirect       /explorateur               https://seeds.ca/bauta/explorateur.php
 
-Redirect       /magazine_submissions     "http://www.seeds.ca/d?n=mag/Seeds of Diversity magazine submission guidelines 2014.pdf"
-Redirect       /magazine-submissions     "http://www.seeds.ca/d?n=mag/Seeds of Diversity magazine submission guidelines 2014.pdf"
-Redirect       /magazine_advertising     "http://www.seeds.ca/d?n=mag/Seeds-of-Diversity-magazine-advertising-rate-sheet-2017.pdf"
-Redirect       /magazine-advertising     "http://www.seeds.ca/d?n=mag/Seeds-of-Diversity-magazine-advertising-rate-sheet-2017.pdf"
-Redirect       /revue_soumission         "http://www.seeds.ca/d?n=mag/Semences du patrimoine revue - directives pour la soumission 2014.pdf"
-Redirect       /revue-soumission         "http://www.seeds.ca/d?n=mag/Semences du patrimoine revue - directives pour la soumission 2014.pdf"
-Redirect       /revue_soumissions        "http://www.seeds.ca/d?n=mag/Semences du patrimoine revue - directives pour la soumission 2014.pdf"
-Redirect       /revue-soumissions        "http://www.seeds.ca/d?n=mag/Semences du patrimoine revue - directives pour la soumission 2014.pdf"
-Redirect       /revue_publicite          "http://www.seeds.ca/d?n=mag/Semences-du-patrimoine-revue-publicites-2017.pdf"
-Redirect       /revue-publicite          "http://www.seeds.ca/d?n=mag/Semences-du-patrimoine-revue-publicites-2017.pdf"
-Redirect       /revue_publicites         "http://www.seeds.ca/d?n=mag/Semences-du-patrimoine-revue-publicites-2017.pdf"
-Redirect       /revue-publicites         "http://www.seeds.ca/d?n=mag/Semences-du-patrimoine-revue-publicites-2017.pdf"
+Redirect       /magazine_submissions     "https://seeds.ca/d?n=mag/Seeds of Diversity magazine submission guidelines 2014.pdf"
+Redirect       /magazine-submissions     "https://seeds.ca/d?n=mag/Seeds of Diversity magazine submission guidelines 2014.pdf"
+Redirect       /magazine_advertising     "https://seeds.ca/d?n=mag/Seeds-of-Diversity-magazine-advertising-rate-sheet-2017.pdf"
+Redirect       /magazine-advertising     "https://seeds.ca/d?n=mag/Seeds-of-Diversity-magazine-advertising-rate-sheet-2017.pdf"
+Redirect       /revue_soumission         "https://seeds.ca/d?n=mag/Semences du patrimoine revue - directives pour la soumission 2014.pdf"
+Redirect       /revue-soumission         "https://seeds.ca/d?n=mag/Semences du patrimoine revue - directives pour la soumission 2014.pdf"
+Redirect       /revue_soumissions        "https://seeds.ca/d?n=mag/Semences du patrimoine revue - directives pour la soumission 2014.pdf"
+Redirect       /revue-soumissions        "https://seeds.ca/d?n=mag/Semences du patrimoine revue - directives pour la soumission 2014.pdf"
+Redirect       /revue_publicite          "https://seeds.ca/d?n=mag/Semences-du-patrimoine-revue-publicites-2017.pdf"
+Redirect       /revue-publicite          "https://seeds.ca/d?n=mag/Semences-du-patrimoine-revue-publicites-2017.pdf"
+Redirect       /revue_publicites         "https://seeds.ca/d?n=mag/Semences-du-patrimoine-revue-publicites-2017.pdf"
+Redirect       /revue-publicites         "https://seeds.ca/d?n=mag/Semences-du-patrimoine-revue-publicites-2017.pdf"
 
-Redirect       /seedexchange             http://www.seeds.ca/app/mbr/msd
-Redirect       /app/seedexchange         http://www.seeds.ca/app/mbr/msd
-Redirect       /seed-directory           http://www.seeds.ca/app/mbr/msd
-Redirect       /catalogue-semences       http://semences.ca/app/mbr/msd
+Redirect       /seedexchange             https://seeds.ca/app/mbr/msd
+Redirect       /app/seedexchange         https://seeds.ca/app/mbr/msd
+Redirect       /seed-directory           https://seeds.ca/app/mbr/msd
+Redirect       /catalogue-semences       https://semences.ca/app/mbr/msd
 
-Redirect       /bautagrowouts            http://www.seedsecurity.ca/en/118-seed-grow-outs
-Redirect       /cropnotes                http://www.seedsecurity.ca/en/118-seed-grow-outs
-Redirect       /bauta-essais             http://www.seedsecurity.ca/fr/122-essais-en-matiere-de-production-de-semences
+Redirect       /bautagrowouts            https://seedsecurity.ca/en/118-seed-grow-outs
+Redirect       /cropnotes                https://seedsecurity.ca/en/118-seed-grow-outs
+Redirect       /bauta-essais             https://seedsecurity.ca/fr/122-essais-en-matiere-de-production-de-semences
 
-Redirect       /how-to-grow-garlic-bulbils http://www.seeds.ca/d?n=web/ebulletin/2016-08-en/articles/garlic
-Redirect       /comment-cultiver-bulbilles http:///www.semences.ca/d?n=web/ebulletin/2016-08-fr/articles/ail
+Redirect       /how-to-grow-garlic-bulbils https://seeds.ca/d?n=web/ebulletin/2016-08-en/articles/garlic
+Redirect       /comment-cultiver-bulbilles https://semences.ca/d?n=web/ebulletin/2016-08-fr/articles/ail
 
 
 
 # drupal8 name redirections
-Redirect       /nos-livres               http://semences.ca/livres
+Redirect       /nos-livres               https://semences.ca/livres
 
-Redirect       /library                  http://seeds.ca/diversity/seed-library
-Redirect       /bibliotheque             http://semences.ca/diversite/bibliotheque-semences
-Redirect       /bibliotheque-semences    http://semences.ca/diversite/bibliotheque-semences
+Redirect       /library                  https://seeds.ca/diversity/seed-library
+Redirect       /bibliotheque             https://semences.ca/diversite/bibliotheque-semences
+Redirect       /bibliotheque-semences    https://semences.ca/diversite/bibliotheque-semences
 
 RewriteEngine on
+
+# force https
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# redirect www.semences.ca to semences.ca because drupal (and maybe some cookies) thinks they're different sites
+RewriteCond %{HTTP_HOST} ^www.semences.ca$
+RewriteRule (.*)$ https://semences.ca/$1 [R=301,L]
+
+
 
 RewriteRule ^diversity/seed-library-list.php diversity/seed-library-list    [L,QSA]
 
@@ -132,6 +142,8 @@ RewriteRule ^ - [E=BASE:/~bob/seeds.ca2/swww/]
 #RewriteRule .* http://www.mysite.com/	[L,R=301]
 
 # Requests to the root go straight to the home page (I think query strings are appended by default if the rewrite has none)
+#RewriteCond %{HTTP_HOST} ^(www.)?seeds.ca$
+#RewriteRule ^$  /1/index.php  [L]
 RewriteRule ^$  %{ENV:BASE}index.php  [L]
 
 # Serve file requests beneath the drupal root (e.g. theme files - img, css, js) - not sure if this works
@@ -152,6 +164,17 @@ RewriteRule ^fr/(.*)$ %{ENV:BASE}index.php?q=$1&lang=FR [L,QSA]
 #RewriteCond %{REQUEST_URI} ^/app/pool/
 #RewriteRule ^ http://%{HTTP_HOST}%{REQUEST_URI}  [R,L]
 
+# seeds.ca redirects to wordpress en unless the url refers to a real file or dir
+RewriteCond %{HTTP_HOST} ^(www.)?seeds.ca$
+RewriteCond %{REQUEST_URI} ^/1/
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-l
+RewriteRule ^(.*)$ /1/$1 [L,QSA]
+#RewriteCond %{HTTP_HOST} ^(www.)?seeds.ca$
+#RewriteRule ^(/)?$ /1/index.php [L] 
+
+
 # Serve other applications in the root directory (e.g. seedliving, bauta/descriptions)
 # If the request is not elsewhere in the root, redirect into swww.
 RewriteCond %{REQUEST_FILENAME} !-f
@@ -161,12 +184,29 @@ RewriteRule ^(.*)$ %{ENV:BASE}$1 [L,QSA]
 
 
 # L = last
+# R = issue a browser redirect to the new url
 # QSA = query string append (add the request ?query to the rewritten url)
 # QSD = query string discard  - default is to discard the original ?query if rewritten has a query string, append if it doesn't
 # S=n skip the next n rules
 #
 # NC = case insensitive condition
 # OR = this condition or the next condition
+
+# BEGIN WordPress
+# The directives (lines) between `BEGIN WordPress` and `END WordPress` are
+# dynamically generated, and should only be modified via WordPress filters.
+# Any changes to the directives between these markers will be overwritten.
+<IfModule mod_rewrite.c>
+#RewriteEngine On
+#RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+#RewriteBase /
+#RewriteRule ^index\.php$ - [L]
+#RewriteCond %{REQUEST_FILENAME} !-f
+#RewriteCond %{REQUEST_FILENAME} !-d
+#RewriteRule . /index.php [L]
+</IfModule>
+
+# END WordPress
 
 # php -- BEGIN cPanel-generated handler, do not edit
 # Set the “ea-php74” package as the default “PHP” programming language.

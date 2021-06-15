@@ -48,9 +48,9 @@ $config['system.logging']['error_level'] = 'verbose';
 
 # to Update:
 cd ~/public_html/sw8
-php -d allow_url_fopen=On ~/composer/composer outdated "drupal/*"                        -- tells you if anything needs to be updated
-php -d allow_url_fopen=On ~/composer/composer.phar install                               -- use when installing a specific downloaded package (just reads composer.lock)
-php -d allow_url_fopen=On [-d memory_limit=2G / -d memory_limit=-1] ~/composer/composer.phar update --with-all-dependencies        -- use when upgrading (updates dependencies and changes composer.json/lock)
+~/composer/composer outdated "drupal/*"                        -- tells you if anything needs to be updated
+~/composer/composer.phar install                               -- use when installing a specific downloaded package (just reads composer.lock)
+~/composer/composer.phar update --with-all-dependencies        -- use when upgrading (updates dependencies and changes composer.json/lock)
 ./vendor/drush/drush/drush updatedb
 ./vendor/drush/drush/drush cache-rebuild
 

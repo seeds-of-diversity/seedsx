@@ -62,6 +62,8 @@ function Site_path_self()
             $page = \Drupal::service('path.alias_manager')->getAliasByPath($current_path);	// alias of current page
             $path = $path.$page;
         }
+    } else if( function_exists('get_permalink') && ($path = get_permalink()) ) {
+        // wordpress
     } else {
         // not in drupal
         
