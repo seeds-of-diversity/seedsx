@@ -103,14 +103,18 @@ Redirect       /bibliotheque-semences    https://semences.ca/diversite/bibliothe
 
 RewriteEngine on
 
-# force https
-RewriteCond %{HTTPS} off
-RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-
-# redirect www.semences.ca to semences.ca because drupal (and maybe some cookies) thinks they're different sites
-RewriteCond %{HTTP_HOST} ^www.semences.ca$
+# redirect subdomains to main domain: *.seeds.ca -> seeds.ca and *.semences.ca -> semences.ca because drupal (and maybe some cookies) think they're different sites
+RewriteCond %{HTTP_HOST} ^(.*)\.seeds\.ca$
+RewriteRule (.*)$ https://seeds.ca/$1 [R=301,L]
+RewriteCond %{HTTP_HOST} ^(.*)\.semences\.ca$
 RewriteRule (.*)$ https://semences.ca/$1 [R=301,L]
 
+
+# force https (above redirect forces to ^seeds.ca$ or ^semences.ca$
+RewriteCond %{HTTPS} off
+RewriteCond %{HTTP_HOST} ^seeds\.ca$    [OR]
+RewriteCond %{HTTP_HOST} ^semences\.ca$
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
 
 RewriteRule ^diversity/seed-library-list.php diversity/seed-library-list    [L,QSA]
