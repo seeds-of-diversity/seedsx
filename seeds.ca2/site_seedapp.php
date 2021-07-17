@@ -50,14 +50,14 @@ if( !defined("SEEDW") ) {
 if( !defined("SEEDQ_URL") )  define( 'SEEDQ_URL', SITEROOT."app/q2/" ); // files that include SEEDAPP/q/*
 
 
-define( "SEEDCONFIG_DIR", SEED_isLocal ? (SEEDSX_ROOT."../../_config/") : (SEEDSX_ROOT."_config/") );
+// should be ~/_config on both dev and prod installations
+if( !defined("SEEDCONFIG_DIR") )  define( 'SEEDCONFIG_DIR', SEED_isLocal ? (SEEDSX_ROOT."../../_config/") : (SEEDSX_ROOT."_config/") );
 
 /* Based on SEEDROOT, define everything about seedapp, seedlib, seedcore, wcore
  */
 include_once( SEEDROOT."seedConfig.php" );
 
-if( !defined("CONFIG_DIR") ) {
-    // should be ~/_config on both dev and prod installations
-    define( "CONFIG_DIR", SEED_isLocal ? (SEEDSX_ROOT."../../_config/") : (SEEDSX_ROOT."_config/") );
-}
+// *** deprecate CONFIG_DIR
+if( !defined("CONFIG_DIR") )  define( "CONFIG_DIR", SEEDCONFIG_DIR );
+
 include_once( CONFIG_DIR."seeds_def1.php" );
