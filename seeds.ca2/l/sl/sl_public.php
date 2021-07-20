@@ -277,7 +277,7 @@ class SL_Public
             }
             $s .= "</P>";
 
-            $s .= "<TABLE class='slCVPagedList' border='0' cellspacing='0' cellpadding='5'>"
+            $s .= "<TABLE class='slCVPagedList' border='0' cellspacing='0' cellpadding='5' style='width:auto'>"
                  ."<TR><TH>&nbsp;</TH><TH>Adoption</TH></TR>";
             $i = 0;
             foreach( $raPCV as $k => $v ) {
@@ -313,9 +313,9 @@ class SL_Public
         $iBar = intval( ($dAdopt + 49.0) / 50.0 );   // the bar from 0 to 5 that is the last bar adopted (0 means zero)
 
         $s = "<STYLE>"
-            .".slAdoptionBar1 TD  { width:20px;height:7px;font-size:8pt; }"
-            .".slAdoptionBar2 TD  { border-right:1px solid #888;width:20px;height:7px;font-size:1px; }"
-            .".slAdoptionBar3 TD  { border-right:1px solid #888;border-top:1px solid #888;border-bottom:1px solid #888;width:20px;height:7px;font-size:1px; }"
+            .".slAdoptionBar1 TD  { width:20px;height:7px;font-size:8pt;padding:0 }"
+            .".slAdoptionBar2 TD  { border-right:1px solid #888;width:20px;height:7px;font-size:1px;padding:0 }"
+            .".slAdoptionBar3 TD  { border-right:1px solid #888;border-top:1px solid #888;border-bottom:1px solid #888;width:20px;height:7px;font-size:1px;padding:0 }"
             .".slAdoptionBarAdopted { background-color:#0b0;width:50px;}"
             .".slAdoptionLabel    { font-size:10pt;font-weight:bold;margin-left:20px;;}"
             .".slAdoptionLink     { font-size:9pt;font-weight:normal;margin-left:20px;}"
@@ -323,7 +323,7 @@ class SL_Public
             .".slAdoptionThanksLI { font-size:9pt;font-weight:normal;}"
             ."</STYLE>";
 
-        $s .= "<TABLE border='0' cellpadding='0' cellspacing='0' style='margin-left:20px;'>"
+        $s .= "<TABLE border='0' cellpadding='0' cellspacing='0' style='margin-left:20px; width:auto'>"
             ."<TR class='slAdoptionBar1'>"
             ."<TD valign='top'>$"."&nbsp;".($iBar <= 1 ? $dAdopt : "")."</TD>"
             ."<TD valign='top'>".($iBar == 2 ? $dAdopt : "&nbsp;")."</TD>"

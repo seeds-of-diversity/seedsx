@@ -166,7 +166,7 @@ class SoDMbrOrderCheckout extends MbrOrderCheckout
              ."<table class='mbro_ctrl' border='0' cellspacing='0' cellpadding='0'><tr valign='top'>"
              ."<td class='mbro_ctrl'>".$this->oL->S('Choose a variety to adopt').":</td>"
              ."<td class='mbro_ctrl'>".$this->oKForm->Radio('slcvchoose',"","as_needed")." ".$this->oL->S('as needed')."<br/>"
-             .$this->oKForm->Radio('slcvchoose',"","")." ".$this->oKForm->Text('slAdopt_cv',"",array("size"=>15))."&nbsp;&nbsp;&nbsp;<A href='http://www.seeds.ca/diversity/seed-library-list' target='_blank'>See Varieties Here</A>"
+             .$this->oKForm->Radio('slcvchoose',"","")." ".$this->oKForm->Text('slAdopt_cv',"",array("size"=>15))."&nbsp;&nbsp;&nbsp;<A href='https://seeds.ca/diversity/seed-library/list' target='_blank'>See Varieties Here</A>"
              ."</td></tr></table>"
              ."<hr style='width:50%;margin-left:10'/>";
 
