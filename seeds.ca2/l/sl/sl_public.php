@@ -323,7 +323,7 @@ class SL_Public
             .".slAdoptionThanksLI { font-size:9pt;font-weight:normal;}"
             ."</STYLE>";
 
-        $s .= "<TABLE border='0' cellpadding='0' cellspacing='0' style='margin-left:20px; width:auto'>"
+        $s .= "<TABLE border='0' cellpadding='0' cellspacing='0' style='margin:0 20px; width:auto; border:none'>"
             ."<TR class='slAdoptionBar1'>"
             ."<TD valign='top'>$"."&nbsp;".($iBar <= 1 ? $dAdopt : "")."</TD>"
             ."<TD valign='top'>".($iBar == 2 ? $dAdopt : "&nbsp;")."</TD>"
