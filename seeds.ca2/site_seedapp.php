@@ -51,7 +51,11 @@ if( !defined("SEEDQ_URL") )  define( 'SEEDQ_URL', SITEROOT."app/q2/" ); // files
 
 
 // should be ~/_config on both dev and prod installations
-if( !defined("SEEDCONFIG_DIR") )  define( 'SEEDCONFIG_DIR', SEED_isLocal ? (SEEDSX_ROOT."../../_config/") : (SEEDSX_ROOT."_config/") );
+if( !defined("SEEDCONFIG_DIR") ) {
+    define( 'SEEDCONFIG_DIR', (substr($_SERVER['SERVER_NAME'],0,9) == 'localhost')    // same as SEED_isLocal but that is not defined yet
+                              ? (SEEDSX_ROOT."../../_config/") : (SEEDSX_ROOT."_config/") );
+}
+
 
 /* Based on SEEDROOT, define everything about seedapp, seedlib, seedcore, wcore
  */
