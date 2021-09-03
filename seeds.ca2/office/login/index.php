@@ -1,6 +1,6 @@
 <?php
 
-/* Main Login page for seeds.ca/office administratioa
+/* Main Login page for seeds.ca/office administration
  */
 
 define( "SITEROOT", "../../" );
@@ -8,9 +8,13 @@ include_once( "../../site2.php" );
 include_once( SEEDCOMMON."console/console01.php" );
 //include_once( SITEROOT."int/taskmanager.share.php" );
 
-list($kfdb, $sess, $lang) = SiteStartSessionAccount( array() );   // requires a valid login, no specific perms required
+$oApp = SEEDConfig_NewAppConsole_LoginNotRequired( ['db'=>'seeds2'] );
+$kfdb = $oApp->kfdb;
+$sess = $oApp->sess;
+$lang = $oApp->lang;
+//list($kfdb, $sess, $lang) = SiteStartSessionAccount( array() );   // requires a valid login, no specific perms required
 
-$oC = new Console01( $kfdb, $sess );
+//$oC = new Console01( $kfdb, $sess );
 $oLP = new SiteStartLoginPage( $sess, $lang );
 
 $sBody = "";
@@ -127,6 +131,6 @@ $raLoginDef = array(
 
 $sBody .= $oLP->DrawLogin( $raLoginDef );
 
-echo $oLP->DrawPage( "Administration", $oC->Style(), $sBody );
+echo $oLP->DrawPage( "Administration", "" /*$oC->Style()*/, $sBody );
 
 ?>
