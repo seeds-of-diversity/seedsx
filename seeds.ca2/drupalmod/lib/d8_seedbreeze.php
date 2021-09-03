@@ -184,6 +184,7 @@ class Drupal8Template
 
                 $sObjectFit = "cover";
                 $sCaptionMarginTop = "0px";
+                $sPaddingTop = '100%';
                 switch( $contentName ) {
                     case 'homeimgA':
                     case 'homeimgA1':
