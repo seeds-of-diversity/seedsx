@@ -8,11 +8,11 @@ include_once( "../../site2.php" );
 include_once( SEEDCOMMON."console/console01.php" );
 //include_once( SITEROOT."int/taskmanager.share.php" );
 
-$oApp = SEEDConfig_NewAppConsole_LoginNotRequired( ['db'=>'seeds2'] );
+//list($kfdb, $sess, $lang) = SiteStartSessionAccount( array() );
+$oApp = SEEDConfig_NewAppConsole( ['db'=>'seeds2'] );       // requires a valid login but no specific perms
 $kfdb = $oApp->kfdb;
 $sess = $oApp->sess;
 $lang = $oApp->lang;
-//list($kfdb, $sess, $lang) = SiteStartSessionAccount( array() );   // requires a valid login, no specific perms required
 
 //$oC = new Console01( $kfdb, $sess );
 $oLP = new SiteStartLoginPage( $sess, $lang );
