@@ -51,6 +51,8 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
     {
         $row = $kfrOrder->Key();
 
+        $kfrBasket = ($kB = $kfrOrder->value('kBasket')) ? $this->GetBasketKFR($kB) : null;
+
 // this part has to be modernized before moving this method to SodOrderFulfil
         $oMbrOrder = new MbrOrder( $this->oApp, $this->kfdb, "EN", $row );
         $sCol1 = $oMbrOrder->DrawTicket();
@@ -78,11 +80,11 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
                 default:
                     die( "<h3><font color='red'>Undefined payment status.  Inform Bob immediately, with the order number ($row).</font></h3>" );
             }
-            $sCol2 = "<h3>This order is $sState - last update ".$kfrOrder->value("_updated")."</h3>";
+            $sCol2 = "<div style='float:right'>Last update ".$kfrOrder->value("_updated")."</div>";
 
             /* This tool manages the eStatus of the order, independently of the rest of this form
              */
-            $sCol2 .= $this->drawStatusFormEStatus( $row, $raActions );
+            $sCol2 .= $this->drawStatusFormEStatus( $row, $raActions, $kfrBasket );
 
             $sCol2 .= "<hr style='border-color:#aaa;margin:30px 0px'/>";
 
@@ -120,24 +122,34 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
         return( $s );
     }
 
-    private function drawStatusFormEStatus( $row, $raActions )
+    private function drawStatusFormEStatus( $row, $raActions, KeyFrameRecord $kfrBasket )
     {
-        // The eStatus-changing buttons (Fill, Cancel, Pending) will pick up the note via JS, but since only the Add Note
-        // button is in a <form> it is the only one that will be activated by hitting enter in the input control. We assume
-        // that you might do this when adding a note but you might not intend to change the eStatus
-        $s = "<div class='statusForm'>";
-        foreach( $raActions as $sAction ) {
-if($sAction=='Fill') { $s .= "<button disabled='disabled' style='margin-right:20px;color:#aaa;'>Fill</button>"; continue; }
-            $s .= "<button onclick='doSubmitStatus(\"$sAction\", $row, ".'$(this)'.")'>$sAction</button>"
-                     ."&nbsp;&nbsp;&nbsp;";
-        }
-        $s .= "<div style='margin-top:15px'>"
-                 ."<form onsubmit='return false;'>"
-                 ."<button onclick='doSubmitStatus(\"Add Note\", $row, ".'$(this)'.")'>Add Note</button>"
-                 ."&nbsp;<input type='text' size='50' id='action_note'/>"
-                 ."</form>"
+        if( !$kfrBasket ) return( "" );
+
+        $eStatus = $kfrBasket->Value('eStatus');
+
+        $s = "<h4>$eStatus</h4>"
+            ."<div class='statusForm' style='font-size:8pt;text-align:right'>"
+                ."<button".($eStatus=='Paid' ? ' disabled' : '')
+                     ." onclick='doChangeStatus(\"Paid\", {$kfrBasket->Key()}, $row, ".'$(this)'.")'>Change to Paid</button>"
+                     ."&nbsp;&nbsp;&nbsp;"
+                 ."<button".($eStatus=='Filled' ? ' disabled' : '')
+                     ." onclick='doChangeStatus(\"Filled\", {$kfrBasket->Key()}, $row, ".'$(this)'.")'>Change to Filled</button>"
+                     ."&nbsp;&nbsp;&nbsp;"
+                 ."<button".($eStatus=='Cancelled' ? ' disabled' : '')
+                     ." onclick='doChangeStatus(\"Cancelled\", {$kfrBasket->Key()}, $row, ".'$(this)'.")'>Cancel Order</button>"
+                     ."&nbsp;&nbsp;&nbsp;"
+
+                 ."<div style='margin-top:15px'>"
+                     ."<form onsubmit='return false;'>"
+                     ."<button onclick='doAddNote( {$kfrBasket->Key()}, $row, ".'$(this)'.")'>Add Note</button>"
+                     ."&nbsp;<input type='text' size='50' id='action_note'/>"
+                     ."</form>"
                  ."</div>"
-                 ."</div>";
+            ."</div>";
+
+
+
         return( $s );
     }
 
@@ -268,17 +280,12 @@ $oOrder = new MbrOrderCommon( $oApp, $kfdb, "EN", $sess->GetUID() );
 $kfrel = $oOrder->kfrelOrder;
 
 if( ($jx = SEEDInput_Str('jx')) ) {
-    $rQ = ['bOk'=>false, 'sOut'=>"", 'sErr'=>"", 'raOut'=>[] ];
-
-    $o = new SoDOrder_MbrOrder( $oApp );
-    $raSBCmd = $o->ProcessCmd( $jx, $_REQUEST );
-    if( $raSBCmd['bHandled'] ) {
-        $rQ = array_merge( $rQ, $raSBCmd );
+    $rQ = (new SodOrderFulfilUI($oApp))->ProcessCmd( $jx, $_REQUEST );$rQ['b'] = $jx;
+    if( $rQ['bHandled'] ) {
         //$rQ['sOut'] = SEEDCore_utf8_encode( $rQ['sOut'] );
         //$rQ['sErr'] = SEEDCore_utf8_encode( $rQ['sErr'] );
         goto jxDone;
     }
-
 
     if( !($k = SEEDInput_Int('k')) ||
         !($kfr = $kfrel->GetRecordFromDBKey( $k )) ||
@@ -326,6 +333,7 @@ if( ($jx = SEEDInput_Str('jx')) ) {
             $rQ['bOk'] = true;
             break;
 
+/*
         case 'changeStatus2ToMailed':
             if( !$oUI->SetMailedToday( $kfr2 ) ) { $rQ['sErr'] = "Couldn't store"; goto jxDone; }
             $rQ['sOut'] = "Order mailed ".$kfr2->Value('dMailed');
@@ -336,6 +344,7 @@ if( ($jx = SEEDInput_Str('jx')) ) {
             $rQ['sOut'] = "";
             $rQ['bOk'] = true;
             break;
+*/
         case 'doAccountingDone':
             $kfr2->SetValue('bDoneAccounting', 1);
             $rQ['bOk'] = $kfr2->PutDBRow();
@@ -354,12 +363,6 @@ if( ($jx = SEEDInput_Str('jx')) ) {
             $o = new SoDOrder_MbrOrder( $oApp );
             $rQ['bOk'] = $o->RecordDonations( $k );
             $rQ['sOut'] = "";
-            break;
-        case 'doSubmitStatus':
-            $sAction = SEEDInput_Str('action');
-            $sNote   = SEEDInput_Str('note');
-            doSubmitForm( $kfr, $sAction, $sNote );
-            $rQ['bOk'] = true;
             break;
         case 'doSetMbrKey':
             if( ($kMbr = SEEDInput_Int('kMbr')) ) {
@@ -426,6 +429,7 @@ if( ($row = $oUI->GetCurrOrderKey()) ) {
 }
 */
 
+/*
 function doSubmitForm( $kfr, $action, $action_notes )
 {
     global $sess;
@@ -445,7 +449,6 @@ function doSubmitForm( $kfr, $action, $action_notes )
             $bUpdate = true;
             break;
         case "Fill":
-            $kfr->SetValue( 'eStatus', MBRORDER_STATUS_FILLED );
             //$kfr->SetValue( 'pay_status', MBR_PS_FILLED );
             $sNoteExtra = "Changed status to Filled";
             $bUpdate = true;
@@ -471,6 +474,7 @@ function doSubmitForm( $kfr, $action, $action_notes )
         $kfr->PutDBRow();
     }
 }
+*/
 
 /* Filter Form
  */
@@ -563,6 +567,8 @@ class MbrOrderFulfil
             });
     }
 
+
+/*
     static MailToday( k )
     {
         if( !k ) return;
@@ -594,6 +600,8 @@ class MbrOrderFulfil
         }
 
     }
+*/
+
 }
 
 $(document).ready(function() {
@@ -611,19 +619,21 @@ $(document).ready(function() {
          MbrOrderFulfil.ChangeStatusToPaid( $(this).attr('data-kOrder') )
      });
 
-    /* Mailed Today button click
-     */
+/*
+    [* Mailed Today button click
+     *]
     $(".status2").click(function(event){
         event.preventDefault();
         MbrOrderFulfil.MailToday( this.id.substr(8) )
     });
 
-    /* Nothing to Mail button click
-     */
+    [* Nothing to Mail button click
+     *]
     $(".status2x").click(function(event){
         event.preventDefault();
         MbrOrderFulfil.MailNothing( this.id.substr(9) )
     });
+*/
 
     /* Accounting Done button
      */
@@ -748,27 +758,42 @@ function fillTmpRowDiv( tmpRowDiv, kOrder, feedback )
      });
 }
 
-function doSubmitStatus( sAction, kRow, jButton )
+function doChangeStatus( eStatusNew, kBasket, kOrder, jButton )
 {
-    let form = jButton.closest(".statusForm");
-    let note = form.find('#action_note').val();
-
     // update the selected record
-    let jxData = { jx     : 'doSubmitStatus',
-                   k      : kRow,
-                   action : sAction,
-                   note   : note,
-                   lang   : "EN"
+    let jxData = { jx      : 'sb--basketStatus',
+                   kBasket : kBasket,
+                   eStatus : eStatusNew,
+                   sNote   : $('#action_note').val()
              };
-    o = SEEDJX( "mbr_order.php", jxData );
+    o = SEEDJXSync( "mbr_order.php", jxData );
 
     // replace the statusForm with its new state
     let tmpRowDiv = jButton.closest(".tmpRowDiv");
-    fillTmpRowDiv( tmpRowDiv, kRow, "" );
+    fillTmpRowDiv( tmpRowDiv, kOrder, "" );
 
     // replace the previous <tr> with its new state
     let prevTr = tmpRowDiv.closest("tr").prev();
-    redrawOrderSummaryRow( kRow, 1 );
+    redrawOrderSummaryRow( kOrder, 1 );
+
+    return( false );
+}
+
+function doAddNote( kBasket, kOrder, jButton )
+{
+    o = SEEDJX( "mbr_order.php",
+                { jx      : 'sb--addNote',
+                  kBasket : kBasket,
+                  sNote   : jButton.closest(".statusForm").find('#action_note').val()
+                } );
+
+    // replace the statusForm with its new state
+    let tmpRowDiv = jButton.closest(".tmpRowDiv");
+    fillTmpRowDiv( tmpRowDiv, kOrder, "" );
+
+    // replace the previous <tr> with its new state
+    let prevTr = tmpRowDiv.closest("tr").prev();
+    redrawOrderSummaryRow( kOrder, 1 );
 
     return( false );
 }
