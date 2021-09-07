@@ -106,7 +106,7 @@ class SoDMbrOrderCheckout extends MbrOrderCheckout
         //$this->oKForm->SetValue('bBulbils',0);
         //$_SESSION['mbrocdata']['sExtra'] = "";
 
-        $bGarlicAdvertised = false;
+        $bGarlicAdvertised = true;
         $bGarlicAdvertisedButGone = false;
 
         if( $bGarlicAdvertised ) {
@@ -728,7 +728,7 @@ $sGarlicVarieties =
                                  ."mais le tout petit bulbe qui pousse dans la fleur &agrave; la cime des plantes.</p>"
                                  ."<p>Consultez notre article "
                                  ."<a href='http://www.semences.ca/d?n=web/ebulletin/2016-08-fr/articles/ail' target='_blank'>"
-                                 ."La culture des bulbilles d'ail</a> de l'ebulletin Ao&ucirc;t 2006.</p>"
+                                 ."La culture des bulbilles d'ail</a></p>"
                                  ."<p>Nous enverrons au moins 10 de bulbilles de 5 vari&eacute;t&eacute;s diff&eacute;rentes pour 15$ frais de poste inclus. "
                                  ."Nous ne serons peut-&ecirc;tre pas en mesure d'offrir des vari&eacute;t&eacute;s sur demande, mais si vous connaissez "
                                  ."votre vari&eacute;t&eacute; pr&eacute;f&eacute;r&eacute;e, n'h&eacute;sitez pas &agrave; la demander et nous ferons "
