@@ -94,7 +94,13 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
                 if( ($kB = $kfrOrder->value('kBasket')) ) {
                     $bFulfilControls = in_array( $this->oApp->sess->GetUID(), [1,1499,10914] );
                     list($sContents,$fTotal,$bContactNeeded,$bDonNotRecorded) = $this->oSoDBasket->ShowBasketContents( $kB, $bFulfilControls );
-                    $sCol2 .= $sContents;
+                    $sCol2 .= "<div class='sbfulfil_basket' data-kBasket='$kB'>"
+.(SEED_isLocal ? (""
+                             ."<h4>Basket &nbsp;<button class='sbfulfil_basket_button_edit'
+                                                        onclick='SEEDBasketFulfilUI.replaceBasketContentsWithEditor($kB)'>Edit</button></h4>"
+): "")
+                             .$sContents
+                             ."</div>";
                 } else {
                     $sCol2 .= "<p class='alert alert-danger'>This order doesn't have a basket number</p>";
                 }
@@ -518,7 +524,9 @@ $s .= mbrSearchJS();
 $raConsoleParms = [
     'sCharset'=>'utf-8', //'ISO-8859-1',
     'bBodyMargin'=>true,
-    'raScriptFiles' => [ W_ROOT."std/js/SEEDStd.js",W_CORE."js/SEEDCore.js", W_CORE."js/SFUTextComplete.js", W_CORE."js/MbrSelector.js" ]
+    'raCSSFiles'    => [ SEEDW."seedapp/SEEDBasket/sbfulfil.css" ],
+    'raScriptFiles' => [ W_ROOT."std/js/SEEDStd.js",W_CORE."js/SEEDCore.js", W_CORE."js/SFUTextComplete.js", W_CORE."js/MbrSelector.js",
+                         SEEDW."seedapp/SEEDBasket/sbfulfil.js" ]
 ];
 
 echo Console01Static::HTMLPage( $s, "", 'EN', $raConsoleParms );
