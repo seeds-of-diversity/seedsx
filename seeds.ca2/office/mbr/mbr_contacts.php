@@ -164,6 +164,7 @@ class mbrContacts_Contacts extends Console01_Worker1
             "fnListRowTranslateRA" => array($this,"mbrContactsListRowTranslateRA"),
             "bReadonly"=> !($this->sess->CanWrite( "MBR" )),
             'raSEEDFormParms' => array('DSParms'=>array('fn_DSPreStore'=>[$this,'dsPreStore'])),
+            'fnPreDelete'=>[$this,'fnPreDelete']
         );
 
         $this->oC->CompInit( $kfrel, $raCompParms );
@@ -174,6 +175,35 @@ class mbrContacts_Contacts extends Console01_Worker1
         // bNoEBull is integer and cannot be '' ; causes an error on insert
         if( $oDS->Value('bNoEBull') != 1 ) $oDS->SetValue( 'bNoEBull', 0 );
         return( true );
+    }
+
+    function fnPreDelete( $kfr )
+    {
+        // Don't delete a contact if it's referenced in a table (return false to disallow delete)
+        // This function only tests for fk rows with _status==0 because deletion causes the contact row to be _status=1 so
+        // referential integrity is preserved if all related rows are "deleted"
+
+        $bDelete = false;
+
+        if( $kfr && $kfr->Key() ) {
+            global $oApp;
+            $ra = Mbr_WhereIsContactReferenced( $oApp, $kfr->Key() );
+
+            $bDelete = true;
+            $sErr = "";
+            if( ($n = $ra['nSBBaskets']) )   { $sErr .= "<li>Has $n orders recorded in the order system</li>"; }
+            if( ($n = $ra['nSProducts']) )   { $sErr .= "<li>Has $n offers in the seed exchange</li>"; }
+            if( ($n = $ra['nDescSites']) )   { $sErr .= "<li>Has $n crop descriptions in their name</li>"; }
+            if( ($n = $ra['nMSD']      ) )   { $sErr .= "<li>Is listed in the seed exchange</li>"; }
+            if( ($n = $ra['nSLAdoptions']) ) { $sErr .= "<li>Has $n seed adoptions in their name</li>"; }
+            if( ($n = $ra['nDonations']) )   { $sErr .= "<li>Has $n donation records in their name</li>"; }
+
+            if( $sErr ) {
+                $this->oC->ErrMsg( "Cannot delete contact {$kfr->Key()}:<br/><ul>$sErr</ul>" );
+                $bDelete = false;
+            }
+        }
+        return( $bDelete );
     }
 
     function mbrContactsForm( $oForm )
