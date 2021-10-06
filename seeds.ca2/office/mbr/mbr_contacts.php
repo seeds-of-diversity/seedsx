@@ -29,7 +29,7 @@ define( "MBRCONTACTS_TABNAME_BULLETIN", "Bulletin" );    // so per-tab TabSetGet
 
 
 $raPerms = array( 'Contacts'                   => array('R MBR'),
-                  'Summary'                    => array('A MBR'),
+                  'Summary'                    => array('W MBR'),
                   'Logins'                     => array('A MBR'),
                   MBRCONTACTS_TABNAME_BULLETIN => array('W BULL'),
                                                   '|'   // the above are disjunctions for application access
