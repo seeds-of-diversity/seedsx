@@ -1054,6 +1054,10 @@ class mbrContacts_Summary extends Console01_Worker1
     {
         $s = "";
 
+        global $oApp;
+        $db1 = $oApp->GetDBName('seeds1');
+        $db2 = $oApp->GetDBName('seeds2');
+
         $s .= "<style>"
              .".mbr_address {  }"
              .".summaryWindow1 { float:right;border:1px solid #aaa;padding:10px;width:50% }"
@@ -1064,28 +1068,28 @@ class mbrContacts_Summary extends Console01_Worker1
 
         $s .= $this->summaryWindow();
 
-        $s .= "<p>There are ".$this->kfdb->Query1( "SELECT count(*) FROM seeds_2.mbr_contacts WHERE _status='0'" )." people in the Contacts database.</p>";
-        $s .= "<p>There are ".$this->kfdb->Query1( "SELECT count(*) FROM seeds_1.SEEDSession_Users WHERE _status='0'" )." Logins for members and non-members.</p>";
+        $s .= "<p>There are ".$this->kfdb->Query1( "SELECT count(*) FROM $db2.mbr_contacts WHERE _status='0'" )." people in the Contacts database.</p>";
+        $s .= "<p>There are ".$this->kfdb->Query1( "SELECT count(*) FROM $db1.SEEDSession_Users WHERE _status='0'" )." Logins for members and non-members.</p>";
         $s .= "<p>&nbsp;</p>";
 
 
         /* Full Outer Join of mbr_contacts and SEEDSession_Users
          */
-        $this->kfdb->Execute( "CREATE TEMPORARY TABLE seeds_2.MbrSummary ( km INTEGER, ku INTEGER, email_m TEXT, email_u TEXT, yExpires INTEGER )" );
+        $this->kfdb->Execute( "CREATE TEMPORARY TABLE $db2.MbrSummary ( km INTEGER, ku INTEGER, email_m TEXT, email_u TEXT, yExpires INTEGER )" );
 
 
         $this->kfdb->Execute(
-            "INSERT INTO seeds_2.MbrSummary (km,ku,email_m,email_u,yExpires) "
+            "INSERT INTO $db2.MbrSummary (km,ku,email_m,email_u,yExpires) "
            ."SELECT M._key,U._key,M.email,U.email,year(M.expires) "
             //."FROM seeds_2.mbr_contacts M FULL OUTER JOIN seeds_1.SEEDSession_Users U ON (M._key=U._key) "
             // Because mysql doesn't have full joins, this is the same thing iff there are no rows that
             // are full duplicates (otherwise it seems you can use UNION ALL to preserve duplicate rows)
-           ."FROM seeds_2.mbr_contacts M LEFT JOIN seeds_1.SEEDSession_Users U ON (M._key=U._key) "
+           ."FROM $db2.mbr_contacts M LEFT JOIN $db1.SEEDSession_Users U ON (M._key=U._key) "
            ."UNION "
            ."SELECT M._key,U._key,M.email,U.email,year(M.expires) "
-           ."FROM seeds_2.mbr_contacts M RIGHT JOIN seeds_1.SEEDSession_Users U ON (M._key=U._key) "
+           ."FROM $db2.mbr_contacts M RIGHT JOIN $db1.SEEDSession_Users U ON (M._key=U._key) "
         );
-        $raRows = $this->kfdb->QueryRowsRA( "SELECT * from seeds_2.MbrSummary" );
+        $raRows = $this->kfdb->QueryRowsRA( "SELECT * from $db2.MbrSummary" );
 
         $s .= "<h4>Contacts Database and User Logins</h4>"
              ."<p>There are ".count($raRows)." combined rows.</p>";
@@ -1093,16 +1097,22 @@ class mbrContacts_Summary extends Console01_Worker1
 
         /* Duplicate emails in mbr_contacts
          */
-        $raRows = $this->kfdb->QueryRowsRA( "SELECT M1.email as email,M1._key as k1,M2._key as k2 FROM mbr_contacts M1,mbr_contacts M2 "
+        $raRows = $this->kfdb->QueryRowsRA( "SELECT M1.email as email,M1._key as k1,M2._key as k2, "
+                                           ." M1.firstname as first1, M1.lastname as last1, M1.company as company1, "
+                                           ." M2.firstname as first2, M2.lastname as last2, M2.company as company2 "
+                                           ."FROM $db2.mbr_contacts M1,$db2.mbr_contacts M2 "
                                            ."WHERE M1._status='0' and M2._status='0' AND "
                                            ."M1._key < M2._key AND M1.email=M2.email AND "
                                            ."M1.email <> '' AND M1.email is not null" );
         $s .= "<h4>Duplicate emails in Contacts database</h4>"
              ."<p>There are ".count($raRows)." duplicate emails in the Contacts database.</p>";
         if( count($raRows) ) {
-            $s .= "<table class='table-striped'>";
+            $s .= "<table class='table table-striped'>";
             foreach( $raRows as $ra ) {
-                $s .= "<tr><td><a href='".Site_path_self()."?cmd=dupemail&k1={$ra['k1']}&k2={$ra['k2']}'>{$ra['email']}</a></td><td>{$ra['k1']}</td><td>{$ra['k2']}</td></tr>";
+                $s .= SEEDCore_ArrayExpand( $ra,
+                        "<tr><td><a href='".Site_path_self()."?cmd=dupemail&k1={$ra['k1']}&k2={$ra['k2']}'>{$ra['email']}</a></td>"
+                           ."<td style='padding-left:10px'>[[k1]]: [[first1]] [[last1]] [[company1]]</td>"
+                           ."<td style='padding-left:10px'>[[k2]]: [[first2]] [[last2]] [[company2]]</td></tr>" );
             }
             $s .= "</table>";
         }
@@ -1271,9 +1281,10 @@ class mbrContacts_Bulletin extends Console01_Worker1
 
         $s .= "</td><td style='border-left:1px solid grey;padding-left:2em;'>";
 
+        global $oApp;
         $s .= "<p>".$this->sOut."</p><hr/>"
              ."<p>There are "
-             .$this->kfdb->Query1( "SELECT count(*) FROM seeds_1.bull_list WHERE status='1'" )
+             .$this->kfdb->Query1( "SELECT count(*) FROM {$oApp->GetDBName('seeds1')}.bull_list WHERE status='1'" )
              ." subscribers in the ebulletin list.</p>"
              .$sInstructions;
 
