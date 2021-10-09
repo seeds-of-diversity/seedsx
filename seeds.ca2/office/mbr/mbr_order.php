@@ -93,13 +93,17 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
             if( in_array( $kfrOrder->value('eStatus'), [MBRORDER_STATUS_PAID,MBRORDER_STATUS_FILLED] ) ) {
                 if( ($kB = $kfrOrder->value('kBasket')) ) {
                     $bFulfilControls = in_array( $this->oApp->sess->GetUID(), [1,1499,10914] );
-                    list($sContents,$fTotal,$bContactNeeded,$bDonNotRecorded) = $this->oSoDBasket->ShowBasketContents( $kB, $bFulfilControls );
-                    $sCol2 .= "<div class='sbfulfil_basket' data-kBasket='$kB'>"
+                    $sContents = $this->oSoDBasket->ShowBasketWidget( $kB, $bFulfilControls ? 'Fulfil' : 'Readonly', [] );
+//                    list($sContents,$fTotalDummy,$bContactNeededDummy,$bDonNotRecordedDummy) = $this->oSoDBasket->ShowBasketContents( $kB, $bFulfilControls );
+                    $sCol2 .= "<div>"
+                             ."<h4>Basket"
 .(SEED_isLocal ? (""
-                             ."<h4>Basket &nbsp;<button class='sbfulfil_basket_button_edit'
-                                                        onclick='SEEDBasketFulfilUI.replaceBasketContentsWithEditor($kB)'>Edit</button></h4>"
+                             ." &nbsp;<button class='sbfulfil_basket_button_edit'
+                                                        onclick='SEEDBasketFulfilUI.replaceBasketContentsWithEditor($kB)'>Edit</button>"
 ): "")
-                             .$sContents
+                             ."</h4>"
+
+                             ."<div class='sbfulfil_basket' data-kBasket='$kB'>$sContents</div>"
                              ."</div>";
                 } else {
                     $sCol2 .= "<p class='alert alert-danger'>This order doesn't have a basket number</p>";
