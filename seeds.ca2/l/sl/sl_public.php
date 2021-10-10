@@ -40,7 +40,7 @@ class SL_Public
         //$this->oSVA->VarSet( 'm', $this->sMode );
 
         // Non-persistent parms. These are not stored in sess, so have to be propagated per-page.
-        if( ($this->p_iPage = SEEDSafeGPC_GetInt('p')) < 0 ) $this->p_iPage = 0;
+        if( ($this->p_iPage = SEEDSafeGPC_GetInt('pg')) < 0 ) $this->p_iPage = 0;
 
 
         // Persistent parms. If the http parms are blank, only change the stored parms if the previous page was the same mode (i.e. parms came from the appropriate form).
@@ -299,7 +299,7 @@ class SL_Public
         if( $this->p_kSp )              $sUrl .= "&kSp=".$this->p_kSp;
         if( !empty($this->p_sPCVFlt) )  $sUrl .= "&pcvflt=".urlencode($this->p_sPCVFlt);
 
-        return( ($p == $this->p_iPage) ? $label : ("<A HREF='".Site_path_self()."?m={$this->p_sMode}&p=$p".$sUrl."'>$label</A>") );
+        return( ($p == $this->p_iPage) ? $label : ("<A HREF='".Site_path_self()."?m={$this->p_sMode}&pg=$p".$sUrl."'>$label</A>") );
     }
 
     private function drawAdoptionBar( $kPCV, $bTextBelow = false )
