@@ -80,6 +80,8 @@ class SoDMbrOrderCheckout extends MbrOrderCheckout
 
         /* Membership
          */
+$s .= "<p style='font-weight:bold'>We're reviewing some new plans about membership for the next year. Check back here soon for details about 2022 memberships.<br/><br/></p>";
+/*
         $s .= "<div class='mbro_ctrl'>"
              ."<div style='font-weight:bold;margin-bottom:4px'>".$this->oL->S('membership')."</div>"
              ."<div class='mbro_help'>".$this->oL->S('Please note what mbr fee covers')."</div><br/>"
@@ -95,7 +97,7 @@ class SoDMbrOrderCheckout extends MbrOrderCheckout
              ."<br/>"
              ."</div></div>\n"       // membership and donation
              ."<BR/>";
-
+*/
 
         /*** Garlic bulbils ***
          */
