@@ -93,8 +93,7 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
             if( in_array( $kfrOrder->value('eStatus'), [MBRORDER_STATUS_PAID,MBRORDER_STATUS_FILLED] ) ) {
                 if( ($kB = $kfrOrder->value('kBasket')) ) {
                     $bFulfilControls = in_array( $this->oApp->sess->GetUID(), [1,1499,10914] );
-                    $sContents = $this->oSoDBasket->ShowBasketWidget( $kB, $bFulfilControls ? 'Fulfil' : 'Readonly', [] );
-//                    list($sContents,$fTotalDummy,$bContactNeededDummy,$bDonNotRecordedDummy) = $this->oSoDBasket->ShowBasketContents( $kB, $bFulfilControls );
+                    list($sContents,$oB) = $this->oSoDBasket->ShowBasketWidget( $kB, $bFulfilControls ? 'Fulfil' : 'Readonly', [] );
                     $sCol2 .= "<div>"
                              ."<h4>Basket"
 .(SEED_isLocal ? (""
