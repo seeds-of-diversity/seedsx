@@ -22,7 +22,8 @@ class MSDView extends SEDCommon
 
     function GetMbrContactsRA( $kMbr )   // SEDCommon::drawGrowerBlock calls back here to get the MbrContacts array for the given member
     {
-        $raM = $this->kfdb->QueryRA( "SELECT * FROM seeds_2.mbr_contacts where _key='".intval($kMbr)."'" );
+        $oApp = SEEDConfig_NewAppConsole_LoginNotRequired([]);
+        $raM = $this->kfdb->QueryRA( "SELECT * FROM {$oApp->GetDBName('seeds2')}.mbr_contacts where _key='".intval($kMbr)."'" );
         //$raM = MbrSitePipeGetContactsRA2( $this->kfdb, $kMbr );
 
         return( $raM );
