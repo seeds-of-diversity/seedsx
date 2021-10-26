@@ -48,22 +48,24 @@ class SEEDBasketStore
     {
         $eStatus = $this->oSB->BasketStatusGet();
 
-        switch( $eStatus ) {
-            case 'Open':
-                if( $eStatusChange == 'Confirmed' ) {
-                    $ra = $this->oSB->ComputeBasketSummary();
-                    if( @count($ra['raSellers']) ) {
-                        $this->oSB->BasketStatusSet( $eStatusChange );
-                    } else {
-                        var_dump("Basket is empty");
+        if( ($kBasket = $this->oSB->GetBasketKey()) ) {
+            switch( $eStatus ) {
+                case 'Open':
+                    if( $eStatusChange == 'Confirmed' ) {
+                        $oB = new SEEDBasket_Basket( $this->oSB, $kBasket );
+                        if( count($oB->GetPurchasesInBasket()) ) {
+                            $this->oSB->BasketStatusSet( $eStatusChange );
+                        } else {
+                            var_dump("Basket is empty");
+                        }
                     }
-                }
-                break;
-            case 'Confirmed':
-                if( $eStatusChange == 'Open' ) {
-                    $this->oSB->BasketStatusSet( $eStatusChange );
-                }
-                break;
+                    break;
+                case 'Confirmed':
+                    if( $eStatusChange == 'Open' ) {
+                        $this->oSB->BasketStatusSet( $eStatusChange );
+                    }
+                    break;
+            }
         }
     }
 }
@@ -173,12 +175,13 @@ class msdBasket extends SEEDBasketStore
 
         $kBPHighlight = 0;
 
-
         $oMSD = new MSDView( $this->oW );
 
         $s .= $this->oTmpl->ExpandTmpl( 'msdConfirmed', $raTmplParms );
 
-        $raSummary = $this->oSB->ComputeBasketSummary();
+        if( !($kBasket = $this->oSB->GetBasketKey()) ) goto done;
+        $raSummary = (new SEEDBasket_Basket($this->oSB, $kBasket))->ComputeBasketContents();
+        if( !@$raSummary['raSellers'] )  goto done;
 
         $s .= "<table style='100%'>";
 
@@ -186,25 +189,19 @@ class msdBasket extends SEEDBasketStore
             $s1 = "";
 
             $sSeller = $this->oSB->cb_SellerNameFromUid( $uidSeller );
-            $s1 .= "<div style='margin-top:10px;font-weight:bold'>$sSeller (total ".$this->oSB->dollar($raSeller['fTotal']).")</div>";
+            $s1 .= "<div style='margin-top:10px;font-weight:bold'>$sSeller (total ".$this->oSB->dollar($raSeller['fSellerTotal']).")</div>";
 
             $kfrG = $oMSD->kfrelG->GetRecordFromDB( "mbr_id='$uidSeller'" );   // sed_growers
             $s1 .= "<div style='width:100%;margin:20px auto;padding:10px;max-width:80%;border:1px solid #777;background-color:#f8f8f8'>"
                     .$oMSD->drawGrowerBlock( $kfrG, true )
                     ."</div>";
 
-            foreach( $raSeller['raItems'] as $raItem ) {
-
-                if( !$raItem['kBP'] ) continue;     // skip discounts
-
-                // I need PxBP to do this
-                $kfrBP = $this->oSB->oDB->GetKFR( 'BP', $raItem['kBP']);
-                $kfrP = $this->oSB->oDB->GetKFR( 'P', $kfrBP->Value('fk_SEEDBasket_Products') );
+            foreach( $raSeller['raPur'] as $pur ) {
+                $kfrP = $this->oSB->oDB->GetKFR( 'P', $pur['oPur']->GetProductKey() );
 
                 $s1 .= "<div style='width:100%;margin:20px auto;padding:10px;max-width:80%;border:0px;background-color:#fff'>"
                       .$this->oSB->DrawProduct( $kfrP, SEEDBasketProductHandler_Seeds::DETAIL_VIEW_NO_SPECIES, ['bUTF8'=>false] )
                       ."</div>";
-
             }
 
             $s2 = "<a href='".Site_path_self()."?kG=$uidSeller' target='_blank' style='text-decoration:none;'>"
@@ -236,13 +233,15 @@ class msdBasket extends SEEDBasketStore
         $s .= "</table>"
              ."<br/><br/>";
 
+        done:
+
         $s .= $this->oTmpl->ExpandTmpl( 'msdConfirmedFooter', $raTmplParms );
 
         return( $s );
     }
 
-    function PrintGrower( $kG )
-    /**************************
+    function PrintGrower( $uidSeller )
+    /*********************************
          Print the Seed Request Form for current orders for the given grower
      */
     {
@@ -254,59 +253,34 @@ class msdBasket extends SEEDBasketStore
         // Confirm that the current basket is Confirmed.
 
         $oMSD = new MSDView( $this->oW );
+        $kfrG = $oMSD->kfrelG->GetRecordFromDB( "mbr_id='$uidSeller'" );   // sed_curr_growers
 
-        $raSummary = $this->oSB->ComputeBasketSummary();
+        $sSeeds = "";
+        if( ($kBasket = $this->oSB->GetBasketKey()) ) {
+            $raSummary = (new SEEDBasket_Basket($this->oSB, $kBasket))->ComputeBasketContents();
+            if( isset($raSummary['raSellers'][$uidSeller]) ) {
+                $sSeeds .= "<p style='font-weight:bold;font-size:11pt;'>This grower accepts payment by: ".$oMSD->drawPaymentMethod($kfrG)."</p>";
 
-        $sSeeds = "<table style='width:100%' border='1' >";
-        foreach( $raSummary['raSellers'] as $uidSeller => $raSeller ) {
-            if( $uidSeller != $kG )  continue;
+                $sSeeds .= "<table style='width:100%' border='1' >";
+                foreach( $raSummary['raSellers'][$uidSeller]['raPur'] as $pur ) {
+                    $kfrP = $this->oSB->oDB->GetKFR( 'P', $pur['oPur']->GetProductKey() );
+                    $sItem = $this->oSB->DrawProduct( $kfrP, SEEDBasketProductHandler_Seeds::DETAIL_TINY, ['bUTF8'=>false] );
+                    $price = $pur['oPur']->GetPrice();
 
-            $kfrG = $oMSD->kfrelG->GetRecordFromDB( "mbr_id='$uidSeller'" );   // sed_curr_growers
-            $sSeeds .= "<p style='font-weight:bold;font-size:11pt;'>This grower accepts payment by: ".$oMSD->drawPaymentMethod($kfrG)."</p>";
+                    $sSeeds .= "<tr><td width='75%' valign='top'>$sItem</td><td valign='top'>".$this->oSB->dollar($price)."</td></tr>";
+                }
+                foreach( $raSummary['raSellers'][$uidSeller]['raExtraItems'] as $xtra ) {
+                    $sSeeds .= "<tr><td width='75%' valign='top'>{$xtra['sLabel']}</td><td valign='top'>".$this->oSB->dollar($xtra['fAmount'])."</td></tr>";
+                }
 
-            foreach( $raSeller['raItems'] as $raItem ) {
-                //if( $raItem['kBP'] ) {
-                    // I need PxBP to do this
-                    //$kfrBP = $this->oSB->oDB->GetKFR( 'BP', $raItem['kBP']);
-                    //$kfrP = $this->oSB->oDB->GetKFR( 'P', $kfrBP->Value('fk_SEEDBasket_Products') );
-                    $sSeeds .= "<tr><td width='75%' valign='top'>{$raItem['sItem']}</td><td valign='top'>".$this->oSB->dollar($raItem['fAmount'])."</td></tr>";
+                $sSeeds .= "<tr><td><p style='font-size:12pt'>Total</p></td><td><p style='font-size:12pt;'>"
+                          .$this->oSB->dollar($raSummary['raSellers'][$uidSeller]['fSellerTotal'])."</p></td></tr>";
+                $sSeeds .= "</table>";
             }
-
-            $sSeeds .= "<tr><td><p style='font-size:12pt'>Total</p></td><td><p style='font-size:12pt;'>".$this->oSB->dollar($raSeller['fTotal'])."</p></td></tr>";
-            $sSeeds .= "</table>";
-            /*
-                        $s1 .= "<div style='width:100%;margin:20px auto;padding:10px;max-width:80%;border:0px;background-color:#fff'>"
-                                .$this->oSB->DrawProduct( $kfrP, SEEDBasketProductHandler::DETAIL_SUMMARY, ['bUTF8'=>false] )
-                                ."</div>";
-
-                    }
-
-                    $s2 = "<a href='index.php?kG=$uidSeller' target='_blank' style='text-decoration:none;'>"
-                    ."<div style='margin-left:30px;background:#ccc;padding:10px;text-align:center;width:120px;height:160px;'>Click here to print your Seed Request Form</div>"
-                            ."</a>";
-
-                            $s .= "<tr><td width='60%'><div style='border:1px solid #aaa;margin-top:20px;'>$s1</div></td><td>$s2</td></tr>";
-                            continue;
-
-                            $s .= "<div class='sb_basket_table'>";
-                            foreach( $raSeller['raItems'] as $raItem ) {
-                                $sClass = ($kBPHighlight && $kBPHighlight == $raItem['kBP']) ? " sb_bp-change" : "";
-                                $s .= "<div class='sb_basket_tr sb_bp$sClass'>"
-                                ."<div class='sb_basket_td'>".$raItem['sItem']."</div>"
-                                        ."<div class='sb_basket_td'>".$this->oSB->dollar($raItem['fAmount'])."</div>"
-                                                ."<div class='sb_basket_td'>"
-                                                        // Use full url instead of W_ROOT because this html can be generated via ajax (so not a relative url)
-                                // Only draw the Remove icon for items with kBP because discounts, etc, are coded with kBP==0 and those shouldn't be removable on their own
-                                .($raItem['kBP'] ? ("<img height='14' onclick='RemoveFromBasket(".$raItem['kBP'].");' src='http://seeds.ca/wcore/img/ctrl/delete01.png'/>") : "")
-                                ."</div>"
-                                        ."</div>";
-                            }
-                            $s .= "</div>";
-            */
         }
 
         include_once( SEEDCOMMON."mbr/mbrSitePipe.php" );
-        $ra = MbrSitePipeGetContactsRA2( $this->oW->kfdb, $kG );
+        $ra = MbrSitePipeGetContactsRA2( $this->oW->kfdb, $uidSeller );
         $sGrowerAddr1 = SEEDCore_ArrayExpand( $ra, "[[firstname]] [[lastname]]<br/>" )
                        .SEEDStd_ExpandIfNotEmpty( @$ra['company'], "[[]]<br/>" )
                        .SEEDCore_ArrayExpand( $ra, "[[address]]<br/>[[city]] [[province]] [[postcode]]" );
@@ -346,8 +320,6 @@ class msdBasket extends SEEDBasketStore
         done:
         return( $s );
     }
-
-
 }
 
 
