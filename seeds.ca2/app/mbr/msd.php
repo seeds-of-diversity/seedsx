@@ -3,7 +3,7 @@
 /*
  * Seed Directory public interface
  *
- * Copyright (c) 2017-2019 Seeds of Diversity Canada
+ * Copyright (c) 2017-2021 Seeds of Diversity Canada
  *
  * Show the listings in the Member Seed Directory
  */
@@ -16,6 +16,8 @@ include_once( SEEDCOMMON."doc/docUtil.php" );           // New_DocRepDB_WithMyPe
 
 include_once( SITEROOT."l/sl/msd.php" );
 include_once( SEEDAPP."seedexchange/msdCommon.php" );
+
+include_once( SEEDCORE."SEEDBasketUI.php" );
 
 // Don't ask to login here, and allow the page to be viewed if no login.
 // But $sess->IsLogin() will only be true if the user has sed=>R (i.e. they are a current member)
