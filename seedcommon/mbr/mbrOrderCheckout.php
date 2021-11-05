@@ -723,7 +723,7 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
     {
         $sTicket = $this->oMbrOrder->DrawTicket( 0, $this->kfrOC );
         // DrawTicket does computeTicket() so the nTotal is available
-        if( $this->oMbrOrder->nTotal ) {
+        if( $this->oMbrOrder->nTotal || $this->kfrOC->Value('mbr_type') == 'mbr1_0' ) {     // a zero total is allowable if it's a free membership
             $sConfirm = $this->oL->S('confirm_order')."<br/><br/>".$this->stateTransButton( MBROC_ST_CONFIRM, 'confirm_button' );
         } else {
             $sConfirm = "<div style='border:1px solid #aaa;padding:15px'>Nothing has been ordered yet. Please go back to the order form.</div>";
@@ -748,53 +748,72 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
     	 */
         $s = "";
 
-        $ePayType = SEEDSafeGPC_Smart( 'ePayType', array("","PayPal","Cheque") );
-        if( !empty($ePayType) ) {
-            $this->oMbrOrder->kfr->SetValue( 'ePayType', $ePayType );
+        $bPaymentNeeded = ($this->oMbrOrder->kfr->Value('pay_total') > 0.0);
+
+        if( ($e = SEEDInput_Smart( 'ePayType', ["","PayPal","Cheque"] )) ) {
+            $this->oMbrOrder->kfr->SetValue( 'ePayType', $e );
             $this->oMbrOrder->kfr->PutDBRow();
         }
 
-        $s .= "<H2>".$this->oL->S('Order_confirmed')." - "
-            .($this->oMbrOrder->kfr->value('ePayType') == 'PayPal' ? $this->oL->S('Pay_by_credit') : $this->oL->S('Pay_by_cheque_mo'))."</H2>";
+        $s .= "<h2>{$this->oL->S('Order_confirmed')}"
+            .($bPaymentNeeded ? (" - ".($this->oMbrOrder->kfr->value('ePayType') == 'PayPal' ? $this->oL->S('Pay_by_credit') : $this->oL->S('Pay_by_cheque_mo'))) : "")
+            ."</h2>";
+
+        $s .= $this->ExtraFormAfterConfirmation();
 
         $sFormAction = $this->getFormAction();
 
-        if( $this->oMbrOrder->kfr->value('ePayType') == 'PayPal' ) {
-            $s .= "<table border='0'><tr><td style='padding:10px'>"
-                .$this->confirmedDrawPayPalButton()
-                ."</td>"
-                ."<td>".$this->oL->S('paypal_instructions1')."</td>"
-                ."</tr></table>"
-                .$this->oL->S('paypal_instructions2')
-                ."<FORM action='$sFormAction' method='post'>"
-                .$this->sess->FormHidden()
-                ."<INPUT type='hidden' name='ePayType' value='Cheque'>"
-                ."<INPUT type='submit' value='".$this->oL->S('pay_by_cheque_instead')."'>"
-                ."</FORM>";
+        if( $bPaymentNeeded ) {
+            if( $this->oMbrOrder->kfr->value('ePayType') == 'PayPal' ) {
+                // left: Pay by PayPal   right: or switch to etransfer/cheque
+                $s .= "<table border='0'><tr>"
+                     ."<td valign='top' style='padding:10px'>{$this->confirmedDrawPayPalButton()}</td>"
+                     ."<td valign='top' style='padding:10px'>{$this->oL->S('paypal_instructions1')}</td>"
+                     ."</tr></table>"
+                   //."<br/>".$this->oL->S('paypal_instructions2')
 
-        } else {
-            $s .= $this->oL->S('cheque_instructions')
-                ."<FORM action='$sFormAction' method='post'>"
-                .$this->sess->FormHidden()
-                ."<INPUT type='hidden' name='ePayType' value='PayPal'>"
-                ."<INPUT type='submit' value='".$this->oL->S('pay_by_credit_card_instead')."'>"
-                ."</FORM>";
+                     ."<p style='margin-left:30px'><b>OR</b></p>"
+                     ."<div style='margin-left:15px'>"
+                        ."<form action='$sFormAction' method='post'>"
+                   // .$this->sess->FormHidden()
+                        ."<input type='hidden' name='ePayType' value='Cheque'/>"
+                        ."<input type='submit' value='{$this->oL->S('pay_by_cheque_instead')}'>"
+                        ."</form>"
+                     ."</div>";
+
+            } else {
+                $s .= "<div style='margin:15px;border:1px solid #aaa;padding:10px'>{$this->oL->S('cheque_instructions', [$this->oMbrOrder->kfr->Key()])}</div>"
+                     ."<p style='margin-left:30px'><b>OR</b></p>"
+                     ."<div style='margin-left:15px'>"
+                         ."<form action='$sFormAction' method='post'>"
+                  //  .$this->sess->FormHidden()
+                         ."<input type='hidden' name='ePayType' value='PayPal'/>"
+                         ."<input type='submit' value='{$this->oL->S('pay_by_credit_card_instead')}'/>"
+                         ."</form>"
+                     ."</div>";
+            }
+
+            $sTicket = $this->oMbrOrder->DrawTicket();     // oMbrOrder->kfr is already loaded with the current order
+            $s .= $sTicket;
+            if( !defined("MbrOrderCheckoutOffice") ) {
+                MailFromOffice( 'bob@seeds.ca', 'Order Ticket', "", $sTicket, $raParms = array() );
+            }
         }
-        $sTicket = $this->oMbrOrder->DrawTicket();     // oMbrOrder->kfr is already loaded with the current order
-        $s .= $sTicket;
 
         // If Paypal, they have to go through the payment now. If Cheque, let them start a new order.
         // Office checkout is always Cheque.
-        if( $this->oMbrOrder->kfr->value('ePayType') == 'Cheque' ) {
+        if( !$bPaymentNeeded || $this->oMbrOrder->kfr->value('ePayType') == 'Cheque' ) {
             $s .= "<BR/><P>".$this->stateTransButton( MBROC_ST_START, 'Start_a_New_Order' )."</P>";
         }
         $s .= "<BR/><P>".$this->stateTransButton( MBROC_ST_CANCEL, 'Cancel_this_order' )."</P>";
 
-        if( !defined("MbrOrderCheckoutOffice") ) {
-            MailFromOffice( 'bob@seeds.ca', 'Order Ticket', "", $sTicket, $raParms = array() );
-        }
 
         return( $s );
+    }
+
+    function ExtraFormAfterConfirmation()
+    {
+        return("");
     }
 
     function PaidDraw()
@@ -1036,15 +1055,12 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
                           "FR" => "Ch&eacute;que / Mandat postal" ),
 
             "credit_card_desc"
-                => array( "EN" => "Use our secure credit card service for safe payment.  Your order will be processed ".
-                                  "within five business days.  Please allow 2-3 weeks for delivery.",
-                          "FR" => "Employez notre service de carte de cr&eacute;dit pour paiement s&ucirc;re. ".
-                                  "Votre ordre sera trait&eacute; dans cinq jours d'affaires. ".
-                                  "Veuillez accorder 2 ou 3 semaines pour la livraison." ),
+                => array( "EN" => "Use our secure credit card service for safe payment.",
+                          "FR" => "Employez notre service de carte de cr&eacute;dit pour paiement s&ucirc;re." ),
 
             "cheque_desc"
-                => array( "EN" => "Pay by cheque or money order.  Please allow 4-5 weeks for delivery.",
-                          "FR" => "Payer par ch&egrave;que ou mandat postal.  Veuillez accorder 4 ou 5 semaines pour la livraison." ),
+                => array( "EN" => "Pay by e-transfer or cheque.",
+                          "FR" => "Payer par Virement Interac ou ch&egrave;que." ),
 
             "mail_note"
                 => array( "EN" => "Send us a Note",
@@ -1088,24 +1104,28 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
 
             "Pay_by_credit"
                 => array( "EN" => "Pay by Credit Card",
-                          "FR" => "Payer par carte de cr&eacute;dit" ),
+                          "FR" => "Payez par carte de cr&eacute;dit" ),
             "Pay_by_cheque_mo"
                 => array( "EN" => "Pay by Cheque or Money Order",
-                          "FR" => "Payer par ch&egrave;que ou mandat postal" ),
+                          "FR" => "Payez par ch&egrave;que ou mandat postal" ),
             "assistance"
                 => array( "EN" => "<P>If you need assistance, please call 226-600-7782 or email "
                                  .SEEDCore_EmailAddress( "office", "seeds.ca" ).".</P>",
                           "FR" => "<P>Si vous avez besoin d'assistance, t&eacute;l&eacute;phonez 226-600-7782 ou envoyez un courriel &agrave; "
                                  .SEEDCore_EmailAddress("courriel","semences.ca")."</P>" ),
             "cheque_instructions"
-                => array( "EN" => "<P>Please print this summary page and mail it with a cheque or money order payable to ".
-                                  "<B>Seeds of Diversity Canada</B>.".
-                                  "<DIV style='margin:1em'><B>Seeds of Diversity Canada<br/>#1 - 12 Dupont St West<br/>Waterloo ON N2L 2X6</B></DIV></P>".
-                                  "<P>Please allow 4 - 5 weeks for delivery</P>",
-                          "FR" => "<P>Veuillez faire imprimer ce page et exp&eacute;dier avec un ch&egrave;que ou mandat postal. ".
-                                  "Libellez votre ch&egrave;que au nom de <B>Programme semencier du patrimoine Canada</B>.".
-                                  "<DIV style='margin:1em'>Programme Semencier du Patrimoine Canada<BR>#1 - 12 Dupont St West<br/>Waterloo ON N2L 2X6</DIV></P>".
-                                  "<P>Veuillez accorder 4 ou 5 semaines pour la livraison.</P>" ),
+                => array( "EN" => "<h4>To pay by e-transfer</h4>"
+                                 ."<p style='margin-left:1em'>Send your e-transfer to mail@seeds.ca and mention the order number %1%. No security question is needed.</p>"
+                                 ."<h4>To pay by cheque</h4>"
+                                 ."<p style='margin-left:1em'>Please print this summary page and mail it with a cheque or money order payable to <b>Seeds of Diversity Canada</b>.</p>"
+                                 ."<div style='margin-left:2em;font-weight:bold'>Seeds of Diversity Canada<br/>#1-12 Dupont St West<br/>Waterloo ON N2L 2X6</div>",
+                          "FR" => "<h4>Payer par Virement Interac</h4>"
+                                 ."<p style='margin-left:1em'>L'envoyez &agrave; mail@seeds.ca et notez le nombre de l'ordre %1%. "
+                                 ."Aucune question de s&eacute;curit&eacute; n'est n&eacute;cessaire.</p>"
+                                 ."<h4>Payer par ch&egrave;que</h4>"
+                                 ."<p style='margin-left:1em'>Veuillez faire imprimer ce page et exp&eacute;dier avec un ch&egrave;que ou mandat postal. "
+                                  ."Libellez votre ch&egrave;que au nom de <b>Semences du patrimoine Canada</b>.</p>"
+                                  ."<div style='margin:1em;font-weight:bold'>Semences du patrimoine<BR>#1-12 Dupont St West<br/>Waterloo ON N2L 2X6</div>" ),
             "paypal_instructions1"
                 => array( "EN" => "<p><strong>Click here to pay by credit card</strong><br/>You don't need a PayPal account to pay for your order, just a credit card.</p>",
                                    //."<div style='padding:10px;margin:10px; border:1px solid orange;background-color:#fe9;width:75%;max-width:600px'>As of Dec 20, 2016, PayPal has advised us that it will require all purchasers to create PayPal accounts. We understand that some people simply want to pay with their credit card without needing a PayPal account, and we apologize for this inconvenience as we look for an alternative payment system.<br/><br/>If you have come here specifically to make a <b>donation</b> with your credit card, we gratefully invite you to do so through our secure charity page at <a href='https://www.canadahelps.org/en/charities/seeds-of-diversity-canada-programme-semencier-du-patrimoin/' target='_blank'>CanadaHelps.org</a>.<br/><br/>We can also process membership renewals by phone at (226) 600-7782 (please leave a voice message and we will call you back).<br/><br/>- Your office team at Seeds of Diversity</div>",
@@ -1121,7 +1141,7 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
                 => array( "EN" => "Pay by Credit Card Instead",
                           "FR" => "Payer par carte de cr&egrave;dit au lieu" ),
             "pay_by_cheque_instead"
-                => array( "EN" => "Pay by Cheque Instead",
+                => array( "EN" => "Pay by e-transfer or cheque instead",
                           "FR" => "Payer par ch&egrave;que au lieu" ),
             "Start_a_New_Order"
                 => array( "EN" => "Start a New Order",

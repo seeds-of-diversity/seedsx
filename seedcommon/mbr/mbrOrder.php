@@ -291,6 +291,10 @@ class MbrOrder extends MbrOrderCommon {
                                                              "FR"=>"L'adh&eacute;sion (1 an) avec le Catalogue de semences en Web" ),
                              "mbr1_45sed" => array( "n"=>45, "EN"=>"One Year Membership with printed and on-line Seed Directory",
                                                              "FR"=>"L'adh&eacute;sion (1 an) avec le Catalogue de semences imprim&eacute; et en Web" ),
+                             "mbr1_0"     => array( "n"=>0, "EN"=>"One Year Membership with on-line Seed Directory",
+                                                             "FR"=>"L'adh&eacute;sion (1 an) avec le Catalogue de semences en Web" ),
+                             "mbr1_10sed"  => array( "n"=>10, "EN"=>"One Year Membership with printed and on-line Seed Directory",
+                                                             "FR"=>"L'adh&eacute;sion (1 an) avec le Catalogue de semences imprim&eacute; et en Web" ),
 
                              // historical
                              "reg1"       => array( "n"=>30, "EN"=>"One Year Membership with printed and on-line Seed Directory",
@@ -334,16 +338,14 @@ if( $kOrder ) $this->setKOrder( $kOrder );
 
         /* For each part of the order, generate a concise summary, a line for the ticket and a running total
          */
-        if( !$this->kfr->IsEmpty('mbr_type') ) {
-            // use this method until a) mbr increases, b) life membership available online.  Then substitute with a different method after that point.
-            if( ($amt = @$this->raMbrTypes[ $this->kfr->value('mbr_type') ]['n']) ) {
+        if( ($m = $this->kfr->Value('mbr_type')) && isset($this->raMbrTypes[$m]) ) {
+            $amt = $this->raMbrTypes[$m]['n'];
 
-                // kluge: replace all reg1 with mbr1_40 from 7338 up
-                if( $this->kfr->value('mbr_type')=='reg1' && ($this->kfr->Key()==0 || $this->kfr->Key() >= 7338) )  $amt = 40;
+            // kluge: replace all reg1 with mbr1_40 from 7338 up
+            if( $m=='reg1' && ($this->kfr->Key()==0 || $this->kfr->Key() >= 7338) )  $amt = 40;
 
-                $this->nTotal += $amt;
-                $this->raOrder['mbr'] = $this->kfr->value('mbr_type');
-            }
+            $this->nTotal += $amt;
+            $this->raOrder['mbr'] = $m;
         }
 
         if( ($n = floatval($this->kfr->value('donation'))) ) {
@@ -788,7 +790,7 @@ function MbrOrderStyle()
     return("
 <STYLE type='text/css'>
 
-    .mbro_boxbody         { background-color:#eee; padding:2px 1em;
+    .mbro_boxbody         { background-color:#eee; padding:15px;
                           }
     .mbro_boxbody,
     .mbro_boxbody p       { font-size:10pt; font-family: verdana,helvetica,sans-serif;

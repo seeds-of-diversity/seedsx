@@ -37,29 +37,27 @@ class SoDMbrOrderCheckout extends MbrOrderCheckout
 //                              $this->drawRegBody( 'Victoria2014', $oReg->raRegistrations['Victoria2014'] ) );
 //        $s .= "<br/>";
 
-        /*** Membership and Donation ***
+        /*** Donation ***
          */
-        $s .= "<div class='mbro_box'>" //  mbro_expand'>"   floating login makes the expand button appear at level of bottom of login box
-             ."<div class='mbro_boxheader'>".$this->oL->S('Annual_Membership_and_Donation')
-           //."<div class='mbro_expand-button'><img src='".W_ROOT."img/expand_button.gif'/></div>"
-             ."</div>"
-             ."<div class='mbro_boxbody' style='display:block'>";
-
-        /* Donation
-         */
-        $raDon = array( 30, 60, 90 );
+        $raDon = [30, 60, 90];
         $bDonX = !in_array($this->oKForm->oDS->Value('donation'), $raDon);     // using the type-your-own-number box
-        $s .= "<br/><div class='mbro_ctrl'>"
-             ."<div style='font-weight:bold;margin-bottom:5px'>".$this->oL->S('Give a Charitable Donation')."</span></div>"
-             ."<div class='mbro_help'>".$this->oL->S('donation_desc')."</div><br/>";
-        $s .= "<TABLE border='0' cellspacing='0' cellpadding='10' style='margin-left:-10px;margin-top:-10px;'><TR>";
-        foreach( $raDon as $d ) {
-            $s .= "<TD style='padding-left:15px;'>".$this->oKForm->Radio("donation","", $d ).$this->oL->Dollar($d)."</TD>";
-        }
-        $s .= "<TD style='padding-left:15px'><INPUT type='radio' name='".$this->oKForm->oFormParms->sfParmField("donation")."' value='X'".($bDonX ? " checked" : "").">"
-             ."<INPUT type='text' size='8' name='".$this->oKForm->oFormParms->sfParmField('donationX')."' value='".($bDonX ? $this->myNumber($this->oKForm->oDS->valueEnt('donationX')) : "")."'></TD>"
-             ."</TR></TABLE>"
-             ."</div><br/>";    // donation ctrl
+        $s .= $this->FormBox( $this->oL->S('Give a Charitable Donation'),
+                              "<div style='font-weight:bold;margin-bottom:5px'>{$this->oL->S('Give a Charitable Donation')}</div>"
+                             ."<div class='mbro_help'>".$this->oL->S('donation_desc')."</div>"
+                             ."<div class='mbro_ctrl'>"
+                                  ."<table border='0' cellspacing='0' cellpadding='10' style='margin-left:-10px;margin-top:5px'><tr>"
+                                 .SEEDCore_ArrayExpandSeries( $raDon,
+                                                              function($k,$d) {
+                                                                  return("<td style='padding-left:15px;'>{$this->oKForm->Radio('donation','',$d)}{$this->oL->Dollar($d)}</td>" );
+                                                              } )
+                                 ."<td style='padding-left:15px'>"
+                                     ."<input type='radio' name='".$this->oKForm->oFormParms->sfParmField("donation")."' value='X'".($bDonX ? " checked" : "")."/>"
+                                     ."<input type='text' size='8' name='{$this->oKForm->oFormParms->sfParmField('donationX')}'
+                                                                   value='".($bDonX ? $this->myNumber($this->oKForm->oDS->valueEnt('donationX')) : "")."'/>"
+                                 ."</td>"
+                                 ."</tr></table>"
+                             ."</div>",
+                             false );
 
 //$s .= "<div style='margin:-20px 30px 30px 20px'><table><tr><td><img src='http://seeds.ca/photos/upload/2020/10/14/20201014174744-1771830c.jpg' width='250'/></td><td style='padding-left:20px'>To designate a donation to our <a target='_blank' href='http://schoolfoodgardens.ca'>School Food Gardens</a> fall campaign, just tell us in the notes section at the bottom.</td></tr></table></div>";
 
@@ -80,7 +78,21 @@ class SoDMbrOrderCheckout extends MbrOrderCheckout
 
         /* Membership
          */
-$s .= "<p style='font-weight:bold'>We're reviewing some new plans about membership for the next year. Check back here soon for details about 2022 memberships.</p>";
+//$s .= "<p style='font-weight:bold'>We're reviewing some new plans about membership for the next year. Check back here soon for details about 2022 memberships.</p>";
+
+        $s .= $this->FormBox( $this->oL->S('membership'),
+                              "<div style='font-weight:bold;margin-bottom:5px'>{$this->oL->S('membership')}</div>"
+                             ."<div class='mbro_help'>"
+                                 ."<p>Seeds of Diversity members can participate in our seed exchange and seed grow-out programs, and support many projects in their communities.</p>"
+                                 ."<p><i>Membership is free for 2022!</i></p>"
+                             ."</div>"
+                             ."<div class='mbro_ctrl'>"
+                                 //."<p>".$this->oKForm->Checkbox( 'mbrJoin', "&nbsp;Join or renew your membership. We'll ask you to fill in a short survey about your interests on the next page." )."</p>"  //$this->oL->S("Please send samples of garlic bulbils for $15") )."</p>")
+                                 .$this->oKForm->Radio('mbr_type',"",'mbr1_0')."&nbsp;&nbsp;&nbsp;".$this->oL->S('One Year Membership form line - online SED')."<br/>"
+                                 .$this->oKForm->Radio('mbr_type',"",'mbr1_10sed')."&nbsp;&nbsp;&nbsp;".$this->oL->S('One Year Membership form line - printed SED')."<br/>"
+                                 .$this->oKForm->Radio('mbr_type',"",'', array('bNoBlankMatches'=>1))."&nbsp;&nbsp;&nbsp;".$this->oL->S('mbr_none')
+                             ."</div>",
+                             false );
 /*
         $s .= "<div class='mbro_ctrl'>"
              ."<div style='font-weight:bold;margin-bottom:4px'>".$this->oL->S('membership')."</div>"
@@ -90,30 +102,26 @@ $s .= "<p style='font-weight:bold'>We're reviewing some new plans about membersh
              .$this->oKForm->Radio('mbr_type',"",'', array('bNoBlankMatches'=>1))."&nbsp;&nbsp;&nbsp;".$this->oL->S('mbr_none')
              ."</div>"
              ."<br/>";
-
-
         $s .= "<DIV class='mbro_help'>".$this->oL->S('membership_desc')."</DIV>"
              ."<DIV class='mbro_help'>".$this->oL->S('mbr_calendar_year')."</DIV>";
-*/
         $s .= "<br/>"
              ."</div></div>\n"       // membership and donation
              ."<BR/>";
+*/
 
 
         /*** Garlic bulbils ***
          */
-// If you click, next, back, unclick, next - the checkbox is not unset.  Tried setting the form value to 0 here but that didn't
-// work because the value is stored in a SessionVarAccessor, which feeds the form and is not reset if the http doesn't contain this parm.
-// So in order to reset the checkbox we'd have to reset the form and the SessionVarAccessor['sExtra']['bBulbils'] which is inconvenient
-// to do because you have to do a whole str->urlparms->str.  Find a way to fix checkboxes right.
-        //$this->oKForm->SetValue('bBulbils',0);
-        //$_SESSION['mbrocdata']['sExtra'] = "";
+// If you click, next, back, unclick, next - the checkbox is not unset. This resets the checkbox every time, which is inconvenient if you're changing something else
+// but not as bad as not being able to uncheck the bulbil order.
+        $this->oKForm->SetValue('bBulbils',0);
+        $_SESSION['mbrocdata']['bBulbils'] = "";    // have to do this too because we're storing everything in the session during this stage
 
         $bGarlicAdvertised = true;
         $bGarlicAdvertisedButGone = false;
 
         if( $bGarlicAdvertised ) {
-            $s .= "<a name='garlic'></a>"
+            $s .= "<a name='gafrlic'></a>"
                  .$this->FormBox(
                      $this->oL->S("Garlic bulbils available for planting"),
                      ($bGarlicAdvertisedButGone
@@ -270,13 +278,15 @@ $s .= "<p style='font-weight:bold'>We're reviewing some new plans about membersh
 
     function ValidateParmsOrderMakeKFR( $oSVar )
     {
-        /*** Membership and Donation ***/
-        if( $oSVar->VarGet("mbr_type") == 'mbr1_35' )     $this->kfrOC->SetValue( "mbr_type", "mbr1_35" );
-        if( $oSVar->VarGet("mbr_type") == 'mbr1_45sed' )  $this->kfrOC->SetValue( "mbr_type", "mbr1_45sed" );
-
+        /*** Donation ***/
         $fDonation = floatval($oSVar->VarGet("donation") == 'X' ? $oSVar->VarGet("donationX") : $oSVar->VarGet("donation") );
         if( $fDonation > 0 ) {  // don't let them type a negative number
             $this->kfrOC->SetValue( "donation", strval($fDonation) );
+        }
+
+        /*** Membership ***/
+        foreach( ['mbr1_35','mbr1_45sed','mbr1_0','mbr1_10sed'] as $m ) {
+            if( $oSVar->VarGet("mbr_type") == $m )  $this->kfrOC->SetValue( "mbr_type", $m );
         }
 
         /*** Publications ***/
@@ -503,6 +513,106 @@ $s .= "<tr valign='top'><td colspan='2' class='mbro_boxheader'>Fundraising Dinne
         }
     }
 
+    function ExtraFormAfterConfirmation()
+    {
+        /* If a membership was ordered, capture extra information
+         */
+        $s = "";
+
+        if( !$this->oMbrOrder->kfr->Value('mbr_type') )  goto done;
+
+        $raWho   = ['who_gardener'    => 'Gardener',
+                    'who_farmer'      => 'Farmer',
+                    'who_seedsaver'   => 'Seed saver',
+                    'who_seedvendor'  => 'Commercial seed vendor/producer',
+                    'who_educator'    => 'Educator',
+                    'who_nfp'         => 'Not-for-profit organization',
+                    'who_heritage'    => 'Heritage site',
+                    'who_commgard'    => 'Community garden',
+        ];
+        $raHow =   ['how_exchange'    => "Exchanging saved seeds with other gardeners",
+                    'how_slgrow'      => "Growing out rare seeds from Seeds of Diversity's collection",
+                    'how_promote'     => "Promoting Seeds of Diversity in my community",
+                    'how_teach'       => "Teaching local gardeners about seed saving, pollinators, food biodiversity and history",
+        ];
+        $raLearn = ['learn_seeds'     => "Seed saving methods",
+                    'learn_poll'      => "Pollinators and pollination",
+                    'learn_gardening' => "General gardening techniques",
+                    'learn_youth'     => "Youth in gardening and food systems",
+                    'learn_heritage'  => "Food and garden history",
+                    'learn_seedysat'  => "Seedy Saturdays/Sundays",
+                    'learn_policy'    => "Policy and regulations about seeds",
+                    'learn_lgscale'   => "Scaling up seed production for vendors and wholesale growers",
+        ];
+
+        if( SEEDInput_Str('p_submitted') || $this->oMbrOrder->kfr->UrlParmGet('sExtra', "p_submitted") ) {
+            // Capture the input
+
+            foreach( array_merge($raWho,$raHow,$raLearn) as $k => $v ) {
+                if( SEEDInput_Int("p_$k") )  $this->oMbrOrder->kfr->UrlParmSet( 'sExtra', "p_$k", $v );
+            }
+            foreach( ['who_other','how_other','learn_other'] as $k ) {
+                if( ($v = SEEDInput_Str("p_$k")) )  $this->oMbrOrder->kfr->UrlParmSet( 'sExtra', "p_$k", $v );
+            }
+            $this->oMbrOrder->kfr->UrlParmSet( 'sExtra', "p_submitted", 1 );
+            $this->oMbrOrder->kfr->PutDBRow();
+
+            $sWho = "";
+            foreach( array_merge($raWho,['who_other'=>'']) as $k => $dummy ) {
+                if( ($v = $this->oMbrOrder->kfr->UrlParmGet('sExtra', "p_$k")) ) { $sWho .= ($sWho ? ", " : "").$v; }
+            }
+            $sHow = "";
+            foreach( array_merge($raHow,['how_other'=>'']) as $k => $dummy ) {
+                if( ($v = $this->oMbrOrder->kfr->UrlParmGet('sExtra', "p_$k")) ) { $sHow .= ($sHow ? ", " : "").$v; }
+            }
+            $sLearn = "";
+            foreach( array_merge($raLearn,['learn_other'=>'']) as $k => $dummy ) {
+                if( ($v = $this->oMbrOrder->kfr->UrlParmGet('sExtra', "p_$k")) ) { $sLearn .= ($sLearn ? ", " : "").$v; }
+            }
+
+            $s .= "<div style='border:1px solid #aaa;border-radius:5px;margin:20px;padding:15px'>"
+                 ."<h3>Good to get to know you!</h3>"
+                 .($sWho ? "<p>I'm a: $sWho</p>" : "")
+                 .($sHow ? "<p>I'd like to help by: $sHow</p>" : "")
+                 .($sLearn ? "<p>I'd like to learn more about: $sLearn</p>" : "")
+                 ."<p><b>You'll be able to edit these answers, and add more information too, when you login to your Seeds of Diversity member account.</b></p>"
+                 ."</div>";
+
+        } else {
+            // Draw the form
+
+            $s .= "<div style='border:1px solid #aaa;border-radius:5px;margin:20px;padding:15px'>"
+                 ."<form method='post'>"
+                 ."<h3>Welcome as a member of Seeds of Diversity!</h3>"
+                 ."<p>Please take a few moments to tell us more about yourself and your interests.</p>"
+
+                 ."<p><b>How would you describe yourself? (check all that apply)</b></p>"
+                 ."<p>".SEEDCore_ArrayExpandSeries( $raWho, "<input type='checkbox' name='p_[[k]]' value='1'/>&nbsp;[[v]]<br/>" )
+                 ."Other: <input type='text' name='p_who_other' size='20'/>"
+                 ."</p>"
+
+                 ."<p><b>How would you like to get involved in Seeds of Diversity? (check all that apply)</b></p>"
+                 ."<p>".SEEDCore_ArrayExpandSeries( $raHow, "<input type='checkbox' name='p_[[k]]' value='1'/>&nbsp;[[v]]<br/>" )
+                 ."Other: <input type='text' name='p_how_other' size='20'/>"
+                 ."</p>"
+
+                 ."<p><b>What would you like to read about in our newsletters? (check all that apply)</b></p>"
+                 ."<p>".SEEDCore_ArrayExpandSeries( $raLearn, "<input type='checkbox' name='p_[[k]]' value='1'/>&nbsp;[[v]]<br/>" )
+                 ."Other: <input type='text' name='p_learn_other' size='20'/>"
+                 ."</p>"
+
+                 ."<p><b>You'll be able to edit these answers, and add more information too, when you login to your Seeds of Diversity member account.</b></p>"
+
+                 ."<input type='hidden' name='p_submitted' value='1'/>"
+                 ."<input type='submit' value='Save'/>"
+                 ."</form>"
+                 ."</div>";
+        }
+
+        done:
+        return( $s );
+    }
+
 
     function addLocalText()
     {
@@ -593,15 +703,23 @@ $sGarlicVarieties =
             "Annual_Membership_and_Donation"
                 => array( "EN" => "Membership and Donation",
                           "FR" => "Adh&eacute;sion et dons" ),
+/*
             "One Year Membership form line - no SED"
                 => array( "EN" => "$35&nbsp;&nbsp;&nbsp;Membership for one year with on-line Seed Directory",
                           "FR" => "35$&nbsp;&nbsp;&nbsp;Adh&eacute;sion pour un an avec acc&egraves au Catalogue de semences en ligne" ),
             "One Year Membership form line"
                 => array( "EN" => "$45&nbsp;&nbsp;&nbsp;Membership for one year with printed and on-line Seed Directory",
                           "FR" => "45$&nbsp;&nbsp;&nbsp;Adh&eacute;sion pour un an avec une version imprim&eacute;e du Catalogue de semences (acc&egrave;s &agrave; la version Web inclus)" ),
+*/
+            "One Year Membership form line - online SED"
+                => array( "EN" => "<i>Free</i>&nbsp;&nbsp;&nbsp;Membership for one year with on-line Seed Directory",
+                          "FR" => "<i>Gratuit</i>&nbsp;&nbsp;&nbsp;Adh&eacute;sion pour un an avec acc&egraves au Catalogue de semences en ligne" ),
+            "One Year Membership form line - printed SED"
+                => array( "EN" => "$10&nbsp;&nbsp;&nbsp;Membership for one year with printed and on-line Seed Directory",
+                          "FR" => "10$&nbsp;&nbsp;&nbsp;Adh&eacute;sion pour un an avec une version imprim&eacute;e du Catalogue de semences (acc&egrave;s &agrave; la version Web inclus)" ),
             "Give a Charitable Donation"
-                => array( "EN" => "Give a charitable donation",
-                          "FR" => "Faire un don" ),
+                => array( "EN" => "Give a Charitable Donation",
+                          "FR" => "Faire un don charitable" ),
             "membership"
                 => array( "EN" => "Membership (new or renewal)",
                           "FR" => "Devenir membre ou renouveler votre adh&eacute;sion" ),
@@ -806,5 +924,3 @@ function DrawMbr( $kfdb, $lang = "EN", $bDrupal = false )
     $oMbrOC = new SoDMbrOrderCheckout( $kfdb, $sess, $lang, $bDrupal );
     return( $oMbrOC->Checkout() );
 }
-
-?>
