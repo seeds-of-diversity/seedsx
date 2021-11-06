@@ -444,9 +444,13 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
                              'sessionNameUID' => $this->sess->GetHTTPNameUID(),
                              'sessionNamePWD' => $this->sess->GetHTTPNamePWD(),
                              'mbrid'  => $this->oKForm->Value('mbrid'),    // you can be logged in but not a member so this can be zero
-                             'mbrname' => $this->sess->GetName()
+                             'mbrname' => $this->sess->GetName(),
+                             'bOmitFormTag' => '1',                        // these two parms allow us to put the <form> tag outside of the main form
+                             'formName' => "loginForm"
             );
             $sLogin = $this->oTmpl->ExpandTmpl( 'page1LoginBox', $raTmpl );
+            // the login form controls use this <form> which is not nested in the main form
+            $s = "<form id='loginForm' action='' method='post' accept-charset='ISO-8859-1' onsubmit='document.charset=\"iso-8859-1\"'></form>";
         }
 
         /* Draw the Form
@@ -460,9 +464,9 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
      * Instead, this draws the Login form first and the Order form second.
      */
     $s .= "<div class='container-fluid'>"
-         ."<div class='row'>"
-             ."<div class='col-sm-7'>&nbsp;</div><div class='col-sm-5'>$sLogin</div>"
-         ."</div>"
+//         ."<div class='row'>"
+//             ."<div class='col-sm-7'>&nbsp;</div><div class='col-sm-5'>$sLogin</div>"
+//         ."</div>"
 
          // this <form> surrounds the order form and contact form but !not! the login form above
          ."<form id='mbrocForm1' action='$sFormAction' method='post' accept-charset='ISO-8859-1' onsubmit='document.charset=\"iso-8859-1\"'>"
@@ -472,7 +476,7 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
                  .$this->FormDrawOrderCol()."<br/><br/>".$this->_formDrawBottomPart()
              ."</div>"
              ."<div class='col-sm-5' id='mbrocForm1col_contactinfo'>"
-                 .$this->_formDrawContactCol()
+                 .$this->_formDrawContactCol( $sLogin )
              ."</div>"
          ."</div>"
 
@@ -552,9 +556,9 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
         return( $o->oL->S($name)."<br/>".$o->oKForm->Text( $name, "", array('size'=>$size))."<br/>" );
     }
 
-    function _formDrawContactCol()
+    function _formDrawContactCol( $sTop = "" )
     {
-        $s = "";
+        $s = $sTop;
 
 
         $mL = $this->oL;

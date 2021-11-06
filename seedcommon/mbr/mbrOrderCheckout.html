@@ -75,22 +75,28 @@
   {% else %}
     <p>Members: if you have a Seeds of Diversity web account you can save time. Login here and we'll fill in your most recent address information below.</p>
   {% endif %}
-  {* Because microsoft is stupid, IE doesn't use accept-charset to send the form data in latin1. 
-     FF and Chrome do, regardless of the page encoding (utf-8 in drupal), but IE sends the form data using the page encoding. 
-     The onsubmit re-encodes the page before data is sent, which seems to work for all three browsers.
-     If you re-load or go back and forth between pages, it still works, because the page is always storing the form data in whichever 
-     encoding the browser thinks is right (utf-8 for IE presumably, and latin1 for the others due to accept-charset) so the displayed data 
-     is consistent. And when we draw drupal pages we compose the checkout in latin1 then iconv it for drupal. So everything works out - only 
-     needing the bit of js to make IE do the right thing - which is redundant to others.
-   *}
-  {* use 1252 in case people have accents in passwords? *}
-  <form action='{{SitePathSelf}}' method='post' accept-charset='ISO-8859-1' onsubmit='document.charset="iso-8859-1"'>
+
+  {* You can suppress the <form> tag if you don't want it right here *} 
+  {% if bOmitFormTag != 1 %}
+    {* Because microsoft is stupid, IE doesn't use accept-charset to send the form data in latin1. 
+       FF and Chrome do, regardless of the page encoding (utf-8 in drupal), but IE sends the form data using the page encoding. 
+       The onsubmit re-encodes the page before data is sent, which seems to work for all three browsers.
+       If you re-load or go back and forth between pages, it still works, because the page is always storing the form data in whichever 
+       encoding the browser thinks is right (utf-8 for IE presumably, and latin1 for the others due to accept-charset) so the displayed data 
+       is consistent. And when we draw drupal pages we compose the checkout in latin1 then iconv it for drupal. So everything works out - only 
+       needing the bit of js to make IE do the right thing - which is redundant to others.
+     *}
+    {* use 1252 in case people have accents in passwords? *}
+    <form id='{{formName}}' action='{{SitePathSelf}}' method='post' accept-charset='ISO-8859-1' onsubmit='document.charset="iso-8859-1"'>
+  {% endif %}
   [[LocalLang:Email address or member number | Adresse courriel ou num&eacute;ro de membre]]<br/>
-  <input type='text' name='{{sessionNameUID}}' value=''/><br/>
+  <input form='{{formName}}' type='text' name='{{sessionNameUID}}' value=''/><br/>
   [[LocalLang:Password | Mot de passe]]<br/>
-  <input type='password' name='{{sessionNamePWD}}' value=''/><br/>
-  <input type='submit' value='Login'/>
-  </form>
+  <input form='{{formName}}' type='password' name='{{sessionNamePWD}}' value=''/><br/>
+  <input form='{{formName}}' type='submit' value='Login'/>
+  {% if bOmitFormTag != 1 %}
+    </form>
+  {% endif %}
   <br/>
   {% if lang == 'FR' %}
   {% else %}
