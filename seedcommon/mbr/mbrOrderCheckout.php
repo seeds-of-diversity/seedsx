@@ -114,7 +114,7 @@ class MbrOrderCheckout {
     var $sess;
     var $lang;
 
-    private $oApp;  // should match the above variables; replace those with this
+    protected $oApp;  // should match the above variables; replace those with this
 
 //  var $kfrelMbrOrder;
     var $oMbrOrder;
@@ -431,12 +431,17 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
         if( defined("MbrOrderCheckoutOffice") ) {
             $sLogin = "<div class='mbro_box' style='width:38%;float:right'>"
                  ."<div class='mbro_boxbody'>"
-                     ."<form action='' method='post'>"
-                     ."<h3>Office Orders</h3>Member number or email address<br/><input type='text' name='mbro_office_mbrid' value='".$this->oKForm->Value('mbrid')."'/>"
-                     ." <input type='submit' value='Search'/>"
-                     ."</form>"
+// to prevent this form from being nested in the main form, refer to it using id
+//                     ."<form action='' method='post'>"
+                     ."<h3>Office Orders</h3>"
+                     ."Member number or email address<br/>"
+                     ."<input form='loginForm' type='text' name='mbro_office_mbrid' value='{$this->oKForm->Value('mbrid')}'/>"
+                     ."<input form='loginForm' type='submit' value='Search'/>"
+//                     ."</form>"
                  ."</div>"
                  ."</div>";
+            // this form not nested in the main form
+            $s .= "<form id='loginForm' action='' method='post'></form>";
         } else {
             /* Login form
              */
@@ -450,7 +455,7 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
             );
             $sLogin = $this->oTmpl->ExpandTmpl( 'page1LoginBox', $raTmpl );
             // the login form controls use this <form> which is not nested in the main form
-            $s = "<form id='loginForm' action='' method='post' accept-charset='ISO-8859-1' onsubmit='document.charset=\"iso-8859-1\"'></form>";
+            $s .= "<form id='loginForm' action='' method='post' accept-charset='ISO-8859-1' onsubmit='document.charset=\"iso-8859-1\"'></form>";
         }
 
         /* Draw the Form
@@ -763,7 +768,7 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
             .($bPaymentNeeded ? (" - ".($this->oMbrOrder->kfr->value('ePayType') == 'PayPal' ? $this->oL->S('Pay_by_credit') : $this->oL->S('Pay_by_cheque_mo'))) : "")
             ."</h2>";
 
-        $s .= $this->ExtraFormAfterConfirmation();
+        $s .= $this->OnConfirmation();
 
         $sFormAction = $this->getFormAction();
 
@@ -815,7 +820,7 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
         return( $s );
     }
 
-    function ExtraFormAfterConfirmation()
+    function OnConfirmation()
     {
         return("");
     }
