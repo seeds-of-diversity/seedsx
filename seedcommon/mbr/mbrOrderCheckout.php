@@ -768,7 +768,7 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
             .($bPaymentNeeded ? (" - ".($this->oMbrOrder->kfr->value('ePayType') == 'PayPal' ? $this->oL->S('Pay_by_credit') : $this->oL->S('Pay_by_cheque_mo'))) : "")
             ."</h2>";
 
-        $s .= $this->OnConfirmation();
+        $s .= $this->ExtraFormAfterConfirmation();
 
         $sFormAction = $this->getFormAction();
 
@@ -820,7 +820,7 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
         return( $s );
     }
 
-    function OnConfirmation()
+    function ExtraFormAfterConfirmation()
     {
         return("");
     }
