@@ -1,7 +1,7 @@
 <?php
 
 if( !defined("SITEROOT") )  define("SITEROOT", "../../");
-include_once( SITEROOT."site2.php" );
+include_once( SITEROOT."site.php" );
 
 include_once( SEEDCOMMON."console/console01kfui.php" );
 include_once( SEEDCOMMON."sl/sl_db.php" );
@@ -10,13 +10,13 @@ include_once( "_sl_admin_adoption.php" );
 
 
 $raPerms = array( 'Reports'       => array('R SL'),
-                  'Adoptions'     => array('W SLAdopt'),
+                  'Adoptions'     => ['W SL']//array('W SLAdopt'),
 );
 
-list($kfdb2, $sess) = SiteStartSessionAccount( $raPerms );
-$kfdb1 = SiteKFDB( SiteKFDB_DB_seeds1 ) or die( "Cannot connect to database" );
+list($kfdb1, $sess) = SiteStartSessionAccount( $raPerms );
+$kfdb2 = SiteKFDB( SiteKFDB_DB_seeds2 ) or die( "Cannot connect to database" );
 
-$oApp = SEEDConfig_NewAppConsole( ['db'=>'seeds2', 'sessPermsRequired' => ["W SLCollectionReport"] ] );
+$oApp = SEEDConfig_NewAppConsole_LoginNotRequired( ['db'=>'seeds1'] ); // , 'sessPermsRequired' => ["W SLCollectionReport"] ] );
 $oApp->kfdb->SetDebug(1);
 
 $raKFParms = array( "kfLogFile"=>SITE_LOG_ROOT."sl_admin.log",
