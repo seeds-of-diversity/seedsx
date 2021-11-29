@@ -281,6 +281,9 @@ class MyConsole extends Console01
             $this->kCurrGrower = $this->oApp->sess->GetUID();
             $this->kCurrSpecies = 0;   // all species
         }
+
+        // Growers and Office are cp1252, but make sure '' is too. Growers was being rendered in utf-8 on initialization, which led some members to enter notes in that charset.
+        $this->klugeThisPageIsUTF8 = ($this->TabSetGetCurrentTab('main') == 'Seeds');
     }
 
     function TabSetInit( $tsid, $tabname )
@@ -371,7 +374,7 @@ class MyConsole extends Console01
                    .($bDone ? " - Done" : "")
                    .($bSkip ? " - Skipped" : "")
                    .($bDelete ? " - Deleted" : "");
-            if( $this->TabSetGetCurrentTab( 'main' ) != 'Growers' )  $name = SEEDCore_utf8_encode(trim($name));
+            if( $this->klugeThisPageIsUTF8 )  $name = SEEDCore_utf8_encode(trim($name));    // Seeds is utf8 but Growers isn't
             $raG2[$name] = $kMbr;
         }
         ksort($raG2);
@@ -401,20 +404,16 @@ $raConsoleParms = array(
 );
 $oC = new MyConsole( $oSed, $oApp, $raConsoleParms );
 
-if( in_array($oC->TabSetGetCurrentTab('main'), ['Growers','Office'] ) ) {
-    $oC->SetConfig( array( 'sCharset' => 'cp1252' ) );
+if( !$oC->klugeThisPageIsUTF8 ) {
+    $oC->SetConfig( ['sCharset' => 'cp1252'] );
 }
 
 // Output reports in this window with no console.
 // MSDLibReport sets header(charset) based on the format of report
-$oMSDLib = new MSDLib( $oApp );     // MSDLib could be passed into MyConsole because one is constructed there.
-if( $oMSDLib->PermOfficeW() && SEEDInput_Str('doReport') ) {
+if( $oC->oMSDLib->PermOfficeW() && SEEDInput_Str('doReport') ) {
     include_once( SEEDLIB."msd/msdlibReport.php" );
-    $oReport = new MSDLibReport( $oMSDLib );
-    echo $oReport->Report();
+    echo (new MSDLibReport($oC->oMSDLib))->Report();
     exit;
 }
 
 echo $oC->DrawConsole( $oSed->SEDStyle()."[[TabSet: main]]" );
-
-?>
