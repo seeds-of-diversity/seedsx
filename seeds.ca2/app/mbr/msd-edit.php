@@ -32,6 +32,8 @@ list($kfdb, $sess, $lang) = SiteStartSessionAccount( ["W sed"] );
 
 $oApp = SEEDConfig_NewAppConsole( ['db'=>'seeds1', 'sessPermsRequired' => ["W sed"], 'lang' => $lang ] );
 
+SEEDPRG();
+
 //var_dump($_SESSION);
 //echo "<BR/><BR/>";
 //var_dump($_REQUEST);
@@ -56,9 +58,14 @@ class SEDMbr extends SEDCommon  // the member-access derivation of SED object
 
 class SEDMbrGrower extends SEDGrowerWorker
 {
-    function __construct( &$oC, &$kfdb, &$sess )
+    private $oApp;
+    private $oMSDLib;
+
+    function __construct( $oC, $oApp, $kfdb, $sess )
     {
         parent::__construct( $oC, $kfdb, $sess );
+        $this->oApp = $oApp;
+        $this->oMSDLib = new MSDLib($oApp);
     }
 
     function UpdateGrower( $kCurrGrower )
@@ -145,10 +152,13 @@ class SEDMbrGrower extends SEDGrowerWorker
 //necessary?
         $oKForm->SetKFR( $kfrG );
 
+        $kfrGxM = $this->oMSDLib->KFRelGxM()->GetRecordFromDB( "mbr_id='$kGrower'" );
+
         $sLeft = "<h3>".$kfrG->value('mbr_code')." : ".$this->oC->GetGrowerName($kGrower)."</h3>"
                 ."<p>".$oSed->S('Grower block heading')."</p>"
                 ."<div class='sed_grower' ".($oKForm->oDS->Value('bDone') ? "style='color:green;background:#cdc;'" : "").">"
-                .$oSed->drawGrowerBlock( $kfrG )
+                //.$oSed->drawGrowerBlock( $kfrG )
+                .$this->oMSDLib->DrawGrowerBlock( $kfrGxM, true )
                 ."</div>"
                 .($oKForm->oDS->Value('bDone') ? "<p style='font-size:16pt;margin-top:20px;'>Done! Thank you!</p>" : "")
                 ."<p><a href='${_SERVER['PHP_SELF']}?gdone=".$kGrower."'>"
@@ -158,13 +168,10 @@ class SEDMbrGrower extends SEDGrowerWorker
                 ."</a></p>"
                 .($this->oC->oSed->bOffice ? $this->drawGrowerOfficeSummary( $kfrG ) : "");
 
-        $sRight = "<form method='post' action='${_SERVER['PHP_SELF']}'>"
-                  // N.B. DSPreStore prevents cross-user hacks
-                 .$oKForm->HiddenKey()
-                 ."<div style='border:1px solid black; margin:10px; padding:10px'>"
-                 .$oSed->drawGrowerForm( $oKForm )
-                 ."</div>"
-                 ."</form>";
+        $sRight = "<div style='border:1px solid black; margin:10px; padding:10px'>"
+                 //.$oSed->drawGrowerForm( $oKForm )
+                 .$this->oMSDLib->DrawGrowerForm( $kfrGxM, $this->oC->oSed->bOffice )
+                 ."</div>";
 
 
         $s = "<div class='container-fluid><div class='row'>"
@@ -261,8 +268,7 @@ class MyConsole extends Console01
         $this->oApp = $oApp;
         parent::__construct( $oSed->kfdb, $oSed->sess, $raParms );
 
-        $this->oSB = new SEEDBasketCore( $this->oApp->kfdb, $this->oApp->sess, $this->oApp,
-                                         SEEDBasketProducts_SoD::$raProductTypes, array('logdir'=>SITE_LOG_ROOT) );
+        $this->oSB = new SEEDBasketCore( null, null, $this->oApp, SEEDBasketProducts_SoD::$raProductTypes, [] );
         $this->oMSDLib = new MSDLib( $oApp );
 
         if( $this->oMSDLib->PermOfficeW() ) {
@@ -280,7 +286,7 @@ class MyConsole extends Console01
     {
         switch( $tabname ) {
             case 'Growers':
-                $this->oW = new SEDMbrGrower( $this, $this->kfdb, $this->sess );
+                $this->oW = new SEDMbrGrower( $this, $this->oApp, $this->kfdb, $this->sess );
                 $this->oW->UpdateGrower( $this->kCurrGrower );
                 break;
             case 'Seeds':
