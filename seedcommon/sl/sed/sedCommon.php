@@ -424,6 +424,8 @@ class SEDGrowerWorker extends Console01_Worker1
                             'pay_stamps'     => array( 'type'=>'checkbox' ),
                             'pay_ct'         => array( 'type'=>'checkbox' ),
                             'pay_mo'         => array( 'type'=>'checkbox' ),
+                            'pay_etransfer'  => array( 'type'=>'checkbox' ),
+                            'pay_paypal'     => array( 'type'=>'checkbox' ),
                             'bDone'          => array( 'type'=>'checkbox' ) );
 
         $oKForm = new KeyFrameUIForm( $this->oC->oSed->kfrelG, NULL, array( 'formdef' => $kfuFormDef,
@@ -851,6 +853,8 @@ CREATE TABLE sed_growers (
     pay_stamps      BOOL        DEFAULT 0,
     pay_ct          BOOL        DEFAULT 0,
     pay_mo          BOOL        DEFAULT 0,              -- money order
+    pay_etransfer   tinyint     not null default 0,
+    pay_paypal      tinyint     not null default 0,
     pay_other       VARCHAR(200),
 
     nTotal          INTEGER     DEFAULT 0,
@@ -863,6 +867,12 @@ CREATE TABLE sed_growers (
     nMisc           INTEGER     DEFAULT 0,
 
     year            INTEGER,
+
+    eReqClass       enum('mail_email','mail','email') not null default 'mail_email',
+
+    eDateRange      enum('use_range','all_year') not null default 'use_range',
+    dDateRangeStart date not null default '2021-01-01',     -- want these to be year-independent
+    dDateRangeEnd   date not null default '2021-05-31',     -- want these to be year-independent
 
 
 -- Uncomment for sed_curr_seeds
