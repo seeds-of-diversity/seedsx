@@ -164,7 +164,8 @@ class SEDMbrGrower extends SEDGrowerWorker
                 ."<p><a href='${_SERVER['PHP_SELF']}?gdone=".$kGrower."'>"
                     .($oKForm->oDS->Value('bDone')
                         ? "Click here if you're not really done"
-                        : $oSed->S("Click here when you are done"))
+// {$oSed->S("Click here when you are done")}
+                        : "<div class='alert alert-warning'><h3>Your seed listings are not active yet</h3> Click here when you are ready (you can undo this)</div>")
                 ."</a></p>"
                 .($this->oC->oSed->bOffice ? $this->drawGrowerOfficeSummary( $kfrG ) : "");
 
