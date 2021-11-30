@@ -102,76 +102,42 @@ class SEDMbrGrower extends SEDGrowerWorker
 
     function DrawGrowerContent( $kGrower )
     {
-        $oSed = $this->oC->oSed;
+        $sLeft = "";
 
         if( !$kGrower || !$this->oC->oMSDLib->PermOfficeW() ) {
-            $kGrower = $this->oC->sess->GetUID();
+            $kGrower = $this->oApp->sess->GetUID();
         }
 
-        $oKForm = $this->NewGrowerForm();
-        /******
- * The mbr_id is passed through http, but DSPreStore checks that it is the same as $sess->GetUID() to prevent cross-user hacks.
- */
-        $oKForm->Update();
+        $oGrowerForm = new MSDAppGrowerForm( $this->oMSDLib, $this->oC->oSed->currentYear, $this->oC->oSed->bOffice );
+        $oGrowerForm->Update();
+        // Fetch kfrGxM if there's a grower record for kGrower, or just get an empty kfrG if not
+        $oGrowerForm->SetKGrower( $kGrower );
 
-        $kfrG = $oSed->kfrelG->GetRecordFromDB( "mbr_id='$kGrower'" );
-        if( !$kfrG ) {
-            if( !$this->oC->sess->GetUID() )  die( "You have to be logged in to list seeds in the Member Seed Directory" );
-
-            $s = "<h4>Hello ".$this->oC->sess->GetName()."</h4>"
-                ."<p>This is your first time listing seeds in our Member Seed Directory. "
-                ."Please fill in the form below to register as a seed grower. <br/>"
-                ."After that, you will be able to enter the seeds that you want to offer to other Seeds of Diversity members.</p>"
-                ."<p>Thanks for sharing your seeds!</p>";
-
-            // box showing our membership info
-            $raMbr = $oSed->GetMbrContactsRA( $kGrower );  // derived class fetches mbr_contacts row
-            $s .= SEEDStd_ArrayExpand( $raMbr, "<div style='border:1px solid #aaa;margin:10px;padding:10px;float:right'>"
-                                              ."<b>[[firstname]] [[lastname]] [[company]] (member [[_key]])</b><br/>"
-                                              ."[[address]], [[city]] [[province]] [[postcode]]<br/>"
-                                              ."[[phone]]<br/>"
-                                              ."[[email]]"
-                                              ."</div>" );
-
-
-            $kfrG = $oSed->kfrelG->CreateRecord();
-            $kfrG->SetValue( 'mbr_id', $kGrower );
-            $oKForm->SetKFR( $kfrG );
-
-            $s .= "<FORM method='post' action='${_SERVER['PHP_SELF']}'>"
-            // N.B. DSPreStore prevents cross-user hacks
-          .$oKForm->Hidden('mbr_id')
-          ."<DIV style='border:1px solid black; margin:10px; padding:10px'>"  // console01 does this style in the office app
-          .$oSed->drawGrowerForm( $oKForm )
-          ."</DIV>"
-          ."</FORM>";
-
-            return( $s );
+        if( !($oGrowerForm->Value('M__key')) ) {
+// also show this if zero seeds have been entered and this is their first year
+            $sLeft .=
+                  "<h4>Hello ".$this->oApp->sess->GetName()."</h4>"
+                 ."<p>This is your first time listing seeds in our Member Seed Exchange. "
+                 ."Please fill in this form to register as a seed grower. <br/>"
+                 ."After that, you will be able to enter the seeds that you want to offer to other Seeds of Diversity members.</p>"
+                 ."<p>Thanks for sharing your seeds!</p>";
         }
 
-//necessary?
-        $oKForm->SetKFR( $kfrG );
-
-        $kfrGxM = $this->oMSDLib->KFRelGxM()->GetRecordFromDB( "mbr_id='$kGrower'" );
-
-        $sLeft = "<h3>".$kfrG->value('mbr_code')." : ".$this->oC->GetGrowerName($kGrower)."</h3>"
-                ."<p>".$oSed->S('Grower block heading')."</p>"
-                ."<div class='sed_grower' ".($oKForm->oDS->Value('bDone') ? "style='color:green;background:#cdc;'" : "").">"
-                //.$oSed->drawGrowerBlock( $kfrG )
-                .$this->oMSDLib->DrawGrowerBlock( $kfrGxM, true )
+        $sLeft .= "<h3>".$oGrowerForm->value('mbr_code')." : ".$this->oC->GetGrowerName($kGrower)."</h3>"
+                ."<p>".$this->oC->oSed->S('Grower block heading')."</p>"
+                ."<div class='sed_grower' ".($oGrowerForm->Value('bDone') ? "style='color:green;background:#cdc;'" : "").">"
+                .$this->oMSDLib->DrawGrowerBlock( $oGrowerForm->GetKFR(), true )
                 ."</div>"
-                .($oKForm->oDS->Value('bDone') ? "<p style='font-size:16pt;margin-top:20px;'>Done! Thank you!</p>" : "")
-                ."<p><a href='${_SERVER['PHP_SELF']}?gdone=".$kGrower."'>"
-                    .($oKForm->oDS->Value('bDone')
+                .($oGrowerForm->Value('bDone') ? "<p style='font-size:16pt;margin-top:20px;'>Done! Thank you!</p>" : "")
+                ."<p><a href='{$this->oMSDLib->oApp->PathToSelf()}?gdone=$kGrower'>"
+                    .($oGrowerForm->Value('bDone')
                         ? "Click here if you're not really done"
-// {$oSed->S("Click here when you are done")}
                         : "<div class='alert alert-warning'><h3>Your seed listings are not active yet</h3> Click here when you are ready (you can undo this)</div>")
                 ."</a></p>"
-                .($this->oC->oSed->bOffice ? $this->drawGrowerOfficeSummary( $kfrG ) : "");
+                .($this->oC->oSed->bOffice ? $this->drawGrowerOfficeSummary( $oGrowerForm->GetKFR() ) : "");
 
         $sRight = "<div style='border:1px solid black; margin:10px; padding:10px'>"
-                 //.$oSed->drawGrowerForm( $oKForm )
-                 .$this->oMSDLib->DrawGrowerForm( $kfrGxM, $this->oC->oSed->bOffice )
+                 .$oGrowerForm->DrawGrowerForm()
                  ."</div>";
 
 
@@ -183,7 +149,7 @@ class SEDMbrGrower extends SEDGrowerWorker
         return( $s );
     }
 
-    private function drawGrowerOfficeSummary( KFRecord $kfrG )
+    private function drawGrowerOfficeSummary( KeyframeRecord $kfrG )
     {
         $kGrower = $kfrG->Value('mbr_id');
 
@@ -210,15 +176,11 @@ class SEDMbrGrower extends SEDGrowerWorker
 */
         list($kP_dummy,$dSUpdated,$kSUpdatedBy) = $this->oC->oSB->oDB->ProductLastUpdated( "P.product_type='seeds' AND P.uid_seller='$kGrower'" );
 
-        global $config_KFDB;
-        $dbname1 = $config_KFDB['seeds1']['kfdbDatabase'];
-        $dbname2 = $config_KFDB['seeds2']['kfdbDatabase'];
+        $nSActive = $this->oApp->kfdb->Query1( "SELECT count(*) FROM {$this->oApp->DBName('seeds1')}.SEEDBasket_Products
+                                                WHERE product_type='seeds' AND _status='0' AND
+                                                      uid_seller='$kGrower' AND eStatus='ACTIVE'" );
 
-        $nSActive = $this->oC->oApp->kfdb->Query1( "SELECT count(*) FROM {$dbname1}.SEEDBasket_Products
-                                                    WHERE product_type='seeds' AND _status='0' AND
-                                                          uid_seller='$kGrower' AND eStatus='ACTIVE'" );
-
-        $dMbrExpiry = $this->oC->oApp->kfdb->Query1( "SELECT expires FROM {$dbname2}.mbr_contacts WHERE _key='$kGrower'" );
+        $dMbrExpiry = $this->oApp->kfdb->Query1( "SELECT expires FROM {$this->oApp->DBName('seeds2')}.mbr_contacts WHERE _key='$kGrower'" );
 
         $sSkip = $kfrG->Value('bSkip')
                     ? ("<div style='background-color:#ee9'><span style='font-size:12pt'>Skipped</span>"
@@ -229,14 +191,16 @@ class SEDMbrGrower extends SEDGrowerWorker
                       ." <a href='{$_SERVER['PHP_SELF']}?gdelete=$kGrower'>UnDelete this grower</a></div>")
                     : ("<div><a href='{$_SERVER['PHP_SELF']}?gdelete=$kGrower'>Delete this grower</a></div>");
 
-        // days since GUpdate
-        if( (new DateTime())->diff(new DateTime($dGUpdated))->days < 90 ) {
-            $dGUpdated = "<span style='color:green;background-color:#cdc'>$dGUpdated</span>";
-        }
-        // days since SUpdate
-        if( (new DateTime())->diff(new DateTime($dSUpdated))->days < 90 ) {
-            $dSUpdated = "<span style='color:green;background-color:#cdc'>$dSUpdated</span>";
-        }
+        try {
+            // days since GUpdate
+            if( (new DateTime())->diff(new DateTime($dGUpdated))->days < 90 ) {
+                $dGUpdated = "<span style='color:green;background-color:#cdc'>$dGUpdated</span>";
+            }
+            // days since SUpdate
+            if( (new DateTime())->diff(new DateTime($dSUpdated))->days < 90 ) {
+                $dSUpdated = "<span style='color:green;background-color:#cdc'>$dSUpdated</span>";
+            }
+        } catch (Exception $e) {}
 
         $s = "<div style='border:1px solid black; margin:10px; padding:10px'>"
             ."<p>Seeds active: $nSActive</p>"
