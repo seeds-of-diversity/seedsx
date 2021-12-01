@@ -22,7 +22,7 @@ $SEEDSessionAuthUI_Config
     = array( 'urlActivation'          => 'https://www.seeds.ca/login',   // link sent in Create Account activation email
              'urlSendPasswordSite'    => 'https://www.seeds.ca/login',   // 'web site' in Send Password email
              'iActivationInitialGid1' => 3,                              // Public
-             'bEnableCreateAccount'   => true /*false*/                  // Random people may create accounts
+             'bEnableCreateAccount'   => false /*true*/                  // Random people may NOT create accounts
            );
 
 define("SITE_DB_DEF_FILE", CONFIG_DIR."seeds_def1.php" );  // this def is used by SEEDSetup and below
@@ -37,7 +37,7 @@ define("SiteKFDB_PASSWORD", SiteKFDB_PASSWORD_seeds1);
 function Site_path_self()
 /************************
     Get the path to the current page. Does the right thing if you're on a drupal page, and also if drupal is not present.
-    
+
     Note <form action=""> is not desirable because it defaults to the current browser address including any GET parms that are currently there
  */
 {
@@ -55,7 +55,7 @@ function Site_path_self()
             // base_path() ends with /sw8/web/ on dev, or is exactly that on prod (unless this is changed in settings.php). Suppress showing that path.
             if( substr( $path, -9 ) == '/sw8/web/' )  $path = substr( $path, 0, -9 );
 
-            // $page below has a leading-/ so remove any trailing-/ on $path 
+            // $page below has a leading-/ so remove any trailing-/ on $path
             if( substr( $path, -1 ) == '/' )  $path = substr( $path, 0, -1 );
 
             $current_path = \Drupal::service('path.current')->getPath();			// current internal route
@@ -66,7 +66,7 @@ function Site_path_self()
         // wordpress
     } else {
         // not in drupal
-        
+
         // PHP_SELF is unsafe because page requests can look like seeds.ca/foo/index.php/"><script>alert(1);</script><span class="
         // Use htmlspecialchars to make injected js non-parseable
         $path = SEEDCore_HSC($_SERVER['PHP_SELF']);
