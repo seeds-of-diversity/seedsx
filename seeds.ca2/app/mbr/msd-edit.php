@@ -363,7 +363,7 @@ $raConsoleParms = array(
     'lang' => $lang,
     'bBootstrap' => true,
     'css_files' => [ W_CORE."css/console02.css" ],
-    'script_files' => [ W_ROOT."std/js/SEEDStd.js", W_CORE."js/SEEDCore.js", W_CORE."js/console02.js" ],
+    'script_files' => [ W_ROOT."std/js/SEEDStd.js", W_CORE."js/SEEDCore.js", W_CORE."js/console02.js",W_ROOT."std/js/SEEDPopover.js" ],
     'sCharset' => 'utf-8'
 );
 $oC = new MyConsole( $oSed, $oApp, $raConsoleParms );
@@ -381,3 +381,45 @@ if( $oC->oMSDLib->PermOfficeW() && SEEDInput_Str('doReport') ) {
 }
 
 echo $oC->DrawConsole( $oSed->SEDStyle()."[[TabSet: main]]" );
+
+?>
+<style>
+.popover { width: 20%; }    /* when container:'body' specified ths makes the popover 20% of the window width */
+</style>
+<script type='text/javascript'>
+
+<?php
+if( true ) {
+    ?>
+    $(document).ready( function() {
+        SEEDPopover();
+    });
+    <?php
+}
+?>
+
+
+SEEDPopover_Def = {
+	mbr_code:
+	    { placement:'right', trigger: 'hover', container: 'body',
+	      title:   "Member Code",
+		  content: "We use this in the printed seed directory as a shorthand code to identify you. If you don't have one yet, our office will set it up for you."
+		},
+	unlisted:
+	    { placement:'right', trigger: 'hover', container: 'body',
+	      title:   "Unlisted email/phone",
+		  content: "You can keep your email address or phone number hidden from other members. Remember that you might want them to contact you though."
+		},
+	frost_free:
+	    { placement:'right', trigger: 'hover', container: 'body',
+	      title:   "Frost free days",
+		  content: "Estimate the typical length of your season from last spring frost to first fall frost. This helps other members know whether their season is compatible."
+		},
+	organic:
+	    { placement:'right', trigger: 'hover', container: 'body',
+	      title:   "Organic seeds",
+		  content: "Your seeds don't necessarily have to be certified organic. Members just want to know if you avoid chemicals in your garden."
+		}
+};
+
+</script>
