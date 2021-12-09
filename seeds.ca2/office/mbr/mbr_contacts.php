@@ -264,7 +264,7 @@ class mbrContacts_Contacts extends Console01_Worker1
             .$oForm->TextTD( 'startdate', "Start Date", $raPDisabled )
             ."</TR>"
             ."<TR valign='top'>"
-            ."<TD>&nbsp;</TD><TD>&nbsp;</TD>"
+            .$oForm->TextTD( 'bNoDonorAppeals', "No Donor Appeals", $raP )
             .$oForm->TextTD( 'lastrenew', "Lastrenew", [] ) // $raPDisabled )
             ."</TR>"
 //            ."<tr><td colspan='2'>&nbsp;</td>"
