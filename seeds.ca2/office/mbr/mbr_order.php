@@ -253,9 +253,9 @@ class drawFormContact
         'phone'      => ['Phone',        'mail_phone',     'phone'],
         'lang'       => ['Language',     '',               'lang'],
         'referral'   => ['Referral',     '',               'referral'],
-        'expires'       => ['Expires',     '',               'expires'],
-        'lastrenew'       => ['Last Renewal',     '',               'lastrenew'],
-        'startdate'       => ['Start Date',     '',               'startdate'],
+        'expires'       => ['Expires',     '',               'expires', 0, 'disabled'],
+        'lastrenew'       => ['Last Renewal',     '',               'lastrenew', 0, 'disabled'],
+        'startdate'       => ['Start Date',     '',               'startdate', 0, 'disabled'],
         'bNoEBull'   => ['No E-bulletin','',               'bNoEBull', 3],
         'bNoDonorAppeals' => ['No Donor Appeals',     '',               'bNoDonorAppeals', 3],
 //        'bNoSED'       => ['Online MSD',     '',               'bNoSED', 3],
@@ -271,7 +271,8 @@ class drawFormContact
 
         $ra = ['attrs'=>"placeholder='$placeholder'"];
         if( @$this->raItems[$fld][3] ) { $ra['size'] = $this->raItems[$fld][3]; }
-        if( $valMbr && $valOrder == $valMbr ) {
+        $bDisabled = @$this->raItems[$fld][4] == 'disabled';
+        if( $bDisabled || $valMbr && $valOrder == $valMbr ) {
             // disable the control if it is not blank and it matches the value in the order form (if blank we might want to enter something there)
             //$ra['disabledAddHidden'] = 1;   // disabled controls look right but don't report values; this appends a hidden element too
             $ra['disabled'] = 1;              // $().find() reads values of disabled controls though
