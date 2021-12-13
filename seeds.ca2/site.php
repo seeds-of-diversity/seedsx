@@ -21,7 +21,7 @@ SiteCommon_init( array(
 $SEEDSessionAuthUI_Config
     = array( 'urlActivation'          => 'https://www.seeds.ca/login',   // link sent in Create Account activation email
              'urlSendPasswordSite'    => 'https://www.seeds.ca/login',   // 'web site' in Send Password email
-             'iActivationInitialGid1' => 3,                              // Public
+             'iActivationInitialGid1' => 2,                              // 2=Members, 3=Public
              'bEnableCreateAccount'   => false /*true*/                  // Random people may NOT create accounts
            );
 

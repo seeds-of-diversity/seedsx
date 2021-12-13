@@ -619,7 +619,7 @@ include_once(SEEDLIB."mbr/MbrContacts.php");
         $kMbr = $kfrM->Key();
 
         global $SEEDSessionAuthUI_Config;
-        $gid1 = intval(@$SEEDSessionAuthUIConfig['iActivationInitialGid1']);
+        $gid1 = intval(@$SEEDSessionAuthUI_Config['iActivationInitialGid1']);
         $realname = trim($this->oMbrOrder->kfr->Value('mail_firstname').' '.$this->oMbrOrder->kfr->Value('mail_lastname')) ?: $this->oMbrOrder->kfr->Value('mail_company');
         $tmpPassword = $this->oApp->kfdb->Query1( "SELECT left(md5('{addslashes($email)}'),6)" );
 
