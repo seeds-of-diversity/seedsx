@@ -18,6 +18,7 @@ include_once( SEEDCOMMON."mbr/mbrOrderCheckout.php" );
 class SoDMbrOrderCheckout extends MbrOrderCheckout
 {
     private $bDrupal = false;
+    //protected $oApp is in parent
 
     function __construct( KeyFrameDB $kfdb, SEEDSessionAccount $sess, $lang, $bDrupal = false )
     {
@@ -82,10 +83,7 @@ class SoDMbrOrderCheckout extends MbrOrderCheckout
 
         $s .= $this->FormBox( $this->oL->S('membership'),
                               "<div style='font-weight:bold;margin-bottom:5px'>{$this->oL->S('membership')}</div>"
-                             ."<div class='mbro_help'>"
-                                 ."<p>Seeds of Diversity members can participate in our seed exchange and seed grow-out programs, and support many projects in their communities.</p>"
-                                 ."<p><i>Membership is free for 2022!</i></p>"
-                             ."</div>"
+                             ."<div class='mbro_help'>{$this->oL->S('membership_desc2022')}</div>"
                              ."<div class='mbro_ctrl'>"
                                  //."<p>".$this->oKForm->Checkbox( 'mbrJoin', "&nbsp;Join or renew your membership. We'll ask you to fill in a short survey about your interests on the next page." )."</p>"  //$this->oL->S("Please send samples of garlic bulbils for $15") )."</p>")
                                  .$this->oKForm->Radio('mbr_type',"",'mbr1_0')."&nbsp;&nbsp;&nbsp;".$this->oL->S('One Year Membership form line - online SED')."<br/>"
@@ -227,7 +225,7 @@ class SoDMbrOrderCheckout extends MbrOrderCheckout
         $s .= $this->mbr_pub( "ssh_en6" );
         $s .= $this->mbr_pub( "ssh_fr6" );
         $s .= $this->mbr_pub( "suechan2012" );
-        $s .= $this->mbr_pub( "kent2012" );
+        //$s .= $this->mbr_pub( "kent2012" );
 
         if( true ) { //$this->oL->GetLang() == "EN" ) {
             $s .= "<tr><td>".$this->oL->S('vend_everyseed')."</td>"
@@ -513,61 +511,180 @@ $s .= "<tr valign='top'><td colspan='2' class='mbro_boxheader'>Fundraising Dinne
         }
     }
 
-    function ExtraFormAfterConfirmation()
+    function OnConfirmation()
     {
-        /* If a membership was ordered, capture extra information
-         */
         $s = "";
+        $bOutputFinal = false;
 
+        /* If a membership was ordered: capture extra information, record member confirmation date, send email
+         */
         if( !$this->oMbrOrder->kfr->Value('mbr_type') )  goto done;
 
-        $raWho   = ['who_gardener'    => 'Gardener',
-                    'who_farmer'      => 'Farmer',
-                    'who_seedsaver'   => 'Seed saver',
-                    'who_seedvendor'  => 'Commercial seed vendor/producer',
-                    'who_educator'    => 'Educator',
-                    'who_nfp'         => 'Not-for-profit organization',
-                    'who_heritage'    => 'Heritage site',
-                    'who_commgard'    => 'Community garden',
-        ];
-        $raHow =   ['how_exchange'    => "Exchanging saved seeds with other gardeners",
-                    'how_slgrow'      => "Growing out rare seeds from Seeds of Diversity's collection",
-                    'how_promote'     => "Promoting Seeds of Diversity in my community",
-                    'how_teach'       => "Teaching local gardeners about seed saving, pollinators, food biodiversity and history",
-        ];
-        $raLearn = ['learn_seeds'     => "Seed saving methods",
-                    'learn_poll'      => "Pollinators and pollination",
-                    'learn_gardening' => "General gardening techniques",
-                    'learn_youth'     => "Youth in gardening and food systems",
-                    'learn_heritage'  => "Food and garden history",
-                    'learn_seedysat'  => "Seedy Saturdays/Sundays",
-                    'learn_policy'    => "Policy and regulations about seeds",
-                    'learn_lgscale'   => "Scaling up seed production for vendors and wholesale growers",
-        ];
 
-        if( SEEDInput_Str('p_submitted') || $this->oMbrOrder->kfr->UrlParmGet('sExtra', "p_submitted") ) {
-            // Capture the input
+        /* If the member information form hasn't been shown yet, do that and come back here after it's been saved
+         */
+        list($bOutputFinal,$s) = $this->onConfirmationDrawMemberInfoForm();
+        if( $bOutputFinal )  goto done;
 
-            foreach( array_merge($raWho,$raHow,$raLearn) as $k => $v ) {
-                if( SEEDInput_Int("p_$k") )  $this->oMbrOrder->kfr->UrlParmSet( 'sExtra', "p_$k", $v );
-            }
-            foreach( ['who_other','how_other','learn_other'] as $k ) {
-                if( ($v = SEEDInput_Str("p_$k")) )  $this->oMbrOrder->kfr->UrlParmSet( 'sExtra', "p_$k", $v );
-            }
-            $this->oMbrOrder->kfr->UrlParmSet( 'sExtra', "p_submitted", 1 );
-            $this->oMbrOrder->kfr->PutDBRow();
 
-            $sWho = "";
-            foreach( array_merge($raWho,['who_other'=>'']) as $k => $dummy ) {
-                if( ($v = $this->oMbrOrder->kfr->UrlParmGet('sExtra', "p_$k")) ) { $sWho .= ($sWho ? ", " : "").$v; }
+        /* If logged in or email address given and found in our databases, update their member confirmation date and send welcome email.
+         * Else if email given, create a new member record and proceed as above.
+         * Else no email given, flag manual confirmation.
+         */
+include_once(SEEDLIB."mbr/MbrContacts.php");
+        $oMbr = new Mbr_Contacts($this->oApp);
+
+        // find the member by login or email given in order
+        if( !($kMbr = intval($this->oMbrOrder->kfr->UrlParmGet('sExtra', 'mbrid'))) ) {
+            if( ($email = $this->oMbrOrder->kfr->Value('mail_email')) ) {
+                $kMbr = $this->oApp->sess->oDB->GetKUserFromEmail($email)
+                     ?: intval( @(new Mbr_Contacts($this->oApp))->GetBasicValues($email)['_key']);
             }
-            $sHow = "";
-            foreach( array_merge($raHow,['how_other'=>'']) as $k => $dummy ) {
-                if( ($v = $this->oMbrOrder->kfr->UrlParmGet('sExtra', "p_$k")) ) { $sHow .= ($sHow ? ", " : "").$v; }
+        }
+        // if member not found, create a new one if we have an email address
+        if( !$kMbr ) {
+            if( $email ) {
+                $kMbr = $this->onConfirmationCreateMember( $oMbr, $email );
+                //$this->oMbrOrder->kfr->UrlParmSet( 'sExtra', 'mbrid', $kMbr );  this is done below
+                //$this->oMbrOrder->kfr->PutDBRow();
+            } else {
+                // Not logged in, no email given. Flag this membership for manual confirmation.
+                $this->oMbrOrder->kfr->UrlParmSet( 'sExtra', "flag_mbr_needs_manual_confirmation", 1 );
+                $this->oMbrOrder->kfr->PutDBRow();
             }
-            $sLearn = "";
-            foreach( array_merge($raLearn,['learn_other'=>'']) as $k => $dummy ) {
-                if( ($v = $this->oMbrOrder->kfr->UrlParmGet('sExtra', "p_$k")) ) { $sLearn .= ($sLearn ? ", " : "").$v; }
+        }
+
+
+        if( $kMbr ) {
+            // record member id in order record if it was discovered or created above
+            if( !$this->oMbrOrder->kfr->UrlParmGet('sExtra', 'mbrid') ) {
+                $this->oMbrOrder->kfr->UrlParmSet('sExtra', 'mbrid', $kMbr);
+                $this->oMbrOrder->kfr->PutDBRow();
+            }
+
+            // record member confirmation date
+            $kfrM = $oMbr->oDB->KFRel('M')->GetRecordFromDBKey($kMbr);
+            $kfrM->SetValue( 'lastrenew', date('Y-m-d') );                      // confirmed today
+            $kfrM->SetValue( 'expires', date('Y-m-d', strtotime("+1 year")) );  // until a year from now
+            if( !$kfrM->Value('startdate') ) {
+                $kfrM->SetValue( 'startdate', date('Y-m-d') );                  // started today if new
+            }
+            $kfrM->PutDBRow();
+
+            $sAlert = "";
+
+            // send welcome email
+            if( ($email = $kfrM->Value('email')) ) {
+                include_once( SEEDLIB."mail/SEEDMail.php" );
+                $oMail = new SEEDMail( $this->oApp, 'MbrWelcome01EN' );
+                if( $oMail->Key() ) {
+                    $oMail->AddRecipient( $kfrM->Value('email') );
+                    $oMail->StageMail();
+
+                    $oMailSend = new SEEDMailSend($this->oApp);
+                    while( $oMailSend->GetCountReadyToSend() < 5 ) {    // don't initiate send if there's a large mail process already going
+                        $oMailSend->SendOne();
+                    }
+
+                    $sAlert .= "<p>We've sent an email to <b>$email</b> with details about your web account.</p>";
+                } else {
+                    // couldn't find the welcome email - send a warning to someone?
+                }
+            }
+
+            $sAlert .= "<p>Your membership is now up-to-date until ".(date('M d, Y', strtotime($kfrM->Value('expires')))).".</p>";
+
+            $sAlert = "<div class='alert alert-success'>$sAlert</div>";
+            if( SEEDCore_Contains( $s, "<replaceWithNewExpiryDate/>") ) {
+                $s = str_replace( "<replaceWithNewExpiryDate/>", $sAlert, $s );
+            } else {
+                $s .= $sAlert;
+            }
+        }
+
+        done:
+        return( [$bOutputFinal,$s] );
+    }
+
+    private function onConfirmationCreateMember( Mbr_Contacts $oMbr, string $email )
+    {
+        /* Member not logged in, email given, but email not found in our databasees. Create new member and user.
+         */
+        $kfrM = $oMbr->oDB->KFRel('M')->CreateRecord();
+        $kfrM->SetValue( 'email', $email );
+        $kfrM->SetValue( 'firstname', $this->oMbrOrder->kfr->Value('mail_firstname') );
+        $kfrM->SetValue( 'lastname', $this->oMbrOrder->kfr->Value('mail_lastname') );
+        $kfrM->SetValue( 'company', $this->oMbrOrder->kfr->Value('mail_company') );
+        $kfrM->PutDBRow();
+        $kMbr = $kfrM->Key();
+
+        global $SEEDSessionAuthUI_Config;
+        $gid1 = intval(@$SEEDSessionAuthUIConfig['iActivationInitialGid1']);
+        $realname = trim($this->oMbrOrder->kfr->Value('mail_firstname').' '.$this->oMbrOrder->kfr->Value('mail_lastname')) ?: $this->oMbrOrder->kfr->Value('mail_company');
+        $tmpPassword = $this->oApp->kfdb->Query1( "SELECT left(md5('{addslashes($email)}'),6)" );
+
+        $oSessDB = new SEEDSessionAccountDB2( $this->oApp->kfdb, $this->oApp->sess->GetUID(), ['dbname'=>$this->oApp->DBName('seeds1')] );
+        $oSessDB->CreateUser( $email, $tmpPassword,
+                              ['k'=>$kMbr,
+                               'realname'=>$realname,
+                               'eStatus'=>'ACTIVE',
+                               'lang'=>$this->oMbrOrder->kfr->Value('mail_lang'),
+                               'gid1'=> $gid1,
+                              ] );
+
+        return( $kMbr );
+    }
+
+    private function onConfirmationDrawMemberInfoForm()
+    {
+        $s = "";
+        $bOutputFinal = false;
+
+        include_once( SEEDLIB."mbr/MbrProfile.php" );
+        $oMP = new MbrProfile( $this->oApp, $this->oMbrOrder->kfr->value('mail_lang') );
+
+        $bAlreadyStored = $this->oMbrOrder->kfr->UrlParmGet('sExtra', "mbrInfoSaved");
+        $bSubmittingNow = SEEDInput_Int('p_submitted');
+
+        if( $bAlreadyStored || $bSubmittingNow ) {
+
+            if( $bSubmittingNow ) {
+                // Capture the input
+                $raProfile = $oMP->InputFormData();  // get profile data from the form http
+
+                // $raProfile has the form 'mbrWho_codes'=>"a,b,c" ; write that in the form "mbrWho=a,b,c&..."
+                foreach( ['mbrWho','mbrHow','mbrLearn'] as $k ) {
+                    if( $raProfile[$k.'_codes'] ) {
+                        $this->oMbrOrder->kfr->UrlParmSet( 'sExtra', $k, $raProfile[$k.'_codes'] );
+                    } else {
+                        $this->oMbrOrder->kfr->UrlParmRemove( 'sExtra', $k );
+                    }
+
+                    // also mbrWhoOther, mbrHowOther, mbrLearnOther verbatim or missing if blank
+                    $kOther = $k.'Other';
+                    if( $raProfile[$kOther] ) {
+                        $this->oMbrOrder->kfr->UrlParmSet( 'sExtra', $kOther, $raProfile[$kOther] );
+                    } else {
+                        $this->oMbrOrder->kfr->UrlParmRemove( 'sExtra', $kOther );
+                    }
+                }
+
+                $this->oMbrOrder->kfr->UrlParmSet( 'sExtra', "mbrInfoSaved", 1 );
+                $this->oMbrOrder->kfr->PutDBRow();
+            }
+
+            // this can be done more straightforwardly when MbrProfile knows about storage in SEEDSessionUsersMetadata, or wherever we will keep this ?
+            $sWho = $oMP->KlugeString( $this->oMbrOrder->kfr->UrlParmGet('sExtra', 'mbrWho'));
+            if( ($o = $this->oMbrOrder->kfr->UrlParmGet('sExtra', 'mbrWhoOther')) ) {
+                $sWho .= ($sWho ? ', ' : '').$o;
+            }
+            $sHow = $oMP->KlugeString( $this->oMbrOrder->kfr->UrlParmGet('sExtra', 'mbrHow'));
+            if( ($o = $this->oMbrOrder->kfr->UrlParmGet('sExtra', 'mbrHowOther')) ) {
+                $sHow .= ($sHow ? ', ' : '').$o;
+            }
+            $sLearn = $oMP->KlugeString( $this->oMbrOrder->kfr->UrlParmGet('sExtra', 'mbrLearn') );
+            if( ($o = $this->oMbrOrder->kfr->UrlParmGet('sExtra', 'mbrLearnOther')) ) {
+                $sLearn .= ($sLearn ? ', ' : '').$o;
             }
 
             $s .= "<div style='border:1px solid #aaa;border-radius:5px;margin:20px;padding:15px'>"
@@ -576,41 +693,27 @@ $s .= "<tr valign='top'><td colspan='2' class='mbro_boxheader'>Fundraising Dinne
                  .($sHow ? "<p>I'd like to help by: $sHow</p>" : "")
                  .($sLearn ? "<p>I'd like to learn more about: $sLearn</p>" : "")
                  ."<p><b>You'll be able to edit these answers, and add more information too, when you login to your Seeds of Diversity member account.</b></p>"
+                 ."<replaceWithNewExpiryDate/>"
                  ."</div>";
 
         } else {
             // Draw the form
+            $s = $oMP->DrawProfileForm();
 
-            $s .= "<div style='border:1px solid #aaa;border-radius:5px;margin:20px;padding:15px'>"
-                 ."<form method='post'>"
-                 ."<h3>Welcome as a member of Seeds of Diversity!</h3>"
-                 ."<p>Please take a few moments to tell us more about yourself and your interests.</p>"
-
-                 ."<p><b>How would you describe yourself? (check all that apply)</b></p>"
-                 ."<p>".SEEDCore_ArrayExpandSeries( $raWho, "<input type='checkbox' name='p_[[k]]' value='1'/>&nbsp;[[v]]<br/>" )
-                 ."Other: <input type='text' name='p_who_other' size='20'/>"
-                 ."</p>"
-
-                 ."<p><b>How would you like to get involved in Seeds of Diversity? (check all that apply)</b></p>"
-                 ."<p>".SEEDCore_ArrayExpandSeries( $raHow, "<input type='checkbox' name='p_[[k]]' value='1'/>&nbsp;[[v]]<br/>" )
-                 ."Other: <input type='text' name='p_how_other' size='20'/>"
-                 ."</p>"
-
-                 ."<p><b>What would you like to read about in our newsletters? (check all that apply)</b></p>"
-                 ."<p>".SEEDCore_ArrayExpandSeries( $raLearn, "<input type='checkbox' name='p_[[k]]' value='1'/>&nbsp;[[v]]<br/>" )
-                 ."Other: <input type='text' name='p_learn_other' size='20'/>"
-                 ."</p>"
-
-                 ."<p><b>You'll be able to edit these answers, and add more information too, when you login to your Seeds of Diversity member account.</b></p>"
-
-                 ."<input type='hidden' name='p_submitted' value='1'/>"
-                 ."<input type='submit' value='Save'/>"
-                 ."</form>"
-                 ."</div>";
+            $bOutputFinal = true;   // the confirmation screen will only show this content
         }
 
-        done:
-        return( $s );
+        return( [$bOutputFinal,$s] );
+    }
+
+    function OnPayment()
+    {
+        /* Call this when payment is made.
+         * For paypal - call when the IPN payment notification is received
+         * For cheque, e-transfer - call when someone clicks the Paid button in the fulfilment application
+         */
+
+        // put this in SEEDBasketStore_Basket::OnPayment()
     }
 
 
@@ -713,7 +816,7 @@ $sGarlicVarieties =
 */
             "One Year Membership form line - online SED"
                 => array( "EN" => "<i>Free</i>&nbsp;&nbsp;&nbsp;Membership for one year with on-line Seed Directory",
-                          "FR" => "<i>Gratuit</i>&nbsp;&nbsp;&nbsp;Adh&eacute;sion pour un an avec acc&egraves au Catalogue de semences en ligne" ),
+                          "FR" => "<i>Gratuite</i>&nbsp;&nbsp;&nbsp;Adh&eacute;sion pour un an avec acc&egraves au Catalogue de semences en ligne" ),
             "One Year Membership form line - printed SED"
                 => array( "EN" => "$10&nbsp;&nbsp;&nbsp;Membership for one year with printed and on-line Seed Directory",
                           "FR" => "10$&nbsp;&nbsp;&nbsp;Adh&eacute;sion pour un an avec une version imprim&eacute;e du Catalogue de semences (acc&egrave;s &agrave; la version Web inclus)" ),
@@ -738,6 +841,11 @@ $sGarlicVarieties =
                                  ."<UL compact='compact'>"
                                  ."<LI>l'abonnement &agrave; notre revue <I>Semences du patrimoine</I></LI>"
                                  ."<LI>le Catalogue de semences, soit la liste de toutes les semences offertes par les membres (environ 2400 vari&eacute;t&eacute;s!)</LI></UL>" ),
+            'membership_desc2022'
+                => ['EN'=> "<p>Seeds of Diversity members can participate in our seed exchange and seed grow-out programs, and support many projects in their communities.</p>"
+                          ."<p><i>Membership is free for 2022!</i></p>",
+                    'FR'=> "<p><i>L'adh&eacute;sion est gratuite en 2022!</i></p>"],
+
             "donation_desc"
                 => array( "EN" => "Seeds of Diversity Canada is a registered Canadian charity (89650 8157 RR0001). "
                                  ."We depend on donations to do our work. Please support our horticultural preservation and educational projects by making a tax-creditable donation.",

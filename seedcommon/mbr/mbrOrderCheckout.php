@@ -757,6 +757,12 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
     	 */
         $s = "";
 
+        list($bExit,$s) = $this->OnConfirmation();
+        if( $bExit ) {
+            // derived class's output is a complete screen (should have a state-trans button to proceed to Paid or Cancelled, or return to Confirmed
+            goto done;
+        }
+
         $bPaymentNeeded = ($this->oMbrOrder->kfr->Value('pay_total') > 0.0);
 
         if( ($e = SEEDInput_Smart( 'ePayType', ["","PayPal","Cheque"] )) ) {
@@ -767,8 +773,6 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
         $s .= "<h2>{$this->oL->S('Order_confirmed')}"
             .($bPaymentNeeded ? (" - ".($this->oMbrOrder->kfr->value('ePayType') == 'PayPal' ? $this->oL->S('Pay_by_credit') : $this->oL->S('Pay_by_cheque_mo'))) : "")
             ."</h2>";
-
-        $s .= $this->ExtraFormAfterConfirmation();
 
         $sFormAction = $this->getFormAction();
 
@@ -816,13 +820,13 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
         }
         $s .= "<BR/><P>".$this->stateTransButton( MBROC_ST_CANCEL, 'Cancel_this_order' )."</P>";
 
-
+        done:
         return( $s );
     }
 
-    function ExtraFormAfterConfirmation()
+    function OnConfirmation()
     {
-        return("");
+        return( [false, ""] );
     }
 
     function PaidDraw()
@@ -1060,8 +1064,8 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
                           "FR" => "Carte de cr&eacute;dit" ),
 
             "cheque_mo"
-                => array( "EN" => "Cheque / Money Order",
-                          "FR" => "Ch&eacute;que / Mandat postal" ),
+                => array( "EN" => "Cheque / E-transfer",
+                          "FR" => "Ch&eacute;que / Virement Interac " ),
 
             "credit_card_desc"
                 => array( "EN" => "Use our secure credit card service for safe payment.",
@@ -1069,7 +1073,7 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
 
             "cheque_desc"
                 => array( "EN" => "Pay by e-transfer or cheque.",
-                          "FR" => "Payer par Virement Interac ou ch&egrave;que." ),
+                          "FR" => "Payer par virement Interac ou ch&egrave;que." ),
 
             "mail_note"
                 => array( "EN" => "Send us a Note",
@@ -1115,8 +1119,8 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
                 => array( "EN" => "Pay by Credit Card",
                           "FR" => "Payez par carte de cr&eacute;dit" ),
             "Pay_by_cheque_mo"
-                => array( "EN" => "Pay by Cheque or Money Order",
-                          "FR" => "Payez par ch&egrave;que ou mandat postal" ),
+                => array( "EN" => "Pay by Cheque or E-transfer",
+                          "FR" => "Payez par ch&egrave;que ou virement Interac" ),
             "assistance"
                 => array( "EN" => "<P>If you need assistance, please call 226-600-7782 or email "
                                  .SEEDCore_EmailAddress( "office", "seeds.ca" ).".</P>",
