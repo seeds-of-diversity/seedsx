@@ -584,7 +584,7 @@ include_once(SEEDLIB."mbr/MbrContacts.php");
                     $oMail->StageMail();
 
                     $oMailSend = new SEEDMailSend($this->oApp);
-                    while( $oMailSend->GetCountReadyToSend() < 5 ) {    // don't initiate send if there's a large mail process already going
+                    while( $oMailSend->GetCountReadyToSend() && $oMailSend->GetCountReadyToSend() < 5 ) {    // don't initiate send if there's a large mail process already going
                         $oMailSend->SendOne();
                     }
 
