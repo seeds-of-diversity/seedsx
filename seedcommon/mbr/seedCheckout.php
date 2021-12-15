@@ -575,8 +575,10 @@ include_once(SEEDLIB."mbr/MbrContacts.php");
 
             // send welcome email
             if( ($email = $kfrM->Value('email')) ) {
+                $sDoc = 'MbrWelcome01EN';
+
                 include_once( SEEDLIB."mail/SEEDMail.php" );
-                $oMail = new SEEDMail( $this->oApp, 'MbrWelcome01EN' );
+                $oMail = new SEEDMail( $this->oApp, $sDoc );
                 if( $oMail->Key() ) {
                     $oMail->AddRecipient( $kfrM->Value('email') );
                     $oMail->StageMail();
@@ -587,8 +589,11 @@ include_once(SEEDLIB."mbr/MbrContacts.php");
                     }
 
                     $sAlert .= "<p>We've sent an email to <b>$email</b> with details about your web account.</p>";
+
+                    $this->oStore->Log( "Sent welcome letter '$sDoc' $email" );
                 } else {
                     // couldn't find the welcome email - send a warning to someone?
+                    $this->oStore->Log( "Failure sending welcome letter to $email : cannot find mail doc '$sDoc'" );
                 }
             }
 
@@ -714,6 +719,10 @@ include_once(SEEDLIB."mbr/MbrContacts.php");
          */
 
         // put this in SEEDBasketStore_Basket::OnPayment()
+
+        // email receipt to buyer (and email invoice in OnConfirmed() if paying by cheque/e-transfer
+
+
     }
 
 

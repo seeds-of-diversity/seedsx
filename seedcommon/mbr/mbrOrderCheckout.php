@@ -8,7 +8,7 @@
 
 /* mbrOrderCheckout
  *
- * Copyright (c) 2009-2020 Seeds of Diversity Canada
+ * Copyright (c) 2009-2021 Seeds of Diversity Canada
  *
  * Base implementation for an online checkout system
  */
@@ -17,6 +17,11 @@ include_once(STDINC."SEEDTemplate.php");
 include_once(SEEDCOMMON."siteutil.php");
 include_once("mbrOrder.php");
 include_once( SEEDCOMMON."mbr/mbrSitePipe.php" );
+
+include_once( SEEDCORE."basket/SEEDBasketStore.php" );
+include_once( SEEDAPP."basket/basketProductHandlers.php" );
+include_once( SEEDAPP."basket/basketProductHandlers_seeds.php" );
+
 
 /* State control:
  *
@@ -109,12 +114,23 @@ define("MBROC_ST_CANCEL",     "CANCEL");      // in eStatus='New', set eStatus='
 
 //var_dump($_REQUEST);
 
+class MbrStore extends SEEDBasketStore
+{
+    function __construct( SEEDAppConsole $oApp )
+    {
+        parent::__construct( new SEEDBasketCore( null, null,
+                                                 $oApp, SEEDBasketProducts_SoD::$raProductTypes, [] )  );
+    }
+}
+
+
 class MbrOrderCheckout {
     var $kfdb;
     var $sess;
     var $lang;
 
-    protected $oApp;  // should match the above variables; replace those with this
+    protected $oApp;   // should match the above variables; replace those with this
+    protected $oStore; // moving lots of stuff here
 
 //  var $kfrelMbrOrder;
     var $oMbrOrder;
@@ -148,6 +164,8 @@ class MbrOrderCheckout {
         $this->_setLocalText( $lang );
         $this->oKForm = new KeyFrameUIForm($this->oMbrOrder->kfrelOrder, "A");
         $this->oTmpl = $this->makeTemplate();
+
+        $this->oStore = new MbrStore( $this->oApp );
     }
 
     private function makeTemplate()
