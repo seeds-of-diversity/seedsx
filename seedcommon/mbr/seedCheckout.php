@@ -40,7 +40,7 @@ class SoDMbrOrderCheckout extends MbrOrderCheckout
 
         /*** Donation ***
          */
-        $raDon = [30, 60, 90];
+        $raDon = [35, 75, 100];
         $bDonX = !in_array($this->oKForm->oDS->Value('donation'), $raDon);     // using the type-your-own-number box
         $s .= $this->FormBox( $this->oL->S('Give a Charitable Donation'),
                               "<div style='font-weight:bold;margin-bottom:5px'>{$this->oL->S('Give a Charitable Donation')}</div>"
@@ -561,6 +561,15 @@ include_once(SEEDLIB."mbr/MbrContacts.php");
                 $this->oMbrOrder->kfr->UrlParmSet('sExtra', 'mbrid', $kMbr);
                 $this->oMbrOrder->kfr->PutDBRow();
             }
+            // record member id in basket if it was discovered or created above
+            if( ($kB = $this->oMbrOrder->kfr->Value('kBasket')) &&
+                ($oB = new SEEDBasket_Basket($this->oStore->KlugeGetSB(), $kB)) &&
+                !$oB->GetBuyer() )
+            {
+                $oB->SetValue( 'uid_buyer', $kMbr );
+                $oB->PutDBRow();
+            }
+
 
             // record member confirmation date
             $kfrM = $oMbr->oDB->KFRel('M')->GetRecordFromDBKey($kMbr);
