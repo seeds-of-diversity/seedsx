@@ -137,7 +137,11 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
 
         $eStatus = $kfrBasket->Value('eStatus');
 
-        $s = "<h4>$eStatus</h4>"
+        $s = "<h4>".($eStatus == 'Confirmed' ? "Not paid" : $eStatus)."</h4>"
+            ."<div class='statusForm' style='font-size:8pt;text-align:left'>"
+                .(new SEEDCoreForm('Plain'))->Select('dummyEStatus', ['Not paid'=>'Confirmed','Paid'=>'Paid','Filled'=>'Filled','Cancelled'=>'Cancelled'],
+                                                     "Change to: ", ['selected'=>$kfrBasket->Value('eStatus'),'attrs'=>"onchange='doChangeStatus({$kfrBasket->Key()}, $row, ".'$(this)'.")'"] )
+/*
             ."<div class='statusForm' style='font-size:8pt;text-align:right'>"
                 ."<button".($eStatus=='Paid' ? ' disabled' : '')
                      ." onclick='doChangeStatus(\"Paid\", {$kfrBasket->Key()}, $row, ".'$(this)'.")'>Change to Paid</button>"
@@ -148,7 +152,7 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
                  ."<button".($eStatus=='Cancelled' ? ' disabled' : '')
                      ." onclick='doChangeStatus(\"Cancelled\", {$kfrBasket->Key()}, $row, ".'$(this)'.")'>Cancel Order</button>"
                      ."&nbsp;&nbsp;&nbsp;"
-
+*/
                  ."<div style='margin-top:15px'>"
                      ."<form onsubmit='return false;'>"
                      ."<button onclick='doAddNote( {$kfrBasket->Key()}, $row, ".'$(this)'.")'>Add Note</button>"
@@ -156,8 +160,6 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
                      ."</form>"
                  ."</div>"
             ."</div>";
-
-
 
         return( $s );
     }
@@ -770,8 +772,10 @@ function fillTmpRowDiv( tmpRowDiv, kOrder, feedback )
      });
 }
 
-function doChangeStatus( eStatusNew, kBasket, kOrder, jButton )
+function doChangeStatus( kBasket, kOrder, jCtrl )
 {
+    eStatusNew = jCtrl.val();
+
     // update the selected record
     let jxData = { jx      : 'sb--basketStatus',
                    kBasket : kBasket,
@@ -781,7 +785,7 @@ function doChangeStatus( eStatusNew, kBasket, kOrder, jButton )
     o = SEEDJXSync( "mbr_order.php", jxData );
 
     // replace the statusForm with its new state
-    let tmpRowDiv = jButton.closest(".tmpRowDiv");
+    let tmpRowDiv = jCtrl.closest(".tmpRowDiv");
     fillTmpRowDiv( tmpRowDiv, kOrder, "" );
 
     // replace the previous <tr> with its new state
