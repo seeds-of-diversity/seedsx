@@ -783,10 +783,12 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
 
         $bPaymentNeeded = ($this->oMbrOrder->kfr->Value('pay_total') > 0.0);
 
-        if( ($e = SEEDInput_Smart( 'ePayType', ["","PayPal","Cheque"] )) ) {
-            $this->oMbrOrder->kfr->SetValue( 'ePayType', $e );
-            $this->oMbrOrder->kfr->PutDBRow();
-        }
+        /* Update order record : with change in payment type
+         *                       if order is free mark it paid
+         */
+        if( ($e = SEEDInput_Smart( 'ePayType', ["","PayPal","Cheque"] )) )  $this->oMbrOrder->kfr->SetValue( 'ePayType', $e );
+        if( !$bPaymentNeeded )                                              $this->oMbrOrder->kfr->SetValue( 'eStatus', MBRORDER_STATUS_PAID );
+        $this->oMbrOrder->kfr->PutDBRow();
 
         $s .= "<h2>{$this->oL->S('Order_confirmed')}"
             .($bPaymentNeeded ? (" - ".($this->oMbrOrder->kfr->value('ePayType') == 'PayPal' ? $this->oL->S('Pay_by_credit') : $this->oL->S('Pay_by_cheque_mo'))) : "")
