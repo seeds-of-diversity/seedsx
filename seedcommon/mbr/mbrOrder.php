@@ -158,6 +158,9 @@ class MbrOrderCommon {
                                                       array("col"=>"eStatus",         "type"=>"S", "default"=>'New'),
                                                       array("col"=>"eStatus2",        "type"=>"I"),
                                                       array("col"=>"dMailed",         "type"=>"S"),
+                                                      array("col"=>"bDoneAccounting", "type"=>"I"),
+                                                      array("col"=>"bDoneRecording",  "type"=>"I"),
+                                                      array("col"=>"kBasket",         "type"=>"I"),
                                                       array("col"=>"ePayType",        "type"=>"S", "default"=>'PayPal'),
                                                       ['col'=>"depositCode",          'type'=>'S'],
                                                       array("col"=>"sExtra",          "type"=>"S") ) ) ) ) );
