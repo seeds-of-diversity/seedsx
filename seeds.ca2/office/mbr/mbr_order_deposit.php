@@ -64,16 +64,17 @@ if( $cmd == "xls" ) {
 //var_dump($raOut);
 //exit;
 
-    $cols = array('order','name','membership','donation','sladoption','books','seeds','misc');
-    $oXls = new SEEDXlsWrite( array('filename'=>"deposit $sDepositCode.xlsx") );
+    $cols = array('order','name','membership','seed-directory','donation','sladoption','books','seeds','misc');
+    $oXls = new SEEDXlsWrite( ['filename'=>"deposit $sDepositCode.xlsx"] );
     $oXls->WriteHeader( 0, $cols );
 
     $row = 2;
     foreach( $raOut as $ra ) {
-        $oXls->WriteRow( 0, $row, array( $ra['order'], $ra['name'], $ra['membership'], $ra['donation'],
-                                           $ra['sladoption'], $ra['books'], $ra['seeds'], $ra['misc'], "", "=sum(C$row:H$row)" ) );
+        $oXls->WriteRow( 0, $row,
+                       // A             B            C                  D           E                F                  G             H             I            J   K
+                         [$ra['order'], $ra['name'], $ra['membership'], $ra['sed'], $ra['donation'], $ra['sladoption'], $ra['books'], $ra['seeds'], $ra['misc'], "", "=sum(C$row:I$row)"] );
         // bold the total on right
-        $oXls->SetCellStyle( 0, $row, 'J', ['font'=>['bold'=>true]] );
+        $oXls->SetCellStyle( 0, $row, 'K', ['font'=>['bold'=>true]] );
 
         $row++;
     }
@@ -81,11 +82,11 @@ if( $cmd == "xls" ) {
     // compute the totals at the bottom
     $row++;
     $rowMinus2 = $row - 2;
-    $oXls->WriteRow( 0, $row, array( "", "", "=sum(C2:C$rowMinus2)", "=sum(D2:D$rowMinus2)", "=sum(E2:E$rowMinus2)", "=sum(F2:F$rowMinus2)",
-                                             "=sum(G2:G$rowMinus2)", "=sum(H2:H$rowMinus2)", "", "=sum(J2:J$rowMinus2)" ) );
+    $oXls->WriteRow( 0, $row, ["", "", "=sum(C2:C$rowMinus2)", "=sum(D2:D$rowMinus2)", "=sum(E2:E$rowMinus2)", "=sum(F2:F$rowMinus2)",
+                               "=sum(G2:G$rowMinus2)", "=sum(H2:H$rowMinus2)", "=sum(I2:I$rowMinus2)", "", "=sum(K2:K$rowMinus2)"] );
 
     // bold the totals on the bottom
-    foreach( ['C','D','E','F','G','H','J'] as $c ) {
+    foreach( ['C','D','E','F','G','H','I','K'] as $c ) {
         $oXls->SetCellStyle( 0, $row, $c, ['font'=>['bold'=>true]] );
     }
     $oXls->OutputSpreadsheet();
@@ -118,7 +119,7 @@ $s .= "<h3>Deposits</h3>"
 
 /* Show all the deposits
  */
-$raCodes = $kfdb->QueryRowsRA1( "SELECT depositCode FROM seeds_1.mbr_order_pending WHERE depositCode<>'' GROUP BY 1 ORDER BY 1 DESC" );
+$raCodes = $kfdb->QueryRowsRA1( "SELECT depositCode FROM {$oApp->DBName('seeds1')}.mbr_order_pending WHERE depositCode<>'' GROUP BY 1 ORDER BY 1 DESC" );
 foreach( $raCodes as $code ) {
     $fTotal = 0.0;
     $raOrders = $oOrder->kfrelOrder->GetRecordSetRA( "depositCode='".addslashes($code)."'" );
@@ -127,8 +128,8 @@ foreach( $raCodes as $code ) {
     foreach( $raOrders as $raR ) {
         list($ra,$fSubtotal) = order2table( $oOrder, $raR );
         $fTotal += $fSubtotal;
-        $sT .= SEEDCore_ArrayExpand( $ra, "<tr><td>[[order]]</td><td>[[name]]</td>"
-                                            ."<td>[[membership]]</td><td>[[donation]]</td><td>[[sladoption]]</td>"
+        $sT .= SEEDCore_ArrayExpand( $ra, "<tr><td>[[order]]</td><td style='text-align:left'>[[name]]</td>"
+                                            ."<td>[[membership]]</td><td>[[sed]]</td><td>[[donation]]</td><td>[[sladoption]]</td>"
                                             ."<td>[[books]]</td><td>[[seeds]]</td><td>[[misc]]</td></tr>" );
     }
 
@@ -136,7 +137,7 @@ foreach( $raCodes as $code ) {
          ."<div style='float:right'><a href='?cmd=xls&depositCode=$code'><img src='".W_CORE_URL."img/icons/xls.png' height='25'/></a></div>"
          //."<div style='float:right'><a href='?cmd=delete&depositCode=$code'><img src='".W_CORE_URL."img/ctrl/delete01.png' height='25'/></a></div>"
          ."<b>$code".SEEDCore_NBSP("",10)."$ $fTotal</b>"
-         ."<table><tr><th>&nbsp;</th><th>&nbsp</th><th>membership</th><th>donation</th><th>sladoption</th>"
+         ."<table><tr><th>&nbsp;</th><th>&nbsp</th><th>membership</th><th>seed-directory</th><th>donation</th><th>sladoption</th>"
                     ."<th>books</th><th>seeds</th><th>misc</th></tr>"
          .$sT
          ."</table>"
@@ -151,6 +152,16 @@ $s .= "
     border: 1px solid #aaa;
     background-color: #eee;
 }
+.mbrod_deposit table th {
+    text-align:right;
+    padding-left:10px;
+}
+
+.mbrod_deposit table td {
+    text-align:right;
+    padding-right:10px;
+}
+
 </style>";
 
 
@@ -170,6 +181,7 @@ function order2table( MbrOrder $oOrder, $raR )
         $ra['name'] = SEEDCore_utf8_encode($raR['mail_company']);
     }
     $ra['membership'] = (@$raOrder['mbr']=='mbr1_45sed' ? 45 : (@$raOrder['mbr']=='mbr1_35' ? 35 : "") );
+    $ra['sed'] = @$raOrder['mbr']=='mbr1_10sed' ? 10 : "";
     $ra['donation'] = @$raOrder['donation'];
     $ra['sladoption'] = @$raOrder['slAdopt_amount'];
 
@@ -191,10 +203,8 @@ function order2table( MbrOrder $oOrder, $raR )
     $ra['misc'] = @$raOrder['misc'] + @$raOrder['everyseed_shipping'];
     if( !$ra['misc'] )  $ra['misc'] = "";
 
-    $fTotal = floatval($ra['membership']) + floatval($ra['donation']) + floatval($ra['sladoption'])
+    $fTotal = floatval($ra['membership']) + floatval($ra['sed']) + floatval($ra['donation']) + floatval($ra['sladoption'])
             + floatval($ra['books']) + floatval($ra['seeds']) + floatval($ra['misc']);
 
     return( [$ra,$fTotal] );
 }
-
-?>
