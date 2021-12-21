@@ -18,6 +18,7 @@ SiteCommon_init( array(
 //included in site_seedapp.php
 //include_once( SITE_DB_DEF_FILE );  // cannot be included by the function above because variables within it would be local there instead of global
 
+global $SEEDSessionAuthUI_Config;   // so this is global in Drupal's scope so it can be used in semences.ca/boutique
 $SEEDSessionAuthUI_Config
     = array( 'urlActivation'          => 'https://www.seeds.ca/login',   // link sent in Create Account activation email
              'urlSendPasswordSite'    => 'https://www.seeds.ca/login',   // 'web site' in Send Password email
