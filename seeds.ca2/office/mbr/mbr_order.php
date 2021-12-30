@@ -114,7 +114,7 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
              */
             $sCol2 .= "<h4>Contact in database</h4>".$this->drawStatusFormMbrSelect( $kfrOrder, $raMbr );
 
-            if( $kMbr ) {
+            if( @$raMbr['_key'] ) {
                 $sCol2 .= "<hr style='border-color:#aaa;margin:30px 0px'/>";
 
                 /* This tool matches the MbrOrder information with the MbrContacts record
@@ -422,8 +422,12 @@ $s = "<style>"
 $s .=  MbrOrderStyle();
 $s .= $oUI->Style();
 
-$s .= "<table border='0' width='100%'><tr><td><h2>Online Order Summary</h2></td>"
-     ."<td align='right'><a href='".SITE_LOGIN_ROOT."'>Home</a>&nbsp;&nbsp;&nbsp;<a href='mbr_order_stats.php'>Statistics</a>&nbsp;&nbsp;&nbsp;<a href='mbr_order_deposit.php'>Deposit</a></td></tr></table>";
+$s .= "<table border='0' width='100%'><tr>
+       <td><h2>Online Order Summary</h2></td>
+       <td align='right'><a href='".SITE_LOGIN_ROOT."'>Home</a>&nbsp;&nbsp;&nbsp;
+                         <a href='mbr_order_stats.php' target='_blank'>Statistics</a>&nbsp;&nbsp;&nbsp;
+                         <a href='mbr_order_deposit.php' target='_blank'>Deposit</a></td>
+       </tr></table>";
 
 $kfr = null;
 /*
