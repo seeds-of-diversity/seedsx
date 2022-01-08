@@ -184,6 +184,8 @@ class SEDCommon extends SEDCommonDraw
         if( $kfrG->value('pay_stamps') )      $ra[] = "Stamps";
         if( $kfrG->value('pay_ct') )          $ra[] = "Canadian-Tire";
         if( $kfrG->value('pay_mo') )          $ra[] = "Money order";
+        if( $kfrG->value('pay_etransfer') )   $ra[] = "E-transfer";
+        if( $kfrG->value('pay_paypal') )      $ra[] = "Paypal";
         if( !$kfrG->IsEmpty('pay_other') )    $ra[] = $kfrG->value('pay_other');
 
         return( implode( ", ", $ra ) );
@@ -413,6 +415,7 @@ class SEDGrowerWorker extends Console01_Worker1
         parent::__construct( $oC, $kfdb, $sess );
     }
 
+/*
     function NewGrowerForm()
     {
         // do the right thing when these checkboxes are unchecked (http parms are absent, stored value is 1, so change stored value to 0)
@@ -435,10 +438,10 @@ class SEDGrowerWorker extends Console01_Worker1
     }
 
     function growerForm_DSPreStore( $oDS )
-    /*************************************
+    [*************************************
         The Grower oForm should override its DSPreStore with this, to fix up the record before it is written to the db.
         Return true to proceed with the db write.
-    */
+    *]
     {
         $oSed = $this->oC->oSed;
 
@@ -460,7 +463,7 @@ class SEDGrowerWorker extends Console01_Worker1
 
         return( true );
     }
-
+*/
 }
 
 
