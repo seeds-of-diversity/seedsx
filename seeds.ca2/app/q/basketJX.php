@@ -195,7 +195,8 @@ function drawMSDOrderInfo( MSDBasketCore $oSB, KeyframeRecord $kfrP )
 
     include_once( SEEDLIB."msd/msdcore.php" );
     $oMSDCore = new MSDCore( $oApp );
-    $bRequestable = $oMSDCore->IsRequestableByUser( $kfrP );
+    $eRequestable = $oMSDCore->IsRequestableByUser( $kfrP );
+    $bRequestable = ($eRequestable==MSDCore::REQUESTABLE_YES);
 
     $kP = $kfrP->Key();
     $kM = $kfrP->Value('uid_seller');
@@ -231,10 +232,27 @@ function drawMSDOrderInfo( MSDBasketCore $oSB, KeyframeRecord $kfrP )
              ."</div>";
     }
 
+    switch( $eRequestable ) {
+        default:
+        case MSDCore::REQUESTABLE_YES:
+            $sReq = "";
+            break;
+        case MSDCore::REQUESTABLE_NO_INACTIVE:
+            $sReq = "<p>This seed offer is not currently active.</p>";
+            break;
+        case MSDCore::REQUESTABLE_NO_OUTOFSEASON:
+            $sReq = "<p>This grower only offers these seeds from {$kfrG->Value('dDateRangeStart')} to {$kfrG->Value('dDateRangeEnd')}</p>";
+            break;
+        case MSDCore::REQUESTABLE_NO_NONGROWER:
+            $sReq = "<p>These seeds are only available to members who also offer seeds in the Seed Exchange.</p></p>";
+            break;
+    }
+
+
     $s = "" //"<div style='display:none' class='msd-order-info msd-order-info-$kP'>"
             .SEEDCore_ArrayExpand( $raPE, "<p><b>[[species]] - [[variety]]</b></p>" )
             ."<p>This is offered by $who for $".$kfrP->Value('item_price')." in $sPayment.</p>"
-            .($bRequestable ? "": "<p>Members can login to request these seeds.</p>")
+            .$sReq
             ."<p><button $sButton1Attr>Add this request to your basket</button>&nbsp;&nbsp;&nbsp;"
                ."<button $sButton2Attr>Show other seeds from this grower</button></p>"
             .($bRequestable ? $sG : "")
