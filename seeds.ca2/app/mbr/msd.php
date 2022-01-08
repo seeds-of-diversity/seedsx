@@ -34,7 +34,7 @@ $oApp = new SEEDAppConsole( $config_KFDB['seeds1']
 SEEDPRG();
 
 
-class SEEDBasketStore
+class SEEDBasketStore_Old
 {
     protected $oW;
     protected $oDraw;
@@ -73,7 +73,7 @@ class SEEDBasketStore
 }
 
 
-class msdBasket extends SEEDBasketStore
+class msdBasket extends SEEDBasketStore_Old
 {
 
     function __construct( KeyFrameDB $kfdb, SEEDSession $sess, SEEDAppConsole $oApp, $lang )
@@ -82,6 +82,8 @@ class msdBasket extends SEEDBasketStore
         $this->oW = new SEEDApp_Worker( $kfdb, $sess, $lang );
         $this->oSB = new MSDBasketCore( $kfdb, $sess, $oApp );
         $this->oDraw = new MSDCommonDraw( $this->oSB );
+
+        $this->oMSDLib = new MSDLib( $oApp );
 
         $raTmplParms = array(
             'fTemplates' => array( SEEDAPP."templates/msd.html" ),
@@ -185,17 +187,19 @@ class msdBasket extends SEEDBasketStore
         $raSummary = (new SEEDBasket_Basket($this->oSB, $kBasket))->ComputeBasketContents();
         if( !@$raSummary['raSellers'] )  goto done;
 
-        $s .= "<table style='100%'>";
+        $s .= "<div style='max-width:800px;margin:auto'>"; //"<table style='100%'>";
 
         foreach( $raSummary['raSellers'] as $uidSeller => $raSeller ) {
             $s1 = "";
 
             $sSeller = $this->oSB->cb_SellerNameFromUid( $uidSeller );
-            $s1 .= "<div style='margin-top:10px;font-weight:bold'>$sSeller (total ".$this->oSB->dollar($raSeller['fSellerTotal']).")</div>";
+            $s1 .= "<div style='margin-top:10px;padding:10px;font-weight:bold'>$sSeller (total ".$this->oSB->dollar($raSeller['fSellerTotal']).")</div>";
 
+            $kfrGxM = $this->oMSDLib->KFRelGxM()->GetRecordFromDB( "G.mbr_id='$uidSeller'" );
             $kfrG = $oMSD->kfrelG->GetRecordFromDB( "mbr_id='$uidSeller'" );   // sed_growers
             $s1 .= "<div style='width:100%;margin:20px auto;padding:10px;max-width:80%;border:1px solid #777;background-color:#f8f8f8'>"
-                    .$oMSD->drawGrowerBlock( $kfrG, true )
+                    //.$oMSD->drawGrowerBlock( $kfrG, true )
+                    .$this->oMSDLib->DrawGrowerBlock( $kfrGxM, true )
                     ."</div>";
 
             foreach( $raSeller['raPur'] as $pur ) {
@@ -206,14 +210,36 @@ class msdBasket extends SEEDBasketStore
                       ."</div>";
             }
 
-            $s2 = "<a href='".Site_path_self()."?kG=$uidSeller' target='_blank' style='text-decoration:none;'>"
-                 ."<div style='margin-left:30px;background:#eee;border:1px solid #aaa;padding:10px;text-align:center;width:120px;height:160px;'>"
-                     ."Click here to print your Seed Request Form"
-                     ."<br/><br/><img src='//seeds.ca/i/img/logo/logoA-300x.png' width='60' height='54'/>"
-                 ."</div>"
-                 ."</a>";
+//should be MSDGrower class with $oGrower->DrawGrowerBlock(), $oGrower->bEPaymentOnly()
 
-            $s .= "<tr><td width='60%'><div style='border:1px solid #aaa;margin-top:20px;'>$s1</div></td><td>$s2</td></tr>";
+            $s2 = "";
+            if( in_array($kfrGxM->Value('eReqClass'), ['mail_email','mail']) ) {
+                $s2 .= "<td valign='top' style='padding:10px'>
+                            <h4>To send your request by mail</h4>
+                            <p>Print this seed request form and mail it with payment directly to the member offering seeds.
+                               Please use a form of payment listed above.</p></td>";
+            }
+            if( in_array($kfrGxM->Value('eReqClass'), ['mail_email','email']) ) {
+                $s2 .= "<td valign='top'  style='padding:10px'>
+                            <h4>To send your request by email</h4>
+                            <p>Save this seed request form to a PDF and email it to the member offering seeds.
+                               Tell them how to expect your payment, then make a digital or physical payment as listed above.</p></td>";
+            }
+
+            $s2 = "<table border='0' width='100%'><tr>
+                   <td style='padding:10px'>
+                       <a href='".Site_path_self()."?kG=$uidSeller' target='_blank' style='text-decoration:none;'>
+                       <div style='margin-left:30px;background:#eee;border:1px solid #aaa;padding:10px;text-align:center;width:120px;height:160px;'>
+                       Click here to print/save your Seed Request Form
+                       <br/><br/><img src='//seeds.ca/i/img/logo/logoA-300x.png' width='60' height='54'/>
+                       </div>
+                       </a>
+                   </td>
+                   $s2
+                   </tr></table>";
+
+
+            $s .= "<div style='border:1px solid #aaa;margin-top:20px;'>$s1 $s2</div>";
             continue;
 
             $s .= "<div class='sb_basket_table'>";
@@ -232,7 +258,7 @@ class msdBasket extends SEEDBasketStore
             $s .= "</div>";
         }
 
-        $s .= "</table>"
+        $s .= "</div>" //"</table>"
              ."<br/><br/>";
 
         done:
@@ -281,15 +307,16 @@ class msdBasket extends SEEDBasketStore
             }
         }
 
+// this should probably be MSDLib::DrawGrowerBlock()
         include_once( SEEDCOMMON."mbr/mbrSitePipe.php" );
         $ra = MbrSitePipeGetContactsRA2( $this->oW->kfdb, $uidSeller );
         $sGrowerAddr1 = SEEDCore_ArrayExpand( $ra, "[[firstname]] [[lastname]]<br/>" )
                        .SEEDStd_ExpandIfNotEmpty( @$ra['company'], "[[]]<br/>" )
-                       .SEEDCore_ArrayExpand( $ra, "[[address]]<br/>[[city]] [[province]] [[postcode]]" );
+                       .($kfrG->Value('eReqClass') != 'email' ? SEEDCore_ArrayExpand( $ra, "[[address]]<br/>[[city]] [[province]] [[postcode]]" ) : "");
         $sGrowerAddr2 = "Grower code: ".$kfrG->Value('mbr_code')."<br/>"
                        .($kfrG->Value('unlisted_email') ? "" : SEEDStd_ExpandIfNotEmpty( @$ra['email'], "Email: [[]]<br/>" ))
                        .($kfrG->Value('unlisted_phone') ? "" : SEEDStd_ExpandIfNotEmpty( @$ra['phone'], "Tel: [[]]<br/>" ));
-                       $sGrowerAddr = "<table border='0' width='100%'><tr>"
+        $sGrowerAddr = "<table border='0' width='100%'><tr>"
                           ."<td valign='top' style='width:50%'>$sGrowerAddr1</td>"
                           ."<td valign='top' style='font-weight:normal'>$sGrowerAddr2</td>"
                       ."</tr></table>";
