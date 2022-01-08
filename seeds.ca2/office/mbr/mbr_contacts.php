@@ -438,7 +438,7 @@ class mbrContacts_Logins extends Console01_Worker2
                     $sBad .= " $n";
                 }
             }
-            if( $sGood ) $this->oC->UserMsg( "Sent MSD notice for member $sGood" );
+            if( $sGood ) $this->oC->UserMsg( "Staged MSD notice for member $sGood" );
             if( $sBad )  $this->oC->ErrMsg( "Error sending MSD notice for member $sBad" );
         }
 
