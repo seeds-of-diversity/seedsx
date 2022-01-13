@@ -192,6 +192,7 @@ class msdBasket extends SEEDBasketStore_Old
         foreach( $raSummary['raSellers'] as $uidSeller => $raSeller ) {
             $s1 = "";
 
+// don't use this for seller name; SEEDSession_Users.realname is not updated as reliably as mbr_contacts
             $sSeller = $this->oSB->cb_SellerNameFromUid( $uidSeller );
             $s1 .= "<div style='margin-top:10px;padding:10px;font-weight:bold'>$sSeller (total ".$this->oSB->dollar($raSeller['fSellerTotal']).")</div>";
 
@@ -216,13 +217,13 @@ class msdBasket extends SEEDBasketStore_Old
             if( in_array($kfrGxM->Value('eReqClass'), ['mail_email','mail']) ) {
                 $s2 .= "<td valign='top' style='padding:10px'>
                             <h4>To send your request by mail</h4>
-                            <p>Print this seed request form and mail it with payment directly to the member offering seeds.
+                            <p>Open the Seed Request Form to the left, print it, and mail it with payment directly to the member offering seeds.
                                Please use a form of payment listed above.</p></td>";
             }
             if( in_array($kfrGxM->Value('eReqClass'), ['mail_email','email']) ) {
                 $s2 .= "<td valign='top'  style='padding:10px'>
                             <h4>To send your request by email</h4>
-                            <p>Save this seed request form to a PDF and email it to the member offering seeds.
+                            <p>Open the Seed Request Form to the left, save it to a PDF file, and email it to the member offering seeds.
                                Tell them how to expect your payment, then make a digital or physical payment as listed above.</p></td>";
             }
 

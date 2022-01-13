@@ -140,15 +140,30 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
             include_once( SEEDLIB."msd/msdcore.php" );
             $oMSDCore = new MSDCore( $oApp, array() );
 
-            $kSp = SEEDInput_Int('kSp');
+            $raP = [];
+            $kSp = SEEDInput_Str('kSp');
+            if( SEEDCore_StartsWith($kSp, 'tomato') ) {
+                $dbSp = "TOMATO";
+                switch( $kSp ) {
+                    default:
+                    case 'tomatoAC':    $cond = " AND UPPER(LEFT(PE2.v,1)) <= 'C'";               break;
+                    case 'tomatoDH':    $cond = " AND UPPER(LEFT(PE2.v,1)) BETWEEN 'D' AND 'H'";  break;
+                    case 'tomatoIM':    $cond = " AND UPPER(LEFT(PE2.v,1)) BETWEEN 'I' AND 'M'";  break;
+                    case 'tomatoNR':    $cond = " AND UPPER(LEFT(PE2.v,1)) BETWEEN 'N' AND 'R'";  break;
+                    case 'tomatoSZ':    $cond = " AND UPPER(LEFT(PE2.v,1)) >= 'S'";               break;
 
-            if( ($dbSp = addslashes($oMSDCore->GetKlugeSpeciesNameFromKey($kSp))) ) {
+                }
+            } else {
+                $dbSp = addslashes($oMSDCore->GetKlugeSpeciesNameFromKey( intval($kSp) ));
+                $cond = "";
+            }
 
+            if( $dbSp ) {
 //$oSB->oDB->kfdb->SetDebug(2);
                 $raP = $oSB->oDB->GetList( "PxPE2",
                                            "product_type='seeds' AND "
                                           ."eStatus='ACTIVE' AND "
-                                          ."PE1.k='species' AND PE1.v='$dbSp' AND PE2.k='variety'",
+                                          ."PE1.k='species' AND PE1.v='$dbSp' AND PE2.k='variety' $cond",
                                            array('sSortCol'=>'PE2_v') );
 //$oSB->oDB->kfdb->SetDebug(0);
                 foreach( $raP as $ra ) {
