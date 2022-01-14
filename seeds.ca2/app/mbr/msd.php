@@ -207,7 +207,7 @@ class msdBasket extends SEEDBasketStore_Old
                 $kfrP = $this->oSB->oDB->GetKFR( 'P', $pur['oPur']->GetProductKey() );
 
                 $s1 .= "<div style='width:100%;margin:20px auto;padding:10px;max-width:80%;border:0px;background-color:#fff'>"
-                      .$this->oSB->DrawProduct( $kfrP, SEEDBasketProductHandler_Seeds::DETAIL_VIEW_NO_SPECIES, ['bUTF8'=>false] )
+                      .$this->oSB->DrawProduct( $kfrP, SEEDBasketProductHandler_Seeds::DETAIL_VIEW_WITH_SPECIES, ['bUTF8'=>false] )
                       ."</div>";
             }
 
@@ -358,6 +358,13 @@ $oMSD = new msdBasket( $kfdb, $sess, $oApp, $lang );
 $sHead = "";
 
 if( ($kPrintGrower = SEEDInput_Int('kG')) ) {
+    // Sometimes the session logs out on the confirmation screen, so when you click for a Seed Request Form you get a blank page.
+    // That's because this app doesn't force login at the top, but operates in both IsLogin() and !IsLogin() modes.
+    // You can't just go back to msd.php though; you have to do a state transition.
+    if( !$oApp->sess->IsLogin() ) {
+        header( "Location: {$oApp->PathToSelf()}?msdStateChange=Open" );
+    }
+
     $sBody = $oMSD->PrintGrower( $kPrintGrower );
 } else {
     $sBody = $oMSD->Draw();
