@@ -257,6 +257,7 @@ function drawMSDOrderInfo( MSDBasketCore $oSB, KeyframeRecord $kfrP )
             break;
         case MSDCore::REQUESTABLE_NO_NOLOGIN:
             $sReq = "<p>Please login to request seeds.</p>";
+            break;
         case MSDCore::REQUESTABLE_NO_INACTIVE:
             $sReq = "<p>This seed offer is not currently active.</p>";
             break;
