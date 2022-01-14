@@ -213,7 +213,7 @@ function drawMSDOrderInfo( MSDBasketCore $oSB, KeyframeRecord $kfrP )
 
     include_once( SEEDLIB."msd/msdcore.php" );
     $oMSDCore = new MSDCore( $oApp );
-    $eRequestable = $oMSDCore->IsRequestableByUser( $kfrP );
+    $eRequestable = $oApp->sess->IsLogin() ? $oMSDCore->IsRequestableByUser( $kfrP ) : MSDCore::REQUESTABLE_NO_NOLOGIN;
     $bRequestable = ($eRequestable==MSDCore::REQUESTABLE_YES);
 
     $kP = $kfrP->Key();
@@ -255,6 +255,8 @@ function drawMSDOrderInfo( MSDBasketCore $oSB, KeyframeRecord $kfrP )
         case MSDCore::REQUESTABLE_YES:
             $sReq = "";
             break;
+        case MSDCore::REQUESTABLE_NO_NOLOGIN:
+            $sReq = "<p>Please login to request seeds.</p>";
         case MSDCore::REQUESTABLE_NO_INACTIVE:
             $sReq = "<p>This seed offer is not currently active.</p>";
             break;
