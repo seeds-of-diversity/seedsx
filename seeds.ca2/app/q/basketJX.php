@@ -143,40 +143,43 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
             $raP = [];
             $kSp = SEEDInput_Str('kSp');
             if( SEEDCore_StartsWith($kSp, 'tomato') ) {
-                $dbSp = "TOMATO";
+                // kluge tomatoAC, tomatoDH, etc
+                $cond = "AND PE1.v LIKE 'TOMATO%'";
                 switch( $kSp ) {
                     default:
-                    case 'tomatoAC':    $cond = " AND UPPER(LEFT(PE2.v,1)) <= 'C'";               break;
-                    case 'tomatoDH':    $cond = " AND UPPER(LEFT(PE2.v,1)) BETWEEN 'D' AND 'H'";  break;
-                    case 'tomatoIM':    $cond = " AND UPPER(LEFT(PE2.v,1)) BETWEEN 'I' AND 'M'";  break;
-                    case 'tomatoNR':    $cond = " AND UPPER(LEFT(PE2.v,1)) BETWEEN 'N' AND 'R'";  break;
-                    case 'tomatoSZ':    $cond = " AND UPPER(LEFT(PE2.v,1)) >= 'S'";               break;
-
+                    case 'tomatoAC':    $cond .= " AND UPPER(LEFT(PE2.v,1)) <= 'C'";               break;
+                    case 'tomatoDH':    $cond .= " AND UPPER(LEFT(PE2.v,1)) BETWEEN 'D' AND 'H'";  break;
+                    case 'tomatoIM':    $cond .= " AND UPPER(LEFT(PE2.v,1)) BETWEEN 'I' AND 'M'";  break;
+                    case 'tomatoNR':    $cond .= " AND UPPER(LEFT(PE2.v,1)) BETWEEN 'N' AND 'R'";  break;
+                    case 'tomatoSZ':    $cond .= " AND UPPER(LEFT(PE2.v,1)) >= 'S'";               break;
                 }
             } else {
-                $dbSp = addslashes($oMSDCore->GetKlugeSpeciesNameFromKey( intval($kSp) ));
-                $cond = "";
-            }
-
-            if( $dbSp ) {
-//$oSB->oDB->kfdb->SetDebug(2);
-                $raP = $oSB->oDB->GetList( "PxPE2",
-                                           "product_type='seeds' AND "
-                                          ."eStatus='ACTIVE' AND "
-                                          ."PE1.k='species' AND PE1.v='$dbSp' AND PE2.k='variety' $cond",
-                                           array('sSortCol'=>'PE2_v') );
-//$oSB->oDB->kfdb->SetDebug(0);
-                foreach( $raP as $ra ) {
-                    $kfrP = $oSB->oDB->GetKFR( 'P', $ra['_key'] );
-
-                    // DrawProduct always returns utf8 now - construct MSDQ with $raConfig['config_bUTF8']=false to get cp1252.
-                    // So just utf8_encode the order info
-                    $raJX['sOut'] .= SEEDCore_utf8_encode($oSB->DrawProduct( $kfrP, SEEDBasketProductHandler_Seeds::DETAIL_VIEW_NO_SPECIES, ['bUTF8'=>false] ));
-                    //$raJX['sOut'] .= SEEDCore_utf8_encode(drawMSDOrderInfo( $oSB, $kfrP ));
-                    $raJX['sOut'] .= "<div style='display:none' class='msd-order-info msd-order-info-{$ra['_key']}'></div>";
-                    $raJX['bOk'] = true;
+                // all non-tomato species
+                if( ($dbSp = addslashes($oMSDCore->GetKlugeSpeciesNameFromKey( intval($kSp) ))) ) {
+                    $cond = "AND PE1.v='$dbSp'";
+                } else {
+                    goto msdVarietyListFromSpecies_notfound;
                 }
             }
+
+//$oSB->oDB->kfdb->SetDebug(2);
+            $raP = $oSB->oDB->GetList( "PxPE2",
+                                       "product_type='seeds' AND "
+                                      ."eStatus='ACTIVE' AND "
+                                      ."PE1.k='species' AND PE2.k='variety' $cond",
+                                       array('sSortCol'=>'PE2_v') );
+//$oSB->oDB->kfdb->SetDebug(0);
+            foreach( $raP as $ra ) {
+                $kfrP = $oSB->oDB->GetKFR( 'P', $ra['_key'] );
+
+                // DrawProduct always returns utf8 now - construct MSDQ with $raConfig['config_bUTF8']=false to get cp1252.
+                // So just utf8_encode the order info
+                $raJX['sOut'] .= SEEDCore_utf8_encode($oSB->DrawProduct( $kfrP, SEEDBasketProductHandler_Seeds::DETAIL_VIEW_NO_SPECIES, ['bUTF8'=>false] ));
+                //$raJX['sOut'] .= SEEDCore_utf8_encode(drawMSDOrderInfo( $oSB, $kfrP ));
+                $raJX['sOut'] .= "<div style='display:none' class='msd-order-info msd-order-info-{$ra['_key']}'></div>";
+                $raJX['bOk'] = true;
+            }
+            msdVarietyListFromSpecies_notfound:
             break;
 
         case 'msdOrderInfo':
