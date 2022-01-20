@@ -54,7 +54,7 @@ class SLAdminReports
                 $sTDClass = "class='td$c'";
                 $s1 .= "<tr><td $sTDClass>{$ra['species']}</td><td $sTDClass>{$ra['cultivar']}</td>"
                       ."<td $sTDClass>{$ra['csci_count']}</td><td $sTDClass>{$ra['adoption']}</td>"
-                      ."<td $sTDClass>{$ra['year_newest']}</td><td $sTDClass>{$ra['total_grams']}</td>"
+                      ."<td $sTDClass>{$ra['newest_lot_year']}</td><td $sTDClass>{$ra['total_grams']}</td>"
                       ."<td $sTDClass>".str_replace( " | ", "<br/>", $ra['notes'] )."</td></tr>";
                 $c = $c ? 0 : 1;
             }
@@ -79,7 +79,7 @@ class SLAdminReports
             foreach( $rQ['raOut'] as $ra ) {
                 $sTDClass = "class='td$c'";
                 $s1 .= "<tr><td $sTDClass>{$ra['species']}</td><td $sTDClass>{$ra['cultivar']}</td><td $sTDClass>{$ra['adoption']}</td>"
-                     ."<td $sTDClass>{$ra['year_newest']}</td><td $sTDClass>{$ra['total_grams']}</td>"
+                     ."<td $sTDClass>{$ra['newest_lot_year']}</td><td $sTDClass>{$ra['total_grams']}</td>"
                      ."<td $sTDClass>".str_replace( " | ", "<br/>", $ra['notes'] )."</td></tr>";
                 $c = $c ? 0 : 1;
             }
