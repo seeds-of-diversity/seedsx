@@ -274,7 +274,18 @@ class drawFormContact
         $ra = ['attrs'=>"placeholder='$placeholder'"];
         if( @$this->raItems[$fld][3] ) { $ra['size'] = $this->raItems[$fld][3]; }
         $bDisabled = @$this->raItems[$fld][4] == 'disabled';
-        if( $bDisabled || $valMbr && $valOrder == $valMbr ) {
+
+        $bSame = false;
+        if( $valMbr ) {
+            $a = strtolower(trim($valMbr));
+            $b = strtolower(trim($valOrder));
+            if( $fld == 'phone' || $fld =='postcode' ) {    // remove spaces, hyphens, and periods
+                $a = str_replace([' ','-','.'], ['','',''], $a);
+                $b = str_replace([' ','-','.'], ['','',''], $b);
+            }
+            $bSame = ($a==$b);
+        }
+        if( $bDisabled || $bSame ) {
             // disable the control if it is not blank and it matches the value in the order form (if blank we might want to enter something there)
             //$ra['disabledAddHidden'] = 1;   // disabled controls look right but don't report values; this appends a hidden element too
             $ra['disabled'] = 1;              // $().find() reads values of disabled controls though
