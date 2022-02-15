@@ -195,7 +195,7 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
 
     private function drawStatusFormContactData( KeyframeRecord $kfrOrder, $raMbr )
     {
-        $s = "";
+        $s = "<style>.mbroContactForm input[disabled] {background-color:#dff0d8;}</style>";
 
         $oForm = new SEEDCoreForm('M');
         foreach( $raMbr as $k => $v ) { $oForm->SetValue( $k, $v ); }
