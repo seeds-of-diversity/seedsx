@@ -92,7 +92,7 @@ Redirect       /bauta-essais             https://seedsecurity.ca/fr/122-essais-e
 Redirect       /how-to-grow-garlic-bulbils https://seeds.ca/d?n=web/ebulletin/2016-08-en/articles/garlic
 Redirect       /comment-cultiver-bulbilles https://semences.ca/d?n=web/ebulletin/2016-08-fr/articles/ail
 
-
+Redirect       /sw8/web/events           http://seedysaturday.ca/2022-events
 
 # drupal8 name redirections
 Redirect       /nos-livres               https://semences.ca/livres
