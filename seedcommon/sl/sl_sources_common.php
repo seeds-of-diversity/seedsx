@@ -133,7 +133,7 @@ class SLSourcesCommon
                 : "")
         .$kfr->Expand( "Phone: [[phone]]<BR/>"
                       // stopPropagation() is a kluge to prevent the onclick of the containing div (which selects the company)
-                      ."Web: <A HREF='https://[[web]]' TARGET='_blank' onclick='event.stopPropagation();'>[[web]]</A><BR/>"
+                      ."Web: <A HREF='http://[[web]]' TARGET='_blank' onclick='event.stopPropagation();'>[[web]]</A><BR/>"
                       ."Email: <A HREF='mailto:[[email]]'>[[email]]</A><BR/>" )
         .$kfr->ExpandIfNotEmpty( 'year_est', "Established: [[]]</BR>" )
         //.($kfr->value('bSupporter') ? "*<BR/>" : "")
