@@ -92,7 +92,7 @@ Redirect       /bauta-essais             https://seedsecurity.ca/fr/122-essais-e
 Redirect       /how-to-grow-garlic-bulbils https://seeds.ca/d?n=web/ebulletin/2016-08-en/articles/garlic
 Redirect       /comment-cultiver-bulbilles https://semences.ca/d?n=web/ebulletin/2016-08-fr/articles/ail
 
-Redirect       /sw8/web/events           http://seedysaturday.ca/2022-events
+
 
 # drupal8 name redirections
 Redirect       /nos-livres               https://semences.ca/livres
@@ -146,9 +146,9 @@ RewriteRule ^ - [E=BASE:/~bob/seeds.ca2/swww/]
 #RewriteRule .* http://www.mysite.com/	[L,R=301]
 
 # Requests to the root go straight to the home page (I think query strings are appended by default if the rewrite has none)
-#RewriteCond %{HTTP_HOST} ^(www.)?seeds.ca$
-#RewriteRule ^$  /1/index.php  [L]
-RewriteRule ^$  %{ENV:BASE}index.php  [L]
+RewriteCond %{HTTP_HOST} ^(www.)?seeds.ca$
+RewriteRule ^$  /1/index.php  [L]
+#RewriteRule ^$  %{ENV:BASE}index.php  [L]
 
 # Serve file requests beneath the drupal root (e.g. theme files - img, css, js) - not sure if this works
 RewriteCond %{DOCUMENT_ROOT}%(ENV:BASE}%{REQUEST_URI} -f
@@ -160,8 +160,8 @@ RewriteCond %{REQUEST_FILENAME} -f
 RewriteRule \.svn %{ENV:BASE}index.php [L]
 
 # tmp rule for development of french site
-RewriteRule ^fr$ %{ENV:BASE}index.php?lang=FR [L,QSA]
-RewriteRule ^fr/(.*)$ %{ENV:BASE}index.php?q=$1&lang=FR [L,QSA]
+#RewriteRule ^fr$ %{ENV:BASE}index.php?lang=FR [L,QSA]
+#RewriteRule ^fr/(.*)$ %{ENV:BASE}index.php?q=$1&lang=FR [L,QSA]
 
 # allow app/pool to use http
 #RewriteCond %{HTTPS} on
@@ -170,13 +170,29 @@ RewriteRule ^fr/(.*)$ %{ENV:BASE}index.php?q=$1&lang=FR [L,QSA]
 
 # seeds.ca redirects to wordpress en unless the url refers to a real file or dir
 RewriteCond %{HTTP_HOST} ^(www.)?seeds.ca$
-RewriteCond %{REQUEST_URI} ^/1/
+#RewriteCond %{REQUEST_URI} ^/1/
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-l
 RewriteRule ^(.*)$ /1/$1 [L,QSA]
 #RewriteCond %{HTTP_HOST} ^(www.)?seeds.ca$
 #RewriteRule ^(/)?$ /1/index.php [L] 
+
+
+# semences.ca redirects to wordpress fr unless the url refers to a real file or dir
+RewriteCond %{HTTP_HOST} ^(www.)?semences.ca$
+RewriteRule ^$  /sw8/web/index.php  [L,QSA]
+RewriteCond %{HTTP_HOST} ^(www.)?semences.ca$
+RewriteRule ^sw8/web/index.php$  /sw8/web/index.php  [L,QSA]
+
+RewriteCond %{HTTP_HOST} ^(www.)?semences.ca$
+RewriteCond %{REQUEST_URI} !^/sw8/web/
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-l
+#RewriteRule ^(.*)$ /1/$1 [L,QSA]
+RewriteRule ^(.*)$ /sw8/web/$1 [L,QSA]
+
 
 
 # Serve other applications in the root directory (e.g. seedliving, bauta/descriptions)
@@ -201,13 +217,13 @@ RewriteRule ^(.*)$ %{ENV:BASE}$1 [L,QSA]
 # dynamically generated, and should only be modified via WordPress filters.
 # Any changes to the directives between these markers will be overwritten.
 <IfModule mod_rewrite.c>
-#RewriteEngine On
-#RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-#RewriteBase /
-#RewriteRule ^index\.php$ - [L]
-#RewriteCond %{REQUEST_FILENAME} !-f
-#RewriteCond %{REQUEST_FILENAME} !-d
-#RewriteRule . /index.php [L]
+RewriteEngine On
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+RewriteBase /
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
 </IfModule>
 
 # END WordPress
