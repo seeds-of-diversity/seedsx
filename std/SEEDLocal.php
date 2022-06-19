@@ -426,45 +426,4 @@ class SEEDLocal_TagParser extends SEEDTagParser
     }
 }
 
-
-define("SEEDLOCAL_DB_TABLE_SEEDLOCAL",
-"
-CREATE TABLE IF NOT EXISTS SEEDLocal (
-
-        _key        INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-        _created    DATETIME,
-        _created_by INTEGER,
-        _updated    DATETIME,
-        _updated_by INTEGER,
-        _status     INTEGER DEFAULT 0,
-
-    ns VARCHAR(200) NOT NULL DEFAULT '',   # namespace for this translation
-    k  VARCHAR(200) NOT NULL,              # key for this translation
-    en TEXT NOT NULL,
-    fr TEXT NOT NULL,
-    content_type ENUM ('PLAIN','HTML') NOT NULL DEFAULT 'PLAIN',
-    comment TEXT,
-
-    INDEX (ns(20)),
-    INDEX (ns(20),k(20))
-);
-"
-);
-
-
-function SEEDLocal_Setup( $oSetup, &$sReport, $bCreate = false )
-/**************************************************************
-    Test whether the tables exist.
-    bCreate: create the tables and insert initial data if they don't exist.
-
-    Return true if exists (or create is successful if bCreate); return a text report in sReport
-
-    N.B. $oSetup is a SEEDSetup.  This file doesn't include SEEDSetup.php because the setup code is very rarely used.
-         Instead, the code that calls this function knows about SEEDSetup.
- */
-{
-    return( $oSetup->SetupTable( "SEEDLocal", SEEDLOCAL_DB_TABLE_SEEDLOCAL, $bCreate, $sReport ) );
-}
-
-
 ?>
