@@ -801,7 +801,8 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
                 // left: Pay by PayPal   right: or switch to etransfer/cheque
                 $s .= "<table border='0'><tr>"
                      ."<td valign='top' style='padding:10px'>{$this->confirmedDrawPayPalButton()}</td>"
-                     ."<td valign='top' style='padding:10px'>{$this->oL->S('paypal_instructions1')}</td>"
+                     // also submit the paypal form if they click on the instructions
+                     ."<td valign='top' style='padding:10px;cursor:pointer' onclick='document.getElementById(\"mbro_paypal_form\").submit()'>{$this->oL->S('paypal_instructions1')}</td>"
                      ."</tr></table>"
                    //."<br/>".$this->oL->S('paypal_instructions2')
 
@@ -943,7 +944,7 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
         foreach( $raVars as $k => $v ) {
             $raPP[$k] = $v;
         }
-        $s = "\n<FORM action='https://www.paypal.com/cgi-bin/webscr' method='post'>"
+        $s = "\n<FORM id='mbro_paypal_form' action='https://www.paypal.com/cgi-bin/webscr' method='post'>"
             ."\n<INPUT type='image' src='https://www.paypal.com/en_US/i/btn/x-click-but6.gif' name='submit' alt='".$this->oL->S('secure_payment_paypal')."'>";
         foreach( $raPP as $k => $v ) {
             $s .= "\n<INPUT type='hidden' name='$k' value='".SEEDStd_HSC($v)."'/>";
