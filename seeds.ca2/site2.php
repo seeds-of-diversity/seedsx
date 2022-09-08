@@ -34,10 +34,11 @@ define("SiteKFDB_DB",       SiteKFDB_DB_seeds2);
 define("SiteKFDB_USERID",   SiteKFDB_USERID_seeds2);
 define("SiteKFDB_PASSWORD", SiteKFDB_PASSWORD_seeds2);
 
+// SEEDConfig_NewAppConsole uses this to set oApp->kfdb if no db parm is specified.
+// Since site2 applications always specify the db parm, this is mainly useful when a SEEDAPP can be launched after site1.php or site2.php
+define("SEED_DB_DEFAULT", "seeds2");
 
 function Site_path_self()
 {
     return( "" );
 }
-
-?>
