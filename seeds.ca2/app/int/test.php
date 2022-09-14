@@ -31,6 +31,7 @@ $s = "<div style='border:1px solid #aaa;margin-bottom:30px;padding:10px'>"
     ."<div><a href='{$oApp->PathToSelf()}?test=docrep'>DocRep test</a></div>"
     ."<div><a href='{$oApp->PathToSelf()}?test=docrep_p'>DocRep test with SEEDSessionAccount_Password enabled</a></div>"
     ."<div><a href='{$oApp->PathToSelf()}?test=msd'>MSD my seeds</a></div>"
+    ."<div><a href='{$oApp->PathToSelf()}?test=dompdf'>DomPDF</a></div>"
     ."</div>";
 
 
@@ -196,6 +197,14 @@ switch( $test ) {
     case 'msd':
         $s .= $oTmpl->ExpandStr( "[[msd:seedlist|1499]]", [] );
         break;
+
+    case 'dompdf':
+        $dompdf = new Dompdf\Dompdf();
+        $dompdf->loadHtml('hello world');
+        $dompdf->setPaper('letter', 'portrait');
+        $dompdf->render();
+        $dompdf->stream( 'file.pdf', ['Attachment' => 0] );
+        exit;
 
     default:
         $s .= $oTmpl->ExpandStr( "[[lower:Foo]] [[upper:Foo]] <br/><br/> [[Image://www.seeds.ca/i/img/logo/logoA_h-en-750x.png|{width=100}]]<br/><br/> [[docreptest:]]", [] );
