@@ -587,12 +587,13 @@ include_once(SEEDLIB."mbr/MbrContacts.php");
                 $sDoc = 'MbrWelcome01EN';
 
                 include_once( SEEDLIB."mail/SEEDMail.php" );
-                $oMail = new SEEDMail( $this->oApp, $sDoc );
-                if( $oMail->Key() ) {
-                    $oMail->AddRecipient( $kfrM->Value('email') );
-                    $oMail->StageMail();
+                $oMailCore = new SEEDMailCore( $this->oApp, ['db'=>'seeds2'] );
+                $oMailMsg = new SEEDMailMessage($oMailCore, $sDoc);
+                if( $oMailMsg->Key() ) {
+                    $oMailMsg->AddRecipient( $kfrM->Value('email') );
+                    $oMailMsg->StageMail();
 
-                    $oMailSend = new SEEDMailSend($this->oApp);
+                    $oMailSend = new SEEDMailSend($this->oApp, ['db'=>'seeds2']);
                     while( $oMailSend->GetCountReadyToSend() && $oMailSend->GetCountReadyToSend() < 5 ) {    // don't initiate send if there's a large mail process already going
                         $oMailSend->SendOne();
                     }
@@ -655,7 +656,7 @@ include_once(SEEDLIB."mbr/MbrContacts.php");
         $bOutputFinal = false;
 
         include_once( SEEDLIB."mbr/MbrProfile.php" );
-        $oMP = new MbrProfile( $this->oApp, $this->oMbrOrder->kfr->value('mail_lang') );
+        $oMP = new MbrProfile( $this->oApp );//, $this->oMbrOrder->kfr->value('mail_lang') );
 
         $bAlreadyStored = $this->oMbrOrder->kfr->UrlParmGet('sExtra', "mbrInfoSaved");
         $bSubmittingNow = SEEDInput_Int('p_submitted');

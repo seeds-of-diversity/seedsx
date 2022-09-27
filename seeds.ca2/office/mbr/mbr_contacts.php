@@ -966,9 +966,12 @@ class mbrContacts_Logins extends Console01_Worker2
 
         include_once( SEEDLIB."mail/SEEDMail.php" );
         $oApp = SEEDConfig_NewAppConsole_LoginNotRequired( ['db'=>'seeds2'] );   // anonymous access
-        $oMail = new SEEDMail($oApp, 'MSDLoginInstructions');
-        $oMail->AddRecipient($sEmail1);
-        $oMail->StageMail();
+        $oMailCore = new SEEDMailCore($oApp, ['db'=>'seeds2']);
+        $oMailMsg = new SEEDMailMessage($oMailCore, 'MSDLoginInstructions');
+        if( $oMailMsg->Key() ) {
+            $oMailMsg->AddRecipient($sEmail1);
+            $oMailMsg->StageMail();
+        }
 
         $bOk = true;
 
