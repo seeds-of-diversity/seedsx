@@ -593,7 +593,7 @@ include_once(SEEDLIB."mbr/MbrContacts.php");
                     $oMailMsg->AddRecipient( $kfrM->Value('email') );
                     $oMailMsg->StageMail();
 
-                    $oMailSend = new SEEDMailSend($this->oApp, ['db'=>'seeds2']);
+                    $oMailSend = new SEEDMailSend((new SEEDMailCore($this->oApp, ['db'=>'seeds2'])));
                     while( $oMailSend->GetCountReadyToSend() && $oMailSend->GetCountReadyToSend() < 5 ) {    // don't initiate send if there's a large mail process already going
                         $oMailSend->SendOne();
                     }
@@ -656,7 +656,7 @@ include_once(SEEDLIB."mbr/MbrContacts.php");
         $bOutputFinal = false;
 
         include_once( SEEDLIB."mbr/MbrProfile.php" );
-        $oMP = new MbrProfile( $this->oApp );//, $this->oMbrOrder->kfr->value('mail_lang') );
+        $oMP = new MbrProfile( $this->oApp, 'EN'); // $this->lang ); this activates FR but it doesn't have translations?
 
         $bAlreadyStored = $this->oMbrOrder->kfr->UrlParmGet('sExtra', "mbrInfoSaved");
         $bSubmittingNow = SEEDInput_Int('p_submitted');
