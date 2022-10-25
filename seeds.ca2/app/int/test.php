@@ -15,8 +15,6 @@ list($kfdb, $sess, $lang) = SiteStartSessionAccountNoUI();
 
 $oApp = SEEDConfig_NewAppConsole_LoginNotRequired( ['db'=>'seeds1'] );
 
-$oTmpl = new Drupal8Template( $oApp, [] );
-
 $s = "<div style='border:1px solid #aaa;margin-bottom:30px;padding:10px'>"
     ."<div><a href='{$oApp->PathToSelf()}?test='>Generic test</a></div>"
     ."<div><a href='{$oApp->PathToSelf()}?test=home-en'>Home page test - English</a></div>"
@@ -97,31 +95,31 @@ $sTmpHome = <<<TmpHome
 
 <div class='container-fluid' style='margin:0px auto;width:90%'>
     <div class='row'>
-        <div class='col-sm-6'>
+        <div class='col-md-6'>
             <div class='SoDHomeBlock SoDHomeBlock01'>
-            <a href='A'>
-            <div class='SoDHomeBlockImg' style='background-image: url("../../../../docrep_upload1/sfile/01.jpg");'>
-                <div class='SoDHomeBlockCaption'><h4>Walk With a Horse</h4>It's good for your heart!</div>
+            <a href='[[Var:linkA]]'>
+                    <div class='SoDHomeBlockImg' style='background-image: url("[[Var:imgA]]");'>
+                <div class='SoDHomeBlockCaption'>[[Var:captionA]]</div>
             </div>
             </a>
             </div>
         </div>
-        <div class='col-sm-6'>
+        <div class='col-md-6'>
             <div class='row'>    
                 <div class='col-sm-6'>
                     <div class='SoDHomeBlock SoDHomeBlock02'>
-                    <a href='B'>
-                    <div class='SoDHomeBlockImg' style='background-image: url("../../../../docrep_upload1/sfile/02.jpg');">
-                        <div class='SoDHomeBlockCaption'><h4>Learn How to Grow Beans</h4>They're easier than you think!</div>
+                    <a href='[[Var:linkB]]'>
+                    <div class='SoDHomeBlockImg' style='background-image: url("[[Var:imgB]]");'>
+                        <div class='SoDHomeBlockCaption'>[[Var:captionB]]</div>
                     </div>
                     </a>
                     </div>
                 </div>
                 <div class='col-sm-6'>
                     <div class='SoDHomeBlock SoDHomeBlock02'>
-                    <a href='C'>
-                    <div class='SoDHomeBlockImg' style='background-image: url("../../../../docrep_upload1/sfile/03.jpg');">
-                        <div class='SoDHomeBlockCaption'><h4>Learn How to Grow Flowers</h4>They're very pretty!</div>
+                    <a href='[[Var:linkC]]'>
+                    <div class='SoDHomeBlockImg' style='background-image: url("[[Var:imgC]]");'>
+                        <div class='SoDHomeBlockCaption'>[[Var:captionC]]</div>
                     </div>
                     </a>
                     </div>
@@ -130,18 +128,18 @@ $sTmpHome = <<<TmpHome
             <div class='row'>    
                 <div class='col-sm-6'>
                     <div class='SoDHomeBlock SoDHomeBlock02'>
-                    <a href='D'>
-                    <div class='SoDHomeBlockImg' style='background-image: url("../../../../docrep_upload1/sfile/04.jpg');">
-                        <div class='SoDHomeBlockCaption'><h4>More Flowers</h4>You can never have enough!</div>
+                    <a href='[[Var:linkD]]'>
+                    <div class='SoDHomeBlockImg' style='background-image: url("[[Var:imgD]]");'>
+                        <div class='SoDHomeBlockCaption'>[[Var:captionD]]</div>
                     </div>
                     </a>
                     </div>
                 </div>
                 <div class='col-sm-6'>
                     <div class='SoDHomeBlock SoDHomeBlock02'>
-                    <a href='E'>
-                    <div class='SoDHomeBlockImg' style='background-image: url("../../../../docrep_upload1/sfile/05.jpg');">
-                        <div class='SoDHomeBlockCaption'><h4>Learn How to Make Pickles</h4>What completes a sandwich better?</div>
+                    <a href='[[Var:linkE]]'>
+                    <div class='SoDHomeBlockImg' style='background-image: url("[[Var:imgE]]");'>
+                        <div class='SoDHomeBlockCaption'>[[Var:captionE]]</div>
                     </div>
                     </a>
                     </div>
@@ -152,9 +150,50 @@ $sTmpHome = <<<TmpHome
 </div>
 TmpHome;
 
+$sTmpl = "";
+$raParmsTmpl = [];
+
+$oTmpl = new Drupal8Template( $oApp, [] );
+
 
 switch( $test ) {
-    case 'home-en':    $s .= $oTmpl->ExpandStr( $sTmpHome, ['lang'=>'EN'] );    break;
+    case 'home-en':
+        $oSB = new SEEDMetaTable_StringBucket( $oApp->kfdb, 0 );
+
+        $def = ['lang'  => 'EN'];
+        foreach( ['linkA', 'imgA', 'captionA',
+                  'linkB', 'imgB', 'captionB',
+                  'linkC', 'imgC', 'captionC',
+                  'linkD', 'imgD', 'captionD',
+                  'linkE', 'imgE', 'captionE' ] as $k )
+        {
+            $def[$k] = $oSB->GetStr('SeedsWPHomeTop', $k);
+        }
+
+/*
+            'linkA'  => "A",
+            'imgA'   => $oSB->GetStr('SeedsWPHomeTop', 'imgA'), // "../../d/?n=web/home/01.jpg",
+            'labelA' => "<h4>Walk With a Horse</h4>It's good for your heart!",
+
+            'linkB'  => "B",
+            'imgB'   => "../../d/?n=web/home/02.jpg",
+            'labelB' => "<h4>Learn How to Grow Beans</h4>They're easier than you think!",
+
+            'linkC'  => "C",
+            'imgC'   => "../../d/?n=web/home/03.jpg",
+            'labelC' => "<h4>Learn How to Grow Flowers</h4>They're very pretty!",
+
+            'linkD'  => "D",
+            'imgD'   => "../../d/?n=web/home/04.jpg",
+            'labelD' => "<h4>More Flowers</h4>You can never have enough!",
+
+            'linkE'  => "E",
+            'imgE'   => "../../d/?n=web/home/05.jpg",
+            'labelE' => "<h4>Learn How to Make Pickles</h4>What completes a sandwich better?",
+        ];
+*/
+        $s .= $oTmpl->ExpandStr( $sTmpHome, $def );
+        break;
     case 'home-fr':    $s .= $oTmpl->ExpandStr( "[[SEEDContent:home-fr]]", [] );    break;
     case 'home-edit':  $s .= $oTmpl->ExpandStr( "[[SEEDContent:home-edit]]", [] );  break;
 
@@ -210,6 +249,14 @@ switch( $test ) {
         $s .= $oTmpl->ExpandStr( "[[lower:Foo]] [[upper:Foo]] <br/><br/> [[Image://www.seeds.ca/i/img/logo/logoA_h-en-750x.png|{width=100}]]<br/><br/> [[docreptest:]]", [] );
         break;
 }
+
+if( $sTmpl ) {
+    $oTmpl2 = new Drupal8Template( $oApp, [] );
+    $oMT = new SoDMasterTemplate( $oApp, [] );
+    $sTmpl = $oMT->GetTmpl()->ExpandStr( $sTmpl, $raParmsTmpl );
+    $s .= $oTmpl2->ExpandStr( $sTmpl, $raParmsTmpl );
+}
+
 
 $raParms = [
     'raScriptFiles' => [W_CORE_URL."js/SEEDUI.js"],
