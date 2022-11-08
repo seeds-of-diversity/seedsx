@@ -233,9 +233,7 @@ switch( $test ) {
         $s .= $oTmplP->ExpandStr( $docrep_p, [] );
         break;
 
-    case 'msd':
-        $s .= $oTmpl->ExpandStr( "[[msd:seedlist|1499]]", [] );
-        break;
+    case 'msd':     $sTmpl = "[[msd:seedlist|1499]]";   break;
 
     case 'dompdf':
         $dompdf = new Dompdf\Dompdf();
@@ -251,10 +249,8 @@ switch( $test ) {
 }
 
 if( $sTmpl ) {
-    $oTmpl2 = new Drupal8Template( $oApp, [] );
-    $oMT = new SoDMasterTemplate( $oApp, [] );
-    $sTmpl = $oMT->GetTmpl()->ExpandStr( $sTmpl, $raParmsTmpl );
-    $s .= $oTmpl2->ExpandStr( $sTmpl, $raParmsTmpl );
+    $oMT = new SoDMasterTemplate( $oApp, ['config_bUTF8'=>true] );  // templates are utf8 and tags substituted are converted to utf8
+    $s .= $oMT->GetTmpl()->ExpandStr( $sTmpl, $raParmsTmpl );
 }
 
 
