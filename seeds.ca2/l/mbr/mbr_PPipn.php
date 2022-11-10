@@ -37,7 +37,7 @@ class SoD_PP_IPN {
         $header = "POST /cgi-bin/webscr HTTP/1.0\r\n";
         $header .= "Content-Type: application/x-www-form-urlencoded\r\n";
         $header .= "Content-Length: " . strlen($req) . "\r\n\r\n";
-
+//https and HTTP/1.1
         $fp = fsockopen ('www.paypal.com', 80, $errno, $errstr, 30);
         if( $fp ) {
             fputs( $fp, $header . $req );
