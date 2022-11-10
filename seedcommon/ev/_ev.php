@@ -10,66 +10,9 @@ include_once( SEEDLIB."events/events.php" );
 if( !defined("CLR_BG_editEN") ) define( "CLR_BG_editEN","#e0e0e0");
 if( !defined("CLR_BG_editFR") ) define( "CLR_BG_editFR","#e0e0ff");
 
-
-/*
-    SS: title is not stored: created via "Seedy Saturday/Sunday {city}"
-        city = the city or town
-        location = the venue and address
-
-    EV: title = the name of the event
-        city = the city or town
-        location = the venue and address
-
-    VIRTUAL:
-        title = the name of the event
-        city = blank
-        province = blank
-        location = blank
- */
-define("SEED_DB_TABLE_EV_EVENTS",
-"
-CREATE TABLE IF NOT EXISTS ev_events (
-    # all events are stored here
-
-        _key        INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-        _created    DATETIME,
-        _created_by INTEGER,
-        _updated    DATETIME,
-        _updated_by INTEGER,
-        _status     INTEGER DEFAULT 0,
-
-    type        enum('SS','EV','VIRTUAL') NOT NULL DEFAULT 'SS',  # SS = Seedy Sat/Sun, EV = regular, VIRTUAL = no location
-    date_start  DATE NOT NULL DEFAULT '2017-01-01',
-    date_end    DATE NOT NULL DEFAULT '2017-01-01',
-    date_alt    VARCHAR(200),
-    date_alt_fr VARCHAR(200),
-    time        VARCHAR(200),
-    location    VARCHAR(200),
-    city        VARCHAR(200),
-    province    VARCHAR(200),
-    title       VARCHAR(200),
-    title_fr    VARCHAR(200),
-    spec        VARCHAR(200),                           # control tags (like texttype for the details)
-    details     TEXT,
-    details_fr  TEXT,
-    contact     VARCHAR(200),
-    url_more    VARCHAR(200),                           # click for more info, poster, special page, etc
-    latlong     VARCHAR(200),                           # latitude and longitude urlencoded (blank means it needs to be geocoded)
-    attendance  INTEGER,
-    notes_priv  TEXT,                                   # internal notes
-
-    vol_kMbr    INTEGER NOT NULL DEFAULT 0,             # our main volunteer there
-    vol_notes   TEXT,                                   # materials to send and notes about volunteer/event
-    vol_dSent   VARCHAR(20),                            # YYYY-MM-DD when materials sent ('' == not sent yet, anything else means no need to send)
-
-    INDEX (date_start),
-    INDEX (province)
-);
-"
-);
-
-
 class EV_Events {
+    public $oApp;
+
     public $gMapsAPIKey_www_seeds_ca = "ABQIAAAAZH7Z2EuHYHx72zrJHRiVphQ8I1Ru0X2yQKG6mkY9VLdWFUIWshQUkdimuessOVdYcpo36SexnaFD3g";
 
     public $lang;
@@ -85,6 +28,9 @@ class EV_Events {
     /***************************************************************
      */
     {
+// should be a parm
+$this->oApp = SEEDConfig_NewAppConsole_LoginNotRequired( ['db'=>'seeds1'] );
+
         $this->lang = $lang;
         $this->oWiki = new SEEDWikiParser();
 
@@ -375,7 +321,7 @@ class EV_Events {
      */
     {
         $def =
-            array( "Tables"=>array( array( "Table" => 'seeds_1.ev_events',
+            array( "Tables"=>array( array( "Table" => "{$this->oApp->DBName('seeds1')}.ev_events",
                                            "Type"  => 'Base',
                                            "Fields" => array( array("col"=>"type",        "type"=>"S"),
                                                               array("col"=>"date_start",  "type"=>"S"),
@@ -451,26 +397,25 @@ class EV_PublicList extends EV_Events {
 
 function DrawEvents( KeyFrameDB $kfdb, $lang )
 {
-	$s = "";
+    $s = "";
 
-    $oEv = new EV_PublicList( $lang, $kfdb, 0 );
+    $oApp = SEEDConfig_NewAppConsole_LoginNotRequired( ['db'=>'seeds1', 'lang'=>$lang] );
+
+    // new
+    $oEventsLib = new EventsLib( $oApp );
+    // old
+    $oEv = new EV_PublicList( $oApp->lang, $kfdb, 0 );
 
     $s .= "<STYLE type='text/css'>"
          .".EV_Event { padding-bottom: 1em; }"
          .".EV_navbox { border: 2px solid #9a9;border-radius:5px; font-size:10pt; margin-left:2em;padding:1em; background-color:#efffef;}"
          ."</STYLE>\n";
 
-    $pDate1 = SEEDSafeGPC_GetStrPlain("date1");             // show events >= this date
-    $pDate2 = SEEDSafeGPC_GetStrPlain("date2");             // show events <= this date
-    $pProv  = SEEDSafeGPC_GetStrPlain("prov");              // show events in this province
-    $pSort1 = SEEDSafeGPC_GetStrPlain("sort1");
-    $pPrn   = (SEEDSafeGPC_GetInt("prn") ? true : false);   // show printable page
-
-    if( empty($pDate1) )  $pDate1 = date("Y-m-d", time() );
-    if( empty($pSort1) )  $pSort1 = "d";
-
-//    $oDP = new SEEDDateCalendar();
-//    $s .= $oDP->Setup();
+    $pDate1 = SEEDInput_Str('date1') ?: date("Y-m-d", time() );             // show events >= this date
+    $pDate2 = SEEDInput_Str('date2');                                       // show events <= this date
+    $pProv  = SEEDInput_Str('prov');                                        // show events in this province
+    $pSort1 = SEEDInput_Str('sort1') ?: 'd';                                // sort by d=date, p=prov
+    $pPrn   = false; // (SEEDSafeGPC_GetInt("prn") ? true : false);   // show printable page
 
     /* Control box floating at right
      */
@@ -506,7 +451,7 @@ function DrawEvents( KeyFrameDB $kfdb, $lang )
                  ."<p>We can help circulate them to our representatives who will put them to good use at other community seed swaps. Every week during the winter, we mail books and table-top materials to Seedy Saturdays and Seedy Sundays all across the country, so we can easily include your leftover seeds in our packages. Our volunteers will make sure the seeds get to their local seed swap tables and seed libraries, so you'll know that they won't go to waste.</p><p>Mail your leftover seeds to:</p><p><strong>Seeds of Diversity Canada<br/>#1-12 Dupont St West<br/>Waterloo ON N2L 2X6</strong></p>"
              ."</div>";
 
-    if( $oEv->lang == "EN" ) {
+    if( $oApp->lang == "EN" ) {
         $s .= ""
 //             ."<H2>Seedy Events</H2>"  // "<H2>Seedy Saturdays and Seedy Sundays</H2>"
              ."<P>This is a listing of events for our members and others interested in plant biodiversity, heritage gardening,"
@@ -605,29 +550,15 @@ function DrawEvents( KeyFrameDB $kfdb, $lang )
 <?
 */
 
-    /* Printable-version link
-     */
-    if( !$pPrn ) {
-        $l = "prn=1"
-            .(!empty($pDate1) ? "&date1=$pDate1" : "")
-            .(!empty($pDate2) ? "&date2=$pDate2" : "")
-            .(!empty($pProv)  ? "&prov=$pProv"   : "")
-            .(!empty($pSort1) ? "&sort1=$pSort1" : "");
-
-//      $s .= "<P><A HREF='${_SERVER['PHP_SELF']}?$l' target='_blank'>Printable version</A></P>";
-    }
-
 
     $sCond = "(date_start >= '".addslashes($pDate1)."')"
-            .(empty($pDate2) ? "" : " AND (date_start <= '".addslashes($pDate2)."')")
-            .(empty($pProv)  ? "" : " AND (province = '".addslashes($pProv)."')");
-    $raParms = array();
-    if( $pSort1 == "d" ) {
-        $raParms['sSortCol'] = 'date_start';
-        $raParms['bSortDown'] = 0;
-    } else if( $pSort1 == "p" ) {
-        $raParms['sSortCol'] = 'province,city';
-        $raParms['bSortDown'] = 0;
+            .($pDate2 ? " AND (date_start <= '".addslashes($pDate2)."')" : "")
+            .($pProv  ? " AND (province = '".addslashes($pProv)."')" : "");
+
+    switch( $pSort1 ) {
+        case 'd':  $raParms = ['sSortCol' => 'date_start',    'bSortDown' => 0];   break;
+        case 'p':  $raParms = ['sSortCol' => 'province,city', 'bSortDown' => 0];   break;
+        default:   $raParms = [];
     }
 
     $oEv->bPrn = $pPrn;
@@ -650,7 +581,10 @@ function DrawEvents( KeyFrameDB $kfdb, $lang )
     $s .= $oEv->DrawStart();
     if( ($kfr = $oEv->kfrel->CreateRecordCursor( $sCond." AND spec not like '% top %'", $raParms )) ) {
         while( $kfr->CursorFetch() ) {
-            $s .= $oEv->DrawEvent( $kfr );
+//            $s .= $oEv->DrawEvent( $kfr );
+
+            $e = new Events_event( $oEventsLib, $kfr->Key() );
+            $s .= $e->DrawEvent();
         }
     }
     $s .= $oEv->DrawEnd();

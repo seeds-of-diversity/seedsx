@@ -127,7 +127,7 @@ $(document).ready(function(){
 
 function EV2_drawFilterControl()
 {
-    global $kfdb, $iCurrYear;
+    global $oApp,$kfdb, $iCurrYear;
 
     /* Fetch the values for the 'year' global filter
      * 0 = This year
@@ -136,7 +136,7 @@ function EV2_drawFilterControl()
     $raYearOpts[0] = "-- Future --";
     $raYearOpts[1] = $iCurrYear;
     $raYearOpts[2] = "-- All --";
-    if( ($ra = $kfdb->QueryRowsRA( "SELECT distinct(YEAR(date_start)) FROM seeds_1.ev_events ORDER BY 1 DESC" )) ) {
+    if( ($ra = $kfdb->QueryRowsRA( "SELECT distinct(YEAR(date_start)) FROM {$oApp->DBName('seeds1')}.ev_events ORDER BY 1 DESC" )) ) {
         foreach( $ra as $ra1 ) {
             $y = $ra1[0];
             if( $y && $y != $iCurrYear ) $raYearOpts[$y] = $y;
