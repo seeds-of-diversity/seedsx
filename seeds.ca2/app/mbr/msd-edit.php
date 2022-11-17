@@ -56,162 +56,19 @@ class SEDMbr extends SEDCommon  // the member-access derivation of SED object
 }
 
 
-class SEDMbrGrower extends SEDGrowerWorker
+class SEDMbrGrower extends MSEEditAppTabGrower
 {
-    private $oApp;
-    private $oMSDLib;
+    public $oC;
+    public $kfdb;
+    public $sess;
 
     function __construct( $oC, $oApp, $kfdb, $sess )
     {
-        parent::__construct( $oC, $kfdb, $sess );
-        $this->oApp = $oApp;
-        $this->oMSDLib = new MSDLib($oApp);
-    }
+        $this->oC   = $oC;
+        $this->kfdb = $kfdb;
+        $this->sess = $sess;
 
-    function UpdateGrower( $kCurrGrower )
-    {
-        // Do this in TabSetInit so the list is correct in TabSetControlDraw
-
-        $kfrG = $this->oC->oSed->kfrelG->GetRecordFromDB( "mbr_id='$kCurrGrower'" );
-
-        if( ($k = SEEDSafeGPC_GetInt( 'gdone' )) && $k == $kCurrGrower ) {
-            $kfrG->SetValue( 'bDone', !$kfrG->value('bDone') );
-            $kfrG->SetValue( 'bDoneMbr', $kfrG->value('bDone') );  // make this match bDone
-            if( !$kfrG->PutDBRow() ) {
-                die( "<P style='color:red'>Update didn't work.  Please email this message to Bob:</P>".$kfrG->kfrel->kfdb->GetErrMsg() );
-            }
-        }
-        if( ($k = SEEDSafeGPC_GetInt( 'gskip' )) && $k == $kCurrGrower ) {
-            $kfrG->SetValue( 'bSkip', !$kfrG->value('bSkip') );
-            if( !$kfrG->PutDBRow() ) {
-                die( "<P style='color:red'>Update didn't work.  Please email this message to Bob:</P>".$kfrG->kfrel->kfdb->GetErrMsg() );
-            }
-        }
-        if( ($k = SEEDSafeGPC_GetInt( 'gdelete' )) && $k == $kCurrGrower ) {
-            $kfrG->SetValue( 'bDelete', !$kfrG->value('bDelete') );
-            if( !$kfrG->PutDBRow() ) {
-                die( "<P style='color:red'>Update didn't work.  Please email this message to Bob:</P>".$kfrG->kfrel->kfdb->GetErrMsg() );
-            }
-        }
-    }
-
-    function DrawGrowerControl()
-    {
-        return( "" ); //GrowerControl" );
-    }
-
-    function DrawGrowerContent( $kGrower )
-    {
-        $sLeft = "";
-
-        if( !$kGrower || !$this->oC->oMSDLib->PermOfficeW() ) {
-            $kGrower = $this->oApp->sess->GetUID();
-        }
-
-        $oGrowerForm = new MSDAppGrowerForm( $this->oMSDLib, $this->oC->oSed->currentYear, $this->oC->oSed->bOffice );
-        $oGrowerForm->Update();
-        // Fetch kfrGxM if there's a grower record for kGrower, or just get an empty kfrG if not
-        $oGrowerForm->SetKGrower( $kGrower );
-
-        if( !($oGrowerForm->Value('M__key')) ) {
-// also show this if zero seeds have been entered and this is their first year
-            $sLeft .=
-                  "<h4>Hello ".$this->oApp->sess->GetName()."</h4>"
-                 ."<p>This is your first time listing seeds in our Member Seed Exchange. "
-                 ."Please fill in this form to register as a seed grower. <br/>"
-                 ."After that, you will be able to enter the seeds that you want to offer to other Seeds of Diversity members.</p>"
-                 ."<p>Thanks for sharing your seeds!</p>";
-        }
-
-        $sLeft .= "<h3>".$oGrowerForm->value('mbr_code')." : ".$this->oC->GetGrowerName($kGrower)."</h3>"
-                ."<p>".$this->oC->oSed->S('Grower block heading')."</p>"
-                ."<div class='sed_grower' ".($oGrowerForm->Value('bDone') ? "style='color:green;background:#cdc;'" : "").">"
-                .$this->oMSDLib->DrawGrowerBlock( $oGrowerForm->GetKFR(), true )
-                ."</div>"
-                .($oGrowerForm->Value('bDone') ? "<p style='font-size:16pt;margin-top:20px;'>Done! Thank you!</p>" : "")
-                ."<p><a href='{$this->oMSDLib->oApp->PathToSelf()}?gdone=$kGrower'>"
-                    .($oGrowerForm->Value('bDone')
-                        ? "Click here if you're not really done"
-                        : "<div class='alert alert-warning'><h3>Your seed listings are not active yet</h3> Click here when you are ready (you can undo this)</div>")
-                ."</a></p>"
-                .($this->oC->oSed->bOffice ? $this->drawGrowerOfficeSummary( $oGrowerForm->GetKFR() ) : "");
-
-        $sRight = "<div style='border:1px solid black; margin:10px; padding:10px'>"
-                 .$oGrowerForm->DrawGrowerForm()
-                 ."</div>";
-
-
-        $s = "<div class='container-fluid><div class='row'>"
-            ."<div class='col-lg-6'>$sLeft</div>"
-            ."<div class='col-lg-6'>$sRight</div>"
-            ."</div></div>";
-
-        return( $s );
-    }
-
-    private function drawGrowerOfficeSummary( KeyframeRecord $kfrG )
-    {
-        $kGrower = $kfrG->Value('mbr_id');
-
-        // Grower record
-        $dGUpdated = substr( $kfrG->Value('_updated'), 0, 10 );
-        $kGUpdatedBy = $kfrG->Value('_updated_by');
-
-        // Seed records
-/*
-        $ra = $this->oC->oApp->kfdb->QueryRA(
-                "SELECT _updated,_updated_by FROM
-                     (
-                     (SELECT _updated,_updated_by FROM seeds_1.SEEDBasket_Products
-                         WHERE product_type='seeds' AND _status='0' AND
-                               uid_seller='$kGrower' ORDER BY _updated DESC LIMIT 1)
-                     UNION
-                     (SELECT PE._updated,PE._updated_by FROM seeds_1.SEEDBasket_ProdExtra PE,seeds_1.SEEDBasket_Products P
-                         WHERE P.product_type='seeds' AND _status='0' AND
-                               P.uid_seller='$kGrower' AND P._key=PE.fk_SEEDBasket_Products ORDER BY 1 DESC LIMIT 1)
-                     ) as A
-                 ORDER BY 1 DESC LIMIT 1" );
-        $dSUpdated = @$ra['_updated'];
-        $kSUpdatedBy = @$ra['_updated_by'];
-*/
-        list($kP_dummy,$dSUpdated,$kSUpdatedBy) = $this->oC->oSB->oDB->ProductLastUpdated( "P.product_type='seeds' AND P.uid_seller='$kGrower'" );
-
-        $nSActive = $this->oApp->kfdb->Query1( "SELECT count(*) FROM {$this->oApp->DBName('seeds1')}.SEEDBasket_Products
-                                                WHERE product_type='seeds' AND _status='0' AND
-                                                      uid_seller='$kGrower' AND eStatus='ACTIVE'" );
-
-        $dMbrExpiry = $this->oApp->kfdb->Query1( "SELECT expires FROM {$this->oApp->DBName('seeds2')}.mbr_contacts WHERE _key='$kGrower'" );
-
-        $sSkip = $kfrG->Value('bSkip')
-                    ? ("<div style='background-color:#ee9'><span style='font-size:12pt'>Skipped</span>"
-                      ." <a href='{$_SERVER['PHP_SELF']}?gskip=$kGrower'>Unskip this grower</a></div>")
-                    : ("<div><a href='{$_SERVER['PHP_SELF']}?gskip=$kGrower'>Skip this grower</a></div>");
-        $sDel = $kfrG->Value('bDelete')
-                    ? ("<div style='background-color:#fdf'><span style='font-size:12pt'>Deleted</span>"
-                      ." <a href='{$_SERVER['PHP_SELF']}?gdelete=$kGrower'>UnDelete this grower</a></div>")
-                    : ("<div><a href='{$_SERVER['PHP_SELF']}?gdelete=$kGrower'>Delete this grower</a></div>");
-
-        try {
-            // days since GUpdate
-            if( (new DateTime())->diff(new DateTime($dGUpdated))->days < 90 ) {
-                $dGUpdated = "<span style='color:green;background-color:#cdc'>$dGUpdated</span>";
-            }
-            // days since SUpdate
-            if( (new DateTime())->diff(new DateTime($dSUpdated))->days < 90 ) {
-                $dSUpdated = "<span style='color:green;background-color:#cdc'>$dSUpdated</span>";
-            }
-        } catch (Exception $e) {}
-
-        $s = "<div style='border:1px solid black; margin:10px; padding:10px'>"
-            ."<p>Seeds active: $nSActive</p>"
-            ."<p>Membership expiry: $dMbrExpiry</p>"
-            ."<p>Last grower record change: $dGUpdated by $kGUpdatedBy</p>"
-            ."<p>Last seed record change: $dSUpdated by $kSUpdatedBy</p>"
-            .$sSkip
-            .$sDel
-            ."</div>";
-
-        return( $s );
+        parent::__construct( $oApp );
     }
 }
 
@@ -255,7 +112,7 @@ class MyConsole extends Console01
         switch( $tabname ) {
             case 'Growers':
                 $this->oW = new SEDMbrGrower( $this, $this->oApp, $this->kfdb, $this->sess );
-                $this->oW->UpdateGrower( $this->kCurrGrower );
+                $this->oW->Init_Grower( $this->kCurrGrower );
                 break;
             case 'Seeds':
                 break;
@@ -281,21 +138,26 @@ class MyConsole extends Console01
     {
         $s = "";
 
-        if( !$this->oMSDLib->PermOfficeW() ) goto done;
-
         switch( $tabname ) {
             case 'Growers':
-                $s = $this->growerSelect();
+                $s = $this->oW->ControlDraw_Grower();
+                if( $this->oMSDLib->PermOfficeW() ) {
+                    $s .= $this->growerSelect();
+                }
                 break;
             case 'Seeds':
-                $s = $this->growerSelect();
+                if( $this->oMSDLib->PermOfficeW() ) {
+                    $s .= $this->growerSelect();
+                }
                 if( $this->kCurrSpecies ) {
                     $s .= "<div style='margin-top:10px'><strong>Showing ".$this->oMSDLib->GetSpeciesNameFromKey($this->kCurrSpecies)."</strong>"
                          ." <a href='{$_SERVER['PHP_SELF']}?selectSpecies=0'><button type='button'>Cancel</button></div>";
                 }
                 break;
             case 'Office':
-                $s = $this->oW->DrawControl();
+                if( $this->oMSDLib->PermOfficeW() ) {
+                    $s = $this->oW->DrawControl();
+                }
                 break;
         }
 
@@ -307,9 +169,9 @@ class MyConsole extends Console01
     {
         switch( $tabname ) {
             case 'Growers':
-                return( $this->oW->DrawGrowerContent( $this->kCurrGrower ) );
+                return( $this->oW->ContentDraw_Grower() );
             case 'Seeds':
-                $oMSDAppSeedEdit = new MSDAppSeedEdit( $this->oSB );
+                $oMSDAppSeedEdit = new MSEEditAppSeedEdit( $this->oSB );
                 return( $oMSDAppSeedEdit->Draw( $this->kCurrGrower, $this->kCurrSpecies ) );
             case 'Office':
                 return( $this->oW->DrawContent() );
@@ -387,17 +249,9 @@ echo $oC->DrawConsole( $oSed->SEDStyle()."[[TabSet: main]]" );
 .popover { width: 20%; }    /* when container:'body' specified ths makes the popover 20% of the window width */
 </style>
 <script type='text/javascript'>
-
-<?php
-if( true ) {
-    ?>
-    $(document).ready( function() {
-        SEEDPopover();
-    });
-    <?php
-}
-?>
-
+$(document).ready( function() {
+    SEEDPopover();
+});
 
 SEEDPopover_Def = {
 	mbr_code:

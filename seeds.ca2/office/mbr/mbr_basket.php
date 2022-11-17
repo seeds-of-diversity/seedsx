@@ -145,7 +145,7 @@ class mbrBasket_Products
         $this->oApp = $oApp;
         $this->oSB = $oSB;
         $this->oSVA = $oSVA;
-        $this->oMSDAppSeedEdit = new MSDAppSeedEdit( $oSB );
+        $this->oMSDAppSeedEdit = new MSEEditAppSeedEdit( $oSB );
 
         $this->uidSeller = intval($this->oSVA->SmartGPC( 'uidSeller', [$this->oApp->sess->GetUID()] ));
     }
@@ -223,7 +223,7 @@ class mbrBasket_Products
         $s .= "<div>$sForm</div><div>$sDel</div><div>$sList</div>";
 
         // Draw the seeds
-        $oMSDAppSeedEdit = new MSDAppSeedEdit( $this->oSB );
+        $oMSDAppSeedEdit = new MSEEditAppSeedEdit( $this->oSB );
         $s .= $oMSDAppSeedEdit->Draw( $this->uidSeller, "" ); //$this->kCurrGrower, $this->kCurrSpecies );
 
         return( $s );
