@@ -3,7 +3,7 @@
 /*
  * Seed Directory member interface
  *
- * Copyright 2011-2021 Seeds of Diversity Canada
+ * Copyright 2011-2022 Seeds of Diversity Canada
  *
  * Gives the current user an interface to their own listings in the Member Seed Directory
  */
@@ -82,7 +82,6 @@ class MyConsole extends Console01
     private $kCurrGrower;
     private $kCurrSpecies;
     public $oMSDLib;
-    public $oSB;
 
     function __construct( SEDMbr $oSed, SEEDAppConsole $oApp, $raParms )
     {
@@ -90,18 +89,17 @@ class MyConsole extends Console01
         $this->oApp = $oApp;
         parent::__construct( $oSed->kfdb, $oSed->sess, $raParms );
 
-        $this->oSB = new SEEDBasketCore( null, null, $this->oApp, SEEDBasketProducts_SoD::$raProductTypes, [] );
         $this->oMSDLib = new MSDLib( $oApp );
 
         if( $this->oMSDLib->PermOfficeW() ) {
             $this->oSed->bOffice = true;
 
-            $this->kCurrGrower = $this->oSVA->SmartGPC( 'selectGrower', array(0) );
-            $this->kCurrSpecies = intval($this->oSVA->SmartGPC( 'selectSpecies', array(0) ));
+            $this->kCurrGrower = $this->oSVA->SmartGPC( 'selectGrower', [0] );
         } else {
             $this->kCurrGrower = $this->oApp->sess->GetUID();
             $this->kCurrSpecies = 0;   // all species
         }
+        $this->kCurrSpecies = intval($this->oSVA->SmartGPC( 'selectSpecies', [0] ));
 
         // Growers and Office are cp1252, but make sure '' is too. Growers was being rendered in utf-8 on initialization, which led some members to enter notes in that charset.
         $this->klugeThisPageIsUTF8 = ($this->TabSetGetCurrentTab('main') == 'Seeds');
@@ -115,6 +113,8 @@ class MyConsole extends Console01
                 $this->oW->Init_Grower( $this->kCurrGrower );
                 break;
             case 'Seeds':
+                $this->oW = new MSEEditAppTabSeeds($this->oApp);
+                $this->oW->Init_Seeds( $this->kCurrGrower, $this->kCurrSpecies );
                 break;
             case 'Office':
                 $this->oW = new MSDAdminTab( $this->oMSDLib );
@@ -139,21 +139,8 @@ class MyConsole extends Console01
         $s = "";
 
         switch( $tabname ) {
-            case 'Growers':
-                $s = $this->oW->ControlDraw_Grower();
-                if( $this->oMSDLib->PermOfficeW() ) {
-                    $s .= $this->growerSelect();
-                }
-                break;
-            case 'Seeds':
-                if( $this->oMSDLib->PermOfficeW() ) {
-                    $s .= $this->growerSelect();
-                }
-                if( $this->kCurrSpecies ) {
-                    $s .= "<div style='margin-top:10px'><strong>Showing ".$this->oMSDLib->GetSpeciesNameFromKey($this->kCurrSpecies)."</strong>"
-                         ." <a href='{$_SERVER['PHP_SELF']}?selectSpecies=0'><button type='button'>Cancel</button></div>";
-                }
-                break;
+            case 'Growers':     $s = $this->oW->ControlDraw_Grower();       break;
+            case 'Seeds':       $s = $this->oW->ControlDraw_Seeds();        break;
             case 'Office':
                 if( $this->oMSDLib->PermOfficeW() ) {
                     $s = $this->oW->DrawControl();
@@ -167,45 +154,18 @@ class MyConsole extends Console01
 
     function TabSetContentDraw( $tsid, $tabname )
     {
+        $s = "";
+
         switch( $tabname ) {
-            case 'Growers':
-                return( $this->oW->ContentDraw_Grower() );
-            case 'Seeds':
-                $oMSDAppSeedEdit = new MSEEditAppSeedEdit( $this->oSB );
-                return( $oMSDAppSeedEdit->Draw( $this->kCurrGrower, $this->kCurrSpecies ) );
+            case 'Growers':     $s = $this->oW->ContentDraw_Grower();       break;
+            case 'Seeds':       $s = $this->oW->ContentDraw_Seeds();        break;
             case 'Office':
-                return( $this->oW->DrawContent() );
+                if( $this->oMSDLib->PermOfficeW() ) {
+                    $s = $this->oW->DrawContent();
+                }
+                break;
         }
-        return( "" );
-    }
-
-    function GetGrowerName( $kGrower )
-    {
-        $oMbr = new Mbr_Contacts($this->oApp);
-        return( $oMbr->GetContactName($kGrower) );
-    }
-
-    private function growerSelect()
-    {
-        $raG = $this->oApp->kfdb->QueryRowsRA( "SELECT mbr_id,bSkip,bDelete,bDone FROM {$this->oApp->GetDBName('seeds1')}.sed_curr_growers WHERE _status='0'" );
-        $raG2 = array( '-- All Growers --' => 0 );
-        foreach( $raG as $ra ) {
-            $kMbr = $ra['mbr_id'];
-            $bSkip = $ra['bSkip'];
-            $bDelete = $ra['bDelete'];
-            $bDone = $ra['bDone'];
-
-            $name = $this->GetGrowerName( $kMbr )
-                   ." ($kMbr)"
-                   .($bDone ? " - Done" : "")
-                   .($bSkip ? " - Skipped" : "")
-                   .($bDelete ? " - Deleted" : "");
-            if( $this->klugeThisPageIsUTF8 )  $name = SEEDCore_utf8_encode(trim($name));    // Seeds is utf8 but Growers isn't
-            $raG2[$name] = $kMbr;
-        }
-        ksort($raG2);
-        $oForm = new SEEDCoreForm( 'Plain' );
-        return( "<form method='post'>".$oForm->Select( 'selectGrower', $raG2, "", array('selected'=>$this->kCurrGrower, 'attrs'=>"onChange='submit();'") )."</form>" );
+        return( $s );
     }
 }
 
