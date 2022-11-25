@@ -142,6 +142,8 @@ class mbr_mail
     Support class for all mailing applications (mail setup, mail sending, etc)
  */
 {
+    private $oApp;
+
     var $kfdb1;
     var $kfdb2;
     var $kfrelMail;         // mbr_mail_send : one row per message
@@ -170,6 +172,9 @@ class mbr_mail
 
     function __construct( KeyFrameDB $kfdb1, KeyFrameDB $kfdb2, $uid )
     {
+        global $config_KFDB;
+        $this->oApp = new SEEDAppDB($config_KFDB['seeds1']);
+
         $this->kfdb1 = $kfdb1;
         $this->kfdb2 = $kfdb2;
         $this->initKfrel( $uid );
@@ -345,7 +350,7 @@ $raDRVars['kMailSend'] = $kfrRecipient->Key();
             } else if( ($k = $this->kfdb2->Query1( "SELECT _key FROM mbr_contacts WHERE email='$eDB'")) ) {
                 $raMbr[] = $k;
             // is it a bulletin email?
-            } else if( ($k = $this->kfdb2->Query1( "SELECT _key FROM seeds_1.bull_list WHERE email='$eDB'")) ) {
+            } else if( ($k = $this->kfdb2->Query1( "SELECT _key FROM {$this->oApp->DBName('seeds1')}.bull_list WHERE email='$eDB'")) ) {
                 // It doesn't matter if this is a valid bulletin subscription. The point is that someone assigned this
                 // email address to the send list, and this _key is a short way to look up that email address.
                 $raBull[] = $k;
@@ -410,7 +415,7 @@ $raDRVars['kMailSend'] = $kfrRecipient->Key();
         // get bulletin emails
         foreach( $raBull as $k ) {
             $k = addslashes($k);
-            if( ($sE = $this->kfdb2->Query1( "SELECT email FROM seeds_1.bull_list where _key='$k'")) ) {
+            if( ($sE = $this->kfdb2->Query1( "SELECT email FROM {$this->oApp->DBName('seeds1')}.bull_list where _key='$k'")) ) {
                 $raEmails[] = $sE;
             }
         }
