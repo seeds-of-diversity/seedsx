@@ -237,7 +237,7 @@ function EV2_formDraw( $oForm )
     $oFormEv->SetKFR( $kfr );
 //}
 
-    $oEvent = new Events_event( $oEventsLib, $k );
+    $oEvent = Events_event::CreateFromKey( $oEventsLib, $k );
 
     if( ($kEv = $oForm->GetKey()) ) {
         if( ($kfr = $oEv->GetKfrelEvents()->GetRecordFromDBKey( $kEv )) ) {
