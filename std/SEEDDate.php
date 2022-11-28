@@ -2,7 +2,7 @@
 
 include_once( SEEDCORE."SEEDDate.php" );
 
-function SEEDDateStr( $unixTime, $lang = "EN" )
+function SEEDDateStr( $unixTime, $lang = "EN" )    // use SEEDCore/SEEDDate::NiceDateStr()
 /**********************************************
     Return a nice string format of the given timestamp, in the given language
  */
@@ -59,7 +59,7 @@ function SEEDDateDB2Str( $sDbDate, $lang = "EN" )
     return( SEEDDateStr( SEEDDateDB2Unixtime($sDbDate), $lang ) );
 }
 
-function SEEDDateDB2Unixtime( $sDbDate )
+function SEEDDateDB2Unixtime( $sDbDate )    // use SEEDCore/SEEDDate::Date2Unixtime()
 /***************************************
     Convert YYYY-MM-DD or YYYY/MM/DD to unix time
 
