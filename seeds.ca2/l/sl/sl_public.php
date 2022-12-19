@@ -24,6 +24,8 @@ class SL_Public
 
         $this->oSLDB = new SLDB_Master( $kfdb, 0 ); // uid 0 because this only uses readonly db methods
 
+$this->oApp = SEEDConfig_NewAppConsole_LoginNotRequired( ['db'=>'seeds1'] );
+
         $this->getParms();
     }
 
@@ -361,8 +363,12 @@ class SL_Public
             if( count($raAdopt) ) {
                 $s .= "<P class='slAdoptionThanks'>This variety has been permanently adopted by the donation of <UL>";
                 foreach( $raAdopt as $ra ) {
-                    if( !empty($ra['public_name']) ) {
-                        $s .= "<LI class='slAdoptionThanksLI'>".$ra['public_name']."</LI>";
+                    // show public_name, or if it is blank show the donor's actual name (if you don't want that, you have to put anonymous in the public_name)
+                    if( !($sName = @$ra['public_name']) && @$ra['fk_mbr_contacts'] ) {
+                        $sName = (new Mbr_Contacts($this->oApp))->GetContactName( $ra['fk_mbr_contacts'], ['SHOW_COMPANY_WITH_NAME'=>true] );
+                    }
+                    if( $sName ) {
+                        $s .= "<li class='slAdoptionThanksLI'>$sName</li>";
                     }
                 }
                 $s .= "</UL>";
