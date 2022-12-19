@@ -365,6 +365,7 @@ $this->oApp = SEEDConfig_NewAppConsole_LoginNotRequired( ['db'=>'seeds1'] );
                 foreach( $raAdopt as $ra ) {
                     // show public_name, or if it is blank show the donor's actual name (if you don't want that, you have to put anonymous in the public_name)
                     if( !($sName = @$ra['public_name']) && @$ra['fk_mbr_contacts'] ) {
+include_once( SEEDLIB."mbr/MbrContacts.php");
                         $sName = (new Mbr_Contacts($this->oApp))->GetContactName( $ra['fk_mbr_contacts'], ['SHOW_COMPANY_WITH_NAME'=>true] );
                     }
                     if( $sName ) {
