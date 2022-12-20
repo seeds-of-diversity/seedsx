@@ -15,6 +15,15 @@ list($kfdb, $sess, $lang) = SiteStartSessionAccountNoUI();
 
 $oApp = SEEDConfig_NewAppConsole_LoginNotRequired( ['db'=>'seeds1'] );
 
+SEEDPRG();
+
+
+$raConsoleParms = [
+    'raScriptFiles' => [W_CORE_URL."js/SEEDUI.js"],
+    'raCSSFiles'    => [W_CORE_URL."css/SEEDUI.css"]
+];
+
+
 $s = "<div style='border:1px solid #aaa;margin-bottom:30px;padding:10px'>"
     ."<div><a href='{$oApp->PathToSelf()}?test='>Generic test</a></div>"
     ."<div><a href='{$oApp->PathToSelf()}?test=home-en'>Home page test - English</a></div>"
@@ -22,6 +31,7 @@ $s = "<div style='border:1px solid #aaa;margin-bottom:30px;padding:10px'>"
     ."<div><a href='{$oApp->PathToSelf()}?test=home-edit'>Home page configuration</a></div>"
     ."<div><a href='{$oApp->PathToSelf()}?test=store'>Store test</a></div>"
     ."<div><a href='{$oApp->PathToSelf()}?test=events'>Events test</a></div>"
+    ."<div><a href='{$oApp->PathToSelf()}?test=eventsOld'>Old Events test</a></div>"
     ."<div><a href='{$oApp->PathToSelf()}?test=csci'>CSCI test</a></div>"
     ."<div><a href='{$oApp->PathToSelf()}?test=sl-search'>Seed Library Search test</a></div>"
     ."<div><a href='{$oApp->PathToSelf()}?test=sl-list'>Seed Library List via Drupal test</a></div>"
@@ -204,6 +214,13 @@ switch( $test ) {
         break;
 
     case 'events':
+        $raConsoleParms['raScriptFiles'][] = "https://seeds.ca/app/ev/dist/jquery.vmap.js";
+        $raConsoleParms['raScriptFiles'][] = "https://seeds.ca/app/ev/dist/maps/jquery.vmap.canada.js";
+        $raConsoleParms['raCSSFiles'][]    = "https://seeds.ca/app/ev/dist/jqvmap.css";
+        $sTmpl = "[[SEEDContent:events-page]]";
+        break;
+
+    case 'eventsOld':
         $s .= $oTmpl->ExpandStr( "[[SEEDContent:events]]", [] );
         break;
 
@@ -254,9 +271,4 @@ if( $sTmpl ) {
 }
 
 
-$raParms = [
-    'raScriptFiles' => [W_CORE_URL."js/SEEDUI.js"],
-    'raCSSFiles'    => [W_CORE_URL."css/SEEDUI.css"]
-];
-
-echo Console02Static::HTMLPage( $s, "", $lang, $raParms );
+echo Console02Static::HTMLPage( $s, "", $lang, $raConsoleParms );

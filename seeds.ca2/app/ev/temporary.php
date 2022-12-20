@@ -17,8 +17,8 @@ $s = $oEvApp->DrawEventsPage();
 
 
 $raParms = [
-    'raScriptFiles' => [W_CORE_URL."js/SEEDUI.js", "dist/jquery.vmap.js", "dist/maps/jquery.vmap.canada.js"],
-    'raCSSFiles'    => [W_CORE_URL."css/SEEDUI.css", "dist/jqvmap.css"]
+    'raScriptFiles' => [W_CORE_URL."js/SEEDUI.js", "https://seeds.ca/app/ev/dist/jquery.vmap.js", "https://seeds.ca/app/ev/dist/maps/jquery.vmap.canada.js"],
+    'raCSSFiles'    => [W_CORE_URL."css/SEEDUI.css", "https://seeds.ca/app/ev/dist/jqvmap.css"]
 ];
 
 echo Console02Static::HTMLPage( $s, "", $oApp->lang, $raParms );
