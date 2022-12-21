@@ -351,7 +351,7 @@ class SLAdminAdoption
         $sDonor = "";
         if( ($kMbrDonor = intval( $kfr->value('fk_mbr_contacts')) ) ) {
             $raQ = $this->kfdb2->QueryRA("SELECT * FROM mbr_contacts WHERE _key='$kMbrDonor'" );
-            if( $raQ['_key'] == $kMbrDonor ) {
+            if( @$raQ['_key'] == $kMbrDonor ) {
                 $sDonor = SEEDStd_ArrayExpand( $raQ, "[[firstname]] [[lastname]] [[company]], [[city]]" );
             }
         }
