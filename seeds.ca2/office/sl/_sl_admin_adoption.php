@@ -312,8 +312,18 @@ class SLAdminAdoption
         $raCompParms = array(
             "Label"=>"Adoptions",
             "fnTableItemDraw" => array($this,'AdoptionTableItemDraw'),
-            "fnFormDraw" => array($this,'AdoptionFormDraw')
-        );
+            "fnFormDraw" => array($this,'AdoptionFormDraw'),
+            "SearchToolDef" => array( 'filterCols' =>
+                [["Donor name"       =>'T1.donor_name',
+                  "Donor #"          =>'T1.fk_mbr_contacts',
+                  "Public name"      =>'T1.public_name',
+                  "Cultivar #"       =>'T1.fk_sl_pcv',
+                  "Cultivar request" =>'T1.sPCV_request',
+                  "Donation amount"  =>'T1.amount',
+                  "Donation date"    =>'T1.d_donation',
+                  "Notes"            =>'T1.notes'
+                ]])
+            );
         $kfreldef_SL_Adoption =
             array( "Tables"=>array( array( "Table" => 'sl_adoption',
                                            "Type"  => 'Base',
@@ -359,7 +369,7 @@ class SLAdminAdoption
         $s = "<DIV class='slAdminConsoleListItem' style='background-color:".($this->bListBgToggle ? "#ddd" : "#fff")."'>"
             ."<A ".$this->oConsole->oComp->EncodeUrlHREF(array('kCurrRow'=>$kfr->Key())).">[Edit]</A><br/>"
             ."Donor: ".$kfr->value('donor_name')    // unless fk_mbr_contacts
-            ." <A HREF='${_SERVER['PHP_SELF']}?sladopt_find=kMbr&sladopt_findstr=$kMbrDonor'>($kMbrDonor)</A> "
+            ." <A HREF='${_SERVER['PHP_SELF']}?sfAx_srch_fld1=T1.fk_mbr_contacts&sfAx_srch_op1=eq&sfAx_srch_val1=$kMbrDonor'>($kMbrDonor)</A> "
             ."<SPAN style='background-color:#eff'>&nbsp;$sDonor&nbsp;</SPAN>"
             .SEEDStd_StrNBSP("",10)
             //.$this->oConsoleList->ExpandTags( $kfr->Key(), " <A HREF='{$_SERVER['PHP_SELF']}?[[LinkParmEdit]]' style='color:red'>[Edit]</A><BR/>" )
@@ -375,7 +385,7 @@ class SLAdminAdoption
                 $s .= $kfrPCV->value('psp')." : ".$kfrPCV->value('name')." ";
             }
         }
-        $s .= " <A HREF='${_SERVER['PHP_SELF']}?sladopt_find=kPCV&sladopt_findstr=".$kfr->value('fk_sl_pcv')."'>(".$kfr->value('fk_sl_pcv').")</A><BR/>"
+        $s .= " <A HREF='${_SERVER['PHP_SELF']}?sfAx_srch_fld1=T1.fk_sl_pcv&sfAx_srch_op1=eq&sfAx_srch_val1={$kfr->value('fk_sl_pcv')}'>({$kfr->value('fk_sl_pcv')})</A><br/> "
              .$kfr->ExpandIfNotEmpty( 'notes', "Notes: [[]]" )
 
              ."<DIV style='border:1px solid #aaa;background-color:#eee;width:50%'>"
