@@ -3,7 +3,7 @@
 /*
  * Seed Directory public interface
  *
- * Copyright (c) 2017-2021 Seeds of Diversity Canada
+ * Copyright (c) 2017-2023 Seeds of Diversity Canada
  *
  * Show the listings in the Member Seed Directory
  */
@@ -75,12 +75,16 @@ class SEEDBasketStore_Old
 
 class msdBasket extends SEEDBasketStore_Old
 {
+    private $kfdb_for_DocRepDB;
+    private $oApp;
 
     function __construct( KeyFrameDB $kfdb, SEEDSession $sess, SEEDAppConsole $oApp, $lang )
     {
         parent::__construct();
+        $this->oApp = $oApp;
+        $this->kfdb_for_DocRepDB = $kfdb;
         $this->oW = new SEEDApp_Worker( $kfdb, $sess, $lang );
-        $this->oSB = new MSDBasketCore( $kfdb, $sess, $oApp );
+        $this->oSB = new MSDBasketCore( $oApp );
         $this->oDraw = new MSDCommonDraw( $this->oSB );
 
         $this->oMSDLib = new MSDLib( $oApp );
@@ -118,13 +122,13 @@ class msdBasket extends SEEDBasketStore_Old
     function Draw()
     {
         $raParms = array(
-                'lang' => $this->oW->lang,
+                'lang' => $this->oApp->lang,
                 'bMbrLogin'=> $this->oSB->bIsMbrLogin,
                 'siteroot' => SITEROOT,
                 'qUrl'    => Site_UrlQ('basketJX.php'),
-                'sessionRealname' => $this->oW->sess->GetRealname(),
-                'sessionNameUID' => $this->oW->sess->GetHTTPNameUID(),
-                'sessionNamePWD' => $this->oW->sess->GetHTTPNamePWD(),
+                'sessionRealname' => $this->oApp->sess->GetRealname(),
+                'sessionNameUID' => $this->oApp->sess->GetHTTPNameUID(),
+                'sessionNamePWD' => $this->oApp->sess->GetHTTPNamePWD(),
         );
 
         switch( $this->oSB->BasketStatusGet() ) {
@@ -140,7 +144,7 @@ class msdBasket extends SEEDBasketStore_Old
 
             default:
                 // shouldn't happen
-                $s = "Seeds of Diversity's Member Seed Directory";
+                $s = "Seeds of Diversity's Member Seed Exchange";
                 break;
         }
 
@@ -153,8 +157,8 @@ class msdBasket extends SEEDBasketStore_Old
      */
     {
         // The production installation should have instructions in DocRep, available to user 0 (e.g. main web site permclass)
-        $oDocRepDB = New_DocRepDB_WithMyPerms( $this->oW->kfdb, 0, array('bReadonly'=>true) );
-        if( !($kDoc = $oDocRepDB->GetDocFromName( $this->oW->lang == 'FR' ? "web/main/home/msd/msd-instructions-fr" : "web/main/home/msd/msd-instructions-en" )) ||
+        $oDocRepDB = New_DocRepDB_WithMyPerms( $this->kfdb_for_DocRepDB /*$this->oApp->kfdb*/, 0, ['bReadonly'=>true] );
+        if( !($kDoc = $oDocRepDB->GetDocFromName( $this->oApp->lang == 'FR' ? "web/main/home/msd/msd-instructions-fr" : "web/main/home/msd/msd-instructions-en" )) ||
             !($oDoc = new DocRepDoc( $oDocRepDB, $kDoc )) ||
             !($s = $oDoc->GetText("PUB")) )
         {

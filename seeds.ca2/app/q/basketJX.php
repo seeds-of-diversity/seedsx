@@ -13,17 +13,12 @@ include_once( SEEDAPP."basket/basketProductHandlers_seeds.php" );
 include_once( SITEROOT."l/sl/msd.php" );
 include_once( SEEDLIB."msd/msdq.php" );
 
-list($kfdb, $sess, $lang) = SiteStartSessionAccountNoUI();     // you don't have to be logged in to use a basket
+list($kfdb, $sess, $lang) = SiteStartSessionAccountNoUI();
+$oApp = SEEDConfig_NewAppConsole_LoginNotRequired( ['db'=>'seeds1', 'lang'=>$lang ] );     // you don't have to be logged in to use a basket
 
 $oW = new SEEDApp_Worker( $kfdb, $sess, $lang );
 
 //$kfdb->SetDebug(2);
-
-$oApp = new SEEDAppConsole( $config_KFDB['seeds1']
-                            + array( 'sessPermsRequired' => array(),
-                                     'logdir' => SITE_LOG_ROOT,
-                                     'lang' => $lang )
-);
 
 /*
 This might solve the issue where http://seeds.ca cannot use http://www.seeds.ca as the ajax domain
@@ -35,7 +30,8 @@ header( "Access-Control-Allow-Origin: *" );
 
 */
 
-$oSB = new MSDBasketCore( $oW->kfdb, $oW->sess, $oApp );
+$oSB = new MSDBasketCore( $oApp );
+$oMSDLib = new MSDLib($oApp);
 
 $raJX = array( 'bOk'=>false, 'sOut'=>"", 'sErr'=>"", 'raOut'=>array() );
 
@@ -185,7 +181,7 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
         case 'msdOrderInfo':
             // when you click on a variety description this order info slides open
             if( ($kP = SEEDInput_Int('kP')) && ($kfrP = $oSB->oDB->GetKFR( 'P', $kP )) ) {
-                $raJX['sOut'] .= SEEDCore_utf8_encode(drawMSDOrderInfo( $oSB, $kfrP ));
+                $raJX['sOut'] .= SEEDCore_utf8_encode($oMSDLib->DrawOrderSlide( $oSB, $kfrP ));
                 $raJX['bOk'] = true;
             }
             break;
@@ -195,92 +191,3 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
 done:
 echo json_encode( $raJX );
 
-
-function drawMSDOrderInfo( MSDBasketCore $oSB, KeyframeRecord $kfrP )
-{
-    global $oApp;
-    global $kfdb;
-
-    $s = "";
-
-    $oMSDDraw = new MSDCommonDraw( $oSB );
-    $oMSDLib = new MSDLib( $oApp );
-
-
-    include_once( SITEROOT."l/sl/msd.php" );
-    $oW = new SEEDApp_Worker( $kfdb, $oSB->sess, "EN" );  // someday this will be in oSB
-    $oMSD = new MSDView( $oW );
-
-    include_once( SEEDLIB."msd/msdcore.php" );
-    $oMSDCore = new MSDCore( $oApp );
-    $eRequestable = $oApp->sess->IsLogin() ? $oMSDCore->IsRequestableByUser( $kfrP ) : MSDCore::REQUESTABLE_NO_NOLOGIN;
-    $bRequestable = ($eRequestable==MSDCore::REQUESTABLE_YES);
-
-    $kP = $kfrP->Key();
-    $kM = $kfrP->Value('uid_seller');
-    $raM = $oMSDCore->GetGrowerDetails($kM);
-    $raPE = $oSB->oDB->GetProdExtraList( $kP );                 // prodExtra
-    $kfrG = $oMSD->kfrelG->GetRecordFromDB( "mbr_id='$kM'" );   // sed_growers
-    if( !($kfrGxM = $oMSDLib->KFRelGxM()->GetRecordFromDB( "G.mbr_id='$kM'" )) ) goto done;
-
-    if( $bRequestable ) {   // this also verifies that the current user can access grower contact info
-        if( $raM['firstname'] || $raM['lastname'] ) {
-            $who = $kfrGxM->Expand( "[[M_firstname]] [[M_lastname]] in [[M_city]] [[M_province]]" );
-        } else {
-            $who = $kfrGxM->Expand( "[[M_company]] in [[M_city]] [[M_province]]" );
-        }
-    } else {
-        $who = $kfrGxM->Expand( "a Seeds of Diversity member in [[M_province]]" );
-    }
-
-    // make this false to prevent people from ordering
-    $bEnableAddToBasket = true;
-
-    $sPayment = $oMSD->drawPaymentMethod( $kfrG );
-    $sMbrCode = $kfrGxM->Value('mbr_code');
-    $sButton1Attr = $bRequestable && $bEnableAddToBasket ? "onclick='AddToBasket_Name($kP);'"
-                                                         : "disabled='disabled'";
-    $sButton2Attr = $bRequestable ? "onclick='msdShowSeedsFromGrower($kM,\"$sMbrCode\");'"
-                                  : "disabled='disabled'";
-
-    $sG = "";
-    if( $kfrGxM ) {
-        $sG = "<div style='width:100%;margin:20px auto;max-width:80%;border:1px solid #777;background-color:#f8f8f8'>"
-             .$oMSDLib->DrawGrowerBlock( $kfrGxM, true )
-             ."</div>";
-    }
-
-    switch( $eRequestable ) {
-        default:
-        case MSDCore::REQUESTABLE_YES:
-            $sReq = "";
-            break;
-        case MSDCore::REQUESTABLE_NO_NOLOGIN:
-            $sReq = "<p>Please login to request seeds.</p>";
-            break;
-        case MSDCore::REQUESTABLE_NO_INACTIVE:
-            $sReq = "<p>This seed offer is not currently active.</p>";
-            break;
-        case MSDCore::REQUESTABLE_NO_OUTOFSEASON:
-            $sReq = "<p>This grower only offers these seeds from {$kfrG->Value('dDateRangeStart')} to {$kfrG->Value('dDateRangeEnd')}</p>";
-            break;
-        case MSDCore::REQUESTABLE_NO_NONGROWER:
-            $sReq = "<p>These seeds are only available to members who also offer seeds in the Seed Exchange.</p></p>";
-            break;
-    }
-
-
-    $s = "" //"<div style='display:none' class='msd-order-info msd-order-info-$kP'>"
-            .SEEDCore_ArrayExpand( $raPE, "<p><b>[[species]] - [[variety]]</b></p>" )
-            ."<p>This is offered by $who for $".$kfrP->Value('item_price')." in $sPayment.</p>"
-            .$sReq
-            ."<p><button $sButton1Attr>Add this request to your basket</button>&nbsp;&nbsp;&nbsp;"
-               ."<button $sButton2Attr>Show other seeds from this grower</button></p>"
-            .($bRequestable ? $sG : "")
-        ;//."</div>";
-
-    done:
-    return( $s );
-}
-
-?>
