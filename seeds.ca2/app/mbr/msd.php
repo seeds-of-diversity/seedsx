@@ -77,6 +77,7 @@ class msdBasket extends SEEDBasketStore_Old
 {
     private $kfdb_for_DocRepDB;
     private $oApp;
+    private $oMSDLib;
 
     function __construct( KeyFrameDB $kfdb, SEEDSession $sess, SEEDAppConsole $oApp, $lang )
     {
@@ -86,7 +87,6 @@ class msdBasket extends SEEDBasketStore_Old
         $this->oW = new SEEDApp_Worker( $kfdb, $sess, $lang );
         $this->oSB = new MSDBasketCore( $oApp );
         $this->oDraw = new MSDCommonDraw( $this->oSB );
-
         $this->oMSDLib = new MSDLib( $oApp );
 
         $raTmplParms = array(
@@ -163,8 +163,8 @@ class msdBasket extends SEEDBasketStore_Old
             !($s = $oDoc->GetText("PUB")) )
         {
             // Nope, this is probably a dev installation, so just use this
-            $s = "<p>Seeds of Diversity's Member Seed Directory is a listing of seeds and plants that our member seed savers offer through our national seed exchange.</p>"
-                ."<p>All members can request seeds directly from the growers, and payment is usually made with "
+            $s = "<p>Seeds of Diversity's Member Seed Exchange is a program for members to save and share seeds with each other.</p>"
+                ."<p>All members can request seeds directly from the growers, and payment is usually made with e-transfers, "
                 ."stamps, cash, cheques, or Canadian Tire money. We invite all members to request seeds, regardless of whether they offer seeds, "
                 ."because participation in the seed exchange is the best way to get to know other members from coast to coast, and to get acquainted "
                 ."with the larger seed saving community. We hope that everyone will try saving their own seeds, and when they feel ready to "
@@ -281,18 +281,17 @@ class msdBasket extends SEEDBasketStore_Old
         $s = "";
 
         // Confirm that this user is logged in.
-        if( !$this->oW->sess->IsLogin() ) goto done;
+        if( !$this->oApp->sess->IsLogin() ) goto done;
 
         // Confirm that the current basket is Confirmed.
 
-        $oMSD = new MSDView( $this->oW );
-        $kfrG = $oMSD->kfrelG->GetRecordFromDB( "mbr_id='$uidSeller'" );   // sed_curr_growers
+        $kfrGxM = $this->oMSDLib->KFRelGxM()->GetRecordFromDB("mbr_id='$uidSeller'");   // sed_curr_growers
 
         $sSeeds = "";
         if( ($kBasket = $this->oSB->GetBasketKey()) ) {
             $raSummary = (new SEEDBasket_Basket($this->oSB, $kBasket))->ComputeBasketContents();
             if( isset($raSummary['raSellers'][$uidSeller]) ) {
-                $sSeeds .= "<p style='font-weight:bold;font-size:11pt;'>This grower accepts payment by: ".$oMSD->drawPaymentMethod($kfrG)."</p>";
+                $sSeeds .= "<p style='font-weight:bold;font-size:11pt;'>This grower accepts payment by: ".$this->oMSDLib->DrawPaymentMethod($kfrGxM)."</p>";
 
                 $sSeeds .= "<table style='width:100%' border='1' >";
                 foreach( $raSummary['raSellers'][$uidSeller]['raPur'] as $pur ) {
@@ -307,39 +306,36 @@ class msdBasket extends SEEDBasketStore_Old
                 }
 
                 $sSeeds .= "<tr><td><p style='font-size:12pt'>Total</p></td><td><p style='font-size:12pt;'>"
-                          .$this->oSB->dollar($raSummary['raSellers'][$uidSeller]['fSellerTotal'])."</p></td></tr>";
-                $sSeeds .= "</table>";
+                          .$this->oSB->dollar($raSummary['raSellers'][$uidSeller]['fSellerTotal'])."</p></td></tr>"
+                          ."</table>";
             }
         }
 
-// this should probably be MSDLib::DrawGrowerBlock()
+// this should probably be done by MSDLib::DrawGrowerBlock()
         include_once( SEEDCOMMON."mbr/mbrSitePipe.php" );
-        $ra = MbrSitePipeGetContactsRA2( $this->oW->kfdb, $uidSeller );
-        $sGrowerAddr1 = SEEDCore_ArrayExpand( $ra, "[[firstname]] [[lastname]]<br/>" )
-                       .SEEDStd_ExpandIfNotEmpty( @$ra['company'], "[[]]<br/>" )
-                       .($kfrG->Value('eReqClass') != 'email' ? SEEDCore_ArrayExpand( $ra, "[[address]]<br/>[[city]] [[province]] [[postcode]]" ) : "");
-        $sGrowerAddr2 = "Grower code: ".$kfrG->Value('mbr_code')."<br/>"
-                       .($kfrG->Value('unlisted_email') ? "" : SEEDStd_ExpandIfNotEmpty( @$ra['email'], "Email: [[]]<br/>" ))
-                       .($kfrG->Value('unlisted_phone') ? "" : SEEDStd_ExpandIfNotEmpty( @$ra['phone'], "Tel: [[]]<br/>" ));
+        $sGrowerAddr1 = $kfrGxM->Expand( "[[M_firstname]] [[M_lastname]]<br/>" )
+                       .$kfrGxM->ExpandIfNotEmpty( 'M_company', "[[]]<br/>" )
+                       .($kfrGxM->Value('eReqClass') != 'email' ? $kfrGxM->Expand("[[M_address]]<br/>[[M_city]] [[M_province]] [[M_postcode]]" ) : "");
+        $sGrowerAddr2 = $kfrGxM->Expand( "Grower code: [[mbr_code]]<br/>" )
+                       .($kfrGxM->Value('unlisted_email') ? "" : $kfrGxM->ExpandIfNotEmpty( 'M_email', "Email: [[]]<br/>" ))
+                       .($kfrGxM->Value('unlisted_phone') ? "" : $kfrGxM->ExpandIfNotEmpty( 'M_phone', "Tel: [[]]<br/>" ));
         $sGrowerAddr = "<table border='0' width='100%'><tr>"
                           ."<td valign='top' style='width:50%'>$sGrowerAddr1</td>"
                           ."<td valign='top' style='font-weight:normal'>$sGrowerAddr2</td>"
                       ."</tr></table>";
 
-        $ra = MbrSitePipeGetContactsRA2( $this->oW->kfdb, $this->oW->sess->GetUID() );
-        $kfrGReq = $oMSD->kfrelG->GetRecordFromDB( "mbr_id='".$this->oW->sess->GetUID()."'" );
+        $ra = (new Mbr_Contacts($this->oApp))->GetBasicValues($this->oW->sess->GetUID());
+        $kfrGReq = $this->oMSDLib->KFRelGxM()->GetRecordFromDB( "mbr_id='".$this->oW->sess->GetUID()."'" );
         $sRequestAddrLabel = SEEDCore_ArrayExpand( $ra, "[[firstname]] [[lastname]]<br/>" )
-                            .SEEDStd_ExpandIfNotEmpty( @$ra['company'], "[[]]<br/>" )
+                            .SEEDCore_ArrayExpandIfNotEmpty( $ra, 'company', "[[]]<br/>" )
                             .SEEDCore_ArrayExpand( $ra, "[[address]]<br/>[[city]] [[province]] [[postcode]]" );
-        $sRequestAddrExtra = $sRequestAddrLabel."<br/>"
-                            .SEEDStd_ExpandIfNotEmpty( @$ra['email'], "Email: [[]]<br/>" )
-                            .SEEDStd_ExpandIfNotEmpty( @$ra['phone'], "Tel: [[]]<br/>" );
-        if( $kfrGReq && $kfrGReq->Value('nTotal') ) {
-            $sRequestAddrExtra .= "Grower member ".$kfrGReq->Value('mbr_code')." (offering seeds in this year's directory)";
-        }
+        $sRequestAddrExtra = ($kfrGReq && $kfrGReq->Value('nTotal') ? "Grower member {$kfrGReq->Value('mbr_code')} (offering seeds in this year's seed exchange)<br/><br/>" : "")
+                            .$sRequestAddrLabel."<br/>"
+                            .SEEDCore_ArrayExpandIfNotEmpty( $ra, 'email', "Email: [[]]<br/>" )
+                            .SEEDCore_ArrayExpandIfNotEmpty( $ra, 'phone', "Tel: [[]]<br/>" );
 
         $raTmplParms = array(
-                'lang' => $this->oW->lang,
+                'lang' => $this->oApp->lang,
                 'bMbrLogin'=> $this->oSB->bIsMbrLogin,
                 'siteroot' => SITEROOT,
 
