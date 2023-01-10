@@ -99,7 +99,7 @@ class MyConsole extends Console01
             $this->kCurrGrower = $this->oApp->sess->GetUID();
             $this->kCurrSpecies = 0;   // all species
         }
-        $this->kCurrSpecies = intval($this->oSVA->SmartGPC( 'selectSpecies', [0] ));
+        $this->kCurrSpecies = $this->oSVA->SmartGPC( 'selectSpecies', [0] );    // normally an int, but can be tomatoAC, tomatoDH, etc
 
         // Growers and Office are cp1252, but make sure '' is too. Growers was being rendered in utf-8 on initialization, which led some members to enter notes in that charset.
         $this->klugeThisPageIsUTF8 = ($this->TabSetGetCurrentTab('main') == 'Seeds');
