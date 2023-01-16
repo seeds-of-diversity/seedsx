@@ -959,7 +959,7 @@ class mbrContacts_Logins extends Console01_Worker2
             $edb = addslashes($sEmail1);
             // Sending an MSD email to an arbitrary email. If we know who it is, that's helpful.
             // Might not be a real contact; it's okay if it's zero after this.
-            if( !($kMbr = $this->kfdb1->Query1( "SELECT _key FROM seeds_2.mbr_contacts WHERE email='$edb'")) ) {
+            if( !($kMbr = $this->kfdb1->Query1( "SELECT _key FROM {$this->dbname2}.mbr_contacts WHERE email='$edb'")) ) {
                 $kMbr = $this->kfdb1->Query1( "SELECT _key FROM {$this->dbname1}.SEEDSession_Users WHERE email='$edb'");
             }
         }
@@ -967,7 +967,7 @@ class mbrContacts_Logins extends Console01_Worker2
         include_once( SEEDLIB."mail/SEEDMail.php" );
         $oApp = SEEDConfig_NewAppConsole_LoginNotRequired( ['db'=>'seeds2'] );   // anonymous access
         $oMailCore = new SEEDMailCore($oApp, ['db'=>'seeds2']);
-        $oMailMsg = new SEEDMailMessage($oMailCore, 'MSDLoginInstructions');
+        $oMailMsg = new SEEDMailMessage($oMailCore, 'MSELoginInstructions');     // this is the SEEDMail name, not the docrep name
         if( $oMailMsg->Key() ) {
             $oMailMsg->AddRecipient($sEmail1);
             $oMailMsg->StageMail();
