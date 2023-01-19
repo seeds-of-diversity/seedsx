@@ -3,7 +3,7 @@
 /*
  * Seed Directory member interface
  *
- * Copyright 2011-2022 Seeds of Diversity Canada
+ * Copyright 2011-2023 Seeds of Diversity Canada
  *
  * Gives the current user an interface to their own listings in the Member Seed Directory
  */
@@ -116,6 +116,9 @@ class MyConsole extends Console01
                 $this->oW = new MSEEditAppTabSeeds($this->oApp);
                 $this->oW->Init_Seeds( $this->kCurrGrower, $this->kCurrSpecies );
                 break;
+            case 'Edit':
+                $this->oW = new MSDOfficeEditTab( $this->oMSDLib );
+                break;
             case 'Office':
                 $this->oW = new MSDAdminTab( $this->oMSDLib );
                 break;
@@ -128,6 +131,7 @@ class MyConsole extends Console01
             case 'Growers':
             case 'Seeds':
                 return( 1 );
+            case 'Edit':
             case 'Office':
                 return( $this->oMSDLib->PermOfficeW() ? 1 : 0 );
         }
@@ -143,7 +147,7 @@ class MyConsole extends Console01
             case 'Seeds':       $s = $this->oW->ControlDraw_Seeds();        break;
             case 'Office':
                 if( $this->oMSDLib->PermOfficeW() ) {
-                    $s = $this->oW->DrawControl();
+                    $s = $this->oW->DrawControl();      // MSDOfficeEditTab or MSDAdminTab
                 }
                 break;
         }
@@ -159,6 +163,7 @@ class MyConsole extends Console01
         switch( $tabname ) {
             case 'Growers':     $s = $this->oW->ContentDraw_Grower();       break;
             case 'Seeds':       $s = $this->oW->ContentDraw_Seeds();        break;
+            case 'Edit':
             case 'Office':
                 if( $this->oMSDLib->PermOfficeW() ) {
                     $s = $this->oW->DrawContent();
@@ -181,6 +186,7 @@ $raConsoleParms = array(
 
     'TABSETS' => array( "main" => array( 'tabs' => array( 'Growers' => array( 'label' => $oSed->S("Tab G") ),
                                                           'Seeds'   => array( 'label' => $oSed->S("Tab S") ),
+                                                          'Edit'    => array( 'label' => "Edit" ),
                                                           'Office'  => array( 'label' => "Office" ) ) ) ),
     'lang' => $lang,
     'bBootstrap' => true,
