@@ -2,7 +2,7 @@
 /*
  * docUtil
  *
- * Copyright 2009-2019 Seeds of Diversity Canada
+ * Copyright 2009-2023 Seeds of Diversity Canada
  *
  * Functions to simplify DocRep applications
  */
@@ -110,6 +110,10 @@ function DocServeDoc( $kfdb, $sess, $flag )
     // ***** Must be after the session_start - do that first!
     header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
     header("Pragma: public");
+    // Allow any domain to access the file - see CORS
+    // Note that this is even necessary for http://www.seeds.ca to access https://www.seeds.ca/.../q because the
+    // CORS access control policy is per (scheme|domain|port)
+    header("Access-Control-Allow-Origin: *");
     //
     // or session_cache_limit() might be the right solution
 
