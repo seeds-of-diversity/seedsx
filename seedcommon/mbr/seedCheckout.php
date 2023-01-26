@@ -116,7 +116,7 @@ class SoDMbrOrderCheckout extends MbrOrderCheckout
         $_SESSION['mbrocdata']['bBulbils'] = "";    // have to do this too because we're storing everything in the session during this stage
 
         $bGarlicAdvertised = true;
-        $bGarlicAdvertisedButGone = false;
+        $bGarlicAdvertisedButGone = true;
 
         if( $bGarlicAdvertised ) {
             $s .= "<a name='gafrlic'></a>"
