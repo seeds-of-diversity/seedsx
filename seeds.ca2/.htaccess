@@ -95,7 +95,7 @@ Redirect       /comment-cultiver-bulbilles https://semences.ca/d?n=web/ebulletin
 Redirect       /sw8/web/events           http://seedysaturday.ca/2022-events
 
 # drupal8 name redirections
-Redirect       /nos-livres               https://semences.ca/livres
+#Redirect       /nos-livres               https://semences.ca/livres
 
 Redirect       /library                  https://seeds.ca/diversity/seed-library
 Redirect       /bibliotheque             https://semences.ca/diversite/bibliotheque-semences
@@ -108,6 +108,8 @@ RewriteCond %{HTTP_HOST} ^(.*)\.seeds\.ca$
 RewriteRule (.*)$ https://seeds.ca/$1 [R=301,L]
 RewriteCond %{HTTP_HOST} ^(.*)\.semences\.ca$
 RewriteRule (.*)$ https://semences.ca/$1 [R=301,L]
+RewriteCond %{HTTP_HOST} youthinfoodsystems
+RewriteRule .* https://seeds.ca/schoolfoodgardens [L,R]
 
 
 # force https (above redirect forces to ^seeds.ca$ or ^semences.ca$
@@ -177,6 +179,20 @@ RewriteCond %{REQUEST_FILENAME} !-l
 RewriteRule ^(.*)$ /1/$1 [L,QSA]
 #RewriteCond %{HTTP_HOST} ^(www.)?seeds.ca$
 #RewriteRule ^(/)?$ /1/index.php [L] 
+
+
+# Requests to the root go straight to the home page (I think query strings are appended by default if the rewrite has none)
+> RewriteCond %{HTTP_HOST} ^(www.)?semences.ca$
+> RewriteRule ^$  /fr/index.php  [L]
+> #RewriteRule ^$  %{ENV:BASE}index.php  [L]
+> # semences.ca redirects to wordpress fr unless the url refers to a real file or dir
+> RewriteCond %{HTTP_HOST} ^(www.)?semences.ca$
+> RewriteCond %{REQUEST_FILENAME} !-f
+> RewriteCond %{REQUEST_FILENAME} !-d
+> RewriteCond %{REQUEST_FILENAME} !-l
+> RewriteRule ^(.*)$ /fr/$1 [L,QSA]
+> #RewriteCond %{HTTP_HOST} ^(www.)?seeds.ca$
+> #RewriteRule ^(/)?$ /1/index.php [L] 
 
 
 # semences.ca redirects to wordpress fr unless the url refers to a real file or dir
