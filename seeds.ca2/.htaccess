@@ -180,19 +180,18 @@ RewriteRule ^(.*)$ /1/$1 [L,QSA]
 #RewriteCond %{HTTP_HOST} ^(www.)?seeds.ca$
 #RewriteRule ^(/)?$ /1/index.php [L] 
 
-
 # Requests to the root go straight to the home page (I think query strings are appended by default if the rewrite has none)
-> RewriteCond %{HTTP_HOST} ^(www.)?semences.ca$
-> RewriteRule ^$  /fr/index.php  [L]
-> #RewriteRule ^$  %{ENV:BASE}index.php  [L]
-> # semences.ca redirects to wordpress fr unless the url refers to a real file or dir
-> RewriteCond %{HTTP_HOST} ^(www.)?semences.ca$
-> RewriteCond %{REQUEST_FILENAME} !-f
-> RewriteCond %{REQUEST_FILENAME} !-d
-> RewriteCond %{REQUEST_FILENAME} !-l
-> RewriteRule ^(.*)$ /fr/$1 [L,QSA]
-> #RewriteCond %{HTTP_HOST} ^(www.)?seeds.ca$
-> #RewriteRule ^(/)?$ /1/index.php [L] 
+RewriteCond %{HTTP_HOST} ^(www.)?semences.ca$
+RewriteRule ^$  /fr/index.php  [L]
+#RewriteRule ^$  %{ENV:BASE}index.php  [L]
+# semences.ca redirects to wordpress fr unless the url refers to a real file or dir
+RewriteCond %{HTTP_HOST} ^(www.)?semences.ca$
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-l
+RewriteRule ^(.*)$ /fr/$1 [L,QSA]
+#RewriteCond %{HTTP_HOST} ^(www.)?seeds.ca$
+#RewriteRule ^(/)?$ /1/index.php [L] 
 
 
 # semences.ca redirects to wordpress fr unless the url refers to a real file or dir
