@@ -143,7 +143,7 @@ class H2o {
         return $instance;
     }
 
-    static function &createTag($tag, $args = null, $parser, $position = 0) {
+    static function &createTag($tag, $args, $parser, $position = 0) {
         if (!isset(self::$tags[$tag])) {
             throw new H2o_Error($tag . " tag doesn't exist");
         }
