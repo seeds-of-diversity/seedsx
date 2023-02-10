@@ -7,7 +7,7 @@ include_once( SEEDCOMMON."console/console01.php" );
 include_once( SEEDCOMMON."siteTemplate.php" );
 
 list($kfdb, $sess, $lang) = SiteStartSessionAccount( array() );  // requires a valid login, but no specific permissions
-
+$oApp = SEEDConfig_NewAppConsole_LoginNotRequired( ['db'=>'seeds1'] );
 
 $oC = new Console01( $kfdb, $sess );
 $oLP = new SiteStartLoginPage( $sess, $lang );
@@ -16,12 +16,23 @@ $raTmplParms = array();
 $oMaster = new MasterTemplate( $kfdb, $sess->GetUID(), $lang, $raTmplParms );
 $oTmpl = $oMaster->GetTmpl();
 
+$kMbr = $oApp->sess->GetUID();
 
 $sBody = "";
 
 $sRight = "<div style='float:right'>";
 
-$sRight .= $oTmpl->ExpandTmpl( "SeedUI-Box1", array( 'heading'=>'Your Membership', 'content'=>"You are member #".$sess->GetUID() ) );
+$sRight .= $oTmpl->ExpandTmpl( "SeedUI-Box1", array( 'heading'=>'Your Membership', 'content'=>"You are member #".$kMbr ) )
+           ."<br/>";
+
+include( SEEDLIB."mbr/MbrDonations.php" );
+$oDon = new MbrDonations($oApp);
+if( $kMbr && ($sMbrReceiptsLinks = $oDon->DrawReceiptLinks($kMbr)) ) {
+    $sMbrReceiptsLinks = "<p>Thanks so much for your support of Seeds of Diversity!<br/> Click below to download your official donation receipts</p>
+                          <div style='margin:10px; padding:10px; background-color:#eee;text-align:left'>$sMbrReceiptsLinks</div>";
+    $sRight .= $oTmpl->ExpandTmpl( "SeedUI-Box1", array( 'heading'=>'Your Donations', 'content'=>$sMbrReceiptsLinks ) )
+               ."<br/>";
+}
 
 
 
@@ -43,6 +54,7 @@ if( $sess->TestPerm( "Traductions", "W" ) || $sess->TestPerm( "DocRepMgr", "W") 
               ."</FORM></DIV>";
 }
 $sRight .= "</div>";
+
 
 $sBody .= $sRight;
 
