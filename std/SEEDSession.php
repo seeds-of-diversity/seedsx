@@ -51,34 +51,6 @@ Security zones: Sess, Auth and Magic.
     put the tables in different databases, and run SEEDSession from a user account that can read and write all such db's.
 */
 
-define("SEEDSESSION_DB_TABLE_SEEDSESSION_MAGICLOGIN",
-"
-CREATE TABLE IF NOT EXISTS SEEDSession_MagicLogin (
-    # Security zone: Magic
-    #
-    # Stores magic logins that are available. If a client provides the magic_idstr, they are automagically logged in
-    # to a new session with the given perms, or all allowed perms
-
-        _key        INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-        _created    DATETIME,
-        _created_by INTEGER,
-        _updated    DATETIME,
-        _updated_by INTEGER,
-        _status     INTEGER DEFAULT 0,
-
-    magic_idstr VARCHAR(200) NOT NULL,
-    uid         INTEGER,
-    ts_expiry   INTEGER,                # Unix time() + duration till expiry (0=no expiry)
-    about       VARCHAR(200),           # optional description of purpose
-    sess_parms  TEXT,                   # optional parms for the session (permsR=A,B,C&permsW=D,E,F&permsA=G,H&expiry=1000) - if empty, all perms allowed and default session expiry
-    act_parms   TEXT,                   # optional parms to tell client page what action to take
-
-    INDEX (magic_idstr)
-);
-"
-);
-
-
 include_once( "SEEDStd.php" );
 include_once( SEEDCORE."SEEDSession.php" );
 include_once( "SEEDForm.php" );
