@@ -110,7 +110,7 @@ class SLCollectionCollection
 
         $sMyColls = "";
         $sOpenColls = "";
-        $nPrivateColls = $this->oSCA->kfdb->Query1( "SELECT count(*) FROM seeds_1.sl_collection WHERE _status='0'" )
+        $nPrivateColls = $this->oSCA->kfdb->Query1( "SELECT count(*) FROM {$this->oSCA->oApp->DBName('seeds1')}.sl_collection WHERE _status='0'" )
                          - count($raC);
 
         if( count($raC) &&

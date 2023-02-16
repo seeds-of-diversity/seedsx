@@ -182,8 +182,9 @@ $raParms = array();
              *   - fill in the current date if it is not set
              *   - set the inv_number
              */
-
-            if( $oI->Value( 'g_weight' ) == 0.0 ) return( false );  // this is an empty row (of course this is valid if the inv item is not new)
+            //if( $oI->Value( 'g_weight' ) == 0.0 ) return( false );  // this is an empty row (of course this is valid if the inv item is not new)
+            // php8: '' != 0.0 so the above failed to detect blank input, so an empty row was inserted (which failed because mysql didn't like the blank value in a float, but the lot # incremented)
+            if( !$oI->Value('g_weight') ) return( false );  // this is an empty row (of course this is valid if the inv item is not new)
 
             if( ($kAcc = $this->oFormA->GetKey()) ) {
                 $oI->SetValue( 'fk_sl_accession', $kAcc );
