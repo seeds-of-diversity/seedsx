@@ -1205,5 +1205,4 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
         $this->oL = new SEEDLocal( $sL, $lang );
     }
 }
-
-?>
+ 
