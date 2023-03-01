@@ -1,48 +1,48 @@
 <?php
+
 /* Main Login page for seeds.ca
  */
 
 include_once( "../site.php" );
-include_once( SEEDCOMMON."console/console01.php" );
-include_once( SEEDCOMMON."siteTemplate.php" );
+include_once( SEEDAPP."website/login.php" );
+include_once( SEEDLIB."SEEDTemplate/masterTemplate.php" );
 
-list($kfdb, $sess, $lang) = SiteStartSessionAccount( array() );  // requires a valid login, but no specific permissions
-$oApp = SEEDConfig_NewAppConsole_LoginNotRequired( ['db'=>'seeds1'] );
+$oApp = SEEDConfig_NewAppConsole( ['db'=>'seeds1'] );       // requires a valid login, but no specific permissions
 
-$oC = new Console01( $kfdb, $sess );
-$oLP = new SiteStartLoginPage( $sess, $lang );
+SEEDPRG();
 
-$raTmplParms = array();
-$oMaster = new MasterTemplate( $kfdb, $sess->GetUID(), $lang, $raTmplParms );
-$oTmpl = $oMaster->GetTmpl();
+$oLP = new SEEDLoginPage($oApp);
+
+$oTmpl = (new SoDMasterTemplate( $oApp, [] ))->GetTmpl();
 
 $kMbr = $oApp->sess->GetUID();
 
-$sBody = "";
+$sRight = "";
 
-$sRight = "<div style='float:right'>";
+/* Membership box
+ */
+$sRight .= $oTmpl->ExpandTmpl("SeedUI-Box1", ['sTitle'=>'Your Membership', 'sContent'=>"You are member #{$kMbr}"])
+          ."<br/>";
 
-$sRight .= $oTmpl->ExpandTmpl( "SeedUI-Box1", array( 'heading'=>'Your Membership', 'content'=>"You are member #".$kMbr ) )
-           ."<br/>";
-
+/* Donations box
+ */
 include( SEEDLIB."mbr/MbrDonations.php" );
 $oDon = new MbrDonations($oApp);
 if( $kMbr && ($sMbrReceiptsLinks = $oDon->DrawReceiptLinks($kMbr)) ) {
     $sMbrReceiptsLinks = "<p>Thanks so much for your support of Seeds of Diversity!<br/> Click below to download your official donation receipts</p>
                           <div style='margin:10px; padding:10px; background-color:#eee;text-align:left'>$sMbrReceiptsLinks</div>";
-    $sRight .= $oTmpl->ExpandTmpl( "SeedUI-Box1", array( 'heading'=>'Your Donations', 'content'=>$sMbrReceiptsLinks ) )
+    $sRight .= $oTmpl->ExpandTmpl( "SeedUI-Box1Expandable", array( 'sTitle'=>'Your Donations', 'sContent'=>$sMbrReceiptsLinks ) )
                ."<br/>";
 }
 
-
-
-// Manage the SEEDTesting flag
-if( $sess->TestPerm( "Traductions", "W" ) || $sess->TestPerm( "DocRepMgr", "W") ) {
-    $bTesting = $sess->VarGetBool("SEEDTesting");
+/* SEEDTesting box
+ */
+if( $oApp->sess->GetUID() == 1499 ) { // $sess->TestPerm( "Traductions", "W" ) || $sess->TestPerm( "DocRepMgr", "W") ) {
+    $bTesting = $oApp->sess->VarGetBool("SEEDTesting");
 
     if( SEEDSafeGPC_GetInt('ToggleSEEDTesting') ) {
         $bTesting = !$bTesting;
-        $sess->VarSet( 'SEEDTesting', $bTesting );
+        $oApp->sess->VarSet( 'SEEDTesting', $bTesting );
     }
     $sColour = $bTesting ? "green" : "black";
     $sBackground = $bTesting ? "efe" : "eee";
@@ -53,10 +53,7 @@ if( $sess->TestPerm( "Traductions", "W" ) || $sess->TestPerm( "DocRepMgr", "W") 
               ."<INPUT type='submit' value='Turn Testing mode ".($bTesting ? "off" : "on")."'/>"
               ."</FORM></DIV>";
 }
-$sRight .= "</div>";
 
-
-$sBody .= $sRight;
 
 $raLoginDef = array(
     array( "Web site", "Site Web",
@@ -94,8 +91,10 @@ $raLoginDef = array(
 );
 
 
-$sBody .= $oLP->DrawLogin( $raLoginDef );
+$sBody = "<div class='container-fluid'><div class='row'>
+            <div class='col-md-9'>{$oLP->DrawLogin($raLoginDef)}</div>
+            <div class='col-md-3'>$sRight</div>
+          </div></div>";
 
-echo $oLP->DrawPage( "Login", $oC->Style(), $sBody );
+echo $oLP->DrawPage( "Login", "", $sBody );
 
-?>

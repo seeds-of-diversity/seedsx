@@ -5,22 +5,22 @@
 
 define( "SITEROOT", "../../" );
 include_once( "../../site2.php" );
-include_once( SEEDCOMMON."console/console01.php" );
-//include_once( SITEROOT."int/taskmanager.share.php" );
+include_once( SEEDAPP."website/login.php" );
+include_once( SEEDLIB."SEEDTemplate/masterTemplate.php" );
 
-//list($kfdb, $sess, $lang) = SiteStartSessionAccount( array() );
 $oApp = SEEDConfig_NewAppConsole( ['db'=>'seeds2'] );       // requires a valid login but no specific perms
+
+SEEDPRG();
+
 $kfdb = $oApp->kfdb;
 $sess = $oApp->sess;
 $lang = $oApp->lang;
 
-//$oC = new Console01( $kfdb, $sess );
-$oLP = new SiteStartLoginPage( $sess, $lang );
-
-$sBody = "";
+$oLP = new SEEDLoginPage($oApp);
 
 /* Tasks List
  */
+/*
 $raTasks = array(); //TasksGetUrgentList( $kfdb, $sess );
 if( count($raTasks) ) {
     $sBody .= "<TABLE align=right width=20% class='console01_controlbox'>"
@@ -50,7 +50,7 @@ if( count($raTasks) ) {
     }
     $sBody .= $s1.$s2.$s3.$s4."</TABLE></TD></TR></TABLE>";
 }
-
+*/
 
 $raLoginDef = array(
     array( "Members, Volunteers, Donors, Contacts",
@@ -129,8 +129,4 @@ $raLoginDef = array(
  *}
  */
 
-$sBody .= $oLP->DrawLogin( $raLoginDef );
-
-echo $oLP->DrawPage( "Administration", "" /*$oC->Style()*/, $sBody );
-
-?>
+echo $oLP->DrawPage( "Administration", "", $oLP->DrawLogin($raLoginDef) );
