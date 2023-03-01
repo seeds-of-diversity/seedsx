@@ -862,8 +862,8 @@ $sGarlicVarieties =
                                  ."<LI>le Catalogue de semences, soit la liste de toutes les semences offertes par les membres (environ 2400 vari&eacute;t&eacute;s!)</LI></UL>" ),
             'membership_desc2022'
                 => ['EN'=> "<p>Seeds of Diversity members can participate in our seed exchange and seed grow-out programs, and support many projects in their communities.</p>"
-                          ."<p><i>Membership is free for 2022!</i></p>",
-                    'FR'=> "<p><i>L'adh&eacute;sion est gratuite en 2022!</i></p>"],
+                          ."<p><i>Membership is free!</i></p>",
+                    'FR'=> "<p><i>L'adh&eacute;sion est gratuite!</i></p>"],
 
             "donation_desc"
                 => array( "EN" => "Seeds of Diversity Canada is a registered Canadian charity (89650 8157 RR0001). "
