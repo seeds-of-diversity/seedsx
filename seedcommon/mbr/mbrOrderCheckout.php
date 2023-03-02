@@ -8,7 +8,7 @@
 
 /* mbrOrderCheckout
  *
- * Copyright (c) 2009-2021 Seeds of Diversity Canada
+ * Copyright (c) 2009-2023 Seeds of Diversity Canada
  *
  * Base implementation for an online checkout system
  */
@@ -253,12 +253,6 @@ class MbrOrderCheckout {
                         $this->oMbrOrder->setKOrder( 0, $this->kfrOC );
                         $this->oMbrOrder->computeOrder();
                         $this->kfrOC->SetValue('pay_total', $this->oMbrOrder->nTotal );
-
-                        // The Office Orders always creates paid-cheque entries
-                        if( defined('MbrOrderCheckoutOffice') ) {
-                            $this->kfrOC->SetValue( 'eStatus', MBRORDER_STATUS_PAID );
-                            $this->kfrOC->SetValue( 'ePayType', "Cheque" );
-                        }
 
                         if( $this->kfrOC->PutDBRow() ) {
                             $this->setSessKOrder( $this->kfrOC->Key() );
@@ -537,9 +531,9 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
 
     protected function FormBox( $heading, $body, $bExpandable = false )
     {
-        $cBox  = $bExpandable ? 'seedui_boxexpand' : "";
-        $cHead = $bExpandable ? 'seedui_boxexpand_head' : "";
-        $cBody = $bExpandable ? 'seedui_boxexpand_body' : "";
+        $cBox  = $bExpandable ? 'seedui-boxexpand' : "";
+        $cHead = $bExpandable ? 'seedui-box-head' : "";
+        $cBody = $bExpandable ? 'seedui-box-body' : "";
 
         $s = "<div class='mbro_box $cBox'>"
                 ."<div class='mbro_boxheader $cHead'>$heading</div>"
@@ -784,54 +778,72 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
         $bPaymentNeeded = ($this->oMbrOrder->kfr->Value('pay_total') > 0.0);
 
         /* Update order record : with change in payment type
-         *                       if order is free mark it paid
+         *                       if order is free or from the office, mark it paid
+         * If the order is marked paid, show that in the SEEDBasket too
          */
-        if( ($e = SEEDInput_Smart( 'ePayType', ["","PayPal","Cheque"] )) )  $this->oMbrOrder->kfr->SetValue( 'ePayType', $e );
-        if( !$bPaymentNeeded )                                              $this->oMbrOrder->kfr->SetValue( 'eStatus', MBRORDER_STATUS_PAID );
+        if( defined('MbrOrderCheckoutOffice') ) {
+            // The Office Orders always creates paid-cheque entries
+            $this->oMbrOrder->kfr->SetValue( 'ePayType', "Cheque" );
+            $this->oMbrOrder->kfr->SetValue( 'eStatus', MBRORDER_STATUS_PAID );
+        } else {
+            if( ($e = SEEDInput_Smart( 'ePayType', ["","PayPal","Cheque"] )) )  $this->oMbrOrder->kfr->SetValue( 'ePayType', $e );      // '' skips the SetValue()
+            if( !$bPaymentNeeded )                                              $this->oMbrOrder->kfr->SetValue( 'eStatus', MBRORDER_STATUS_PAID );
+        }
         $this->oMbrOrder->kfr->PutDBRow();
+        /* Copy the Paid eStatus to the SEEDBasket
+         */
+        if( $this->oMbrOrder->kfr->Value('eStatus') == MBRORDER_STATUS_PAID &&
+            ($kB = $this->oMbrOrder->kfr->Value('kBasket')) &&
+            ($oB = new SEEDBasket_Basket($this->oStore->KlugeGetSB(), $kB)) )
+        {
+            $oB->SetValue( 'eStatus', 'Paid' );
+            $oB->PutDBRow();
+        }
 
-        $s .= "<h2>{$this->oL->S('Order_confirmed')}"
-            .($bPaymentNeeded ? (" - ".($this->oMbrOrder->kfr->value('ePayType') == 'PayPal' ? $this->oL->S('Pay_by_credit') : $this->oL->S('Pay_by_cheque_mo'))) : "")
-            ."</h2>";
+        if( !defined('MbrOrderCheckoutOffice') ) {
+            $s .= "<h2>{$this->oL->S('Order_confirmed')}"
+                .($bPaymentNeeded ? (" - ".($this->oMbrOrder->kfr->value('ePayType') == 'PayPal' ? $this->oL->S('Pay_by_credit') : $this->oL->S('Pay_by_cheque_mo'))) : "")
+                ."</h2>";
 
-        $sFormAction = $this->getFormAction();
+            if( $bPaymentNeeded ) {
+                $sFormAction = $this->getFormAction();
 
-        if( $bPaymentNeeded ) {
-            if( $this->oMbrOrder->kfr->value('ePayType') == 'PayPal' ) {
-                // left: Pay by PayPal   right: or switch to etransfer/cheque
-                $s .= "<table border='0'><tr>"
-                     ."<td valign='top' style='padding:10px'>{$this->confirmedDrawPayPalButton()}</td>"
-                     // also submit the paypal form if they click on the instructions
-                     ."<td valign='top' style='padding:10px;cursor:pointer' onclick='document.getElementById(\"mbro_paypal_form\").submit()'>{$this->oL->S('paypal_instructions1')}</td>"
-                     ."</tr></table>"
-                   //."<br/>".$this->oL->S('paypal_instructions2')
+                if( $this->oMbrOrder->kfr->value('ePayType') == 'PayPal' ) {
+                    // left: Pay by PayPal   right: or switch to etransfer/cheque
+                    $s .= "<table border='0'><tr>"
+                         ."<td valign='top' style='padding:10px'>{$this->confirmedDrawPayPalButton()}</td>"
+                         // also submit the paypal form if they click on the instructions
+                         ."<td valign='top' style='padding:10px;cursor:pointer' onclick='document.getElementById(\"mbro_paypal_form\").submit()'>{$this->oL->S('paypal_instructions1')}</td>"
+                         ."</tr></table>"
+                       //."<br/>".$this->oL->S('paypal_instructions2')
 
-                     ."<p style='margin-left:30px'><b>OR</b></p>"
-                     ."<div style='margin-left:15px'>"
-                        ."<form action='$sFormAction' method='post'>"
-                   // .$this->sess->FormHidden()
-                        ."<input type='hidden' name='ePayType' value='Cheque'/>"
-                        ."<input type='submit' value='{$this->oL->S('pay_by_cheque_instead')}'>"
-                        ."</form>"
-                     ."</div>";
+                         ."<p style='margin-left:30px'><b>OR</b></p>"
+                         ."<div style='margin-left:15px'>"
+                            ."<form action='$sFormAction' method='post'>"
+                       // .$this->sess->FormHidden()
+                            ."<input type='hidden' name='ePayType' value='Cheque'/>"
+                            ."<input type='submit' value='{$this->oL->S('pay_by_cheque_instead')}'>"
+                            ."</form>"
+                         ."</div>";
 
-            } else {
-                $s .= "<div style='margin:15px;border:1px solid #aaa;padding:10px'>{$this->oL->S('cheque_instructions', [$this->oMbrOrder->kfr->Key()])}</div>"
-                     ."<p style='margin-left:30px'><b>OR</b></p>"
-                     ."<div style='margin-left:15px'>"
-                         ."<form action='$sFormAction' method='post'>"
-                  //  .$this->sess->FormHidden()
-                         ."<input type='hidden' name='ePayType' value='PayPal'/>"
-                         ."<input type='submit' value='{$this->oL->S('pay_by_credit_card_instead')}'/>"
-                         ."</form>"
-                     ."</div>";
+                } else {
+                    $s .= "<div style='margin:15px;border:1px solid #aaa;padding:10px'>{$this->oL->S('cheque_instructions', [$this->oMbrOrder->kfr->Key()])}</div>"
+                         ."<p style='margin-left:30px'><b>OR</b></p>"
+                         ."<div style='margin-left:15px'>"
+                             ."<form action='$sFormAction' method='post'>"
+                      //  .$this->sess->FormHidden()
+                             ."<input type='hidden' name='ePayType' value='PayPal'/>"
+                             ."<input type='submit' value='{$this->oL->S('pay_by_credit_card_instead')}'/>"
+                             ."</form>"
+                         ."</div>";
+                }
             }
+        }
 
-            $sTicket = $this->oMbrOrder->DrawTicket();     // oMbrOrder->kfr is already loaded with the current order
-            $s .= $sTicket;
-            if( !defined("MbrOrderCheckoutOffice") ) {
-                MailFromOffice( 'bob@seeds.ca', 'Order Ticket', "", $sTicket, $raParms = array() );
-            }
+        $sTicket = $this->oMbrOrder->DrawTicket();     // oMbrOrder->kfr is already loaded with the current order
+        $s .= $sTicket;
+        if( !defined("MbrOrderCheckoutOffice") ) {
+            MailFromOffice( 'bob@seeds.ca', 'Order Ticket', "", $sTicket, $raParms = array() );
         }
 
         // If Paypal, they have to go through the payment now. If Cheque, let them start a new order.
@@ -1205,4 +1217,3 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
         $this->oL = new SEEDLocal( $sL, $lang );
     }
 }
- 
