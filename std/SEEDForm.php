@@ -628,7 +628,7 @@ class SEEDForm extends SEEDFormElements
         foreach( $raConfig['filters'] as $raFld ) {
             $currFld = $this->CtrlGlobal('srch_fld'.$iFilter);
             $currOp  = $this->CtrlGlobal('srch_op'.$iFilter);
-            $currVal = trim($this->CtrlGlobal('srch_val'.$iFilter));
+            $currVal = trim($this->CtrlGlobal('srch_val'.$iFilter) ?: "");
 
             if( $currOp == 'blank' ) {
                 // process this separately because the text value is irrelevant

@@ -270,7 +270,10 @@ $this->sess->VarSet( "console01".$this->sConsoleName."TF".substr($k,6), SEEDSafe
      * raMatches[5] = title (if any)
      */
     {
-        return( $this->ExpandTemplateTag( trim(@$raMatches[2]), trim(@$raMatches[3]), trim(@$raMatches[5]) ) );
+        $ns    = trim(@$raMatches[2] ?: "");
+        $tag   = trim(@$raMatches[3] ?: "");
+        $title = trim(@$raMatches[5] ?: "");
+        return( $this->ExpandTemplateTag( $ns, $tag, $title ) );
     }
 
     function ExpandTemplateTag( $namespace, $tag, $title )
