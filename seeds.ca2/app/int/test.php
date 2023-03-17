@@ -37,18 +37,11 @@ $s = "<div style='border:1px solid #aaa;margin-bottom:30px;padding:10px'>"
     ."<div><a href='{$oApp->PathToSelf()}?test=sl-list'>Seed Library List via Drupal test</a></div>"
     ."<div><a href='{$oApp->PathToSelf()}?test=bulletin'>bulletin signup test</a></div>"
     ."<div><a href='{$oApp->PathToSelf()}?test=docrep'>DocRep test</a></div>"
-    ."<div><a href='{$oApp->PathToSelf()}?test=docrep_p'>DocRep test with SEEDSessionAccount_Password enabled</a></div>"
-    ."<div><a href='{$oApp->PathToSelf()}?test=msd'>MSD my seeds</a></div>"
+    ."<div><a href='{$oApp->PathToSelf()}?test=docrep_p_new'>DocRep test with New SEEDSessionAccount_Password enabled</a></div>"
+    ."<div><a href='{$oApp->PathToSelf()}?test=docrep_p_old'>DocRep test with Old SEEDSessionAccount_Password enabled</a></div>"
+    ."<div><a href='{$oApp->PathToSelf()}?test=msd'>MSE my seeds</a></div>"
     ."<div><a href='{$oApp->PathToSelf()}?test=dompdf'>DomPDF</a></div>"
     ."</div>";
-
-
-$docrep_p = "<p>Your user id is [[SEEDSessionAccount_email:3]]</p>"
-           ."[[SEEDSessionAccount_TrustTest:3]] "
-           ."[[if: \$bSEEDSessionPasswordAutoGen "
-               ."| <p>Your password is [[SEEDSessionAccount_password:3]]</p> "  // password is original auto-gen so show it (the tag only works in _mbr_mail)
-               ."| <p>Forgot your password? <a href='https://seeds.ca/login?sessioncmd=sendPwd' target='_blank'>Click here to get it back</a></p>"
-           ."]]";
 
 
 $test = $oApp->sess->SmartGPC( 'test' );
@@ -238,16 +231,34 @@ switch( $test ) {
 
     case 'bulletin':
         $s .= $oTmpl->ExpandStr( "[[SEEDContent:bulletin-action]] Subscribe to Seeds of Diversity's free monthly e-bulletin! [[SEEDContent:bulletin-control]]", [] );
-
-    case 'docrep':
-        $s .= $oTmpl->ExpandStr( $docrep_p, [] );
         break;
 
-    case 'docrep_p':
-        include_once( STDINC."SEEDSessionAccountTag.php" );
-        $oSessTag = new SEEDSessionAccountTag( $kfdb, $oApp->sess->GetUID(), array('bAllowKMbr'=>true,'bAllowPwd'=>true) );
-        $oTmplP = new Drupal8Template( $oApp, ['EnableSEEDSession'=>['oSessTag'=>$oSessTag]] );
-        $s .= $oTmplP->ExpandStr( $docrep_p, [] );
+    case 'docrep':
+    case 'docrep_p_old':
+    case 'docrep_p_new':
+        $docrep_p = "<p>Your user id is [[SEEDSessionAccount_email:3]]</p>"
+                   ."[[SEEDSessionAccount_TrustTest:3]] "
+                   ."[[if: \$bSEEDSessionPasswordAutoGen "
+                       ."| <p>Your password is [[SEEDSessionAccount_password:3]]</p> "  // password is original auto-gen so show it (the tag only works in _mbr_mail)
+                       ."| <p>Forgot your password? <a href='https://seeds.ca/login?sessioncmd=sendPwd' target='_blank'>Click here to get it back</a></p>"
+                   ."]]";
+        switch($test) {
+            case 'docrep':
+                $s .= $oTmpl->ExpandStr( $docrep_p, [] );
+                break;
+            case 'docrep_p_old':
+                include_once( STDINC."SEEDSessionAccountTag.php" );
+                $oSessTag = new SEEDSessionAccountTag( $kfdb, $oApp->sess->GetUID(), array('bAllowKMbr'=>true,'bAllowPwd'=>true) );
+                $oTmplP = new Drupal8Template( $oApp, ['EnableSEEDSession'=>['oSessTag'=>$oSessTag]] );
+                $s .= $oTmplP->ExpandStr( $docrep_p, [] );
+                break;
+            case 'docrep_p_new':
+                include_once( SEEDCORE."SEEDSessionAccountTag.php" );
+                $oSessTag = new SEEDSessionAccountTagHandler( $oApp, ['bAllowKMbr'=>true,'bAllowPwd'=>true] );
+                $oMT_P = new SoDMasterTemplate( $oApp, ['oSessionAccountTag'=>$oSessTag] );
+                $s .= $oMT_P->GetTmpl()->ExpandStr( $docrep_p, [] );
+                break;
+        }
         break;
 
     case 'msd':     $sTmpl = "[[msd:seedlist|1499]]";   break;
