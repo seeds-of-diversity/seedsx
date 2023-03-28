@@ -11,18 +11,15 @@ include_once( SEEDCOMMON."mbr/seedCheckout.php" );
 include_once( SITEROOT."drupalmod/lib/d8_seedbreeze.php" );
 
 
+$oApp = SEEDConfig_NewAppConsole_LoginNotRequired( ['db'=>'seeds1'] );
 list($kfdb, $sess, $lang) = SiteStartSessionAccountNoUI();
 
-$oApp = SEEDConfig_NewAppConsole_LoginNotRequired( ['db'=>'seeds1'] );
-
 SEEDPRG();
-
 
 $raConsoleParms = [
     'raScriptFiles' => [W_CORE_URL."js/SEEDUI.js"],
     'raCSSFiles'    => [W_CORE_URL."css/SEEDUI.css"]
 ];
-
 
 $s = "<div style='border:1px solid #aaa;margin-bottom:30px;padding:10px'>"
     ."<div><a href='{$oApp->PathToSelf()}?test='>Generic test</a></div>"
