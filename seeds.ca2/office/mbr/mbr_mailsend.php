@@ -106,17 +106,19 @@ class mbr_mailsend {
             $kfrRec->PutDBRow();
         }
         if( $kfrRec->value('eStatus') == 'SENDING' ) {
-            $i = 0;
+            $i = 0; $sMsg = "";
             if( ($sDoc = $this->oMail->DrawMailFromKFR( $kfrRec )) ) {
-                $i = MailFromOffice( $sTo, $sSubject,
-                                     "", $sDoc,
-                                     array( "from"=>array($this->oMail->GetFullFrom($sFrom) ) ) );
+//                $i = MailFromOffice( $sTo, $sSubject,
+//                                     "", $sDoc,
+//                                     array( "from"=>array($this->oMail->GetFullFrom($sFrom) ) ) );
+                  [$bOk, $i, $sMsg] = SEEDEmailSend_Postmark( $this->oMail->GetFullFrom($sFrom), $sTo, $sSubject, "", $sDoc, [] );
             }
             $kfrRec->SetValue( "iResult", $i );
-            $kfrRec->SetValue( "eStatus", $i==1 ? "SENT" : "FAILED");
+//            $kfrRec->SetValue( "eStatus", $i==1 ? "SENT" : "FAILED");
+            $kfrRec->SetValue( "eStatus", $bOk ? "SENT" : "FAILED");
             $kfrRec->PutDBRow();
             $this->oMail->kfdb2->Execute( "UPDATE mbr_mail_send_recipients SET ts_sent=NOW() WHERE _key='".$kfrRec->Key()."'");
-            Site_Log( "mbr_mailsend", $kfrRec->Expand( "[[_key]] [[eStatus]] [[email_to]] [[fk_mbr_contacts]] ").time() );
+            Site_Log( "mbr_mailsend", $kfrRec->Expand( "[[_key]] [[eStatus]] [[email_to]] [[fk_mbr_contacts]] ").time()." : $sMsg" );
         }
 
         /* Update the master mail record status
