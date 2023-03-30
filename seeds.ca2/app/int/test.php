@@ -273,13 +273,12 @@ switch( $test ) {
         if( SEEDInput_Int('send') ) {
             $s .= "Sending email";
             SEEDEmailSend_Postmark(
-                    "post@seeds.ca",
-                    "bob@seeds.ca",
+                    "Seeds of Diversity <ebulletin@seeds.ca>",
+                    "Bob Wildfong <bob@seeds.ca>",
                     "Hello again from Seeds of Diversity!",
                     "This is just a friendly 'hello' from your friends at Seeds of Diversity.",
                     "This is just a friendly 'hello' from your friends at Seeds of Diversity.",
                 );
-            var_dump($x);
         } else {
             $s .= "<form><input type='hidden' name='send' value='1'/><input type='submit' value='Send Email'/></form>";
         }
