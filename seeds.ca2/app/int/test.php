@@ -41,6 +41,7 @@ $s = "<div style='border:1px solid #aaa;margin-bottom:30px;padding:10px'>"
     ."<div><a href='{$oApp->PathToSelf()}?test=docrep_p_old'>DocRep test with Old SEEDSessionAccount_Password enabled</a></div>"
     ."<div><a href='{$oApp->PathToSelf()}?test=msd'>MSE my seeds</a></div>"
     ."<div><a href='{$oApp->PathToSelf()}?test=dompdf'>DomPDF</a></div>"
+    ."<div><a href='{$oApp->PathToSelf()}?test=postmark'>Postmark</a></div>"
     ."</div>";
 
 
@@ -270,6 +271,22 @@ switch( $test ) {
         $dompdf->render();
         $dompdf->stream( 'file.pdf', ['Attachment' => 0] );
         exit;
+
+    case 'postmark':
+        if( SEEDInput_Int('send') ) {
+            $s .= "Sending email";
+            SEEDEmailSend_Postmark(
+                    "post@seeds.ca",
+                    "bob@seeds.ca",
+                    "Hello again from Seeds of Diversity!",
+                    "This is just a friendly 'hello' from your friends at Seeds of Diversity.",
+                    "This is just a friendly 'hello' from your friends at Seeds of Diversity.",
+                );
+            var_dump($x);
+        } else {
+            $s .= "<form><input type='hidden' name='send' value='1'/><input type='submit' value='Send Email'/></form>";
+        }
+        break;
 
     default:
         $s .= $oTmpl->ExpandStr( "[[lower:Foo]] [[upper:Foo]] <br/><br/> [[Image://www.seeds.ca/i/img/logo/logoA_h-en-750x.png|{width=100}]]<br/><br/> [[docreptest:]]", [] );
