@@ -271,14 +271,18 @@ switch( $test ) {
 
     case 'postmark':
         if( SEEDInput_Int('send') ) {
-            $s .= "Sending email";
-            SEEDEmailSend_Postmark(
+            [$bOk, $errcode, $sMsg] = SEEDEmailSend_Postmark(
                     "Seeds of Diversity <ebulletin@seeds.ca>",
                     "Bob Wildfong <bob@seeds.ca>",
                     "Hello again from Seeds of Diversity!",
                     "This is just a friendly 'hello' from your friends at Seeds of Diversity.",
                     "This is just a friendly 'hello' from your friends at Seeds of Diversity.",
                 );
+            if( $bOk ) {
+                $s .= "Email Sent";
+            } else {
+                $s .= "Postmark error $errcode: $sMsg";
+            }
         } else {
             $s .= "<form><input type='hidden' name='send' value='1'/><input type='submit' value='Send Email'/></form>";
         }
