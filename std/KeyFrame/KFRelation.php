@@ -696,8 +696,8 @@ class KeyFrameRelation {
     /***********************************************************
      */
     {
-        $sGroupCol = @$parms['sGroupCol'];
-        $sSortCol  = @$parms['sSortCol'];
+        $sGroupCol = @$parms['sGroupCol'] ?? "";
+        $sSortCol  = @$parms['sSortCol'] ?? "";
         $bSortDown = intval(@$parms['bSortDown']);
         $iOffset   = intval(@$parms['iOffset']);
         $iLimit    = intval(@$parms['iLimit']);
@@ -778,8 +778,8 @@ class KeyFrameRelation {
         }
 
 
-        $sGroupCol = @$parms['sGroupCol'];
-        $sSortCol  = @$parms['sSortCol'];
+        $sGroupCol = @$parms['sGroupCol'] ?? "";
+        $sSortCol  = @$parms['sSortCol'] ?? "";
         $bSortDown = intval(@$parms['bSortDown']);
         $iOffset   = intval(@$parms['iOffset']);
         $iLimit    = intval(@$parms['iLimit']);
@@ -1027,7 +1027,7 @@ class KFRecord {
      */
     {
         $ra = $this->UrlParmGetRA( $fld );
-        return( @$ra[$k] );
+        return( @$ra[$k] ?? "" );
     }
 
     function UrlParmSet( $fld, $k, $v )
@@ -1369,7 +1369,7 @@ Why is this done via _valPrepend? Can't we just prepend to _values using a metho
             // Caller has defined a set of fields to return, overriding the defaults.
             // It is a bad idea to try to rewrite this kfr unless it contains everything needed, like a _key.
             foreach( $this->raFieldsOverride as $alias => $fld ) {
-                $this->_values[$alias] = @$ra[$alias];
+                $this->_values[$alias] = @$ra[$alias] ?? "";
             }
         } else {
             $this->prot_getBaseValuesFromRA( $ra, true, KFRECORD_DATASOURCE_DB );    // get base values, set defaults(why?), not gpc
@@ -1575,7 +1575,7 @@ class KFRelationView
         $this->p_sCond                  = $sCond;
         $this->raViewParms['sSortCol']  = (!empty($raParms['sSortCol']) ? $raParms['sSortCol']  : "_key");
         $this->raViewParms['bSortDown'] = (isset($raParms['bSortDown']) ? $raParms['bSortDown'] : true );
-        $this->raViewParms['sGroupCol'] = @$raParms['sGroupCol'];
+        $this->raViewParms['sGroupCol'] = @$raParms['sGroupCol'] ?? "";
         $this->raViewParms['iStatus']   = intval(@$raParms['iStatus']);
     }
 

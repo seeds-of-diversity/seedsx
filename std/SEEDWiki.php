@@ -180,12 +180,12 @@ if( $raLink['namespace'] == 'mbr' )  return("");
         'suffix'    = see format above
      */
     {
-        $ra['link']      = @$raMatches[0];
-        $ra['namespace'] = trim(@$raMatches[3]);
-        $ra['target']    = trim(@$raMatches[4]);
-        $ra['suffix']    = @$raMatches[7];
+        $ra['link']      = @$raMatches[0] ?? "";
+        $ra['namespace'] = trim(@$raMatches[3] ?? "");
+        $ra['target']    = trim(@$raMatches[4] ?? "");
+        $ra['suffix']    = @$raMatches[7] ?? "";
 
-        $ra['parms'][0]  = trim(@$raMatches[6]);
+        $ra['parms'][0]  = trim(@$raMatches[6] ?? "");
         $parms = explode( '|', $ra['parms'][0] );
         for( $i = 0; $i < count($parms); ++$i ) {
             $ra['parms'][$i+1] = trim($parms[$i]);
