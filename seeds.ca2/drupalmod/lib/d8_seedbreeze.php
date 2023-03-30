@@ -155,7 +155,7 @@ class Drupal8Template
         $bHandled = true;
 
         $contentName = $raTag['target'];
-        $lang = strtolower(@$raTag['raParms']['1'])=='fr' ? "FR" : "EN";  // only defined this way for some tags
+        $lang = strtolower(@$raTag['raParms']['1'] ?? "")=='fr' ? "FR" : "EN";  // only defined this way for some tags
 
         if( method_exists('\Drupal\Core\Url', 'fromRoute') ) {
             $pathSelf = \Drupal\Core\Url::fromRoute('<current>')->toString();
