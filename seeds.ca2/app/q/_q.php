@@ -68,6 +68,10 @@ if( ($cmd = SEEDSafeGPC_GetStrPlain('qcmd')) || /* deprecate */ ($cmd = SEEDSafe
 
         case 'xls':
             if( $rQ['bOk'] ) {
+                include_once( SEEDCORE."SEEDXLSX.php" );
+                SEEDXlsx_WriteFileXlsx( array_keys($rQ['raOut'][0]), $rQ['raOut'], ['sCharsetRows'=>$sCharset] );
+
+/*
                 include_once( STDINC."SEEDTable.php" );
 
                 // PHPExcel sends the header( Content-Type )
@@ -78,6 +82,7 @@ if( ($cmd = SEEDSafeGPC_GetStrPlain('qcmd')) || /* deprecate */ ($cmd = SEEDSafe
                                           'created_by'=>$sess->GetName(),
                                           'title'=>'$title'
                                           ) );
+*/
             }
             break;
 
