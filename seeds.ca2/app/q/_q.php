@@ -66,23 +66,17 @@ if( ($cmd = SEEDSafeGPC_GetStrPlain('qcmd')) || /* deprecate */ ($cmd = SEEDSafe
             }
             break;
 
-        case 'xls':
+        case 'xls':     // deprecate because we always write xlsx format
+        case 'xlsx':
             if( $rQ['bOk'] ) {
                 include_once( SEEDCORE."SEEDXLSX.php" );
-                SEEDXlsx_WriteFileXlsx( array_keys($rQ['raOut'][0]), $rQ['raOut'], ['sCharsetRows'=>$sCharset] );
-
-/*
-                include_once( STDINC."SEEDTable.php" );
-
-                // PHPExcel sends the header( Content-Type )
-                // N.B. the data has to be utf8 or PHPExcel will fail to write it
-                SEEDTable_OutputXLSFromRARows( $rQ['raOut'],
-                                   array( 'columns' => array_keys($rQ['raOut'][0]),
-                                          'filename'=>"$name.xls",
-                                          'created_by'=>$sess->GetName(),
-                                          'title'=>'$title'
-                                          ) );
-*/
+                SEEDXlsx_WriteFileXlsx( array_keys($rQ['raOut'][0]), $rQ['raOut'],
+                                        ['sCharsetRows'=>$sCharset,
+                                         'filename'=>"$name.xlsx",
+                                         'creator'=>$sess->GetName(),
+                                         'author'=>$sess->GetName(),
+                                         'title'=>$title
+                ] );
             }
             break;
 
