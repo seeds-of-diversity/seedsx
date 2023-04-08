@@ -9,7 +9,7 @@ include_once( SITEROOT."site2.php" );
 include_once( "../mbr/_mbr.php" );
 include_once( SEEDCOMMON."sl/sl_db.php" );
 //include_once( STDINC."KeyFrame/KFRTable.php" );
-include_once( STDINC."SEEDTable.php" );
+include_once( SEEDCORE."SEEDXLSX.php" );
 
 list($kfdb2, $sess) = SiteStartSessionAccount( array("R SL") );
 $kfdb1 = SiteKFDB( SiteKFDB_DB_seeds1 ) or die( "Cannot connect to database" );
@@ -26,6 +26,10 @@ if( $bCSV || $bDebug ) {
     header( "Content-type: text/plain; charset=ISO-8859-1" );
 } else {
 }
+
+
+
+
 
 
 
@@ -342,11 +346,9 @@ if( $cmd == 't' ) {
         }
     }
 
-    SEEDTable_OutputXLSFromRARows( $raRowsOut,
-                                   array( 'columns' => array('_key','psp','name_en','iname_en','name_fr','iname_fr','name_bot',
-                                                             'family_en','family_fr','category','notes'),
-                                          'filename'=>'sl-species.xls',
-                                          'created_by'=>$sess->GetName(), 'title'=>'Species Table' ) );
+    SEEDXlsx_WriteFileXlsx( [], $raRowsOut,
+                            ['filename'=>'sl-species.xlsx',
+                             'creator'=>$sess->GetName(), 'title'=>'Species Table'] );
 } else if( $cmd == 'sl-pcv' ) {
 //QServer should provide this
     /* N.B. Any rows where fk_sl_species=0 (or just where fk_sl_species does not match an S._key) will not be shown here.
@@ -369,25 +371,25 @@ if( $cmd == 't' ) {
         }
     }
 
-    SEEDTable_OutputXLSFromRARows( $raRowsOut,
-                                   array( 'columns' => array('_key','species','cultivar','t','notes'),
-                                          'filename'=>'sl-pcv.xls',
-                                          'created_by'=>$sess->GetName(), 'title'=>'Primary Cultivars Table' ) );
+    SEEDXlsx_WriteFileXlsx( [], $raRowsOut,
+                            ['filename'=>'sl-pcv.xlsx',
+                             'creator'=>$sess->GetName(), 'title'=>'Primary Cultivars Table'] );
+
 } else if( $cmd == 'sl-accessions' || $cmd == 'sl-accessions-verbatim' ) {
     doAccessions( $cmd == 'sl-accessions' );
 } else if( $cmd == 'sl-inventory' || $cmd == 'sl-inventory-A' || $cmd == 'sl-inventory-verbatim' ) {
     doInventory( $cmd == 'sl-inventory' ? "AxPxS" : ($cmd == 'sl-inventory-A' ? "A" : "") );
 } else {
 
-    $s = "<h3>Seed Library tables as xls</h3>"
+    $s = "<h3>Seed Library tables as xls (implement these with QServer instead)</h3>"
         ."<div style='margin-left:30px'>"
         ."<p><a href='".Site_path_self()."?cmd=sl-species' target='_blank'>Species</a></p>"
         ."<p><a href='".Site_path_self()."?cmd=sl-pcv' target='_blank'>Cultivars</a></p>"
         ."<p><a href='".Site_path_self()."?cmd=sl-accessions' target='_blank'>Accessions</a></p>"
-        ."<p><a href='".Site_path_self()."?cmd=sl-accessions-verbatim' target='_blank'>Accessions no joins</a></p>"
+        ."<p><a href='".Site_path_self()."?cmd=sl-accessions-verbatim' target='_blank'>Accessions no joins</a> don't need this</p>"
         ."<p><a href='".Site_path_self()."?cmd=sl-inventory' target='_blank'>Inventory</a></p>"
-        ."<p><a href='".Site_path_self()."?cmd=sl-inventory-A' target='_blank'>Inventory joined only to Accessions</a></p>"
-        ."<p><a href='".Site_path_self()."?cmd=sl-inventory-verbatim' target='_blank'>Inventory no joins</a></p>"
+        ."<p><a href='".Site_path_self()."?cmd=sl-inventory-A' target='_blank'>Inventory joined only to Accessions</a> don't need this</p>"
+        ."<p><a href='".Site_path_self()."?cmd=sl-inventory-verbatim' target='_blank'>Inventory no joins</a> don't need this</p>"
         ."</div>";
 
     echo $s;
@@ -407,10 +409,10 @@ function doAccessions( $bJoined )
      */
     if( $bJoined ) {
         $rel = "AxPxS";
-        $fname = "sl-accession.xls";
+        $fname = "sl-accession.xlsx";
     } else {
         $rel = "A";
-        $fname = "sl-accession-verbatim.xls";
+        $fname = "sl-accession-verbatim.xlsx";
     }
 
     $raRowsOut = array();
@@ -436,13 +438,10 @@ function doAccessions( $bJoined )
         }
     }
 
-    SEEDTable_OutputXLSFromRARows( $raRowsOut,
-                                   array( 'columns' => array_merge( array('acc-key'),
-                                                                    ($bJoined ? array('species','cultivar') : array() ),
-                                                                    array('orig-name','pcv-key','grower-source',
-                                                                          'date-harvest','date-received','parent','notes')),
-                                          'filename'=>$fname,
-                                          'created_by'=>$sess->GetName(), 'title'=>'Accessions Table' ) );
+    SEEDXlsx_WriteFileXlsx( [], $raRowsOut,
+                            ['filename'=>$fname,
+                             'creator'=>$sess->GetName(), 'title'=>'Accessions Table'] );
+
 }
 
 function doInventory( $eJoins )
@@ -464,18 +463,18 @@ function doInventory( $eJoins )
     switch( $eJoins ) {
         case "":
             $rel = "I";
-            $fname = "sl-inventory-verbatim.xls";
+            $fname = "sl-inventory-verbatim.xlsx";
             break;
         case "A":
             $rel = "IxA";
             $raA = array('orig-name','pcv-key','grower-source','date-harvest','date-received','parent','notes');
-            $fname = "sl-inventory-A.xls";
+            $fname = "sl-inventory-A.xlsx";
             break;
         case "AxPxS":
             $rel = "IxAxPxS";
             $raA = array('orig-name','pcv-key','grower-source','date-harvest','date-received','parent','notes');
             $raPxS = array('species','cultivar');
-            $fname = "sl-inventory.xls";
+            $fname = "sl-inventory.xlsx";
             break;
         default:
             die( "Invalid I join $eJoins" );
@@ -514,16 +513,7 @@ function doInventory( $eJoins )
         }
     }
 
-    SEEDTable_OutputXLSFromRARows( $raRowsOut,
-                                   array( 'columns' => array_merge( array('inv-number'),
-                                                                    $raPxS,
-                                                                    array('grams','location','date-inv','deaccessioned','acc-key','coll-key'),
-                                                                    $raA,
-                                                                    array('inv-key')),
-                                          'filename'=>$fname,
-                                          'created_by'=>$sess->GetName(), 'title'=>'Inventory Table' ) );
+    SEEDXlsx_WriteFileXlsx( [], $raRowsOut,
+                            ['filename'=>$fname,
+                             'creator'=>$sess->GetName(), 'title'=>'Inventory Table'] );
 }
-
-
-
-?>
