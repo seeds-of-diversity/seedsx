@@ -56,13 +56,13 @@ if( ($cmd = SEEDSafeGPC_GetStrPlain('qcmd')) || /* deprecate */ ($cmd = SEEDSafe
         */
         case 'csv':
             if( $rQ['bOk'] ) {
-                include_once( STDINC."SEEDTable.php" );
+                include_once( SEEDCORE."SEEDXLSX.php" );
                 $sCharset = 'utf-8';
-                header( "Content-Type:text/plain; charset=$sCharset" );
+                header( "Content-Type:text/plain; charset=$sCharset" );     // should this be text/csv ?
 
-                SEEDTable_OutputCSVFromRARows( $rQ['raOut'],
-                                   array( //'columns' => array_keys($rQ['raOut'][0]),  use default columns
-                                          ) );
+                SEEDXlsx_WriteFileCSV( [], $rQ['raOut'],
+                                       ['sCharsetRows'=>$sCharset,
+                                        'sCharsetFile'=>$sCharset ] );
             }
             break;
 

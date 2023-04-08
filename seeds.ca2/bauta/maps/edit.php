@@ -24,11 +24,11 @@ $oFormB->Update();
 if( SEEDInput_Str('cmd') == 'download' ) {
     /* Download to spreadsheet
      */
-    // N.B. data is stored in utf8, which PHPExcel requires here
-    SEEDTable_OutputXLSFromRASheets( $oMap->GetMarkersSheets(),
-                                   array( 'columns' => array('cat','note','name','address','latitude','longitude'),
-                                          'filename'=>'bautamaps.xls',
-                                          'created_by'=>$oApp->sess->GetName(), 'title'=>'Bauta Maps' ) );
+die("obsolete: use SEEDTableSheets.php instead");
+//    SEEDTable_OutputXLSFromRASheets( $oMap->GetMarkersSheets(),
+//                                   array( 'columns' => array('cat','note','name','address','latitude','longitude'),
+//                                          'filename'=>'bautamaps.xls',
+//                                          'created_by'=>$oApp->sess->GetName(), 'title'=>'Bauta Maps' ) );
     exit;
 }
 

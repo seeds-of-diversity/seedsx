@@ -7,15 +7,15 @@
  * Copyright (c) 2016 Seeds of Diversity Canada
  */
 
+/*
 include_once( STDINC."SEEDTable.php" );
 
-
 function Console01UI_DownloadUpload( SEEDApp_WorkerC $oW, $raParms )
-/*******************************************************************
+[*******************************************************************
     Draw a UI to download a spreadsheet and upload it again.
         Download needs a link that makes a spreadsheet, and appropriate filtering controls.
         Upload needs a SEEDTable definition, and a function to facilitate the upload process (like a Stepper).
- */
+ *]
 {
     $s = "";
 
@@ -57,3 +57,4 @@ function Console01UI_DownloadUpload( SEEDApp_WorkerC $oW, $raParms )
     return( $s );
 }
 
+*/
