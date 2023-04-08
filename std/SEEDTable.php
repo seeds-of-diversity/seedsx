@@ -258,6 +258,11 @@ class SEEDTable     // implemented for a single table - use SEEDTableSheets for 
 
 }
 
+
+
+/***********************************************************************************
+ * Does not seem to be used : replaced by seedcore/SEEDTableSheets.php
+ */
 class SEEDTableSheets
 /********************
     Manage a set of tables, such as a spreadsheet with multiple sheets
@@ -756,56 +761,3 @@ function SEEDTable_OutputXLSFromRASheets( $raSheets, $raParms = array() )
 
     $o->End();
 }
-
-function SEEDTable_OutputXLSFromRARows( $raRows, $raParms = array() )
-/********************************************************************
-    $raRows:          array( array( k1 => v1a, k2 => v2a, ...), array( k1 => v1b, k2 => v2b, ... ) )
-
-                      N.B. PHPExcel requires all accented chars here to be utf8
-
-    filename:         the download filename
-    (other metadata): see SEEDTable::Start
-    columns:          the column headers and map for raRows (only these columns of raRows are put in the spreadsheet)
- */
-{
-    // if columns not defined, use all keys of the first data row
-    if( !isset($raParms['columns']) )  $raParms['columns'] = array_keys($raRows[0]);
-
-    $o = new SEEDTableWrite();
-    $o->Start( $raParms );
-    // header row
-    $o->WriteRow( $raParms['columns'] );
-
-    foreach( $raRows as $k => $ra ) {
-        $o->WriteRowMap( $ra, $raParms['columns'] );
-    }
-
-    $o->End();
-}
-
-function SEEDTable_OutputCSVFromRARows( $raRows, $raParms = array() )
-/********************************************************************
-    Same as SEEDTable_OutputXLSFromRaRows but in CSV format
-    Maybe it's better to do this with PHPExcel, maybe not
- */
-{
-    // if columns not defined, use all keys of the first data row
-    if( !isset($raParms['columns']) )  $raParms['columns'] = array_keys($raRows[0]);
-    // if filename not defined, write to stdout
-    if( empty($raParms['filename']) )  $raParms['filename'] = 'php://output';
-
-    if( ($f = fopen($raParms['filename'], 'w')) ) {
-        fputcsv( $f, $raParms['columns'] );
-        foreach( $raRows as $dummy => $row ) {
-            $outRow = array();
-            foreach( $raParms['columns'] as $col ) {
-                $outRow[] = @$row[$col];
-            }
-            fputcsv( $f, $outRow );
-        }
-
-        fclose( $f );
-    }
-}
-
-?>
