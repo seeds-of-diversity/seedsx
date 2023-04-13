@@ -111,7 +111,10 @@ class mbr_mailsend {
 //                $i = MailFromOffice( $sTo, $sSubject,
 //                                     "", $sDoc,
 //                                     array( "from"=>array($this->oMail->GetFullFrom($sFrom) ) ) );
-                  [$bOk, $i, $sMsg] = SEEDEmailSend_Postmark( $this->oMail->GetFullFrom($sFrom), $sTo, $sSubject, "", $sDoc, [] );
+                $sendParms = ['bInputNotUTF8'=>true,            // at the moment, all broadcast emails and subject text are cp1252 from docrep
+                            //'bcc'=>['bob@seeds.ca']           // uncomment to get bcc
+                 ];
+                [$bOk, $i, $sMsg] = SEEDEmailSend_Postmark( $this->oMail->GetFullFrom($sFrom), $sTo, $sSubject, "", $sDoc, $sendParms );
             }
             $kfrRec->SetValue( "iResult", $i );
 //            $kfrRec->SetValue( "eStatus", $i==1 ? "SENT" : "FAILED");
