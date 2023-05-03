@@ -25,8 +25,6 @@ class KeyFrameDataStore extends SEEDDataStore
         parent::__construct( $raParms );
     }
 
-    function GetValuesRA() { return( $this->kfr ? $this->kfr->ValuesRA() : array() ); }
-
     // Sometimes forms use auxiliary code that need a kfr, so it isn't enough to just get/set values from this interface.
     function GetKFR()                 { return( $this->kfr ); }
     function SetKFR( KFRecord $kfr )  { $this->kfr = $kfr; }
@@ -34,8 +32,8 @@ class KeyFrameDataStore extends SEEDDataStore
     /* Override the Data-side methods.
      * The Application-side methods are normally not overridden.
      */
-
     function DSValue( $k )        { return( $this->kfr ? $this->kfr->Value($k) : "" ); }
+    function DSValuesRA()         { return( $this->kfr ? $this->kfr->ValuesRA() : [] ); }
     function DSSetValue( $k, $v ) { if( $this->kfr )  $this->kfr->SetValue( $k, $v ); }
     function DSOp( $op )
     {
