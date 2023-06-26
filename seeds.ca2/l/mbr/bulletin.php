@@ -7,6 +7,7 @@ include_once( STDINC."SEEDTemplate.php" );
 include_once( SEEDCOMMON."mbr/mbrBulletin.php" );    // MbrBulletin
 include_once( SITEROOT."/l/mbr/mbrPipe.php" );       // MbrPipeGetContactRA
 include_once( SEEDCOMMON."siteutil.php" );           // MailFromOffice
+include_once( SEEDLIB."mbr/MbrEbulletin.php" );
 include_once( SEEDLIB."mbr/QServerMbr.php" );
 
 class SoDBulletin
