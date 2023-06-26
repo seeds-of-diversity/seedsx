@@ -244,12 +244,12 @@ class Drupal8Template
                 break;
             case 'bulletin-action':
                 include_once( SITEROOT."l/mbr/bulletin.php" );
-                $s = BulletinHandleAction( $this->kfdb, $lang );
+                $s = BulletinHandleAction( $this->oApp, $this->kfdb, $lang );
                 $s = iconv( 'Windows-1252', 'UTF-8//IGNORE', $s );
                 break;
             case 'bulletin-control':
                 include_once( SITEROOT."l/mbr/bulletin.php" );
-                $s = BulletinDrawControl( $this->kfdb, $lang );
+                $s = BulletinDrawControl( $this->oApp, $this->kfdb, $lang );
                 $s = iconv( 'Windows-1252', 'UTF-8//IGNORE', $s );
                 break;
             case 'events':

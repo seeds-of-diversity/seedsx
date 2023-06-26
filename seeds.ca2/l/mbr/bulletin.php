@@ -12,18 +12,22 @@ include_once( SEEDLIB."mbr/QServerMbr.php" );
 class SoDBulletin
 {
     const   hashSeed = "Your Seeds of Diversity e-bulletin";
+    private $oApp;
     private $kfdb;
     private $lang;
-    private $oBull;
+    private $oEbull;    // new object
+    private $oBull;     // old object to deprecate
     private $oForm;     // the form that lets people subscribe/unsubscribe their email address
     private $oTmpl;
 
-    function __construct( KeyFrameDB $kfdb, $lang )
+    function __construct( SEEDAppConsole $oApp, KeyFrameDB $kfdb, $lang )
     {
+        $this->oApp = $oApp;
         $this->kfdb = $kfdb;
         $this->lang = $lang;
         $this->oBull = new MbrBulletin( $kfdb );
-        $this->oForm = new SEEDForm();
+        $this->oEbull = new MbrEbulletin($oApp);
+        $this->oForm = new SEEDCoreForm();
         $this->oTmpl = $this->makeTemplates( $lang );
     }
 
@@ -32,7 +36,7 @@ class SoDBulletin
         Draw the form that lets people subscribe/unsubscribe their email address
      */
     {
-        $s = $this->oTmpl->ExpandTmpl( "bullControlForm", array( 'formAction' => Site_path_self(), 'emailParmName' => $this->oForm->Name('email') ) );
+        $s = $this->oTmpl->ExpandTmpl( 'bullControlForm', ['formAction'=>$this->oApp->PathToSelf(), 'emailParmName'=>$this->oForm->Name('email')] );
 
         return( $s );
     }
@@ -48,7 +52,7 @@ class SoDBulletin
     {
         $s = "";
 
-        if( ($cmd = SEEDSafeGPC_GetStrPlain( 'bullCtlCmd' )) ) {
+        if( ($cmd = SEEDInput_Str('bullCtlCmd')) ) {
             /* The user clicked Subscribe or Unsubscribe on the control form.
              * Maybe we tell them they're already subscribed, not subscribed, etc.
              * Maybe we send them an email to confirm their action.
@@ -57,23 +61,26 @@ class SoDBulletin
 
         } else if( isset($_REQUEST['subscribe']) || isset($_REQUEST['unsubscribe']) ) {
             /* Someone clicked on a link in a confirmation email.
+             *
+             * https://seeds.ca/ebulletin?subscribe=me@email.com&id={hash}
+             * https://seeds.ca/ebulletin?unsubscribe=me@email.com&id={hash}
+             *
              * Validate the link, fulfill the action, and tell them the result.
              */
-            if( ($email = SEEDSafeGPC_GetStrPlain('subscribe')) ) {
+            if( ($email = SEEDInput_Str('subscribe')) ) {
                 $bSubscribe = true;
-            } else if( ($email = SEEDSafeGPC_GetStrPlain('unsubscribe')) ) {
+            } else if( ($email = SEEDInput_Str('unsubscribe')) ) {
                 $bSubscribe = false;
             } else {
-                return( "" );
+                goto done;
             }
-            $md5 = SEEDSafeGPC_GetStrPlain('id');
+            $md5 = SEEDInput_Str('id');
             list($s,$alertType) = $this->handleConfirm( $email, $md5, $bSubscribe );
 
         }
-        if( $s ) {
-            $s = "<div class='alert alert-$alertType'>$s</div>";
-        }
+        if( $s )  $s = "<div class='alert alert-$alertType'>$s</div>";
 
+        done:
         return( $s );
     }
 
@@ -98,7 +105,7 @@ class SoDBulletin
 
         $raBull = $this->getBullStatus( $e );
 
-        $raTmplVars = array( 'email'=>$e );
+        $raTmplVars = ['email'=>$e];
 
         switch( $cmd ) {
             case 'Subscribe':
@@ -133,8 +140,7 @@ class SoDBulletin
         $this->oForm->SetValue( 'email', "" );
 
         done:
-
-        return( array($sAlert, $alertType) );
+        return( [$sAlert, $alertType] );
     }
 
     private function handleConfirm( $email, $md5, $bSubscribe )
@@ -146,7 +152,7 @@ class SoDBulletin
         $alertType = "success";
 
         if( md5($email.self::hashSeed) != $md5 ) {
-            $sAlert = $this->oTmpl->ExpandTmpl( 'confirm-badMD5', array( 'bSubscribe' => $bSubscribe ) );
+            $sAlert = $this->oTmpl->ExpandTmpl( 'confirm-badMD5', ['bSubscribe'=>$bSubscribe] );
             $alertType = 'danger';
             goto done;
         }
@@ -155,67 +161,41 @@ class SoDBulletin
 
         if( $bSubscribe ) {
             /* The subscribe link is valid.
-             * Add the name to bull_list.
+             * Add the email to bull_list and uncheck mbr_contacts.bNoEbull if applicable.
              *
-             * Issue 1: When we sent the link we checked that the email wasn't in bull_list or mbr_contacts, but this person might have joined as
-             *          a member in the meantime. Not worth worrying about since bull_list and mbr_contacts.bNoEBull will be handled by
-             *          seeds_1.SEEDSession_UsersMetaData some day anyway.
-             * Issue 2: If the email belongs to a bNoEBull member, we should uncheck that preference.
-             * Issue 3: If an expired member subscribes, that should override their 2-year contact limit. Also, if a current member subscribes
-             *          this way they should remain subscribed more than 2 years after their membership expires, if we retain proof that they
-             *          opted in. The separate bull_list and mbr_contacts lists satisfy these requirements, but the criteria could be preserved
-             *          in UsersMetaData.
+             * Issue: If a current member subscribes this way they should remain subscribed more than 2 years after their
+             *        membership expires, if we retain proof that they opted in. The separate bull_list and mbr_contacts lists
+             *        satisfy this requirement but the criteria could be preserved in UsersMetaData.
              */
-            $this->oBull->AddSubscriber( $email, "", $this->lang, "bulletin-via-web" );
-            $sAlert = $this->oTmpl->ExpandTmpl( 'confirm-subscribe', array( 'email'=>$email ) );
-
-            if( $raBull['bIsMember'] && $raBull['raMbr'] && $raBull['raMbr']['bNoEBull'] ) {
-                // This email belongs to a member who has bNoEBull.  Not sure what to do about it, but we should know that we have to do something.
-                MailFromOffice( 'bob@seeds.ca,office@seeds.ca',
-                                "Member ".$raBull['raMbr']['_key']." wants the e-bulletin",
-                                "This member had the no-bulletin checkbox checked, but they just signed up for the e-bulletin on the web site.",
-                                "This member had the no-bulletin checkbox checked, but they just signed up for the e-bulletin on the web site.",
-                                array( 'from' => 'no-reply-website@seeds.ca' ) );
-            }
+            list($eRetBull,$eRetMbr,$sResult) = $this->oEbull->AddSubscriber( $email, "", $this->lang, "bulletin-via-web" );
+            $sAlert = $this->oTmpl->ExpandTmpl( 'confirm-subscribe', ['email'=>$email] );
         } else {
             /* The unsubscribe link is valid.
              * Remove the email from bull_list, and also set bNoEBull if it's in mbr_contacts
              */
-            $this->oBull->RemoveSubscriber( $email );
-            $sAlert = $this->oTmpl->ExpandTmpl( 'confirm-unsubscribe', array( 'email'=>$email ) );
-
-            if( $raBull['bIsMember'] && $raBull['raMbr'] && !$raBull['raMbr']['bNoEBull'] ) {
-                // This email belongs to a member. We have to unsubscribe them manually.
-                MailFromOffice( 'bob@seeds.ca,office@seeds.ca',
-                                "Member ".$raBull['raMbr']['_key']." unsubscribed from the e-bulletin",
-                                "This member has unsubscribed, so please check the no-bulletin checkbox in the member database.",
-                                "This member has unsubscribed, so please check the no-bulletin checkbox in the member database.",
-                                array( 'from' => 'no-reply-website@seeds.ca' ) );
-            }
+            $this->oEbull->RemoveSubscriber( $email );
+            $sAlert = $this->oTmpl->ExpandTmpl( 'confirm-unsubscribe', ['email'=>$email] );
         }
 
         done:
-        return( array($sAlert, $alertType) );
+        return( [$sAlert, $alertType] );
     }
 
     private function getBullStatus( $email )
     {
-        $kfr = $this->oBull->GetKFR( $email );                // bull_list row for this email
+        //$kfrBull = $this->oBull->GetKFR( $email );                // bull_list row for this email
+        $kfrBull = $this->oEbull->oDB->GetKFRCond('B', "email='".addslashes($email)."'");
 
-        $oApp = SEEDConfig_NewAppConsole_LoginNotRequired( ['db'=>'seeds1'] );
-        $oQ = new QServerMbr( $oApp, ['config_bUTF8'=>false] );
+        $oQ = new QServerMbr( $this->oApp, ['config_bUTF8'=>false] );
         $rQ = $oQ->Cmd( 'mbr!getOffice', ['sEmail'=>$email] );
         $raMbr = $rQ['raOut'];
-        //$raMbr = MbrPipeGetContactRA( $this->kfdb, $email );  // mbr_contacts row for this email
 
 // Actually, check if the member's expiry is within 2 years
 
-        $raBull = array( 'bIsBullSubscriber' => (bool)($kfr),
-                         'bIsMember' => isset($raMbr['_key']),
-                         'bIsMemberSubscriber' => isset($raMbr['_key']) && !$raMbr['bNoEBull'],
-                         'kfrBull' => $kfr,
-                         'raMbr' => $raMbr,
-        );
+        $raBull = ['bIsBullSubscriber' => ($kfrBull != null),
+                   'bIsMember' => isset($raMbr['_key']),
+                   'bIsMemberSubscriber' => isset($raMbr['_key']) && !$raMbr['bNoEBull'],
+        ];
         $raBull['bIsSubscriber'] = $raBull['bIsBullSubscriber'] || $raBull['bIsMemberSubscriber'];
 
         return( $raBull );
@@ -237,7 +217,7 @@ class SoDBulletin
 
         $sEmailBody = $this->oTmpl->ExpandTmpl( $sCmd=='subscribe' ? 'emailConfirmSubscribe' : 'emailConfirmUnsubscribe', array('link'=>$link) );
         $sSubject = $this->oTmpl->ExpandTmpl( $sCmd=='subscribe' ? 'emailConfirmSubscribe-subject' : 'emailConfirmUnsubscribe-subject' );
-        return( MailFromOffice( $email, $sSubject, str_replace('<br/>', "\n", $sEmailBody), $sEmailBody, array('from'=>"do-not-reply-ebulletin@seeds.ca") ) );
+        return( MailFromOffice( $email, $sSubject, str_replace('<br/>', "\n", $sEmailBody), $sEmailBody, array('from'=>"ebulletin@seeds.ca") ) );
     }
 
     private function makeTemplates( $lang )
@@ -259,17 +239,14 @@ class SoDBulletin
 }
 
 
-function BulletinDrawControl( KeyFrameDB $kfdb, $lang )
+function BulletinDrawControl( SEEDAppConsole $oApp, KeyFrameDB $kfdb, $lang )
 {
-    $o = new SoDBulletin( $kfdb, $lang );
+    $o = new SoDBulletin( $oApp, $kfdb, $lang );
     return( $o->ControlDraw() );
 }
 
-function BulletinHandleAction( KeyFrameDB $kfdb, $lang )
+function BulletinHandleAction( SEEDAppConsole $oApp, KeyFrameDB $kfdb, $lang )
 {
-    $o = new SoDBulletin( $kfdb, $lang );
+    $o = new SoDBulletin( $oApp, $kfdb, $lang );
     return( $o->HandleAction() );
 }
-
-
-?>
