@@ -224,10 +224,10 @@ class SoDMbrOrderCheckout extends MbrOrderCheckout
         //     .$this->mbr_pub( $this->oL->GetLang() == "EN" ? "ssh_fr" : "ssh_en" )
         $s .= $this->mbr_pub( "ssh_en6" );
         $s .= $this->mbr_pub( "ssh_fr6" );
-        $s .= $this->mbr_pub( "suechan2012" );
+        //$s .= $this->mbr_pub( "suechan2012" );
         //$s .= $this->mbr_pub( "kent2012" );
 
-        if( true ) { //$this->oL->GetLang() == "EN" ) {
+        if( false ) { //$this->oL->GetLang() == "EN" ) {
             $s .= "<tr><td>".$this->oL->S('vend_everyseed')."</td>"
                  ."<td>Every Seed Tells a Tale<br/><span style='color:red'>Sorry, out of stock</span></td>"
                  ."<td>$35 plus shipping</td>"
@@ -537,8 +537,7 @@ include_once(SEEDLIB."mbr/MbrContacts.php");
         // find the member by login or email given in order
         if( !($kMbr = intval($this->oMbrOrder->kfr->UrlParmGet('sExtra', 'mbrid'))) ) {
             if( ($email = $this->oMbrOrder->kfr->Value('mail_email')) ) {
-                $kMbr = $this->oApp->sess->oDB->GetKUserFromEmail($email)
-                     ?: intval( @(new Mbr_Contacts($this->oApp))->GetBasicValues($email)['_key']);
+                $kMbr = intval( @(new Mbr_Contacts($this->oApp))->GetBasicValues($email)['_key']);
             }
         }
         // if member not found, create a new one if we have an email address
