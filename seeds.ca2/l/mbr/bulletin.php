@@ -37,8 +37,8 @@ class SoDBulletin
         Draw the form that lets people subscribe/unsubscribe their email address
      */
     {
-        $s = $this->oTmpl->ExpandTmpl( 'bullControlForm', ['formAction'=>$this->oApp->PathToSelf(), 'emailParmName'=>$this->oForm->Name('email')] );
-
+        $s = $this->oTmpl->ExpandTmpl( 'bullControlForm', ['formAction'=>"https://seeds.ca/ebulletin" /*$this->oApp->PathToSelf()  resolves to "/1/index.php" */,
+                                                           'emailParmName'=>$this->oForm->Name('email')] );
         return( $s );
     }
 
