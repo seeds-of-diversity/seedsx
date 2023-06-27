@@ -1087,7 +1087,7 @@ class mbrContacts_Summary extends Console01_Worker1
             // are full duplicates (otherwise it seems you can use UNION ALL to preserve duplicate rows)
            ."FROM $db2.mbr_contacts M LEFT JOIN $db1.SEEDSession_Users U ON (M._key=U._key) "
            ."UNION "
-           ."SELECT M._key,U._key,M.email,U.email,year(M.expires) "
+           ."SELECT M._key,U._key,M.email,U.email,M.expires "
            ."FROM $db2.mbr_contacts M RIGHT JOIN $db1.SEEDSession_Users U ON (M._key=U._key) "
         );
         $this->kfdb->Execute(
