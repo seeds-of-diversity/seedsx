@@ -3,6 +3,7 @@
 /* Manage eBulletin subscriptions
  */
 
+/*
 class MbrBulletin
 {
     private $kfrelBull = null;
@@ -15,11 +16,11 @@ class MbrBulletin
     }
 
     function GetKFR( $id )
-    /*********************
+    [*********************
        Get a bull_list kfr for either
            $id == _key
            $id == email
-     */
+     *]
     {
         if( !$id )  return( null );
 
@@ -76,5 +77,4 @@ class MbrBulletin
         $this->kfrelBull->SetLogFile( SITE_LOG_ROOT."bull_list.log" );
     }
 }
-
-?>
+*/

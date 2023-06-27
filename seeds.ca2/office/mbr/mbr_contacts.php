@@ -18,7 +18,7 @@ include_once( SITEROOT."site2.php" );
 //include_once( STDINC."SEEDCSV.php" );  not used anymore?
 include_once( SEEDCOMMON."console/console01kfui.php" );
 include_once( SEEDCOMMON."mbr/mbrDB.php" );
-include_once( SEEDCOMMON."mbr/mbrBulletin.php" );
+//include_once( SEEDCOMMON."mbr/mbrBulletin.php" );
 include_once( "_mbr.php" );
 include_once( "_mbr_mail.php" );
 
