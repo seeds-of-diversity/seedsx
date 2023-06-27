@@ -1,11 +1,9 @@
 <?php
 
 /* Support for e-bulletin content on our web site
- *
  */
+
 include_once( STDINC."SEEDTemplate.php" );
-include_once( SEEDCOMMON."mbr/mbrBulletin.php" );    // MbrBulletin
-include_once( SITEROOT."/l/mbr/mbrPipe.php" );       // MbrPipeGetContactRA
 include_once( SEEDCOMMON."siteutil.php" );           // MailFromOffice
 include_once( SEEDLIB."mbr/MbrEbulletin.php" );
 include_once( SEEDLIB."mbr/QServerMbr.php" );
@@ -14,22 +12,16 @@ class SoDBulletin
 {
     const   hashSeed = "Your Seeds of Diversity e-bulletin";
     private $oApp;
-    private $kfdb;
-    private $lang;
     private $oEbull;    // new object
-    private $oBull;     // old object to deprecate
     private $oForm;     // the form that lets people subscribe/unsubscribe their email address
     private $oTmpl;
 
-    function __construct( SEEDAppConsole $oApp, KeyFrameDB $kfdb, $lang )
+    function __construct( SEEDAppConsole $oApp )
     {
         $this->oApp = $oApp;
-        $this->kfdb = $kfdb;
-        $this->lang = $lang;
-        $this->oBull = new MbrBulletin( $kfdb );
         $this->oEbull = new MbrEbulletin($oApp);
         $this->oForm = new SEEDCoreForm();
-        $this->oTmpl = $this->makeTemplates( $lang );
+        $this->oTmpl = $this->makeTemplates();
     }
 
     function ControlDraw()
@@ -168,7 +160,7 @@ class SoDBulletin
              *        membership expires, if we retain proof that they opted in. The separate bull_list and mbr_contacts lists
              *        satisfy this requirement but the criteria could be preserved in UsersMetaData.
              */
-            list($eRetBull,$eRetMbr,$sResult) = $this->oEbull->AddSubscriber( $email, "", $this->lang, "bulletin-via-web" );
+            list($eRetBull,$eRetMbr,$sResult) = $this->oEbull->AddSubscriber( $email, "", $this->oApp->lang, "bulletin-via-web" );
             $sAlert = $this->oTmpl->ExpandTmpl( 'confirm-subscribe', ['email'=>$email] );
         } else {
             /* The unsubscribe link is valid.
@@ -184,7 +176,6 @@ class SoDBulletin
 
     private function getBullStatus( $email )
     {
-        //$kfrBull = $this->oBull->GetKFR( $email );                // bull_list row for this email
         $kfrBull = $this->oEbull->oDB->GetKFRCond('B', "email='".addslashes($email)."'");
 
         $oQ = new QServerMbr( $this->oApp, ['config_bUTF8'=>false] );
@@ -221,7 +212,7 @@ class SoDBulletin
         return( MailFromOffice( $email, $sSubject, str_replace('<br/>', "\n", $sEmailBody), $sEmailBody, array('from'=>"ebulletin@seeds.ca") ) );
     }
 
-    private function makeTemplates( $lang )
+    private function makeTemplates()
     {
         $raFTemplates = array( SITEROOT."l/mbr/bulletin_tmpl.html" );
         $tagParms = array();
@@ -230,24 +221,11 @@ class SoDBulletin
 
         // vars available in all templates
         $raTmplVars = array();
-        $raTmplVars['lang'] = $lang;
+        $raTmplVars['lang'] = $this->oApp->lang;
 
         $o = new SEEDTemplate_Generator( array( 'fTemplates' => $raFTemplates,
                                                 'SEEDTagParms' => $tagParms,
                                                 'vars' => $raTmplVars ) );
         return( $o->MakeSEEDTemplate() );
     }
-}
-
-
-function BulletinDrawControl( SEEDAppConsole $oApp, KeyFrameDB $kfdb, $lang )
-{
-    $o = new SoDBulletin( $oApp, $kfdb, $lang );
-    return( $o->ControlDraw() );
-}
-
-function BulletinHandleAction( SEEDAppConsole $oApp, KeyFrameDB $kfdb, $lang )
-{
-    $o = new SoDBulletin( $oApp, $kfdb, $lang );
-    return( $o->HandleAction() );
 }
