@@ -1078,12 +1078,10 @@ class mbrContacts_Summary extends Console01_Worker1
 
         /* Full Outer Join of mbr_contacts and SEEDSession_Users
          */
-        $this->kfdb->Execute( "CREATE TEMPORARY TABLE $db2.MbrSummary ( km INTEGER, ku INTEGER, email_m TEXT, email_u TEXT, yExpires INTEGER )" );
-
-
+        $this->kfdb->Execute( "CREATE TEMPORARY TABLE $db2.MbrSummary ( km INTEGER, ku INTEGER, email_m TEXT, email_u TEXT, yExpires TEXT )" );
         $this->kfdb->Execute(
             "INSERT INTO $db2.MbrSummary (km,ku,email_m,email_u,yExpires) "
-           ."SELECT M._key,U._key,M.email,U.email,year(M.expires) "
+           ."SELECT M._key,U._key,M.email,U.email,M.expires "
             //."FROM seeds_2.mbr_contacts M FULL OUTER JOIN seeds_1.SEEDSession_Users U ON (M._key=U._key) "
             // Because mysql doesn't have full joins, this is the same thing iff there are no rows that
             // are full duplicates (otherwise it seems you can use UNION ALL to preserve duplicate rows)
@@ -1091,6 +1089,10 @@ class mbrContacts_Summary extends Console01_Worker1
            ."UNION "
            ."SELECT M._key,U._key,M.email,U.email,year(M.expires) "
            ."FROM $db2.mbr_contacts M RIGHT JOIN $db1.SEEDSession_Users U ON (M._key=U._key) "
+        );
+        $this->kfdb->Execute(
+            // yExpires is calculated in a separate step because year() works for NULL but not ''
+            "UPDATE $db2.MbrSummary SET yExpires=year(yExpires) WHERE yExpires<>''"
         );
         $raRows = $this->kfdb->QueryRowsRA( "SELECT * from $db2.MbrSummary" );
 
