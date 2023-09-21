@@ -222,8 +222,8 @@ class SoDMbrOrderCheckout extends MbrOrderCheckout
              ."</tr>";
         //$s .= $this->mbr_pub( $this->oL->GetLang() == "EN" ? "ssh_en" : "ssh_fr" )
         //     .$this->mbr_pub( $this->oL->GetLang() == "EN" ? "ssh_fr" : "ssh_en" )
-        $s .= $this->mbr_pub( "ssh_en6" );
-        $s .= $this->mbr_pub( "ssh_fr6" );
+        $s .= $this->mbr_pub( "ssh_en6_20" );
+        $s .= $this->mbr_pub( "ssh_fr6_20" );
         //$s .= $this->mbr_pub( "suechan2012" );
         //$s .= $this->mbr_pub( "kent2012" );
 
@@ -300,9 +300,9 @@ class SoDMbrOrderCheckout extends MbrOrderCheckout
                         $shipping = $ra[$n];
                     }
                     $this->kfrOC->UrlParmSet( "sExtra", 'nPubEverySeed_Shipping', $shipping );
-                } else if( $k == 'ssh_en6' ) {
+                } else if( $k == 'ssh_en6_20' ) {
                     $this->kfrOC->UrlParmSet( "sExtra", 'nPubSSH-EN6-20', $n );
-                } else if( $k == 'ssh_fr6' ) {
+                } else if( $k == 'ssh_fr6_20' ) {
                     $this->kfrOC->UrlParmSet( "sExtra", 'nPubSSH-FR6-20', $n );
                 } else if( $k == 'suechan2012' ) {
                     $this->kfrOC->UrlParmSet( "sExtra", 'nPubSueChan2012', $n );
@@ -898,10 +898,10 @@ $sGarlicVarieties =
             "pub_ssh_en"
                 => array( "EN" => "How to Save Your Own Seeds, 5th edition",
                           "FR" => "How to Save Your Own Seeds (Anglais)" ),
-            "pub_ssh_en6"
+            "pub_ssh_en6_20"
                 => array( "EN" => "How to Save Your Own Seeds, 6th edition",
                           "FR" => "How to Save Your Own Seeds (Anglais)" ),
-            "pub_ssh_fr6"
+            "pub_ssh_fr6_20"
                 => array( "EN" => "La conservation des semences (French)",
                           "FR" => "La conservation des semences, une nouvelle &eacute;dition" ),
 
@@ -927,10 +927,10 @@ $sGarlicVarieties =
             "vend_ssh_en"
                 => array( "EN" => "<A HREF='${sPubPageEN}#ssh_e' target='_blank'><IMG src='${sSiteImg}vend/ssh_cv.gif' height='50'></A>",
                           "FR" => "<A HREF='${sPubPageFR}#ssh_e' target='_blank'><IMG src='${sSiteImg}vend/ssh_cv.gif' height='50'></A>" ),
-            "vend_ssh_en6"
+            "vend_ssh_en6_20"
                 => array( "EN" => "<A HREF='${sPubPageEN}#ssh_e' target='_blank'><IMG src='${sSiteImg}vend/ssh6en150.jpg' height='50'></A>",
                           "FR" => "<A HREF='${sPubPageFR}#ssh_e' target='_blank'><IMG src='${sSiteImg}vend/ssh6en150.jpg' height='50'></A>" ),
-            "vend_ssh_fr6"
+            "vend_ssh_fr6_20"
                 => array( "EN" => "<A HREF='${sPubPageEN}#ssh_f' target='_blank'><IMG src='${sSiteImg}vend/ssh6fr150.jpg' height='50'></A>",
                           "FR" => "<A HREF='${sPubPageFR}#ssh_f' target='_blank'><IMG src='${sSiteImg}vend/ssh6fr150.jpg' height='50'></A>" ),
             "vend_ssh_fr"
