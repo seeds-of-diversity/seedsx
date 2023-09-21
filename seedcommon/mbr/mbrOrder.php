@@ -298,7 +298,9 @@ class MbrOrder extends MbrOrderCommon {
                                                              "FR"=>"L'adh&eacute;sion (1 an) avec le Catalogue de semences en Web" ),
                              "mbr1_10sed"  => array( "n"=>10, "EN"=>"One Year Membership with printed and on-line Seed Directory",
                                                              "FR"=>"L'adh&eacute;sion (1 an) avec le Catalogue de semences imprim&eacute; et en Web" ),
-
+                             "mbr1_15sed"  => array( "n"=>15, "EN"=>"One Year Membership with printed and on-line Seed Directory",
+                                                              "FR"=>"L'adh&eacute;sion (1 an) avec le Catalogue de semences imprim&eacute; et en Web" ),
+        
                              // historical
                              "reg1"       => array( "n"=>30, "EN"=>"One Year Membership with printed and on-line Seed Directory",
                                                              "FR"=>"L'adh&eacute;sion (1 an) avec le Catalogue de semences imprim&eacute; et en Web" ),

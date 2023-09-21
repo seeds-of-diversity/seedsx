@@ -87,7 +87,7 @@ class SoDMbrOrderCheckout extends MbrOrderCheckout
                              ."<div class='mbro_ctrl'>"
                                  //."<p>".$this->oKForm->Checkbox( 'mbrJoin', "&nbsp;Join or renew your membership. We'll ask you to fill in a short survey about your interests on the next page." )."</p>"  //$this->oL->S("Please send samples of garlic bulbils for $15") )."</p>")
                                  .$this->oKForm->Radio('mbr_type',"",'mbr1_0')."&nbsp;&nbsp;&nbsp;".$this->oL->S('One Year Membership form line - online SED')."<br/>"
-                                 .$this->oKForm->Radio('mbr_type',"",'mbr1_10sed')."&nbsp;&nbsp;&nbsp;".$this->oL->S('One Year Membership form line - printed SED')."<br/>"
+                                 .$this->oKForm->Radio('mbr_type',"",'mbr1_15sed')."&nbsp;&nbsp;&nbsp;".$this->oL->S('One Year Membership form line - printed SED')."<br/>"
                                  .$this->oKForm->Radio('mbr_type',"",'', array('bNoBlankMatches'=>1))."&nbsp;&nbsp;&nbsp;".$this->oL->S('mbr_none')
                              ."</div>",
                              false );
@@ -283,7 +283,7 @@ class SoDMbrOrderCheckout extends MbrOrderCheckout
         }
 
         /*** Membership ***/
-        foreach( ['mbr1_35','mbr1_45sed','mbr1_0','mbr1_10sed'] as $m ) {
+        foreach( ['mbr1_35','mbr1_45sed','mbr1_0','mbr1_10sed','mbr1_15sed'] as $m ) {
             if( $oSVar->VarGet("mbr_type") == $m )  $this->kfrOC->SetValue( "mbr_type", $m );
         }
 
@@ -836,8 +836,8 @@ $sGarlicVarieties =
                 => array( "EN" => "<i>Free</i>&nbsp;&nbsp;&nbsp;Membership for one year with on-line Seed Directory",
                           "FR" => "<i>Gratuite</i>&nbsp;&nbsp;&nbsp;Adh&eacute;sion pour un an avec acc&egraves au Catalogue de semences en ligne" ),
             "One Year Membership form line - printed SED"
-                => array( "EN" => "$10&nbsp;&nbsp;&nbsp;Membership for one year with printed and on-line Seed Directory",
-                          "FR" => "10$&nbsp;&nbsp;&nbsp;Adh&eacute;sion pour un an avec une version imprim&eacute;e du Catalogue de semences (acc&egrave;s &agrave; la version Web inclus)" ),
+                => array( "EN" => "$15&nbsp;&nbsp;&nbsp;Membership for one year with printed and on-line Seed Directory",
+                          "FR" => "15$&nbsp;&nbsp;&nbsp;Adh&eacute;sion pour un an avec une version imprim&eacute;e du Catalogue de semences (acc&egrave;s &agrave; la version Web inclus)" ),
             "Give a Charitable Donation"
                 => array( "EN" => "Give a Charitable Donation",
                           "FR" => "Faire un don charitable" ),

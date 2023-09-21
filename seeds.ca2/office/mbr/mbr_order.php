@@ -268,8 +268,8 @@ class drawFormContact
     public function DrawItem( $fld )
     {
         $placeholder = $this->raItems[$fld][0];
-        $valOrder = @$this->raOrder[$this->raItems[$fld][1]];
-        $valMbr = @$this->raMbr[$this->raItems[$fld][2]];
+        $valOrder = @$this->raOrder[$this->raItems[$fld][1]] ?? "";
+        $valMbr = @$this->raMbr[$this->raItems[$fld][2]] ?? "";
 
         $ra = ['attrs'=>"placeholder='$placeholder'"];
         if( @$this->raItems[$fld][3] ) { $ra['size'] = $this->raItems[$fld][3]; }

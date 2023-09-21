@@ -181,7 +181,7 @@ function order2table( MbrOrder $oOrder, $raR )
         $ra['name'] = SEEDCore_utf8_encode($raR['mail_company']);
     }
     $ra['membership'] = (@$raOrder['mbr']=='mbr1_45sed' ? 45 : (@$raOrder['mbr']=='mbr1_35' ? 35 : "") );
-    $ra['sed'] = @$raOrder['mbr']=='mbr1_10sed' ? 10 : "";
+    $ra['sed'] = @$raOrder['mbr']=='mbr1_15sed' ? 15 : (@$raOrder['mbr']=='mbr1_10sed' ? 10 : "");
     $ra['donation'] = @$raOrder['donation'];
     $ra['sladoption'] = @$raOrder['slAdopt_amount'];
 
