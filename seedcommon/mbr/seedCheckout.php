@@ -301,9 +301,9 @@ class SoDMbrOrderCheckout extends MbrOrderCheckout
                     }
                     $this->kfrOC->UrlParmSet( "sExtra", 'nPubEverySeed_Shipping', $shipping );
                 } else if( $k == 'ssh_en6' ) {
-                    $this->kfrOC->UrlParmSet( "sExtra", 'nPubSSH-EN6', $n );
+                    $this->kfrOC->UrlParmSet( "sExtra", 'nPubSSH-EN6-20', $n );
                 } else if( $k == 'ssh_fr6' ) {
-                    $this->kfrOC->UrlParmSet( "sExtra", 'nPubSSH-FR6', $n );
+                    $this->kfrOC->UrlParmSet( "sExtra", 'nPubSSH-FR6-20', $n );
                 } else if( $k == 'suechan2012' ) {
                     $this->kfrOC->UrlParmSet( "sExtra", 'nPubSueChan2012', $n );
                 } else if( $k == 'kent2012' ) {

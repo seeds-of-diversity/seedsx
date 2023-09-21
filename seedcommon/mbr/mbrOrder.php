@@ -281,6 +281,8 @@ class MbrOrder extends MbrOrderCommon {
         'everyseed' => array( 'price'=>35.0, 'concise'=>"Every Seed",  'title'=>"Every Seed Tells a Tale" ),
         'ssh_en6'   => array( 'price'=>15.0, 'concise'=>"English How-to-Save", 'title'=>"How to Save Your Own Seeds, 6th Edition" ),
         'ssh_fr6'   => array( 'price'=>15.0, 'concise'=>"French La-conservation", 'title'=>"La conservation des semences, 6i&egrave;me &Eacute;dition" ),
+        'ssh_en6_20'=> array( 'price'=>20.0, 'concise'=>"English How-to-Save",    'title'=>"How to Save Your Own Seeds, 6th Edition" ),
+        'ssh_fr6_20'=> array( 'price'=>20.0, 'concise'=>"French La-conservation", 'title'=>"La conservation des semences, 6i&egrave;me &Eacute;dition" ),
         'suechan2012' => array( 'price'=>15.0, 'concise'=>"Conserving Native Pollinators", 'title'=>"Conserving Native Pollinators in Ontario" ),
         'kent2012' => array( 'price'=>8.0, 'concise'=>"How to Make a Pollinator Garden", 'title'=>"How to Make a Pollinator Garden" ),
 
@@ -431,12 +433,10 @@ if( $kOrder ) $this->setKOrder( $kOrder );
                 if( $k == 'nPubEverySeed_shipping' ) {
                     // ignore: this is processed in nPubEverySeed
                 }
-                if( $k == 'nPubSSH-EN6' ) {
-                    $this->nTotal += $this->_computeOrderPub( 'ssh_en6', $v );
-                }
-                if( $k == 'nPubSSH-FR6' ) {
-                    $this->nTotal += $this->_computeOrderPub( 'ssh_fr6', $v );
-                }
+                if( $k == 'nPubSSH-EN6' )    { $this->nTotal += $this->_computeOrderPub( 'ssh_en6', $v ); }
+                if( $k == 'nPubSSH-FR6' )    { $this->nTotal += $this->_computeOrderPub( 'ssh_fr6', $v ); }
+                if( $k == 'nPubSSH-EN6-20' ) { $this->nTotal += $this->_computeOrderPub( 'ssh_en6_20', $v ); }
+                if( $k == 'nPubSSH-FR6-20' ) { $this->nTotal += $this->_computeOrderPub( 'ssh_fr6_20', $v ); }
                 if( $k == 'nPubSueChan2012' ) {
                     $this->nTotal += $this->_computeOrderPub( 'suechan2012', $v );
                 }
