@@ -573,7 +573,7 @@ include_once(SEEDLIB."mbr/MbrContacts.php");
             // record member confirmation date
             $kfrM = $oMbr->oDB->KFRel('M')->GetRecordFromDBKey($kMbr);
             $kfrM->SetValue( 'lastrenew', date('Y-m-d') );                      // confirmed today
-            $kfrM->SetValue( 'expires', date('Y-m-d', strtotime("+1 year")) );  // until a year from now
+            $kfrM->SetValue( 'expires', date('Y', strtotime("+7 months"))."-12-31" );  // end of year as of 7 months from now
             if( !$kfrM->Value('startdate') ) {
                 $kfrM->SetValue( 'startdate', date('Y-m-d') );                  // started today if new
             }
