@@ -36,6 +36,7 @@ $kfdb->SetDebug(1);
 class MyConsole extends Console01KFUI
 {
     public $oW;
+    private $oApp;
     private $oSLDB;
     private $oSLDBRosetta;
 
@@ -44,6 +45,7 @@ class MyConsole extends Console01KFUI
         parent::__construct( $kfdb, $sess, $raParms );
         $this->oSLDB = new SLDB_Master( $kfdb, $sess->GetUID() );
         $this->oSLDBRosetta = new SLDB_Rosetta( $kfdb, $sess->GetUID() );
+        $this->oApp = SEEDConfig_NewAppConsole_LoginNotRequired( ['db'=>'seeds2'] );
     }
 
     function TFmainCultivarsInit()           { $this->myInit( 'cultivars' ); }
@@ -144,7 +146,7 @@ class MyConsole extends Console01KFUI
     function CultivarsDSPreStore( KeyFrameDataStore $oDS )
     {
         if( !($kSp = $oDS->value('fk_sl_species')) )  return( false );
-        if( !($psp = $this->kfdb->Query1( "SELECT psp FROM seeds_1.sl_species WHERE _key='$kSp'" )) )  return( false );
+        if( !($psp = $this->kfdb->Query1( "SELECT psp FROM {$this->oApp->DBName('seeds1')}.sl_species WHERE _key='$kSp'" )) )  return( false );
 // deprecate, just rely on fk_sl_species because people can easily change sl_species.psp
 $oDS->SetValue( 'psp', $psp );
 
@@ -188,7 +190,7 @@ $oDS->SetValue( 'psp', $psp );
         $s = "";
 
         if( ($kPCV = $oForm->GetKey()) ) {
-            $raSyn = $this->kfdb->QueryRowsRA( "SELECT * FROM seeds_1.sl_pcv_syn WHERE _status='0' AND fk_sl_pcv='$kPCV'" );
+            $raSyn = $this->kfdb->QueryRowsRA( "SELECT * FROM {$this->oApp->DBName('seeds1')}.sl_pcv_syn WHERE _status='0' AND fk_sl_pcv='$kPCV'" );
             $sTmpl = "[[name]]";
             $sSyn = SEEDCore_ArrayExpandRows( $raSyn, ", $sTmpl", true, array('sTemplateLast'=>$sTmpl) );
 
@@ -262,9 +264,9 @@ $oDS->SetValue( 'psp', $psp );
     private function speciesGetStats( $kSp )
     {
         $ra = array();
-        $ra['nSLAcc'] = $this->kfdb->Query1( "SELECT count(*) FROM seeds_1.sl_accession A,seeds_1.sl_pcv P WHERE P.fk_sl_species='$kSp' AND P._key=A.fk_sl_pcv" );
+        $ra['nSLAcc'] = $this->kfdb->Query1( "SELECT count(*) FROM {$this->oApp->DBName('seeds1')}.sl_accession A,{$this->oApp->DBName('seeds1')}.sl_pcv P WHERE P.fk_sl_species='$kSp' AND P._key=A.fk_sl_pcv" );
 
-        $sSql = "SELECT count(*) FROM seeds_1.sl_cv_sources CV,seeds_1.sl_pcv P WHERE P._key=CV.fk_sl_pcv AND P.fk_sl_species='$kSp'";
+        $sSql = "SELECT count(*) FROM {$this->oApp->DBName('seeds1')}.sl_cv_sources CV,{$this->oApp->DBName('seeds1')}.sl_pcv P WHERE P._key=CV.fk_sl_pcv AND P.fk_sl_species='$kSp'";
         $ra['nSLCV1'] = $this->kfdb->Query1( $sSql." AND fk_sl_sources='1'" );
         $ra['nSLCV2'] = $this->kfdb->Query1( $sSql." AND fk_sl_sources='2'" );
         $ra['nSLCV3'] = $this->kfdb->Query1( $sSql." AND fk_sl_sources>='3'" );
