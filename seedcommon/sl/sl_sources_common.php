@@ -205,6 +205,7 @@ class SLSourcesCommon
         array("col"=>"bOrganic",      "type"=>"I")
         );
 
+        $oApp = SEEDConfig_NewAppConsole_LoginNotRequired([]);
 
         $kfreldef_Sources = array(
             "Tables" => array( array( "Table" => 'sl_sources', "Alias" => 'S',
@@ -214,10 +215,10 @@ class SLSourcesCommon
                                       "Fields" => $fld_CVSources ) ) );
         $kfreldef_CxS = array(
             "ver" => 2,
-            "Tables" => array( "C" => array( "Table" => 'seeds_1.sl_cv_sources',
+            "Tables" => array( "C" => array( "Table" => $oApp->DBName('seeds1').'.sl_cv_sources',
                                              "Type" => 'Base',
                                              "Fields" => $fld_CVSources ),
-                               "S" => array( "Table" => 'seeds_1.sl_sources',
+                               "S" => array( "Table" => $oApp->DBName('seeds1').'.sl_sources',
                                              "Fields" => $fld_Sources ) ) );
 /*
         $kfreldef_CxS_P = array(
@@ -300,7 +301,7 @@ Actually these styles are just defined in drupal page-tpl because it isn't neces
         return( $s );
     }
 
-    function DrawCompaniesVarieties( $kSp, $sSpKluge, $lang, $raParms = array() )
+    function DrawCompaniesVarieties( SEEDAppConsole $oApp, $kSp, $sSpKluge, $lang, $raParms = array() )
     {
 include_once( SEEDCOMMON."siteutil.php" );
 Site_Log( "csci_sp.log", date("Y-m-d H:i:s")." {$_SERVER['REMOTE_ADDR']} | $kSp $sSpKluge" );
@@ -345,8 +346,8 @@ Site_Log( "csci_sp.log", date("Y-m-d H:i:s")." {$_SERVER['REMOTE_ADDR']} | $kSp 
                     $ocv = $kfr->value('ocv');
                     $kCV = $kfr->value('fk_sl_pcv');
                     if( $kCV ) {
-                        $sCV = $this->oSrcCommon->kfdb->Query1( "SELECT name FROM seeds_1.sl_pcv WHERE _key='$kCV'" );
-                        $raSyn = $this->oSrcCommon->kfdb->QueryRowsRA1( "SELECT name FROM seeds_1.sl_pcv_syn WHERE fk_sl_pcv='$kCV' AND t='1' AND _status='0'" );
+                        $sCV = $this->oSrcCommon->kfdb->Query1( "SELECT name FROM {$oApp->DBName('seeds1')}.sl_pcv WHERE _key='$kCV'" );
+                        $raSyn = $this->oSrcCommon->kfdb->QueryRowsRA1( "SELECT name FROM {$oApp->DBName('seeds1')}.sl_pcv_syn WHERE fk_sl_pcv='$kCV' AND t='1' AND _status='0'" );
                         if( count($raSyn) ) {
                             $sCV .= " / ".implode( " / ", $raSyn );
                         }

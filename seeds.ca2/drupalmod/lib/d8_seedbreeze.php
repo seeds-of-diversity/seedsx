@@ -292,7 +292,7 @@ class Drupal8Template
                     }
                     if( $kSp ) {
                         $s .= "<p><a href='$pathSelf'>Back to Companies</a></p>"
-                             .$oSLSrc->DrawCompaniesVarieties( $kSp, $sSp, $lang,
+                             .$oSLSrc->DrawCompaniesVarieties( $this->oApp, $kSp, $sSp, $lang,
                                   array( /*'sTemplate' => "<div style=''><a href='".Site_path_self()."?psp=[[var:k]]'>[[var:name]] ([[var:n]])</a></div>"*/ ) );
                     }
                 } else {
