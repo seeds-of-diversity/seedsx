@@ -57,8 +57,25 @@ class SoDMbrOrderCheckout extends MbrOrderCheckout
                                                                    value='".($bDonX ? $this->myNumber($this->oKForm->oDS->valueEnt('donationX')) : "")."'/>"
                                  ."</td>"
                                  ."</tr></table>"
+                             ."</div>"
+                             ."<div class='mbro_ctrl' style='margin-top:20px'>
+                                   <p>Use my donation for (choose as many as you want):</p>
+                                   <p style='margin-left:3em'>"
+                                     .$this->oKForm->Checkbox('donpref_sl',  "Seed conservation: rescuing and distributing rare seed varieties")."<br/>"
+                                     .$this->oKForm->Checkbox('donpref_yfs', "Youth in Food Systems: inspiring youth to become the sustainable food leaders of tomorrow")."<br/>"
+                                     .$this->oKForm->Checkbox('donpref_ss',  "Seedy Saturdays/Sundays: supporting local community seed events")."<br/>"
+                                     .$this->oKForm->Checkbox('donpref_any', "Where it's needed the most", ['checked'=>1])
+                                 ."</p>"
                              ."</div>",
                              false );
+
+
+// kluge : after storing checkbox state in the controls, reset in the sess so back->uncheck->next will do the right thing
+        $oSVar = new SEEDSessionVarAccessor( $this->sess, "mbrocdata" );
+        foreach( ['donpref_sl','donpref_yfs','donpref_ss','donpref_any'] as $k ) {
+            $oSVar->VarSet($k,0);
+        }
+
 
 //$s .= "<div style='margin:-20px 30px 30px 20px'><table><tr><td><img src='http://seeds.ca/photos/upload/2020/10/14/20201014174744-1771830c.jpg' width='250'/></td><td style='padding-left:20px'>To designate a donation to our <a target='_blank' href='http://schoolfoodgardens.ca'>School Food Gardens</a> fall campaign, just tell us in the notes section at the bottom.</td></tr></table></div>";
 
@@ -116,7 +133,7 @@ class SoDMbrOrderCheckout extends MbrOrderCheckout
         $_SESSION['mbrocdata']['bBulbils'] = "";    // have to do this too because we're storing everything in the session during this stage
 
         $bGarlicAdvertised = true;
-        $bGarlicAdvertisedButGone = true;
+        $bGarlicAdvertisedButGone = false;
 
         if( $bGarlicAdvertised ) {
             $s .= "<a name='gafrlic'></a>"
@@ -280,6 +297,10 @@ class SoDMbrOrderCheckout extends MbrOrderCheckout
         $fDonation = floatval($oSVar->VarGet("donation") == 'X' ? $oSVar->VarGet("donationX") : $oSVar->VarGet("donation") );
         if( $fDonation > 0 ) {  // don't let them type a negative number
             $this->kfrOC->SetValue( "donation", strval($fDonation) );
+
+            foreach( ['donpref_sl','donpref_yfs','donpref_ss','donpref_any'] as $k ) {
+                if( $oSVar->VarGet($k) )  $this->kfrOC->UrlParmSet("sExtra", $k, 1);
+            }
         }
 
         /*** Membership ***/
@@ -570,10 +591,15 @@ include_once(SEEDLIB."mbr/MbrContacts.php");
             }
 
 
-            // record member confirmation date
+            /* Membership expiry is Dec 31 of the year that's 8 months from now.
+             * startdate Jan-Apr expires at the end of the same year
+             * startdate May-Dec expires at the end of the next year
+             * This allows printed Seed Exchange Directory to be mailed and still useful.
+             * If a member gets 2 years of useful membership (e.g. renews May 1) they'll get the first year without printed directory.
+             */
             $kfrM = $oMbr->oDB->KFRel('M')->GetRecordFromDBKey($kMbr);
             $kfrM->SetValue( 'lastrenew', date('Y-m-d') );                      // confirmed today
-            $kfrM->SetValue( 'expires', date('Y', strtotime("+7 months"))."-12-31" );  // end of year as of 7 months from now
+            $kfrM->SetValue( 'expires', date('Y', strtotime("+8 months"))."-12-31" );
             if( !$kfrM->Value('startdate') ) {
                 $kfrM->SetValue( 'startdate', date('Y-m-d') );                  // started today if new
             }
@@ -992,7 +1018,7 @@ $sGarlicVarieties =
                 => array( "EN" => "Adopt a Variety into the Canadian Seed Library",
                           "FR" => "Adoptez une vari&eacute;t&eacute; &agrave; la Biblioth&egrave;que canadienne des semences" ),
             "You can adopt etc"
-                => array( "EN" => "<P>You can adopt a heritage seed variety into our Seed Library forever, with a donation!</P>"
+                => array( "EN" => "<P>You can adopt a heritage seed variety into our Seed Library collection forever, with a donation!</P>"
                                  ."<P>A full adoption of $250 will preserve a seed variety for all time. You can also make a partial adoption of any amount. "
                                  ."Donations of $50 or more will be permanently recognized in the Seed Library, and the "
                                  ."full amount of every adoption is a tax-receiptable charitable donation.</P>",
