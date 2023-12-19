@@ -11,7 +11,7 @@ include_once( SEEDCORE."SEEDBasket.php" );
 include_once( SEEDAPP."basket/basketProductHandlers.php" );
 include_once( SEEDAPP."basket/basketProductHandlers_seeds.php" );
 include_once( SEEDCORE."SEEDTemplateMaker.php" );
-include_once( SEEDAPP."seedexchange/msdedit.php" );
+include_once( SEEDAPP."seedexchange/mse-edit_ts_seeds.php" );
 include_once( SEEDLIB."mbr/MbrContacts.php" );
 
 //var_dump($_REQUEST);
@@ -235,46 +235,19 @@ class mbrBasket_Store
 {
     private $oApp;
     private $oSB;
+    private $oTmpl;
 
     function __construct( SEEDAppConsole $oApp, SEEDBasketCore $oSB )
     {
         $this->oApp = $oApp;
         $this->oSB = $oSB;
-
-        $raTmplParms = array(
-            'fTemplates' => array( SEEDAPP."templates/store-sod.html", SEEDAPP."templates/msd.html" ),
-            'sFormCid'   => 'Plain',
-            'raResolvers'=> array( array( 'fn'=>array($this,'ResolveTag'), 'raParms'=>array() ) ),
-            'vars'       => array()
-        );
-        $this->oTmpl = SEEDTemplateMaker2( $raTmplParms );
     }
 
     function DrawContent()
     {
-        $s = $this->oTmpl->ExpandTmpl( 'storeMain' );
+        $s = (new myTemplate($this->oSB))->oTmpl->ExpandTmpl('storeMain');
 
         return( $s );
-    }
-
-    function ResolveTag( $raTag, SEEDTagParser $oTagDummy_same_as_this_oTmpl_oSeedTag, $raParms )
-    {
-        $bHandled = true;
-        $s = "";
-
-        switch( strtolower($raTag['tag']) ) {
-            case 'basket_contents':
-                // could parse parms out of target for this method (use a standard seedtag method with the same format that seedform uses)
-                $s = $this->oSB->DrawBasketContents();
-                break;
-            case 'basket_purchase0':
-                $s = $this->oSB->DrawPurchaseForm( $raTag['target'] );
-                break;
-            default:
-                $bHandled = false;
-                break;
-        }
-        return( array( $bHandled, $s ) );
     }
 }
 
@@ -323,10 +296,51 @@ $s .= "</table>";
 }
 
 
+class myTemplate
+{
+    public  $oTmpl = null;
+    private $oSB;
+
+    function __construct( SEEDBasketCore $oSB )
+    {
+        $this->oSB = $oSB;
+        $raTmplParms = array(
+            'fTemplates' => [SEEDAPP."templates/store-sod.html", SEEDAPP."templates/msd.html", SEEDAPP."templates/msd-edit.html"],
+            'sFormCid'   => 'Plain',
+            'raResolvers'=> array( array( 'fn'=>array($this,'ResolveTag'), 'raParms'=>array() ) ),
+            'vars'       => array()
+        );
+        $this->oTmpl = SEEDTemplateMaker2( $raTmplParms );
+    }
+
+    function ResolveTag( $raTag, SEEDTagParser $oTagDummy_same_as_this_oTmpl_oSeedTag, $raParms )
+    {
+        $bHandled = true;
+        $s = "";
+
+        switch( strtolower($raTag['tag']) ) {
+            case 'basket_contents':
+                // could parse parms out of target for this method (use a standard seedtag method with the same format that seedform uses)
+                $s = $this->oSB->DrawBasketContents();
+                break;
+            case 'basket_purchase0':
+                $s = $this->oSB->DrawPurchaseForm( $raTag['target'] );
+                break;
+            default:
+                $bHandled = false;
+                break;
+        }
+        return( array( $bHandled, $s ) );
+    }
+}
+
+
+
+
 class MyConsole02TabSet extends Console02TabSet
 {
     private $oApp;
-    private $oSB;
+    public  $oSB;
     private $oW;    // object that does the work for the chosen tab
 
     function __construct( SEEDAppConsole $oApp )
@@ -416,10 +430,10 @@ function doFulfilButton( jxCmd, kBP )
 
 SCRIPT;
 
-echo Console02Static::HTMLPage( SEEDCore_utf8_encode($s), "", 'EN',                    // sCharset defaults to utf8
+$sHead = (new myTemplate($oCTS->oSB))->oTmpl->ExpandTmpl('MSEEdit_css');
+
+echo Console02Static::HTMLPage( SEEDCore_utf8_encode($s), $sHead, 'EN',                    // sCharset defaults to utf8
                                 ['consoleSkin'=>'green',
                                  'raScriptFiles' => [W_CORE_URL."js/SEEDCore.js", W_CORE_URL."js/console02.js"],
                                 ] );
 
-
-?>
