@@ -60,24 +60,6 @@ class SEDCommon extends SEDCommonDraw
     function SEDStyle()
     {
         $s = "<STYLE>"
-            .".sed_grower     { font-family:verdana,helvetica,sans-serif; font-size:10pt; width:80%; }"
-            .".sed_edit_form  { padding:0px 1em; }"
-            .".sed_edit_form, .sed_edit_form td { "
-                ."font-family:verdana,helvetica,sans-serif; font-size:9pt; }"
-            .".sed_edit_form input { font-size:8pt;}"
-            .".sed_edit_form h3 { font-size:12pt; }"
-
-            .".sed_type { }"
-            .".sed_type h3 { font-family: helvetica,arial,sans-serif; }"
-            .".sed_seed {}" // font-family: helvetica,arial,sans-serif;font-size:10pt; margin-bottom:15pt; }"
-            .".sed_seed_skip { color: #444; background-color:#ee9; }"
-            .".sed_seed_delete { color: red; background-color:#fdf }"
-            .".sed_seed_change { background-color: #99dd99 }"
-            .".sed_seed_mc     { font-weight:bold;text-align:right }"
-            .".sed_seed_offer  { font-family: helvetica,arial,sans-serif;font-size:10pt; padding:2px; float:right; background-color:#fff; }"
-            .".sed_seed_offer_member       { color: #484; border:2px solid #484 }"
-            .".sed_seed_offer_growermember { color: #08f; border:2px solid #08f }"
-            .".sed_seed_offer_public       { color: #f80; border:2px solid #f80 }"
             ."</STYLE>";
 
         return( $s );
