@@ -228,9 +228,9 @@ RewriteRule ^(.*)$ %{ENV:BASE}$1 [L,QSA]
 # OR = this condition or the next condition
 
 # BEGIN WordPress
-# The directives (lines) between `BEGIN WordPress` and `END WordPress` are
-# dynamically generated, and should only be modified via WordPress filters.
-# Any changes to the directives between these markers will be overwritten.
+# Les directives (lignes) entre « BEGIN WordPress » et « END WordPress » sont générées
+# dynamiquement et doivent uniquement être modifiées via les filtres de WordPress.
+# Toute modification des directives situées entre ces marqueurs sera surchargée.
 <IfModule mod_rewrite.c>
 RewriteEngine On
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
@@ -244,8 +244,5 @@ RewriteRule . /index.php [L]
 # END WordPress
 
 # php -- BEGIN cPanel-generated handler, do not edit
-# Set the “ea-php74” package as the default “PHP” programming language.
-<IfModule mime_module>
-  AddHandler application/x-httpd-ea-php74 .php .php7 .phtml
-</IfModule>
+# This domain inherits the “PHP” package.
 # php -- END cPanel-generated handler, do not edit
