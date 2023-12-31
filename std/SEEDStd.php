@@ -54,14 +54,15 @@ function SEEDStd_HTTPRequest( $host, $page, $raReqParms )
     return( array( $ok, $sResponseHeader, $sResponseContent ) );
 }
 
+/*
 function SEEDStd_Ent( $s )
-/*************************
+[*************************
     Since the default charset used by htmlentities depends on the php version, standardize the charset by using this instead
- */
+ *]
 {
     return( htmlentities( $s ?? "", ENT_QUOTES, 'cp1252') );
 }
-
+*/
 function SEEDStd_HSC( $s )
 /*************************
     Since the default charset used by htmlspecialchars depends on the php version, standardize the charset by using this instead

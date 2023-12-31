@@ -692,7 +692,7 @@ class QServerSources extends QServerBase
                                                                        ."OR city    LIKE '%".addslashes($sQuery)."%' "
                                                                        ."OR desc_en LIKE '%".addslashes($sQuery)."%') ORDER BY name_en" )) ) {
             while( $ra = $this->kfdb->CursorFetch( $dbc ) ) {
-                $raOut[] = "<p>".$this->StartLink( "s___".$ra['_key'], SEEDStd_Ent($ra['name_en']))."</p>";
+                $raOut[] = "<p>".$this->StartLink( "s___".$ra['_key'], SEEDCore_HSC($ra['name_en']))."</p>";
             }
         }
         if( count($raOut) ) {
@@ -777,12 +777,12 @@ class QServerSources extends QServerBase
         if( @$ra['_key'] ) {
             $sDesc = ($this->oL->GetLang()=='FR' && @$ra['desc_fr']) ? $ra['desc_fr'] : $ra['desc_en'];
             $html = SEEDStd_ArrayExpand( $ra,
-                                         "<h2>".SEEDStd_Ent($ra['name_en'])."</h2>"
-                                        ."<p>".SEEDStd_Ent($ra['addr_en'])."<br/>"
-                                        .SEEDStd_Ent($ra['city'])." [[prov]] [[postcode]]</p>"
+                                         "<h2>".SEEDCore_HSC($ra['name_en'])."</h2>"
+                                        ."<p>".SEEDCore_HSC($ra['addr_en'])."<br/>"
+                                        .SEEDCore_HSC($ra['city'])." [[prov]] [[postcode]]</p>"
                                         ."<p><a href='http://[[web]]' target='_blank'>[[web]]</a></p>"
-                                        ."<p class='qPara'>".SEEDStd_Ent($sDesc)."</p>" );
-            $htmlsmall = "<span class='qMainSm'>".SEEDStd_Ent($ra['name_en'])."</span>";
+                                        ."<p class='qPara'>".SEEDCore_HSC($sDesc)."</p>" );
+            $htmlsmall = "<span class='qMainSm'>".SEEDCore_HSC($ra['name_en'])."</span>";
         }
 
         return( array( $htmlsmall, $html ) );
@@ -794,7 +794,7 @@ class QServerSources extends QServerBase
 
         $raSrc = $this->kfdb->QueryRA( "SELECT * FROM sl_sources WHERE _key='$kSrc'" );
         if( @$raSrc['_key'] ) {
-            $htmlsmall = $this->oL->S2("[[Climate conditions near _name_]]", array( 'name' => SEEDStd_Ent($raSrc['name_en']) ));
+            $htmlsmall = $this->oL->S2("[[Climate conditions near _name_]]", array( 'name' => SEEDCore_HSC($raSrc['name_en']) ));
             $html = "<h2>$htmlsmall</h2><p>".$this->oL->S("Coming soon")."</p>";
         }
 
@@ -807,7 +807,7 @@ class QServerSources extends QServerBase
 
         $ra = $this->kfdb->QueryRA( "SELECT * FROM sl_sources WHERE _key='$kSrc'" );
         if( @$ra['_key'] ) {
-            $htmlsmall = $this->oL->S2("[[Map for _name_]]", array( 'name' => SEEDStd_Ent($ra['name_en']) ));
+            $htmlsmall = $this->oL->S2("[[Map for _name_]]", array( 'name' => SEEDCore_HSC($ra['name_en']) ));
             $addr = $ra['addr_en']." ".$ra['city']." ".$ra['prov']." ".$ra['country'];
             $mapUrl = "https://www.google.com/maps?t=m&amp;q=".urlencode($addr)."&amp;ie=UTF8&amp;z=12";
 
@@ -825,7 +825,7 @@ class QServerSources extends QServerBase
             $html =
                 "<div class='QSEEDMapContainer'>"
                     ."<div class='QSEEDMapAutoHeight'>"
-                        ."<h4>".SEEDStd_Ent($ra['name_en'])."</h4>".SEEDStd_Ent($addr)
+                        ."<h4>".SEEDCore_HSC($ra['name_en'])."</h4>".SEEDCore_HSC($addr)
                     ."</div>"
                     ."<div class='QSEEDMapRemainingHeight'>"
                         ."<iframe width='100%' height='100%' frameborder='0' scrolling='no' marginheight='0' marginwidth='0' "
@@ -866,7 +866,7 @@ class QServerSources extends QServerBase
 
         $raSrc = $this->kfdb->QueryRA( "SELECT * FROM sl_sources WHERE _key='$kSrc'" );
         if( @$raSrc['_key'] ) {
-            $htmlsmall = $this->oL->S2("[[Seeds available from _name_]]", array( 'name' => SEEDStd_Ent($raSrc['name_en']) ));
+            $htmlsmall = $this->oL->S2("[[Seeds available from _name_]]", array( 'name' => SEEDCore_HSC($raSrc['name_en']) ));
             $html = "<h2>$htmlsmall</h2>";
 
             if( ($dbc = $this->kfdb->CursorOpen( "SELECT * FROM sl_cv_sources WHERE _status=0 AND fk_sl_sources='$kSrc' ORDER BY osp,ocv" )) ) {
@@ -877,13 +877,13 @@ class QServerSources extends QServerBase
                         $html .= "<h3>$sp</h3>";
                     }
                     if( $raCVS['fk_sl_pcv'] ) {
-                        $html .= "<div>".$this->StartLink( "c___".$raCVS['fk_sl_pcv'], SEEDStd_Ent($raCVS['ocv']))."</div>";
+                        $html .= "<div>".$this->StartLink( "c___".$raCVS['fk_sl_pcv'], SEEDCore_HSC($raCVS['ocv']))."</div>";
                     } else {
                         /* This name is not known in sl_pcv so kluge the link using the min(_key) of sl_cv_sources with that name
                          */
                         if( $raCVS['fk_sl_species'] ) {
                             if( ($kV = $this->GetKlugeVKey( $raCVS['fk_sl_species'], $raCVS['ocv'])) ) {
-                                $html .= "<div>".$this->StartLink( "v___".$kV, SEEDStd_Ent($raCVS['ocv']))."</div>";
+                                $html .= "<div>".$this->StartLink( "v___".$kV, SEEDCore_HSC($raCVS['ocv']))."</div>";
                             }
                         }
                     }
@@ -900,7 +900,7 @@ class QServerSources extends QServerBase
 
         $raSrc = $this->kfdb->QueryRA( "SELECT * FROM sl_sources WHERE _key='$kSrc'" );
         if( @$raSrc['_key'] ) {
-            $htmlsmall = $this->oL->S2("[[Soil types near _name_]]", array( 'name' => SEEDStd_Ent($raSrc['name_en']) ));
+            $htmlsmall = $this->oL->S2("[[Soil types near _name_]]", array( 'name' => SEEDCore_HSC($raSrc['name_en']) ));
             $html = "<h2>$htmlsmall</h2><p>".$this->oL->S('Coming soon')."</p>";
         }
 
@@ -999,10 +999,10 @@ class QServerCultivars extends QServerBase
             foreach( $raCV as $k => $ra ) {
                 if( @$ra['kcv'] ) {
                     // found the name in sl_pcv
-                    $s .= "<p>".$this->StartLink( "c___".$ra['kcv'], $ra['psp']." ".SEEDStd_Ent($ra['name']))."</p>";
+                    $s .= "<p>".$this->StartLink( "c___".$ra['kcv'], $ra['psp']." ".SEEDCore_HSC($ra['name']))."</p>";
                 } else {
                     // found the name in sl_cv_sources
-                    $s .= "<p>".$this->StartLink( "v___".$ra['kcvsrc'], $ra['psp']." ".SEEDStd_Ent($ra['ocv']))."</p>";
+                    $s .= "<p>".$this->StartLink( "v___".$ra['kcvsrc'], $ra['psp']." ".SEEDCore_HSC($ra['ocv']))."</p>";
                 }
             }
             $s .= "</div>";
@@ -1178,7 +1178,7 @@ if( $bVarKluge ) {
         //$ra = $this->kfdb->QueryRA( "SELECT * FROM sl_pcv WHERE _key='$kCV'" );
         $ksp = $this->raCVInfo['ksp'];
         $sp = $this->raCVInfo['sp'];    $dbSp = addslashes($sp);
-        $cv = $this->raCVInfo['cv'];    $dbCv = addslashes($cv);   $htmlCv = SEEDStd_Ent($cv);
+        $cv = $this->raCVInfo['cv'];    $dbCv = addslashes($cv);   $htmlCv = SEEDCore_HSC($cv);
 
         $htmlsmall = "<span class='qMainSm'>$sp : $htmlCv</span>";
         $html = "<h2>$htmlCv ($sp)</h2>";
@@ -1209,7 +1209,7 @@ if( $bVarKluge ) {
         //$ra = $this->kfdb->QueryRA( "SELECT * FROM sl_pcv WHERE _key='$kCV'" );
         $ksp = $this->raCVInfo['ksp'];
         $sp = $this->raCVInfo['sp'];    $dbSp = addslashes($sp);
-        $cv = $this->raCVInfo['cv'];    $dbCv = addslashes($cv);  $htmlCv = SEEDStd_Ent($cv);
+        $cv = $this->raCVInfo['cv'];    $dbCv = addslashes($cv);  $htmlCv = SEEDCore_HSC($cv);
 
         $htmlsmall = $this->oL->S2("[[Suppliers of _cv_]]", array( 'cv' => $htmlCv ) );
         $html = "<h2>".$this->oL->S2("[[Suppliers of _cv_ (_sp_)]]", array('cv'=>$htmlCv, 'sp'=>$sp))."</h2>";
@@ -1220,7 +1220,7 @@ if( $bVarKluge ) {
                                             ."S._key=C.fk_sl_sources AND "
                                             ."C.fk_sl_species='$ksp' AND C.ocv='$dbCv'")) ) {
             while( $raS = $this->kfdb->CursorFetch( $dbc ) ) {
-                $html .= "<p>".$this->StartLink( "s___".$raS['_key'], SEEDStd_Ent($raS['name_en']))."</p>";
+                $html .= "<p>".$this->StartLink( "s___".$raS['_key'], SEEDCore_HSC($raS['name_en']))."</p>";
                 ++$n;
             }
         }
@@ -1249,7 +1249,7 @@ if( $bVarKluge ) {
                                             ."S._key=C.fk_sl_sources AND "
                                             ."C.fk_sl_species='$ksp' GROUP BY 1 ORDER BY 2")) ) {
             while( $raS = $this->kfdb->CursorFetch( $dbc ) ) {
-                $html .= "<p>".$this->StartLink( "s___".$raS['_key'], SEEDStd_Ent($raS['name_en']))."</p>";
+                $html .= "<p>".$this->StartLink( "s___".$raS['_key'], SEEDCore_HSC($raS['name_en']))."</p>";
                 ++$n;
             }
         }
@@ -1283,7 +1283,7 @@ if( $bVarKluge ) {
         $n = 0;
         if( ($dbc = $this->kfdb->CursorOpen("SELECT _key,name FROM sl_pcv WHERE _status=0 AND fk_sl_species='$ksp' ORDER BY name")) ) {
             while( $raPCV = $this->kfdb->CursorFetch( $dbc ) ) {
-                $html .= "<p>".$this->StartLink( "c___".$raPCV['_key'], SEEDStd_Ent($raPCV['name']))."</p>";
+                $html .= "<p>".$this->StartLink( "c___".$raPCV['_key'], SEEDCore_HSC($raPCV['name']))."</p>";
                 ++$n;
             }
         }
@@ -1301,7 +1301,7 @@ if( $bVarKluge ) {
     {
         //$ra = $this->kfdb->QueryRA( "SELECT * FROM sl_pcv WHERE _key='$kCV'" );
         $sp = $this->raCVInfo['sp'];    $dbSp = addslashes($sp);
-        $cv = $this->raCVInfo['cv'];    $dbCv = addslashes($cv);  $htmlCv = SEEDStd_Ent($cv);
+        $cv = $this->raCVInfo['cv'];    $dbCv = addslashes($cv);  $htmlCv = SEEDCore_HSC($cv);
 
         $htmlsmall = $this->oL->S2("[[History of _cv_]]", array('cv'=>$htmlCv));
         $html = $this->oL->S2("<h2>[[Historical References to _cv_]]</h2>", array('cv'=>$htmlCv));
@@ -1328,7 +1328,7 @@ if( $bVarKluge ) {
     {
         //$ra = $this->kfdb->QueryRA( "SELECT * FROM sl_pcv WHERE _key='$kCV'" );
         $sp = $this->raCVInfo['sp'];    $dbSp = addslashes($sp);
-        $cv = $this->raCVInfo['cv'];    $dbCv = addslashes($cv);  $htmlCv = SEEDStd_Ent($cv);
+        $cv = $this->raCVInfo['cv'];    $dbCv = addslashes($cv);  $htmlCv = SEEDCore_HSC($cv);
 
         $htmlsmall = $this->oL->S2( "[[What Growers Wrote About _cv_]]", array( 'cv' => $htmlCv ) );
         $html = $this->oL->S2( "<h2>[[What Seeds of Diversity's Growers Wrote About _cv_ (_sp_)]]</h2>", array( 'cv'=>$htmlCv, 'sp'=>$sp ) );
@@ -1337,7 +1337,7 @@ if( $bVarKluge ) {
         if( ($dbc = $this->kfdb->CursorOpen( "SELECT description FROM sed_seeds WHERE _status=0 AND "
                                             ."type like '$dbSp%' AND variety='$dbCv'")) ) {
             while( $ra = $this->kfdb->CursorFetch( $dbc ) ) {
-                $html .= "<p>".SEEDStd_Ent($ra['description'])."</p>";
+                $html .= "<p>".SEEDCore_HSC($ra['description'])."</p>";
                 ++$n;
             }
         }
@@ -1355,7 +1355,7 @@ if( $bVarKluge ) {
     {
         //$ra = $this->kfdb->QueryRA( "SELECT * FROM sl_pcv WHERE _key='$kCV'" );
         $sp = $this->raCVInfo['sp'];    $dbSp = addslashes($sp);
-        $cv = $this->raCVInfo['cv'];    $dbCv = addslashes($cv);  $htmlCv = SEEDStd_Ent($cv);
+        $cv = $this->raCVInfo['cv'];    $dbCv = addslashes($cv);  $htmlCv = SEEDCore_HSC($cv);
 
         $htmlsmall = $this->oL->S2("[[_cv_ in the Canadian Seed Library]]", array( 'cv'=>$htmlCv ));
         $html = $this->oL->S2("<h2>[[Seeds of Diversity's Seed Library _cv_ (_sp_)]]</h2>", array( 'sp'=>$sp, 'cv'=>$htmlCv ));
@@ -1400,7 +1400,7 @@ if( $bVarKluge ) {
      */
     {
         $sp = $this->raCVInfo['sp'];    $dbSp = addslashes($sp);
-        $cv = $this->raCVInfo['cv'];    $dbCv = addslashes($cv);  $htmlCv = SEEDStd_Ent($cv);
+        $cv = $this->raCVInfo['cv'];    $dbCv = addslashes($cv);  $htmlCv = SEEDCore_HSC($cv);
 
 include_once( SEEDCOMMON."sl/sl_desc_report.php" );    // for htmlCultivarDescriptors
 
@@ -1602,7 +1602,7 @@ class QServerVarKluge extends QServerBase
     private function htmlVarKluge( $kV )
     {
         $ra = $this->kfdb->QueryRA( "SELECT * FROM sl_cv_sources WHERE _key='$kV'" );
-        $htmlCv = SEEDStd_Ent($ra['ocv']);
+        $htmlCv = SEEDCore_HSC($ra['ocv']);
         $psp = $ra['fk_sl_species'] ? $this->kfdb->Query1( "SELECT psp FROM sl_species WHERE _key='${ra['fk_sl_species']}'" ) : "";
 
         $htmlsmall = "<span class='qMainSm'>$psp : $htmlCv</span>";
@@ -1614,7 +1614,7 @@ class QServerVarKluge extends QServerBase
     private function htmlVarKlugeSources( $kV )
     {
         $ra = $this->kfdb->QueryRA( "SELECT * FROM sl_cv_sources WHERE _key='$kV'" );
-        $htmlCv = SEEDStd_Ent($ra['ocv']);
+        $htmlCv = SEEDCore_HSC($ra['ocv']);
         $psp = $ra['fk_sl_species'] ? $this->kfdb->Query1( "SELECT psp FROM sl_species WHERE _key='${ra['fk_sl_species']}'" ) : "";
 
         $htmlsmall = "Sources of $htmlCv";
