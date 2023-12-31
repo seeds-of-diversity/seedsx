@@ -106,7 +106,7 @@ class SEEDEditor
                                 .'theme_advanced_toolbar_align : "left",'
                                 .'theme_advanced_statusbar_location : "bottom",'
                                 .'theme_advanced_resizing : true,'
-                                // these prevent references to https://seeds.ca/d?foo being replaced by ../d?foo which looks great during edit but very bad in an email  
+                                // these prevent references to https://seeds.ca/d?foo being replaced by ../d?foo which looks great during edit but very bad in an email
                                 .'relative_urls: false,'
                                 .'convert_urls: false,'
                                 .'remove_script_host : false,'
@@ -135,7 +135,7 @@ class SEEDEditor
                                 .'theme_advanced_toolbar_align : "left",'
                                 .'theme_advanced_statusbar_location : "bottom",'
                                 .'theme_advanced_resizing : true,'
-                                // these prevent references to https://seeds.ca/d?foo being replaced by ../d?foo which looks great during edit but very bad in an email  
+                                // these prevent references to https://seeds.ca/d?foo being replaced by ../d?foo which looks great during edit but very bad in an email
                                 .'relative_urls: false,'
                                 .'convert_urls: false,'
                                 .'remove_script_host : false,'
@@ -154,7 +154,7 @@ class SEEDEditor
                                                                ." });"
                  ."</script>"
                  ."<TEXTAREA id='{$this->sFieldName}' name='{$this->sFieldName}' style='width:$sWidth' class='SEEDTinyMCE_{$this->sFieldName}'>"
-                 .SEEDStd_HSC($this->sContent)."</TEXTAREA>";
+                 .SEEDCore_HSC($this->sContent)."</TEXTAREA>";
 
         } else if( $this->eType == "TinyMCE-4" ) {
             $s .= $this->TinyMCE_4( $sWidth );
@@ -170,7 +170,7 @@ class SEEDEditor
         } else {
             $s .= $this->textarea( $sWidth );
             //$s .= "<TEXTAREA NAME='{$this->sFieldName}' style='width:$sWidth;height:$sHeight' wrap='soft'>"
-            //      .SEEDStd_HSC($this->sContent)."</TEXTAREA>";
+            //      .SEEDCore_HSC($this->sContent)."</TEXTAREA>";
         }
 
         return( $s );
@@ -220,7 +220,7 @@ class SEEDEditor
     private function textarea( $sWidth )
     {
         return( "<textarea id='{$this->sFieldName}' name='{$this->sFieldName}' style='width:$sWidth' class=''>"
-               .SEEDStd_HSC($this->sContent)."</textarea>" );
+               .SEEDCore_HSC($this->sContent)."</textarea>" );
     }
 }
 

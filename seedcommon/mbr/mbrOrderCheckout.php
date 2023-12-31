@@ -959,7 +959,7 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
         $s = "\n<FORM id='mbro_paypal_form' action='https://www.paypal.com/cgi-bin/webscr' method='post'>"
             ."\n<INPUT type='image' src='https://www.paypal.com/en_US/i/btn/x-click-but6.gif' name='submit' alt='".$this->oL->S('secure_payment_paypal')."'>";
         foreach( $raPP as $k => $v ) {
-            $s .= "\n<INPUT type='hidden' name='$k' value='".SEEDStd_HSC($v)."'/>";
+            $s .= "\n<INPUT type='hidden' name='$k' value='".SEEDCore_HSC($v)."'/>";
         }
         $s .= "\n</FORM>";
 

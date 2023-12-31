@@ -44,11 +44,11 @@ class siteSEEDSessionAuthUI extends SEEDSessionAuthUI
             // Some (all?) browsers keep the url address intact on the next page when you submit a POST form, so these parms should be propagated anyway
             foreach( $_GET as $k => $v ) {
                 if( $k != $this->httpNameUID && $k != $this->httpNamePWD )
-                $s .= "<INPUT type=hidden name='$k' value='".SEEDStd_HSC(SEEDSafeGPC_MagicStripSlashes($v))."'>";
+                $s .= "<INPUT type=hidden name='$k' value='".SEEDCore_HSC(SEEDSafeGPC_MagicStripSlashes($v))."'>";
             }
             foreach( $_POST as $k => $v ) {
                 if( $k != $this->httpNameUID && $k != $this->httpNamePWD )
-                $s .= "<INPUT type=hidden name='$k' value='".SEEDStd_HSC(SEEDSafeGPC_MagicStripSlashes($v))."'>";
+                $s .= "<INPUT type=hidden name='$k' value='".SEEDCore_HSC(SEEDSafeGPC_MagicStripSlashes($v))."'>";
             }
         }
 

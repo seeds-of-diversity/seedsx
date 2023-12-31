@@ -416,7 +416,7 @@ class SEEDFormUIList
             // This can be a problem for content that's meant to show html markup.
             // This is done here, instead of below, because we want to allow fnTranslate to insert html markup.
             foreach( $raList[$i] as $kCol => $vCol ) {
-                $raRow[$kCol] = SEEDStd_HSC( $vCol );
+                $raRow[$kCol] = SEEDCore_HSC( $vCol );
             }
             if( @$raParms['fnRowTranslate'] ) {
                 $raRow = call_user_func( $raParms['fnRowTranslate'], $raRow );
@@ -663,7 +663,7 @@ class SEEDFormUIList
                 }
                 $s .= "<td onclick='location.replace(\"".$this->Link(array('iCurr'=>$iRow,'iWindowOffset'=>$iWindowOffset))."\");'"
                          ."style='$sColStyle'>"
-                     .SEEDStd_HSC($v)
+                     .SEEDCore_HSC($v)
                      ."</td>";
             }
             $s .= "</tr>";

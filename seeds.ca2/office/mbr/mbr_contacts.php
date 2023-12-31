@@ -506,7 +506,7 @@ class mbrContacts_Logins extends Console01_Worker2
         if( $n ) {
             $s .= "<P>Ask Bob to fix this</P><DIV style='margin-top:2em;font-family:monospace;font-size:10pt'>";
             foreach( $raAcctNoMbr as $k => $ra ) {
-                $s .= SEEDStd_ArrayExpand( $ra, "$k: [[name]]<BR/>[[email]]<BR/><BR/>" );
+                $s .= SEEDCore_ArrayExpand( $ra, "$k: [[name]]<BR/>[[email]]<BR/><BR/>" );
                             }
             $s .= "</DIV>";
         }
@@ -718,7 +718,7 @@ class mbrContacts_Logins extends Console01_Worker2
             foreach( $raTest as $k => $ra ) {
                  $s .= "<TR>"
                       ."<TD valign='top'>".SEEDForm_Checkbox( "mbr_$k", 0, "" )."</TD>"
-                      ."<TD valign='top'>".SEEDStd_ArrayExpand( $ra, "$k: $sExpand" )."</TD>"
+                      ."<TD valign='top'>".SEEDCore_ArrayExpand( $ra, "$k: $sExpand" )."</TD>"
                       ."</TR>";
             }
             $s .= "</TABLE></DIV></FORM>";

@@ -123,7 +123,8 @@ class SLSourcesCommon
         // Caller might wrap the name with a link or something
         // e.g. subst_name = "<a href=foo>[[name]]</a>   -- [[name]] is substituted with $name (which could be EN or FR as decided above)
         if( isset($raParms['subst_name']) ) {
-            $name = SEEDStd_ArrayExpand( array('name'=>$name), $raParms['subst_name'], false );  // bEnt=false because entities already expanded
+// easier to use str_replace('[[name]]')
+            $name = SEEDCore_ArrayExpand( array('name'=>$name), $raParms['subst_name'], false );  // bEnt=false because entities already expanded
         }
 
         $s .= "<SPAN style='font-size:11pt;font-weight:bold'>$name</SPAN><BR/>"
@@ -770,7 +771,7 @@ $bUS = false;
                    .$sCondOrganic
                    ." ORDER BY 1" );
             foreach( $raComm as $ra ) {
-                $sCSCI .= SEEDStd_ArrayExpand( $ra, "<div>"
+                $sCSCI .= SEEDCore_ArrayExpand( $ra, "<div>"
                                                    .($ra['web'] ? "<a href='http://[[web]]' target='_blank'>[[name]]</A>" : "[[name]]")
                                                    ." ([[city]] [[prov]]) </div>" );
             }

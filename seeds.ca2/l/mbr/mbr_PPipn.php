@@ -75,7 +75,7 @@ class SoD_PP_IPN {
     }
 
     function postedParms() {
-        $s = SEEDStd_ArrayExpand( $_POST,
+        $s = SEEDCore_ArrayExpand( $_POST,
                                   "Parms:\n"
                                  ."name = [[first_name]] [[last_name]]\n"
                                  ."item = [[item_name]]\n"

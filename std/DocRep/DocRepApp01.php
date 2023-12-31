@@ -686,7 +686,7 @@ class DocRepApp01 {
                     $s .= "<DIV style='background-color:white;border:solid thin black;padding:1em;font-family:arial,helvetica,sans serif;font-size:9pt;'>";
                     if( $bShowSource || $eTextType == "TEXTTYPE_PLAIN" ) {
                         $s .= "<PRE>"
-                              .wordwrap( SEEDStd_HSC($this->oDocMgr->GetDocText() ), 150, "\n", 1 )
+                              .wordwrap( SEEDCore_HSC($this->oDocMgr->GetDocText() ), 150, "\n", 1 )
                              ."</PRE>";
                     } else {
                         switch( $eTextType ) {
@@ -723,7 +723,7 @@ class DocRepApp01 {
                          ."<H3>".$ra['meta_title']."</H3>"
                          ."<DIV style='background-color:white;border:solid thin black;padding:1em;font-family:arial,helvetica,sans serif;font-size:9pt;'>";
                     if( strstr($this->oDocMgr->GetDocValue('verspec'), ' TEXTTYPE_HTML ') === false ) {
-                        $s .= "<PRE>".SEEDStd_HSC($ra['data_text'])."</PRE>";
+                        $s .= "<PRE>".SEEDCore_HSC($ra['data_text'])."</PRE>";
                     } else {
                         $s .= $ra['data_text'];
                     }
@@ -818,7 +818,7 @@ class DocRepApp01 {
             $s .= $this->_draw_controls_form_insert_text_savebuttons();
 
             if( $bDrawEditBox ) {
-                $s .= "<TEXTAREA name='doc_text' rows=40 style='width:100%'>".SEEDStd_HSC($docText)."</TEXTAREA>";
+                $s .= "<TEXTAREA name='doc_text' rows=40 style='width:100%'>".SEEDCore_HSC($docText)."</TEXTAREA>";
             } else {
                 // Show preview for HTML, WIKI, WIKILINK
                 $s .= "<DIV style='background-color:white;border:solid thin black;padding:1em;font-family:arial,helvetica,sans serif;font-size:9pt;'>";
@@ -1236,7 +1236,7 @@ class DocRepMgrUI
         }
 
         if( strpos( $sTemplate, "[[Comments]]" ) !== false ) {
-            $s = "<TD valign='top'>Comments: </TD><TD valign='top'><TEXTAREA name='doc_desc' cols=40 rows=2>".SEEDStd_HSC($oDoc->GetValue('desc',''))."</TEXTAREA></TD>";
+            $s = "<TD valign='top'>Comments: </TD><TD valign='top'><TEXTAREA name='doc_desc' cols=40 rows=2>".SEEDCore_HSC($oDoc->GetValue('desc',''))."</TEXTAREA></TD>";
             $sTemplate = str_replace( "[[Comments]]", $s, $sTemplate );
         }
 

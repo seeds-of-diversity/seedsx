@@ -112,7 +112,7 @@ class SLCollectionBatchProcess
                                                  ."fk_sl_collection='{$this->oSCA->kCurrCollection}' AND inv_number='$n'" );
             }
         } else {
-            $s .= "So, you want to add this note to Lot # <b>$sRangeNormal</b>:<div style='border:1px solid #aaa;width:400px'>".SEEDStd_HSC($note)."</div>"
+            $s .= "So, you want to add this note to Lot # <b>$sRangeNormal</b>:<div style='border:1px solid #aaa;width:400px'>".SEEDCore_HSC($note)."</div>"
                 ."<form method='post' action='".$this->oSCA->oApp->PathToSelf()."'>"
                 .SEEDForm_Hidden( 'bpCmd', $_REQUEST['bpCmd'] )
                 .SEEDForm_Hidden( 'bpConfirm', 1 )

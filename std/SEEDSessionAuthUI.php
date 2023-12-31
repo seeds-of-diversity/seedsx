@@ -212,7 +212,7 @@ class SEEDSessionAccount_UI
             $ra = $this->sess->GetNonSessionHttpParms();
             unset($ra[$this->httpCmdParm]);
             foreach( $ra as $k => $v ) {
-                $sHidden .= "<input type='hidden' name='$k' value='".SEEDStd_HSC($v)."'>";
+                $sHidden .= "<input type='hidden' name='$k' value='".SEEDCore_HSC($v)."'>";
             }
         }
 

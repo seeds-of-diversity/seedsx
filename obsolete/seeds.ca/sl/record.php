@@ -148,7 +148,7 @@ class SLUser
         if( count($this->raVI) ) {
             foreach( $this->raVI as $ra ) {
                 $class = ($ra['_key']==$this->kVICurr ? 'slUserListItemCurr' : 'slUserListItem');
-                $s .= SEEDStd_ArrayExpand( $ra, "<DIV class='$class'><A HREF='{$_SERVER['PHP_SELF']}?kVI=[[_key]]'>[[osp]] : [[oname]] : [[year]]</DIV>" );
+                $s .= SEEDCore_ArrayExpand( $ra, "<DIV class='$class'><A HREF='{$_SERVER['PHP_SELF']}?kVI=[[_key]]'>[[osp]] : [[oname]] : [[year]]</DIV>" );
             }
         }
         return( $s );
@@ -181,7 +181,7 @@ class SLUser
                  ."</FORM></DIV>"
                  ."<H3>".$this->raSiteCurr['sitename']."</H3>"
                  ."<TABLE border='0' cellpadding='5' cellspacing='0'>"
-                 .SEEDStd_ArrayExpand( $this->raSiteCurr,
+                 .SEEDCore_ArrayExpand( $this->raSiteCurr,
                      "<TR><TD valign='top'>Location:</TD><TD valign='top'>[[city]] [[province]] [[country]]</TD></TR>"
                     ."<TR><TD valign='top'>Postal code:</TD><TD valign='top'>[[postcode]]</TD></TR>"
                     ."<TR><TD valign='top'>Latitude / Longitude:</TD><TD valign='top'>".(@$this->raSiteCurr['latitude'] ? "[[latitude]] / [[longitude]]" : "")."</TD></TR>"
@@ -276,11 +276,11 @@ class SLUser
                  ."<INPUT type='submit' value='Edit this Record'/>"
                  ."</FORM></DIV>";
         }
-        $s .= SEEDStd_ArrayExpand( $this->raVICurr, "<H3>Variety Record for [[oname]] [[osp]]</H3>" )
+        $s .= SEEDCore_ArrayExpand( $this->raVICurr, "<H3>Variety Record for [[oname]] [[osp]]</H3>" )
              ."<TABLE border='0' cellpadding='5' cellspacing='0'>";
         if( $bEdit ) {
 // TODO make Variety and Year editable
-             $s .= SEEDStd_ArrayExpand( $this->raVICurr,
+             $s .= SEEDCore_ArrayExpand( $this->raVICurr,
                  "<TR><TD valign='top'>Species:</TD><TD valign='top'>[[osp]]</TD></TR>"
                 ."<TR><TD valign='top'>Variety:</TD><TD valign='top'>[[oname]]</TD></TR>"
                 ."<TR><TD valign='top'>Year:</TD><TD valign='top'>[[year]]</TD></TR>" );
@@ -303,7 +303,7 @@ class SLUser
         $cv   = $this->raVICurr['oname'];
         $year = $this->raVICurr['year'];
 
-        $site = SEEDStd_ArrayExpand($this->raVICurr, @$this->raSiteCurr['sitename']);
+        $site = SEEDCore_ArrayExpand($this->raVICurr, @$this->raSiteCurr['sitename']);
 
         $defsRA = $this->oSLDescDefs->GetDefsRAFromOSP( $osp );
             $codesRA = array_keys($defsRA);

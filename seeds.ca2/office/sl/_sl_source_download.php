@@ -1238,7 +1238,7 @@ class CompanyUpload
                  ."<tr><th colspan='5'>The spreadsheet must have columns with these names</th><th colspan='2'>and optionally these</th></tr>"
                  ."<TR><TH>key</TH><TH>company</TH><TH>species</TH><TH>variety</TH><TH>organic</TH><th>sp_old</th><th>var_old</th></TR>";
             while( $ra = $this->kfdb->CursorFetch($dbc) ) {
-                $s .= SEEDStd_ArrayExpand( $ra, "<TR><TD>[[k]]&nbsp;</TD><TD>[[company]]&nbsp;</TD><TD>[[species]]&nbsp;</TD><TD>[[variety]]&nbsp;</TD><TD>[[organic]]&nbsp;</TD><td>[[sp_old]]&nbsp;</td><td>[[var_old]]&nbsp;</td></TR>" );
+                $s .= SEEDCore_ArrayExpand( $ra, "<TR><TD>[[k]]&nbsp;</TD><TD>[[company]]&nbsp;</TD><TD>[[species]]&nbsp;</TD><TD>[[variety]]&nbsp;</TD><TD>[[organic]]&nbsp;</TD><td>[[sp_old]]&nbsp;</td><td>[[var_old]]&nbsp;</td></TR>" );
             }
             $s .= "</TABLE>";
         }

@@ -368,8 +368,8 @@ $bNoStore = ( $p_action != 'Create' && $p_action != 'Update' );
             $sTo = ($kfrMbr = $this->oMail->oMbr->GetKFRByKey($kMbr)) ? $kfrMbr->value('email') : $sEmailTo;
             if( empty($sTo) ) $sTo = "< Unknown recipient >";
 
-            $sHeader = $kfr->Expand( "From: ".SEEDStd_HSC($sFrom)    // because Expand's hsc expansion is only for the tagged values
-                                    ."\nTo: ".SEEDStd_HSC($sTo)
+            $sHeader = $kfr->Expand( "From: ".SEEDCore_HSC($sFrom)    // because Expand's hsc expansion is only for the tagged values
+                                    ."\nTo: ".SEEDCore_HSC($sTo)
 //                                  ."\nCc: [[email_cc]]"
 //                                  ."\nBcc: [[email_bcc]]"
                                     ."\nSubject: [[email_subject]]",
@@ -474,7 +474,7 @@ $bNoStore = ( $p_action != 'Create' && $p_action != 'Update' );
 
         $sOut .= "<TR valign='top'><TD colspan='2'><P class='msInstructions'>Type or paste email addresses and member numbers below. "
                                                   ."A single separate email will be sent to each address and each member.</P></TD>"
-                ."<TR valign='top'><TD colspan='2'>Email addresses / member numbers:<BR/><TEXTAREA   name='p_email_addresses' rows='20' style='width:100%'>".SEEDStd_HSC($sEmails)."</TEXTAREA></TD>"
+                ."<TR valign='top'><TD colspan='2'>Email addresses / member numbers:<BR/><TEXTAREA   name='p_email_addresses' rows='20' style='width:100%'>".SEEDCore_HSC($sEmails)."</TEXTAREA></TD>"
                                  //."<TD>Member Keys:<BR/><TEXTAREA name='p_member_keys'     rows='20' cols='30'>".htmlspecialchars($sMbrid, ENT_QUOTES)."</TEXTAREA></TD>"
                                  ."</TR>"
                 ."</TABLE>";
@@ -798,7 +798,7 @@ function drawMailTable( $oMS )
                                ."</td>"
                            ."<td valign='top'>"
                                ."Subject: <b>[[email_subject]]</b><br/>"
-                               ."From: ".SEEDStd_HSC($oMS->oMail->GetFullFrom($kfr->value('email_from')))."<br/>"
+                               ."From: ".SEEDCore_HSC($oMS->oMail->GetFullFrom($kfr->value('email_from')))."<br/>"
                                ."To: $nEmails emails, $nMbrid member keys<br/>"
                                ."Doc: $sDocName<br/>"
                                ."</td>"

@@ -728,7 +728,7 @@ class SEEDFormElements
     public function SetValue( $k, $v ) { return( $this->sfSetValue( $k, $v ) ); }
 
     function sfValue( $k )     { return( NULL ); }    // Must override this in a derived class to get real parms from data storage (e.g. session vars, KFRecord)
-    function sfValueEnt( $k )  { return( SEEDStd_HSC( $this->sfValue($k) ) ); }
+    function sfValueEnt( $k )  { return( SEEDCore_HSC( $this->sfValue($k) ) ); }
     function sfSetValue( $k, $v )  { return( NULL ); }    // Must override this in a derived class to get real parms from data storage (e.g. session vars, KFRecord)
 
 
@@ -1111,7 +1111,7 @@ if( !@$p['nCols'] ) { $p['nCols'] = 40; }
 
         if( !empty($label) )  $label = SEEDStd_StrNBSP( " ".$label );
 
-        $value = SEEDStd_HSC($value);
+        $value = SEEDCore_HSC($value);
 
         // the id is the name+value because every element should have a different id
 // duh you can't put a dot there
@@ -1215,7 +1215,7 @@ Same as Select but raValues is label1=>val1, label2=>val2 because this allows va
         $attrs = (@$raParms['selected'] || $this->sfValue($fld)==$value) ? " SELECTED" : "";
         if( @$raParms['disabled'] )  $attrs .= " disabled";
 
-        return( "<OPTION value='".SEEDStd_HSC($value)."' $attrs>$label</OPTION>" );
+        return( "<OPTION value='".SEEDCore_HSC($value)."' $attrs>$label</OPTION>" );
     }
 
 
@@ -1366,7 +1366,7 @@ Same as Select but raValues is label1=>val1, label2=>val2 because this allows va
             }
         }
         $p['value'] = $v;
-        $p['valueEnt'] = SEEDStd_HSC($v);
+        $p['valueEnt'] = SEEDCore_HSC($v);
 
 
         /* readonly, bPassword : normalized and passed back to the control
@@ -1413,7 +1413,7 @@ function SEEDForm_Hidden( $name, $value )
     Remove the guesswork about how to escape HTML-unfriendly characters in an arbitrary string
  */
 {
-    return( "<INPUT type='hidden' name='$name' id='$name' value='".SEEDStd_HSC($value)."'/>" );
+    return( "<INPUT type='hidden' name='$name' id='$name' value='".SEEDCore_HSC($value)."'/>" );
 }
 
 
@@ -1429,7 +1429,7 @@ function SEEDForm_Text( $name, $value, $label = "", $size = 20, $attrs = "", $ra
     if( !empty( $label ) ) {
         $s .= SEEDStd_StrNBSP("$label: ");
     }
-    $s .= "<INPUT type='$sType' name='$name' id='$name' value='".SEEDStd_HSC($value)."' size='$size' $attrs />";
+    $s .= "<INPUT type='$sType' name='$name' id='$name' value='".SEEDCore_HSC($value)."' size='$size' $attrs />";
     return( $s );
 }
 
@@ -1485,7 +1485,7 @@ function SEEDForm_Option( $value, $label, $currValue = NULL, $raParms = array() 
     $raParms: optionAttrs = string inserted into <OPTION ...>
  */
 {
-    return( "<OPTION value='".SEEDStd_HSC($value)."' ".@$raParms['optionAttrs']
+    return( "<OPTION value='".SEEDCore_HSC($value)."' ".@$raParms['optionAttrs']
            .($value==$currValue && $currValue!==NULL ? " SELECTED" : "")
            .">$label</OPTION>" );
 }

@@ -61,7 +61,7 @@ class SEDCommonDraw extends SEDCommonDB
             $sLabel = $ra['label'];
             $sType = $ra['type'];
 
-            $sLink = $bLink ? (" onclick='console01FormSubmit(\"SetType\",\"$cat\", \"".SEEDStd_HSC($sType)."\");'"): "";
+            $sLink = $bLink ? (" onclick='console01FormSubmit(\"SetType\",\"$cat\", \"".SEEDCore_HSC($sType)."\");'"): "";
             if( $bUCWords ) $sLabel = ucwords(strtolower($sLabel));
             $s .= "<DIV class='sedTypename'$sLink>$sLabel</DIV>";
         }

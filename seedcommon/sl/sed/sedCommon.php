@@ -122,7 +122,7 @@ class SEDCommon extends SEDCommonDraw
 
         if( $bFull ) {
             $s .= SEEDStd_ExpandIfNotEmpty( @$raMbr['company'], "<B>[[]]</B><BR/>" )
-                 .SEEDStd_ArrayExpand( $raMbr, "[[address]], [[city]] [[province]] [[postcode]]<BR/>" );
+                 .SEEDCore_ArrayExpand( $raMbr, "[[address]], [[city]] [[province]] [[postcode]]<BR/>" );
 
             if( !$kfrG->value('unlisted_phone') )  $s .= SEEDStd_ExpandIfNotEmpty( @$raMbr['phone'], "Tel: [[]]<BR/>" );
             if( !$kfrG->value('unlisted_email') )  $s .= SEEDStd_ExpandIfNotEmpty( @$raMbr['email'], "<I>E-mail: [[]]</I><BR/>" );
@@ -181,7 +181,7 @@ class SEDCommon extends SEDCommonDraw
 
         $s = "<DIV class='sed_edit_form'>"
             ."<H3>".($bNew ? "Add a New Grower" : ("Edit Grower ".$oKForm->oDS->value('mbr_code')." : "
-                                                   .SEEDStd_ArrayExpand( $raMbr, "[[firstname]] [[lastname]] [[company]]</H3>" ) ) );
+                                                   .SEEDCore_ArrayExpand( $raMbr, "[[firstname]] [[lastname]] [[company]]</H3>" ) ) );
         if( !$bNew ) {
             $s .= "<DIV style='background-color:#DDDDDD; padding:1em;font-size:9pt;'>"
                  .($bOffice ?

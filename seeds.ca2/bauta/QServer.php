@@ -31,7 +31,7 @@ class QServer
         $raOut = array();
         if( ($dbc = $this->kfdb->CursorOpen("SELECT * FROM sl_sources WHERE name_en LIKE '%".addslashes($q)."%'")) ) {
             while( $ra = $this->kfdb->CursorFetch( $dbc ) ) {
-                $raOut[] = SEEDStd_ArrayExpand( $ra, "<p><a href='{$_SERVER['PHP_SELF']}?qCode=s__[[_key]]'>[[name_en]]</a></p>" );
+                $raOut[] = SEEDCore_ArrayExpand( $ra, "<p><a href='{$_SERVER['PHP_SELF']}?qCode=s__[[_key]]'>[[name_en]]</a></p>" );
             }
         }
         if( count($raOut) ) {
@@ -141,7 +141,7 @@ class QServer
 
         $ra = $this->kfdb->QueryRA( "SELECT * FROM sl_sources WHERE _key='$k'" );
         if( @$ra['_key'] ) {
-            $s = SEEDStd_ArrayExpand( $ra,
+            $s = SEEDCore_ArrayExpand( $ra,
                                       "<h2>[[name_en]]</h2>"
                                      ."<p>[[addr_en]]<br/>"
                                      ."[[city]] [[prov]] [[postcode]]</p>"
@@ -192,7 +192,7 @@ class QServer
                         $sp = $raCV['osp'];
                         $s .= "<h3>$sp</h3>";
                     }
-                    $s .= SEEDStd_ArrayExpand( $raCV, "<div><a href='{$_SERVER['PHP_SELF']}?qCode=cv_[[_key]]'>[[ocv]]</a></div>" );
+                    $s .= SEEDCore_ArrayExpand( $raCV, "<div><a href='{$_SERVER['PHP_SELF']}?qCode=cv_[[_key]]'>[[ocv]]</a></div>" );
                 }
                 $raItem['html'] .= $s;
             }
@@ -235,8 +235,8 @@ class QServer
         $raCV = $this->kfdb->QueryRA( "SELECT * FROM sl_cv_sources WHERE _key='$k'" );  // should be looking up sl_pcv
         if( @$raCV['_key'] ) {
             $raItem['qCode'] = "cv_$k";
-            $raItem['htmlSmall'] = SEEDStd_ArrayExpand( $raCV, "All about [[ocv]] [[osp]]" );
-            $raItem['html'] = SEEDStd_ArrayExpand( $raCV, "<h2>Here's Everything we know about [[ocv]] [[osp]]</h2>"
+            $raItem['htmlSmall'] = SEEDCore_ArrayExpand( $raCV, "All about [[ocv]] [[osp]]" );
+            $raItem['html'] = SEEDCore_ArrayExpand( $raCV, "<h2>Here's Everything we know about [[ocv]] [[osp]]</h2>"
                                                          ."<p>Come back soon, that info is around here someplace</p>"
                                                          ."<p>There will be pictures here.</p>"
                                                          ."<p>And all the Crop Description records from that other page</p>");
@@ -255,14 +255,14 @@ class QServer
         $raCV = $this->kfdb->QueryRA( "SELECT * FROM sl_cv_sources WHERE _key='$k'" );  // should be looking up sl_pcv
         if( @$raCV['_key'] ) {
             $raItem['qCode'] = "cv_$k";
-            $raItem['htmlSmall'] = SEEDStd_ArrayExpand( $raCV, "Where can you get [[ocv]] [[osp]]" );
-            $raItem['html'] = SEEDStd_ArrayExpand( $raCV, "<h2>Suppliers of [[ocv]] [[osp]]</h2>" );
+            $raItem['htmlSmall'] = SEEDCore_ArrayExpand( $raCV, "Where can you get [[ocv]] [[osp]]" );
+            $raItem['html'] = SEEDCore_ArrayExpand( $raCV, "<h2>Suppliers of [[ocv]] [[osp]]</h2>" );
 
             if( ($dbc = $this->kfdb->CursorOpen( "SELECT S._key as S__key,S.name_en as S_name_en "
                                                 ."FROM sl_cv_sources C, sl_sources S WHERE S._key=C.fk_sl_sources AND "
                                                 ." osp='".addslashes($raCV['osp'])."' and ocv='".addslashes($raCV['ocv'])."'" )) ) {
                 while( $raS = $this->kfdb->CursorFetch( $dbc ) ) {
-                    $s .= SEEDStd_ArrayExpand( $raS, "<p><a href='{$_SERVER['PHP_SELF']}?qCode=s__[[S__key]]'>[[S_name_en]]</a></p>" );
+                    $s .= SEEDCore_ArrayExpand( $raS, "<p><a href='{$_SERVER['PHP_SELF']}?qCode=s__[[S__key]]'>[[S_name_en]]</a></p>" );
                 }
                 $raItem['html'] .= $s;
             }

@@ -276,14 +276,14 @@ class sedAdmin {
             $this->setErr($sHead);
             foreach( $raRows as $ra ) {
                 if( $sNoDup ) {
-                    $s = SEEDStd_ArrayExpand( $ra, $sNoDup );
+                    $s = SEEDCore_ArrayExpand( $ra, $sNoDup );
                     if( in_array( $s, $raNoDup) ) {
                         $this->sResults .= "* ";
                         continue;
                     }
                     $raNoDup[] = $s;
                 }
-                $this->sResults .= SEEDStd_ArrayExpand( $ra, $sTemplate."<BR/>" );
+                $this->sResults .= SEEDCore_ArrayExpand( $ra, $sTemplate."<BR/>" );
             }
             if( $eRemedy ) {
             	$ra = $this->getRemedy( $eRemedy );

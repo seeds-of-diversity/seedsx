@@ -984,7 +984,7 @@ class KFRecord {
         return( $v );
     }
 
-    function ValueEnt( $k )     { return( SEEDStd_HSC($this->Value($k)) ); }
+    function ValueEnt( $k )     { return( SEEDCore_HSC($this->Value($k)) ); }
     function ValueXlat( $k )    { return( $this->Value( $k ) ); }
     function ValueXlatEnt( $k ) { return( $this->ValueEnt( $k ) ); }
     function ValueDB( $k )      { return( addslashes($this->Value($k)) ); }

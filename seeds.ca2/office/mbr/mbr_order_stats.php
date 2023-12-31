@@ -126,7 +126,7 @@ class MbrOrderStats
                 $s .= count($raRows);
             } else {
                 foreach( $raRows as $ra ) {
-                    $s .= SEEDStd_ArrayExpand( $ra, "[[firstname]] [[lastname]] [[company]] [[dept]]<br/>" );
+                    $s .= SEEDCore_ArrayExpand( $ra, "[[firstname]] [[lastname]] [[company]] [[dept]]<br/>" );
                 }
             }
             $s .= "</td>";

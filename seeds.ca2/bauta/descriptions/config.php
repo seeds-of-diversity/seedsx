@@ -406,7 +406,7 @@ function uploadXLS( $sAction )
                     .SEEDForm_Hidden( "label_fr$i",  $ra['label_fr'] )
                     .SEEDForm_Hidden( "q_en$i",      $ra['q_en'] )
                     .SEEDForm_Hidden( "q_fr$i",      $ra['q_fr'] );
-            $sT .= SEEDStd_ArrayExpand( $ra, "<tr><td valign='top'>[[tag]]</td>"
+            $sT .= SEEDCore_ArrayExpand( $ra, "<tr><td valign='top'>[[tag]]</td>"
                                                 ."<td valign='top'>[[label_en]]</td>"
                                                 ."<td valign='top'>[[label_fr]]</td>"
                                                 ."<td valign='top'>[[q_en]]</td>"
@@ -416,7 +416,7 @@ function uploadXLS( $sAction )
                     .SEEDForm_Hidden( "l_en$i",  $ra['l_en'] )
                     .SEEDForm_Hidden( "l_fr$i",  $ra['l_fr'] )
                     .SEEDForm_Hidden( "v$i",     $ra['v'] );
-            $sT .= SEEDStd_ArrayExpand( $ra, "<tr><td valign='top'>[[tag]]</td>"
+            $sT .= SEEDCore_ArrayExpand( $ra, "<tr><td valign='top'>[[tag]]</td>"
                                                 ."<td valign='top'>[[v]]</td>"
                                                 ."<td valign='top'>[[l_en]]</td>"
                                                 ."<td valign='top'>[[l_fr]]</td></tr>" );

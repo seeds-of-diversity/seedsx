@@ -228,7 +228,7 @@ class SL_CSCI
 
     function DrawSeedSourceList( $sPsp )
     {
-        $s = "<H3>".SEEDStd_HSC($sPsp)." - Varieties Sold in Canada</H3>";
+        $s = "<H3>".SEEDCore_HSC($sPsp)." - Varieties Sold in Canada</H3>";
 
         if( ($kfr = $this->kfrelSeeds->CreateRecordCursor( "psp='".addslashes($sPsp)."'", array('sSortCol'=>'icv,company_name') )) ) {
             $icv = NULL;

@@ -80,8 +80,8 @@ class SLiv_Seeds
 			tmplt_proc_ex(TEMPLROOT,tkntbl_search($tmpl,"myseedsAddEdit"),OPENTAG,CLOSETAG,stdout,1,array(&$tt,&$gtt,&$temptt));
         } else {
             while( $ra = $this->oSLiv->kfdb->CursorFetch( $dbc ) ) {
-                if( $ra['seed_featured'] == 'N' ) $ra['sFeatureOpts'] = SEEDStd_ArrayExpand( $ra, "<option value='[[seed_id]]'>[[seed_title]]</option>", true );
-                if( $ra['seed_featured'] == 'Y' ) $ra['sFeatured'] = SEEDStd_ArrayExpand( $ra, "<li>[[seed_title]] - <a href='#' seedid='[[seed_id]]' class='slRemoveFeature'>Remove</a></li>", true );
+                if( $ra['seed_featured'] == 'N' ) $ra['sFeatureOpts'] = SEEDCore_ArrayExpand( $ra, "<option value='[[seed_id]]'>[[seed_title]]</option>", true );
+                if( $ra['seed_featured'] == 'Y' ) $ra['sFeatured'] = SEEDCore_ArrayExpand( $ra, "<li>[[seed_title]] - <a href='#' seedid='[[seed_id]]' class='slRemoveFeature'>Remove</a></li>", true );
                 $ra['seed_topcat'] = $ra['seed_topcat'] ? $this->oSLiv->kfdb->Query1( "SELECT cat_name FROM cats WHERE cat_id='{$ra['seed_topcat']}'" )
                                                         : "";
                 $raTmpl['sMyseedsListRows'] .= $this->oSLiv->oTmpl->ExpandTmpl( 'myseedsListRow', array_merge($raTmpl,$ra) );
@@ -150,7 +150,7 @@ class SLiv_Seeds
         $ra = $this->oSLiv->kfdb->QueryRowsRA( "SELECT cat_id,cat_name FROM cats WHERE cat_parentid='0' AND cat_enabled='Y' ORDER BY cat_name" );
         if( count($ra) ) {
             foreach( $ra as $raC ) {
-                $sTopCat .= SEEDStd_ArrayExpand( $raC, "<option value='[[cat_id]]'>[[cat_name]]</option>" );
+                $sTopCat .= SEEDCore_ArrayExpand( $raC, "<option value='[[cat_id]]'>[[cat_name]]</option>" );
             }
         } else {
             $sTopCat = "<option value=''>None</option>";

@@ -220,13 +220,13 @@ if( ($kfr = $oSrc->GetCultivarsKFRC( implode(" AND ", $raCond), array("mode"=>$s
 // do this above in the kfrcursor when the kluge is gone
     $nItems = 0;
     foreach( $raKlugeCollector as $ra ) {
-        $sItem = SEEDStd_ArrayExpand( $ra,
+        $sItem = SEEDCore_ArrayExpand( $ra,
             "<span class='seedfinder-item-sp'>&nbsp;[[S_name_en]]</span>"
            ."<div class='seedfinder-item-cv'>[[P_name]]</div>"
            ."<span style='font-size:8pt;font-family:serif;float:right;margin-top:-15px;display:none'>[[c]]"./*" source".($kfr->Value('c')==1?"":"s").*/"&nbsp;</span>"
         ,true );  // expand with entities
 
-        $sCVList .= SEEDStd_ArrayExpand( $ra,
+        $sCVList .= SEEDCore_ArrayExpand( $ra,
                     "<div class='seedfinder-item seedfinder-item".($nItems%2)."' "
                    ." onclick='showSuppliers([[P__key]],\"[[P_name]] [[S_name_en]]\");'>", true )    // expand with entities
                    .$sItem

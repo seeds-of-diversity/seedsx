@@ -219,7 +219,7 @@ $oDS->SetValue( 'psp', $psp );
     {
         $ra = $kfr->ValuesRA();
 
-        $ra['P_name'] = SEEDStd_ArrayExpand($ra, "[[S_name_en]] : [[P_name]] ([[P__key]])" );
+        $ra['P_name'] = SEEDCore_ArrayExpand($ra, "[[S_name_en]] : [[P_name]] ([[P__key]])" );
 
         return( $ra );
     }

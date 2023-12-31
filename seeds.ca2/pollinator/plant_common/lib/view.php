@@ -265,11 +265,11 @@ function ViewPlantForm( $id )
     $s .= "
       <tr>
         <td width='161'>Scientific Name:</td>
-        <td width='329'><input name='sc_name' type='text' id='sc_name' value='".SEEDStd_HSC($sc_name)."' style='width:350px;'/></td>
+        <td width='329'><input name='sc_name' type='text' id='sc_name' value='".SEEDCore_HSC($sc_name)."' style='width:350px;'/></td>
       </tr>
       <tr>
         <td>Common Name:</td>
-        <td><input name='common_name' type='text' id='sc_name' value='".SEEDStd_HSC($com_name)."' style='width:350px;'/></td>
+        <td><input name='common_name' type='text' id='sc_name' value='".SEEDCore_HSC($com_name)."' style='width:350px;'/></td>
       </tr>
     ";
 

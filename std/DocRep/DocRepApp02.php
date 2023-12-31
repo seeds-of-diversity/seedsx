@@ -849,9 +849,9 @@ if( @$_REQUEST['dra01_ver_update_action'] == 'Delete' ) {
                          ."<DIV style='background-color:white;border:solid thin black;padding:1em;font-family:arial,helvetica,sans serif;font-size:9pt;'>";
                     $eTextType = DocRepTextTypes::GetFromTagStr( $this->oDocRepMgr->GetDocValue('verspec') );
                     if( in_array( $eTextType, array( 'TEXTTYPE_HTML', 'TEXTTYPE_SOD' ) ) ) {
-                        $s .= SEEDStd_HSC($ra['data_text']);
+                        $s .= SEEDCore_HSC($ra['data_text']);
                     } else {
-                        $s .= "<PRE>".SEEDStd_HSC($ra['data_text'])."</PRE>";
+                        $s .= "<PRE>".SEEDCore_HSC($ra['data_text'])."</PRE>";
                     }
                     $s .= "</DIV></DIV>";
                 }
@@ -1813,7 +1813,7 @@ $raTreeExpanded = $this->getRATreeExpanded( true );
 
         if( $bShowSource || !DocRepTextTypes::IsHTML($eTextType) ) {    // use !HTML to catch old WIKI types and errors
             $s .= "<PRE>"
-                 .wordwrap( SEEDStd_HSC( $sDocText === NULL ? $this->oDocRepMgr->GetDocText() : $sDocText ), 150, "\n", 1 )
+                 .wordwrap( SEEDCore_HSC( $sDocText === NULL ? $this->oDocRepMgr->GetDocText() : $sDocText ), 150, "\n", 1 )
                  ."</PRE>";
         } else {
             if( $eTextType == 'TEXTTYPE_HTML_SOD' ) {
@@ -1974,7 +1974,7 @@ $s .= $oDocRepWiki->TranslateDoc( $this->oDocRepMgr->GetDocKey(), $docText );   
 
     private function dtePlainEditor( $docText )
     {
-        $s = "<textarea name='doc_text' rows=40 style='width:100%'>".SEEDStd_HSC($docText)."</textarea>";
+        $s = "<textarea name='doc_text' rows=40 style='width:100%'>".SEEDCore_HSC($docText)."</textarea>";
         return( $s );
     }
 
@@ -2045,7 +2045,7 @@ $s .= $oDocRepWiki->TranslateDoc( $this->oDocRepMgr->GetDocKey(), $docText );   
         }
 
         if( strpos( $sTemplate, "[[Comments]]" ) !== false ) {
-            $s = "<TD valign='top'>Comments: </TD><TD valign='top'><TEXTAREA name='doc_desc' cols=40 rows=2>".SEEDStd_HSC($oDoc->GetValue('desc',''))."</TEXTAREA></TD>";
+            $s = "<TD valign='top'>Comments: </TD><TD valign='top'><TEXTAREA name='doc_desc' cols=40 rows=2>".SEEDCore_HSC($oDoc->GetValue('desc',''))."</TEXTAREA></TD>";
             $sTemplate = str_replace( "[[Comments]]", $s, $sTemplate );
         }
 
@@ -2220,7 +2220,7 @@ $s .= $oDocRepWiki->TranslateDoc( $this->oDocRepMgr->GetDocKey(), $docText );   
                 if( DocRepTextTypes::IsHTML($eTextType) ) {
                     $sText = $ra['data_text'];
                 } else {
-                    $sText = "<PRE>".SEEDStd_HSC($ra['data_text'])."</PRE>";
+                    $sText = "<PRE>".SEEDCore_HSC($ra['data_text'])."</PRE>";
                 }
             }
         }

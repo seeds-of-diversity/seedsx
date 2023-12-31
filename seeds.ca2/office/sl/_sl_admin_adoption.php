@@ -172,7 +172,7 @@ class SLAdoption
         if( ($kMbrDonor = intval( $kfr->value('fk_mbr_contacts')) ) ) {
             $raQ = $this->kfdb2->QueryRA("SELECT * FROM mbr_contacts WHERE _key='$kMbrDonor'" );
             if( $raQ['_key'] == $kMbrDonor ) {
-                $sDonor = SEEDStd_ArrayExpand( $raQ, "[[firstname]] [[lastname]] [[company]], [[city]]" );
+                $sDonor = SEEDCore_ArrayExpand( $raQ, "[[firstname]] [[lastname]] [[company]], [[city]]" );
             }
         }
 
@@ -219,7 +219,7 @@ class SLAdoption
         if( ($kMbrDonor = intval($oKForm->oDS->value('fk_mbr_contacts'))) ) {
             $raQ = $this->kfdb2->QueryRA("SELECT * FROM mbr_contacts WHERE _key='$kMbrDonor'" );
             if( $raQ['_key'] == $kMbrDonor ) {
-                $sDonor = SEEDStd_ArrayExpand( $raQ, "[[firstname]] [[lastname]] [[company]]<BR/>[[address]]<BR/>[[city]] [[province]] [[postcode]]<BR/>[[email]]" );
+                $sDonor = SEEDCore_ArrayExpand( $raQ, "[[firstname]] [[lastname]] [[company]]<BR/>[[address]]<BR/>[[city]] [[province]] [[postcode]]<BR/>[[email]]" );
             }
         }
         $s = "<STYLE>"
@@ -362,7 +362,7 @@ class SLAdminAdoption
         if( ($kMbrDonor = intval( $kfr->value('fk_mbr_contacts')) ) ) {
             $raQ = $this->kfdb2->QueryRA("SELECT * FROM mbr_contacts WHERE _key='$kMbrDonor'" );
             if( @$raQ['_key'] == $kMbrDonor ) {
-                $sDonor = SEEDStd_ArrayExpand( $raQ, "[[firstname]] [[lastname]] [[company]], [[city]]" );
+                $sDonor = SEEDCore_ArrayExpand( $raQ, "[[firstname]] [[lastname]] [[company]], [[city]]" );
             }
         }
 
@@ -432,7 +432,7 @@ class SLAdminAdoption
         if( ($kMbrDonor = intval($oKForm->oDS->value('fk_mbr_contacts'))) ) {
             $raQ = $this->kfdb2->QueryRA("SELECT * FROM mbr_contacts WHERE _key='$kMbrDonor'" );
             if( $raQ['_key'] == $kMbrDonor ) {
-                $sDonor = SEEDStd_ArrayExpand( $raQ, "[[firstname]] [[lastname]] [[company]]<BR/>[[address]]<BR/>[[city]] [[province]] [[postcode]]<BR/>[[email]]" );
+                $sDonor = SEEDCore_ArrayExpand( $raQ, "[[firstname]] [[lastname]] [[company]]<BR/>[[address]]<BR/>[[city]] [[province]] [[postcode]]<BR/>[[email]]" );
             }
         }
         $s = "<STYLE>"

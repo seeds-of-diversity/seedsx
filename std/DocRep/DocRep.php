@@ -239,10 +239,10 @@ class DocRepDiff
         $s1 = "";
         foreach( $raDiff as $v ) {
             if( is_array( $v ) ) {
-                $s1 .= (!empty($v['d']) ? ("<del>".SEEDStd_HSC(implode('',$v['d']))."</del> ") : "")
-                      .(!empty($v['i']) ? ("<ins>".SEEDStd_HSC(implode('',$v['i']))."</ins> ") : "");
+                $s1 .= (!empty($v['d']) ? ("<del>".SEEDCore_HSC(implode('',$v['d']))."</del> ") : "")
+                      .(!empty($v['i']) ? ("<ins>".SEEDCore_HSC(implode('',$v['i']))."</ins> ") : "");
             } else {
-                $s1 .= SEEDStd_HSC($v);
+                $s1 .= SEEDCore_HSC($v);
             }
         }
         $s .= "<pre>".wordwrap( $s1, 120, "\n" )."</pre>";

@@ -112,9 +112,10 @@ function SEEDStd_ExpandIfNotEmpty( $s, $sTemplate, $bEnt = true )
 /**
  * Replace "[[foo]]" in template with $ra['foo']
  */
+/*
 function SEEDStd_ArrayExpand( $ra, $sTemplate, $bEnt = true )
-/************************************************************
- */
+[************************************************************
+ *]
 {
     foreach( $ra as $k => $v ) {
         $sTemplate = str_replace( "[[$k]]", ($bEnt ? SEEDStd_HSC($v) : $v), $sTemplate );
@@ -122,7 +123,7 @@ function SEEDStd_ArrayExpand( $ra, $sTemplate, $bEnt = true )
 // recursive expansions are not implemented
     return( $sTemplate );
 
-/*
+[*
 // isn't this the same thing as str_replace( "[[$k]]", ($bEnt ? ...), $sTemplate )
 
 	foreach( $ra as $k => $v ) {
@@ -133,9 +134,9 @@ function SEEDStd_ArrayExpand( $ra, $sTemplate, $bEnt = true )
 			.substr( $sTemplate, $s1+strlen($k)+4 );
 		}
 	}
-*/
+*]
 
-	/* Did not work for HTML templates that contained processing instructions with ]]
+	[* Did not work for HTML templates that contained processing instructions with ]]
 	for(;;) {
         $s1 = strpos( $sTemplate, "[[" );
         $s2 = strpos( $sTemplate, "]]" );
@@ -147,11 +148,11 @@ function SEEDStd_ArrayExpand( $ra, $sTemplate, $bEnt = true )
                     .($bEnt ? SEEDStd_HSC(@$ra[$k]) : @$ra[$k])
                     .substr( $sTemplate, $s2+2 );
 	}
-	*/
+	*]
 
 	return( $sTemplate );
 }
-
+*/
 
 /**
  *  if $raAllowed contains 1 value, then $raParms[$k] is unconstrained (except for empty or !isset) and $raAllowed[0] is the default:

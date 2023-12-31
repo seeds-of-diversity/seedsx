@@ -201,7 +201,7 @@ class CropDescUI
 
         foreach( $this->raVI as $ra ) {
             $class = ($ra['_key']==$this->kVI ? 'sldescuiListItemCurr' : 'sldescuiListItem');
-            $s .= SEEDStd_ArrayExpand( $ra, "<DIV class='$class'><a HREF='{$_SERVER['PHP_SELF']}?editVI=[[_key]]'>[[oname]] [[osp]] [[year]]</a></DIV>" );
+            $s .= SEEDCore_ArrayExpand( $ra, "<DIV class='$class'><a HREF='{$_SERVER['PHP_SELF']}?editVI=[[_key]]'>[[oname]] [[osp]] [[year]]</a></DIV>" );
         }
 
         if( count($this->raSites) ) {    // allow new Variety Records to be created if there is at least one site registered
