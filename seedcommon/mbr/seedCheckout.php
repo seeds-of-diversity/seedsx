@@ -293,8 +293,16 @@ class SoDMbrOrderCheckout extends MbrOrderCheckout
 
     function ValidateParmsOrderMakeKFR( $oSVar )
     {
-        /*** Donation ***/
-        $fDonation = floatval($oSVar->VarGet("donation") == 'X' ? $oSVar->VarGet("donationX") : $oSVar->VarGet("donation") );
+        /*** Donation - anything in the type-your-own box overrides a radio button ***/
+        if( ($d = $oSVar->VarGet('donationX')) ) {
+            // sometimes people type $200 instead of 200, so remove all non-numeric characters to try to find the donation amount
+            $d = preg_replace("/[^0-9,.]/", '', $d);    // retain digits, periods, commas
+            $fDonation = floatval($d);
+            $oSVar->VarSet('donationX', $d);            // set the value for when people go back to the form page
+        } else {
+            $fDonation = floatval($oSVar->VarGet('donation'));  // donation==X goes to zero (if donationX is blank
+        }
+
         if( $fDonation > 0 ) {  // don't let them type a negative number
             $this->kfrOC->SetValue( "donation", strval($fDonation) );
 
