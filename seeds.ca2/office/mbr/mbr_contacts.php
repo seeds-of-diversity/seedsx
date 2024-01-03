@@ -173,7 +173,8 @@ class mbrContacts_Contacts extends Console01_Worker1
     function dsPreStore( $oDS )
     {
         // bNoEBull is integer and cannot be '' ; causes an error on insert
-        if( $oDS->Value('bNoEBull') != 1 ) $oDS->SetValue( 'bNoEBull', 0 );
+        if( $oDS->Value('bNoEBull') != 1 )     $oDS->SetValue( 'bNoEBull', 0 );
+        if( $oDS->Value('bNoPaperMail') != 1 ) $oDS->SetValue( 'bNoPaperMail', 0 );
         return( true );
     }
 
@@ -270,7 +271,8 @@ class mbrContacts_Contacts extends Console01_Worker1
 //            ."<tr><td colspan='2'>&nbsp;</td>"
 //            .$oForm->TextTD( 'bNoSED', "Online MSD", $raP )
 //            ."</tr>"
-            ."<tr><td colspan='2'>&nbsp;</td>"
+            ."<TR valign='top'>"
+            .$oForm->TextTD( 'bNoPaperMail', "No Paper Mail", $raP )
             .$oForm->TextTD( 'bPrintedMSD', "Printed MSD", $raP )
             ."</tr>"
             ."<TR valign='top'>"

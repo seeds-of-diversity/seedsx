@@ -257,6 +257,7 @@ class MbrContacts
                                                               array("col"=>"lastrenew",         "type"=>"S"),
                                                               array("col"=>"bNoEBull",          "type"=>"S"),  // I?
                                                               array("col"=>"bNoDonorAppeals",   "type"=>"I"),
+                                                              array("col"=>"bNoPaperMail",      "type"=>"I"),
                                                               array("col"=>"bNoSED",            "type"=>"I"),  // obsolete and no longer updated
                                                               array("col"=>"bPrintedMSD",       "type"=>"I"),
                                                               array("col"=>"comment",           "type"=>"S"),
