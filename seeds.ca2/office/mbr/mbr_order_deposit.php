@@ -2,7 +2,7 @@
 
 define("SITEROOT", "../../");
 include_once( SITEROOT."site2.php" );
-include_once( STDINC."SEEDForm.php" );
+include_once( SEEDCORE."SEEDCoreFormSession.php" );
 include_once( SEEDCORE."SEEDXLSX.php" );
 include_once( SEEDCOMMON."mbr/mbrOrder.php" );
 
@@ -75,6 +75,9 @@ showForm:
 
 $oForm = new SEEDCoreForm('Plain');
 //$oForm->Load();  don't really want to retain values in the form after submit
+$oFormSrch = new SEEDCoreFormSVA($oApp->oC->GetSVA('srchDepositCode'));
+$oFormSrch->Update();
+
 $s .= "<h3>Deposits</h3>"
      ."<ol>"
      ."<li>Enter the range of order numbers for your deposit e.g. 29002,29004,29006-29010,29014.</li>"
@@ -96,12 +99,15 @@ $s .= "<h3>Deposits</h3>"
               <tr>".$oForm->TextTD('newCode', "Deposit Code&nbsp;<br/>&nbsp;", ['size'=>50])."</tr>
        </table>
        <input type='submit' value='Save Deposit'/>
-       </form></div><br/><br/>";
+       </form></div>
+       <br/><hr style='border:2px solid #aaa'/>
+       <form method='post'><p style='margin:20px'><input type='submit' value='Search for deposit code'/> {$oFormSrch->Text('srchCode','')}</p></form>";
 
 
-/* Show all the deposits
+/* Show all the deposits that match the filter; default to all non-blank depositCodes (blank depositCode means an order is not in a deposit)
  */
-$raCodes = $kfdb->QueryRowsRA1( "SELECT depositCode FROM {$oApp->DBName('seeds1')}.mbr_order_pending WHERE depositCode<>'' GROUP BY 1 ORDER BY 1 DESC" );
+$cond = ($sSrch = $oFormSrch->Value('srchCode')) ? ("depositCode LIKE '%".addslashes($sSrch)."%'") : "depositCode<>''";
+$raCodes = $kfdb->QueryRowsRA1( "SELECT depositCode FROM {$oApp->DBName('seeds1')}.mbr_order_pending WHERE $cond GROUP BY 1 ORDER BY 1 DESC" );
 foreach( $raCodes as $code ) {
     $fTotal = 0.0;
     $raOrders = $oOrder->kfrelOrder->GetRecordSetRA( "depositCode='".addslashes($code)."'" );
