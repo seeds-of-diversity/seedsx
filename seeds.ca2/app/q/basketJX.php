@@ -132,7 +132,7 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
         case "msdVarietyListFromSpecies":
 //this is way faster - see msd-edit.php
 //$rQ = $oMSDQ->Cmd( 'msdSeedList-GetData', ['kUidSeller'=>$uidSeller,'kSp'=>$kSp,'eStatus'=>"ALL"] );
-
+// and that handles tomatoAC now
             include_once( SEEDLIB."msd/msdcore.php" );
             $oMSDCore = new MSDCore( $oApp, array() );
 
@@ -165,8 +165,14 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
                                       ."PE1.k='species' AND PE2.k='variety' $cond",
                                        array('sSortCol'=>'PE2_v') );
 //$oSB->oDB->kfdb->SetDebug(0);
+
+$raGrowers = $oApp->kfdb->QueryRowsRA("SELECT * from {$oApp->DBName('seeds1')}.sed_curr_growers WHERE _status=0");
             foreach( $raP as $ra ) {
                 $kfrP = $oSB->oDB->GetKFR( 'P', $ra['_key'] );
+
+if( ($k = array_search($kfrP->Value('uid_seller'), array_column($raGrowers, 'mbr_id'))) === false )  continue;
+if( !($raG = @$raGrowers[$k]) ) continue;
+if( $raG['bDelete'] || $raG['bSkip'] || @$raG['bHold'] ) continue;
 
                 // DrawProduct always returns utf8 now - construct MSDQ with $raConfig['config_bUTF8']=false to get cp1252.
                 // So just utf8_encode the order info
