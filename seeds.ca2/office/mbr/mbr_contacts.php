@@ -24,6 +24,7 @@ include_once( "_mbr_mail.php" );
 
 include_once( SEEDAPP."mbr/mbr_ts_ebulletin.php" );
 include_once( SEEDCORE."SEEDTableSheets.php" );
+include_once( SEEDLIB."mbr/MbrIntegrity.php" );
 
 define( "MBRCONTACTS_TABNAME_BULLETIN", "Bulletin" );    // so per-tab TabSetGetSVA knows its name
 
@@ -188,20 +189,14 @@ class mbrContacts_Contacts extends Console01_Worker1
 
         if( $kfr && $kfr->Key() ) {
             global $oApp;
-            $ra = Mbr_WhereIsContactReferenced( $oApp, $kfr->Key() );
-
-            $bDelete = true;
-            $sErr = "";
-            if( ($n = $ra['nSBBaskets']) )   { $sErr .= "<li>Has $n orders recorded in the order system</li>"; }
-            if( ($n = $ra['nSProducts']) )   { $sErr .= "<li>Has $n offers in the seed exchange</li>"; }
-            if( ($n = $ra['nDescSites']) )   { $sErr .= "<li>Has $n crop descriptions in their name</li>"; }
-            if( ($n = $ra['nMSD']      ) )   { $sErr .= "<li>Is listed in the seed exchange</li>"; }
-            if( ($n = $ra['nSLAdoptions']) ) { $sErr .= "<li>Has $n seed adoptions in their name</li>"; }
-            if( ($n = $ra['nDonations']) )   { $sErr .= "<li>Has $n donation records in their name</li>"; }
-
-            if( $sErr ) {
-                $this->oC->ErrMsg( "Cannot delete contact {$kfr->Key()}:<br/><ul>$sErr</ul>" );
+            $oMI = new MbrIntegrity($oApp);
+            $ra = $oMI->WhereIsContactReferenced($kfr->Key());
+            if( $ra['nTotal'] ) {
+                $this->oC->ErrMsg( "Cannot delete contact {$kfr->Key()}:<br/><ul>{$oMI->ExplainContactReferencesLong($ra)}</ul>" );
                 $bDelete = false;
+            } else {
+                $this->oC->ErrMsg( "Deleted {$kfr->Key()}: {$kfr->Value('firstname')} {$kfr->Value('lastname')} {$kfr->Value('company')}" );
+                $bDelete = true;
             }
         }
         return( $bDelete );
