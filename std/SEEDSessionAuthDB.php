@@ -308,9 +308,9 @@ class SEEDSessionAuthDB extends SEEDSessionAuthDBRead
     {
         $kUser       = intval(@$raParms['k']);      // 0 means use the next auto-increment
         $sdbEmail    = addslashes($sEmail);
-        $sdbPwd      = addslashes($sPwd);
-        $sdbRealname = addslashes(@$raParms['realname']);
-        $sdbExtra    = addslashes(@$raParms['sExtra']);
+        $sdbPwd      = addslashes($sPwd??"");
+        $sdbRealname = addslashes(@$raParms['realname']??"");
+        $sdbExtra    = addslashes(@$raParms['sExtra']??"");
         $eStatus     = SEEDStd_ArraySmartVal( $raParms, 'eStatus', array('PENDING','ACTIVE','INACTIVE'), false );
         $eLang       = SEEDStd_ArraySmartVal( $raParms, 'lang', array('E','F','B'), false );
         $gid1        = intval(@$raParms['gid1']);

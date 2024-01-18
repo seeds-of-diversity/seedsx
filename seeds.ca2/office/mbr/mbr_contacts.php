@@ -518,6 +518,7 @@ class mbrContacts_Logins extends Console01_Worker2
         $s .= $this->drawSectionA( 'mbrOrphan', $raAcctOrphan )
              .$this->drawSectionA( 'msdNotice', $raOldMSD )
              .$this->drawSectionA_SendMSDEmail()
+             .$this->drawSectionA_AddIndLogin()
              .$this->drawSectionA_MbrIndStatus()
              ."</td>"
              ."<td valign='top' width='40%'>";
@@ -547,6 +548,9 @@ class mbrContacts_Logins extends Console01_Worker2
                 break;
             case 'sendMSDEmail':
                 $s .= $this->drawSectionB_SendMSDEmail();
+                break;
+            case 'addIndLogin':
+                $s .= $this->drawSectionB_AddIndLogin();
                 break;
             case 'mbrIndStatus':
                 $s .= $this->drawSectionB_MbrIndStatus();
@@ -635,6 +639,12 @@ class mbrContacts_Logins extends Console01_Worker2
                                'outputGood' => "",//"Sent MSD notice for email",    doSendMSDEmail uses UserMsg
                                'outputBad'  => "Error sending MSD notice for email",
         ),
+        'addIndLogin' => array( 'heading' => "Individual add login from contact",
+                               'desc'    => "Non-member contact (e.g. donor) needs a login",
+                               'do'      => "create login accounts",
+                               'action'  => "addIndLogin",
+                               'button'  => "Validate User Account",
+                               'expand'  => "" ),
         'mbrIndStatus' => array(
                                'heading' => "Individual status of a login",
                                'do'      => "Status of login",
@@ -755,7 +765,7 @@ class mbrContacts_Logins extends Console01_Worker2
 
     private function drawSectionB_SendMSDEmail()
     /*******************************************
-        Draw the right-hand form that lets you send a MSD notice to some arbitrary email addresses
+        Draw the right-hand form that lets you check a user's status
      */
     {
         $eSection = "sendMSDEmail";
@@ -807,7 +817,7 @@ class mbrContacts_Logins extends Console01_Worker2
 
     private function drawSectionB_MbrIndStatus()
     /*******************************************
-        Draw the right-hand form that lets you send a MSD notice to some arbitrary email addresses
+        Draw the right-hand form that lets you check a user's status
      */
     {
         $eSection = "mbrIndStatus";
@@ -843,6 +853,75 @@ class mbrContacts_Logins extends Console01_Worker2
                 $this->kfdb2->Execute( "UPDATE {$this->dbname1}.SEEDSession_Users SET _status=1 WHERE _key='$kMbr'" );
                     $s .= "<p>$kMbr deactivated</p>";
                 //}
+            }
+        }
+
+        return( $s );
+    }
+
+    private function drawSectionA_AddIndLogin()
+    /******************************************
+        Draw the left-hand tab that lets you add a login for any contact
+     */
+    {
+        $eSection = "addIndLogin";
+        $raS = $this->raSections[$eSection];
+
+        $sClass = "well";
+        $sBorder = "black";
+        if( $eSection == $this->eSection ) {
+            $sAttrs = "style='padding:3px;margin:3px;font-weight:bold;border:2px solid $sBorder;'";
+        } else {
+            $sClass .= " small";
+            $sAttrs = "style='padding:3px;margin:3px;cursor:pointer' onclick='location.replace(\"?eSection=$eSection\")'";
+        }
+
+        $s =  "<div class='$sClass' $sAttrs>"
+             ."<p>{$raS['heading']}</p>"
+             ."</div>";
+
+        return( $s );
+    }
+
+    private function drawSectionB_AddIndLogin()
+    /******************************************
+        Draw the right-hand form that lets you add a login for any contact
+     */
+    {
+        $eSection = "addIndLogin";
+        $raS = $this->raSections[$eSection];
+
+        $s = "<style> .loginsCtlEmail { margin:15px 0px 0px 20px } </style>";
+
+        $s .= "<h4>${raS['heading']}</h4>"
+             ."<form method='post' action='${_SERVER['PHP_SELF']}'>"
+             .SEEDForm_Hidden( 'eSection', $this->eSection )
+             .SEEDForm_Hidden( 'action', $this->eSection )
+             ."<div>"
+             ."<input type='submit' name='action_${raS['action']}' value='${raS['button']}'/> "
+             ."<p style='font-size:8pt;margin:5px 0 0 30px'>Enter contact #.</p>"
+             ."</div>"
+             ."<div class='loginsCtlEmail'>".SEEDForm_Text( "kMbr", "","" )."</div>"
+             ."</form>";
+
+        if( ($kMbr = SEEDInput_Int('kMbr')) ) {
+            global $oApp;
+            include_once(SEEDLIB."mbr/MbrUsers.php");
+            $oMU = new MbrUsers($oApp);
+            list($kfrMbr,$bOk,$sErr) = $oMU->GetMemberInfoAndValidate($kMbr, "EmailNotBlank UserNotExists");
+            $s .= "<p>User login ".($bOk ? "can be added" : "cannot be added : $sErr")."</p>";
+            // show the button if the mbr_contact exists but not the login
+            if( $bOk ) {
+                $s .= "<form method='post' action='${_SERVER['PHP_SELF']}'>"
+                     .SEEDForm_Hidden( 'eSection', $this->eSection )
+                     .SEEDForm_Hidden( 'kMbr', $kMbr )
+                     .SEEDForm_Hidden( 'localaction_adduser', 1 )
+                     ."<input type='submit' value='Add User for Contact $kMbr'/>"
+                     ."</form>";
+            }
+            if( SEEDInput_Int('localaction_adduser') ) {
+                list($bOk,$sErr) = $oMU->CreateLoginFromContact($kMbr);
+                $s .= $bOk ? "<p>$kMbr User added</p>" : "<p>Error: $sErr</p>";
             }
         }
 
