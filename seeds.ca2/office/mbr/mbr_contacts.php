@@ -2,7 +2,7 @@
 
 /* Contact and Login manager
 
-   Copyright (c) 2009-2021 Seeds of Diversity Canada
+   Copyright (c) 2009-2024 Seeds of Diversity Canada
 
    Contact database:
        Read only view of the mbr_contacts database
@@ -25,6 +25,7 @@ include_once( "_mbr_mail.php" );
 include_once( SEEDAPP."mbr/mbr_ts_ebulletin.php" );
 include_once( SEEDCORE."SEEDTableSheets.php" );
 include_once( SEEDLIB."mbr/MbrIntegrity.php" );
+include_once( SEEDAPP."mbr/tab_mbrcontacts_manage.php" );
 
 define( "MBRCONTACTS_TABNAME_BULLETIN", "Bulletin" );    // so per-tab TabSetGetSVA knows its name
 
@@ -33,6 +34,7 @@ $raPerms = array( 'Contacts'                   => array('R MBR'),
                   'Summary'                    => array('W MBR'),
                   'Logins'                     => array('A MBR'),
                   MBRCONTACTS_TABNAME_BULLETIN => array('W BULL'),
+                  'Manage'                     => array('W MBR'),
                                                   '|'   // the above are disjunctions for application access
 );
 
@@ -81,12 +83,14 @@ class MyConsole extends Console01KFUI
 
     function TabSetInit( $tsid, $tabname )
     {
+        global $oApp;
         if( $tsid == 'main' ) {
             switch( $tabname ) {
                 case 'Contacts':  $this->oW = new mbrContacts_Contacts( $this, $this->kfdb, $this->sess );  break;
-                case 'Summary':   $this->oW = new mbrContacts_Summary( $this, $this->kfdb, $this->sess );  break;
+                case 'Summary':   break; $this->oW = new mbrContacts_Summary( $this, $this->kfdb, $this->sess );  break;
                 case 'Logins':    global $kfdb1; $this->oW = new mbrContacts_Logins( $this, $kfdb1, $this->kfdb, $this->sess );  break;
                 case MBRCONTACTS_TABNAME_BULLETIN:  $this->oW = new mbrContacts_Bulletin( $this, $this->kfdb, $this->sess );  break;
+                case 'Manage':    $this->oW = new MbrContactsTabManage($oApp, (new Mbr_Contacts($oApp)));  break;
             }
             if( $this->oW ) $this->oW->Init();
         }
@@ -116,6 +120,7 @@ class MyConsole extends Console01KFUI
 
                 case 'Logins':    break;
                 case MBRCONTACTS_TABNAME_BULLETIN:  return( $this->oW->ControlDraw() );
+                case 'Manage':    return( $this->oW->ControlDraw() );
             }
         }
         return( "" );
@@ -126,9 +131,10 @@ class MyConsole extends Console01KFUI
         if( $tsid == 'main' ) {
             switch( $tabname ) {
                 case 'Contacts':  return( $this->CompListForm_Vert() );
-                case 'Summary':   return( $this->oW->ContentDraw() );
+                case 'Summary':   return("No summary"); // return( $this->oW->ContentDraw() );
                 case 'Logins':    return( $this->oW->ContentDraw() );
                 case MBRCONTACTS_TABNAME_BULLETIN:  return( $this->oW->ContentDraw() );
+                case 'Manage':    return( $this->oW->ContentDraw() );
             }
         }
         return( "" );
@@ -1303,7 +1309,8 @@ $raConsoleParms = array(
     'TABSETS' => array( "main" => array( 'tabs'=> array( "Contacts" => array('label' => "Contacts" ),
                                                          "Summary"  => array('label' => "Summary" ),
                                                          "Logins"   => array('label' => "Logins" ),
-                                                         MBRCONTACTS_TABNAME_BULLETIN => array('label' => "Bulletin" ) ) ) ),
+                                                         MBRCONTACTS_TABNAME_BULLETIN => array('label' => "Bulletin" ),
+                                                         "Manage"   => array('label' => "Manage" ) ) ) ),
     'bLogo' => true,
     'bBootstrap' => true,
 );
@@ -1311,5 +1318,3 @@ $raConsoleParms = array(
 $oC = new MyConsole( $kfdb2, $sess, $raConsoleParms );
 
 echo $oC->DrawConsole( "[[TabSet: main]]" );
-
-?>
