@@ -102,28 +102,11 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
             break;
 
         case "msdSeedsFromGrower":
-// use MSDQ:msdSeedList-Draw with kUidSeller=$kG and eStatus=ACTIVE
-            //include_once( "_QServerCollection.php" );
-            //$o = new QServerCollection( $this, array( ) );
-            //$rQ = $o->Cmd( $cmd, $parms );
-
-            $kG = SEEDInput_Int( "kG" );
-
-            // get seeds from kG, also get the species and variety for sorting
-            $raP = $oSB->oDB->GetList( "PxPE2",
-                                       "product_type='seeds' AND "
-                                      ."eStatus='ACTIVE' AND "
-                                      ."uid_seller='$kG' AND "
-                                      ."PE1.k='species' AND PE2.k='variety'",
-                                       array('sSortCol'=>'PE1_v,PE2_v') );
-
-            foreach( $raP as $ra ) {
-                if( ($kfrP = $oSB->oDB->GetKFR( 'P', $ra['_key'] )) ) {
-                    // DrawProduct always returns utf8 now - construct MSDQ with $raConfig['config_bUTF8']=false to get cp1252.
-                    // So just utf8_encode the order info
-                    $raJX['sOut'] .= SEEDCore_utf8_encode($oSB->DrawProduct( $kfrP, SEEDBasketProductHandler_Seeds::DETAIL_ALL, ['bUTF8'=>false] ));
-                    //$raJX['sOut'] .= SEEDCore_utf8_encode(drawMSDOrderInfo( $oSB, $kfrP ));
-                    $raJX['sOut'] .= "<div style='display:none' class='msd-order-info msd-order-info-{$ra['_key']}'></div>";
+            if( ($kG = SEEDInput_Str('kG')) ) {
+                $rQ = $oMSDQ->Cmd('msdSeedList-GetData', ['kUidSeller'=>$kG,'eFilter'=>'LISTABLE','eDrawMode'=>'VIEW_REQUESTABLE VIEW_SHOWCATEGORY VIEW_SHOWSPECIES']);
+                foreach( $rQ['raOut'] as $ra ) {
+                    $raJX['sOut'] .= $ra['sSeedDraw']
+                                    ."<div style='display:none' class='msd-order-info msd-order-info-{$ra['_key']}'></div>";
                     $raJX['bOk'] = true;
                 }
             }
