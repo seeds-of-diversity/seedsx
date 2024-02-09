@@ -285,15 +285,15 @@ class SLDB_Base extends sldb__base
 
     private function initKfrel()
     {
-        $this->tDef['C'] = array( "Table" => "seeds.sl_collection", "Alias" => "C", "Fields" => SLDB_base::kfrelFldSLCollection() );
-        $this->tDef['I'] = array( "Table" => "seeds.sl_inventory",  "Alias" => "I", "Fields" => SLDB_base::kfrelFldSLInventory() );
-        $this->tDef['A'] = array( "Table" => "seeds.sl_accession",  "Alias" => "A", "Fields" => SLDB_base::kfrelFldSLAccession() );
-        $this->tDef['D'] = array( "Table" => "seeds.sl_adoption",   "Alias" => "D", "Fields" => SLDB_base::kfrelFldSLAdoption() );
-        $this->tDef['G'] = array( "Table" => "seeds.sl_germ",       "Alias" => "G", "Fields" => SLDB_base::kfrelFldSLGerm() );
-        $this->tDef['P'] = array( "Table" => "seeds.sl_pcv",        "Alias" => "P", "Fields" => SLDB_base::kfrelFldSLPCV() );
-        $this->tDef['S'] = array( "Table" => "seeds.sl_species",    "Alias" => "S", "Fields" => SLDB_base::kfrelFldSLSpecies() );
-        $this->tDef['PY'] = array("Table" => "seeds.sl_pcv_syn",    "Alias" => "PY","Fields" => SLDB_base::kfrelFldSLPCVSyn() );
-        $this->tDef['SY'] = array("Table" => "seeds.sl_species_syn","Alias" => "SY","Fields" => SLDB_base::kfrelFldSLSpeciesSyn() );
+        $this->tDef['C'] = array( "Table" => "seeds_1.sl_collection", "Alias" => "C", "Fields" => SLDB_base::kfrelFldSLCollection() );
+        $this->tDef['I'] = array( "Table" => "seeds_1.sl_inventory",  "Alias" => "I", "Fields" => SLDB_base::kfrelFldSLInventory() );
+        $this->tDef['A'] = array( "Table" => "seeds_1.sl_accession",  "Alias" => "A", "Fields" => SLDB_base::kfrelFldSLAccession() );
+        $this->tDef['D'] = array( "Table" => "seeds_1.sl_adoption",   "Alias" => "D", "Fields" => SLDB_base::kfrelFldSLAdoption() );
+        $this->tDef['G'] = array( "Table" => "seeds_1.sl_germ",       "Alias" => "G", "Fields" => SLDB_base::kfrelFldSLGerm() );
+        $this->tDef['P'] = array( "Table" => "seeds_1.sl_pcv",        "Alias" => "P", "Fields" => SLDB_base::kfrelFldSLPCV() );
+        $this->tDef['S'] = array( "Table" => "seeds_1.sl_species",    "Alias" => "S", "Fields" => SLDB_base::kfrelFldSLSpecies() );
+        $this->tDef['PY'] = array("Table" => "seeds_1.sl_pcv_syn",    "Alias" => "PY","Fields" => SLDB_base::kfrelFldSLPCVSyn() );
+        $this->tDef['SY'] = array("Table" => "seeds_1.sl_species_syn","Alias" => "SY","Fields" => SLDB_base::kfrelFldSLSpeciesSyn() );
 
         $this->raKfrel['C'] = $this->newKfrel2( array( "C" => $this->tDef['C'] ), "slinventory.log" );
         $this->raKfrel['I'] = $this->newKfrel2( array( "I" => $this->tDef['I'] ), "slinventory.log" );
