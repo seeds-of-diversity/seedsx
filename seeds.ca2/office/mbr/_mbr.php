@@ -270,21 +270,6 @@ class MbrContacts
 }
 
 
-function Mbr_WhereIsContactReferenced( SEEDAppDB $oApp, $kMbr )
-{
-    $ra = [];
-
-    $ra['nSBBaskets' ]  = $oApp->kfdb->Query1( "SELECT count(*) from {$oApp->GetDBName('seeds1')}.SEEDBasket_Baskets  WHERE _status='0' AND uid_buyer='$kMbr'" );
-    $ra['nSProducts']   = $oApp->kfdb->Query1( "SELECT count(*) from {$oApp->GetDBName('seeds1')}.SEEDBasket_Products WHERE _status='0' AND uid_seller='$kMbr'" );
-    $ra['nDescSites']   = $oApp->kfdb->Query1( "SELECT count(*) from {$oApp->GetDBName('seeds1')}.mbr_sites           WHERE _status='0' AND uid='$kMbr'" );
-    $ra['nMSD']         = $oApp->kfdb->Query1( "SELECT count(*) from {$oApp->GetDBName('seeds1')}.sed_curr_growers    WHERE _status='0' AND mbr_id='$kMbr'" );
-    $ra['nSLAdoptions'] = $oApp->kfdb->Query1( "SELECT count(*) from {$oApp->GetDBName('seeds1')}.sl_adoption         WHERE _status='0' AND fk_mbr_contacts='$kMbr'" );
-
-    $ra['nDonations']   = $oApp->kfdb->Query1( "SELECT count(*) from {$oApp->GetDBName('seeds2')}.mbr_donations       WHERE _status='0' AND fk_mbr_contacts='$kMbr'" );
-
-    return( $ra );
-}
-
 function MbrContacts_Setup( $oSetup, &$sReport, $bCreate = false )
 /*****************************************************************
     Test whether the mbr_mail_* tables exist.

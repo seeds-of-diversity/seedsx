@@ -2,7 +2,7 @@
 
 /* Contact and Login manager
 
-   Copyright (c) 2009-2021 Seeds of Diversity Canada
+   Copyright (c) 2009-2024 Seeds of Diversity Canada
 
    Contact database:
        Read only view of the mbr_contacts database
@@ -24,6 +24,8 @@ include_once( "_mbr_mail.php" );
 
 include_once( SEEDAPP."mbr/mbr_ts_ebulletin.php" );
 include_once( SEEDCORE."SEEDTableSheets.php" );
+include_once( SEEDLIB."mbr/MbrIntegrity.php" );
+include_once( SEEDAPP."mbr/tab_mbrcontacts_manage.php" );
 
 define( "MBRCONTACTS_TABNAME_BULLETIN", "Bulletin" );    // so per-tab TabSetGetSVA knows its name
 
@@ -32,6 +34,7 @@ $raPerms = array( 'Contacts'                   => array('R MBR'),
                   'Summary'                    => array('W MBR'),
                   'Logins'                     => array('A MBR'),
                   MBRCONTACTS_TABNAME_BULLETIN => array('W BULL'),
+                  'Manage'                     => array('W MBR'),
                                                   '|'   // the above are disjunctions for application access
 );
 
@@ -80,12 +83,14 @@ class MyConsole extends Console01KFUI
 
     function TabSetInit( $tsid, $tabname )
     {
+        global $oApp;
         if( $tsid == 'main' ) {
             switch( $tabname ) {
                 case 'Contacts':  $this->oW = new mbrContacts_Contacts( $this, $this->kfdb, $this->sess );  break;
-                case 'Summary':   $this->oW = new mbrContacts_Summary( $this, $this->kfdb, $this->sess );  break;
+                case 'Summary':   break; $this->oW = new mbrContacts_Summary( $this, $this->kfdb, $this->sess );  break;
                 case 'Logins':    global $kfdb1; $this->oW = new mbrContacts_Logins( $this, $kfdb1, $this->kfdb, $this->sess );  break;
                 case MBRCONTACTS_TABNAME_BULLETIN:  $this->oW = new mbrContacts_Bulletin( $this, $this->kfdb, $this->sess );  break;
+                case 'Manage':    $this->oW = new MbrContactsTabManage($oApp, (new Mbr_Contacts($oApp)));  break;
             }
             if( $this->oW ) $this->oW->Init();
         }
@@ -115,6 +120,7 @@ class MyConsole extends Console01KFUI
 
                 case 'Logins':    break;
                 case MBRCONTACTS_TABNAME_BULLETIN:  return( $this->oW->ControlDraw() );
+                case 'Manage':    return( $this->oW->ControlDraw() );
             }
         }
         return( "" );
@@ -125,9 +131,10 @@ class MyConsole extends Console01KFUI
         if( $tsid == 'main' ) {
             switch( $tabname ) {
                 case 'Contacts':  return( $this->CompListForm_Vert() );
-                case 'Summary':   return( $this->oW->ContentDraw() );
+                case 'Summary':   return("No summary"); // return( $this->oW->ContentDraw() );
                 case 'Logins':    return( $this->oW->ContentDraw() );
                 case MBRCONTACTS_TABNAME_BULLETIN:  return( $this->oW->ContentDraw() );
+                case 'Manage':    return( $this->oW->ContentDraw() );
             }
         }
         return( "" );
@@ -188,20 +195,14 @@ class mbrContacts_Contacts extends Console01_Worker1
 
         if( $kfr && $kfr->Key() ) {
             global $oApp;
-            $ra = Mbr_WhereIsContactReferenced( $oApp, $kfr->Key() );
-
-            $bDelete = true;
-            $sErr = "";
-            if( ($n = $ra['nSBBaskets']) )   { $sErr .= "<li>Has $n orders recorded in the order system</li>"; }
-            if( ($n = $ra['nSProducts']) )   { $sErr .= "<li>Has $n offers in the seed exchange</li>"; }
-            if( ($n = $ra['nDescSites']) )   { $sErr .= "<li>Has $n crop descriptions in their name</li>"; }
-            if( ($n = $ra['nMSD']      ) )   { $sErr .= "<li>Is listed in the seed exchange</li>"; }
-            if( ($n = $ra['nSLAdoptions']) ) { $sErr .= "<li>Has $n seed adoptions in their name</li>"; }
-            if( ($n = $ra['nDonations']) )   { $sErr .= "<li>Has $n donation records in their name</li>"; }
-
-            if( $sErr ) {
-                $this->oC->ErrMsg( "Cannot delete contact {$kfr->Key()}:<br/><ul>$sErr</ul>" );
+            $oMI = new MbrIntegrity($oApp);
+            $ra = $oMI->WhereIsContactReferenced($kfr->Key());
+            if( $ra['nTotal'] ) {
+                $this->oC->ErrMsg( "Cannot delete contact {$kfr->Key()}:<br/><ul>{$oMI->ExplainContactReferencesLong($ra)}</ul>" );
                 $bDelete = false;
+            } else {
+                $this->oC->ErrMsg( "Deleted {$kfr->Key()}: {$kfr->Value('firstname')} {$kfr->Value('lastname')} {$kfr->Value('company')}" );
+                $bDelete = true;
             }
         }
         return( $bDelete );
@@ -517,6 +518,7 @@ class mbrContacts_Logins extends Console01_Worker2
         $s .= $this->drawSectionA( 'mbrOrphan', $raAcctOrphan )
              .$this->drawSectionA( 'msdNotice', $raOldMSD )
              .$this->drawSectionA_SendMSDEmail()
+             .$this->drawSectionA_AddIndLogin()
              .$this->drawSectionA_MbrIndStatus()
              ."</td>"
              ."<td valign='top' width='40%'>";
@@ -546,6 +548,9 @@ class mbrContacts_Logins extends Console01_Worker2
                 break;
             case 'sendMSDEmail':
                 $s .= $this->drawSectionB_SendMSDEmail();
+                break;
+            case 'addIndLogin':
+                $s .= $this->drawSectionB_AddIndLogin();
                 break;
             case 'mbrIndStatus':
                 $s .= $this->drawSectionB_MbrIndStatus();
@@ -634,6 +639,12 @@ class mbrContacts_Logins extends Console01_Worker2
                                'outputGood' => "",//"Sent MSD notice for email",    doSendMSDEmail uses UserMsg
                                'outputBad'  => "Error sending MSD notice for email",
         ),
+        'addIndLogin' => array( 'heading' => "Individual add login from contact",
+                               'desc'    => "Non-member contact (e.g. donor) needs a login",
+                               'do'      => "create login accounts",
+                               'action'  => "addIndLogin",
+                               'button'  => "Validate User Account",
+                               'expand'  => "" ),
         'mbrIndStatus' => array(
                                'heading' => "Individual status of a login",
                                'do'      => "Status of login",
@@ -754,7 +765,7 @@ class mbrContacts_Logins extends Console01_Worker2
 
     private function drawSectionB_SendMSDEmail()
     /*******************************************
-        Draw the right-hand form that lets you send a MSD notice to some arbitrary email addresses
+        Draw the right-hand form that lets you check a user's status
      */
     {
         $eSection = "sendMSDEmail";
@@ -806,7 +817,7 @@ class mbrContacts_Logins extends Console01_Worker2
 
     private function drawSectionB_MbrIndStatus()
     /*******************************************
-        Draw the right-hand form that lets you send a MSD notice to some arbitrary email addresses
+        Draw the right-hand form that lets you check a user's status
      */
     {
         $eSection = "mbrIndStatus";
@@ -842,6 +853,75 @@ class mbrContacts_Logins extends Console01_Worker2
                 $this->kfdb2->Execute( "UPDATE {$this->dbname1}.SEEDSession_Users SET _status=1 WHERE _key='$kMbr'" );
                     $s .= "<p>$kMbr deactivated</p>";
                 //}
+            }
+        }
+
+        return( $s );
+    }
+
+    private function drawSectionA_AddIndLogin()
+    /******************************************
+        Draw the left-hand tab that lets you add a login for any contact
+     */
+    {
+        $eSection = "addIndLogin";
+        $raS = $this->raSections[$eSection];
+
+        $sClass = "well";
+        $sBorder = "black";
+        if( $eSection == $this->eSection ) {
+            $sAttrs = "style='padding:3px;margin:3px;font-weight:bold;border:2px solid $sBorder;'";
+        } else {
+            $sClass .= " small";
+            $sAttrs = "style='padding:3px;margin:3px;cursor:pointer' onclick='location.replace(\"?eSection=$eSection\")'";
+        }
+
+        $s =  "<div class='$sClass' $sAttrs>"
+             ."<p>{$raS['heading']}</p>"
+             ."</div>";
+
+        return( $s );
+    }
+
+    private function drawSectionB_AddIndLogin()
+    /******************************************
+        Draw the right-hand form that lets you add a login for any contact
+     */
+    {
+        $eSection = "addIndLogin";
+        $raS = $this->raSections[$eSection];
+
+        $s = "<style> .loginsCtlEmail { margin:15px 0px 0px 20px } </style>";
+
+        $s .= "<h4>${raS['heading']}</h4>"
+             ."<form method='post' action='${_SERVER['PHP_SELF']}'>"
+             .SEEDForm_Hidden( 'eSection', $this->eSection )
+             .SEEDForm_Hidden( 'action', $this->eSection )
+             ."<div>"
+             ."<input type='submit' name='action_${raS['action']}' value='${raS['button']}'/> "
+             ."<p style='font-size:8pt;margin:5px 0 0 30px'>Enter contact #.</p>"
+             ."</div>"
+             ."<div class='loginsCtlEmail'>".SEEDForm_Text( "kMbr", "","" )."</div>"
+             ."</form>";
+
+        if( ($kMbr = SEEDInput_Int('kMbr')) ) {
+            global $oApp;
+            include_once(SEEDLIB."mbr/MbrUsers.php");
+            $oMU = new MbrUsers($oApp);
+            list($kfrMbr,$bOk,$sErr) = $oMU->GetMemberInfoAndValidate($kMbr, "EmailNotBlank UserNotExists");
+            $s .= "<p>User login ".($bOk ? "can be added" : "cannot be added : $sErr")."</p>";
+            // show the button if the mbr_contact exists but not the login
+            if( $bOk ) {
+                $s .= "<form method='post' action='${_SERVER['PHP_SELF']}'>"
+                     .SEEDForm_Hidden( 'eSection', $this->eSection )
+                     .SEEDForm_Hidden( 'kMbr', $kMbr )
+                     .SEEDForm_Hidden( 'localaction_adduser', 1 )
+                     ."<input type='submit' value='Add User for Contact $kMbr'/>"
+                     ."</form>";
+            }
+            if( SEEDInput_Int('localaction_adduser') ) {
+                list($bOk,$sErr) = $oMU->CreateLoginFromContact($kMbr);
+                $s .= $bOk ? "<p>$kMbr User added</p>" : "<p>Error: $sErr</p>";
             }
         }
 
@@ -1308,7 +1388,8 @@ $raConsoleParms = array(
     'TABSETS' => array( "main" => array( 'tabs'=> array( "Contacts" => array('label' => "Contacts" ),
                                                          "Summary"  => array('label' => "Summary" ),
                                                          "Logins"   => array('label' => "Logins" ),
-                                                         MBRCONTACTS_TABNAME_BULLETIN => array('label' => "Bulletin" ) ) ) ),
+                                                         MBRCONTACTS_TABNAME_BULLETIN => array('label' => "Bulletin" ),
+                                                         "Manage"   => array('label' => "Manage" ) ) ) ),
     'bLogo' => true,
     'bBootstrap' => true,
 );
@@ -1316,5 +1397,3 @@ $raConsoleParms = array(
 $oC = new MyConsole( $kfdb2, $sess, $raConsoleParms );
 
 echo $oC->DrawConsole( "[[TabSet: main]]" );
-
-?>

@@ -102,80 +102,25 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
             break;
 
         case "msdSeedsFromGrower":
-// use MSDQ:msdSeedList-Draw with kUidSeller=$kG and eStatus=ACTIVE
-            //include_once( "_QServerCollection.php" );
-            //$o = new QServerCollection( $this, array( ) );
-            //$rQ = $o->Cmd( $cmd, $parms );
-
-            $kG = SEEDInput_Int( "kG" );
-
-            // get seeds from kG, also get the species and variety for sorting
-            $raP = $oSB->oDB->GetList( "PxPE2",
-                                       "product_type='seeds' AND "
-                                      ."eStatus='ACTIVE' AND "
-                                      ."uid_seller='$kG' AND "
-                                      ."PE1.k='species' AND PE2.k='variety'",
-                                       array('sSortCol'=>'PE1_v,PE2_v') );
-
-            foreach( $raP as $ra ) {
-                if( ($kfrP = $oSB->oDB->GetKFR( 'P', $ra['_key'] )) ) {
-                    // DrawProduct always returns utf8 now - construct MSDQ with $raConfig['config_bUTF8']=false to get cp1252.
-                    // So just utf8_encode the order info
-                    $raJX['sOut'] .= SEEDCore_utf8_encode($oSB->DrawProduct( $kfrP, SEEDBasketProductHandler_Seeds::DETAIL_ALL, ['bUTF8'=>false] ));
-                    //$raJX['sOut'] .= SEEDCore_utf8_encode(drawMSDOrderInfo( $oSB, $kfrP ));
-                    $raJX['sOut'] .= "<div style='display:none' class='msd-order-info msd-order-info-{$ra['_key']}'></div>";
+            if( ($kG = SEEDInput_Str('kG')) ) {
+                $rQ = $oMSDQ->Cmd('msdSeedList-GetData', ['kUidSeller'=>$kG,'eFilter'=>'LISTABLE','eDrawMode'=>'VIEW_REQUESTABLE VIEW_SHOWCATEGORY VIEW_SHOWSPECIES']);
+                foreach( $rQ['raOut'] as $ra ) {
+                    $raJX['sOut'] .= $ra['sSeedDraw']
+                                    ."<div style='display:none' class='msd-order-info msd-order-info-{$ra['_key']}'></div>";
                     $raJX['bOk'] = true;
                 }
             }
             break;
 
         case "msdVarietyListFromSpecies":
-//this is way faster - see msd-edit.php
-//$rQ = $oMSDQ->Cmd( 'msdSeedList-GetData', ['kUidSeller'=>$uidSeller,'kSp'=>$kSp,'eStatus'=>"ALL"] );
-
-            include_once( SEEDLIB."msd/msdcore.php" );
-            $oMSDCore = new MSDCore( $oApp, array() );
-
-            $raP = [];
-            $kSp = SEEDInput_Str('kSp');
-            if( SEEDCore_StartsWith($kSp, 'tomato') ) {
-                // kluge tomatoAC, tomatoDH, etc
-                $cond = "AND PE1.v LIKE 'TOMATO%'";
-                switch( $kSp ) {
-                    default:
-                    case 'tomatoAC':    $cond .= " AND UPPER(LEFT(PE2.v,1)) <= 'C'";               break;
-                    case 'tomatoDH':    $cond .= " AND UPPER(LEFT(PE2.v,1)) BETWEEN 'D' AND 'H'";  break;
-                    case 'tomatoIM':    $cond .= " AND UPPER(LEFT(PE2.v,1)) BETWEEN 'I' AND 'M'";  break;
-                    case 'tomatoNR':    $cond .= " AND UPPER(LEFT(PE2.v,1)) BETWEEN 'N' AND 'R'";  break;
-                    case 'tomatoSZ':    $cond .= " AND UPPER(LEFT(PE2.v,1)) >= 'S'";               break;
-                }
-            } else {
-                // all non-tomato species
-                if( ($dbSp = addslashes($oMSDCore->GetKlugeSpeciesNameFromKey( intval($kSp) ))) ) {
-                    $cond = "AND PE1.v='$dbSp'";
-                } else {
-                    goto msdVarietyListFromSpecies_notfound;
+            if( ($kSp = SEEDInput_Str('kSp')) ) {
+                $rQ = $oMSDQ->Cmd('msdSeedList-GetData', ['kSp'=>$kSp,'eFilter'=>'LISTABLE','eDrawMode'=>'VIEW_REQUESTABLE']);
+                foreach( $rQ['raOut'] as $ra ) {
+                    $raJX['sOut'] .= $ra['sSeedDraw']
+                                    ."<div style='display:none' class='msd-order-info msd-order-info-{$ra['_key']}'></div>";
+                    $raJX['bOk'] = true;
                 }
             }
-
-//$oSB->oDB->kfdb->SetDebug(2);
-            $raP = $oSB->oDB->GetList( "PxPE2",
-                                       "product_type='seeds' AND "
-                                      ."eStatus='ACTIVE' AND "
-                                      ."PE1.k='species' AND PE2.k='variety' $cond",
-                                       array('sSortCol'=>'PE2_v') );
-//$oSB->oDB->kfdb->SetDebug(0);
-            foreach( $raP as $ra ) {
-                $kfrP = $oSB->oDB->GetKFR( 'P', $ra['_key'] );
-
-                // DrawProduct always returns utf8 now - construct MSDQ with $raConfig['config_bUTF8']=false to get cp1252.
-                // So just utf8_encode the order info
-                $raJX['sOut'] .= SEEDCore_utf8_encode($oSB->DrawProduct( $kfrP, SEEDBasketProductHandler_Seeds::DETAIL_VIEW_NO_SPECIES, ['bUTF8'=>false] ));
-                //$raJX['sOut'] .= SEEDCore_utf8_encode(drawMSDOrderInfo( $oSB, $kfrP ));
-                $raJX['sOut'] .= "<div style='display:none' class='msd-order-info msd-order-info-{$ra['_key']}'></div>";
-                $raJX['bOk'] = true;
-            }
-            msdVarietyListFromSpecies_notfound:
             break;
 
         case 'msdOrderInfo':

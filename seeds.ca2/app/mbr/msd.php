@@ -135,6 +135,9 @@ class msdBasket extends SEEDBasketStore_Old
             case 'Open':
                 $raParms['jsonInstructions'] = $this->drawInstructions();
                 $raParms['msdList'] = $this->oDraw->DrawMSDList();
+// change this to true to show the Closed for the Season message
+// also set bShutdown in msdcore.php
+                $raParms['mseClosed'] = false;
                 $s = $this->oTmpl->ExpandTmpl( 'msdMain', $raParms );
                 break;
 
