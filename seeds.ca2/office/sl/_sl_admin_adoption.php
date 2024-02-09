@@ -92,7 +92,7 @@ class SLAdoption
         $this->sess->SmartGPC( "sladopt_kmbr", array() );
 
         $s .= "<TABLE border='0'><TR><TD valign='top'>"
-             ."<FORM method='post' action='${_SERVER['PHP_SELF']}'>"
+             ."<FORM method='post' action='{$_SERVER['PHP_SELF']}'>"
              ."Show: ".SEEDForm_Select( 'sladopt_show', array(0=>"All",1=>"No Donor #",2=>"No PCV"), $this->sess->VarGet('sladopt_show'), array('selectAttrs'=>"onChange='submit();'") )
              .SEEDStd_StrNBSP("",10)
              ."Sort: ".SEEDForm_Select( 'sladopt_sort', array( 'sDonor'=>"Donor name", 'sCV'=>"Cultivar name", 'sDate'=>"Donation date" ), $this->sess->VarGet('sladopt_sort'), array('selectAttrs'=>"onChange='submit();'") )
@@ -108,7 +108,7 @@ class SLAdoption
              ."</FORM>"
              ."</TD>"
              ."<TD valign='top'>"
-             ."<FORM method='post' action='${_SERVER['PHP_SELF']}'>"    // separate form to add new adoption
+             ."<FORM method='post' action='{$_SERVER['PHP_SELF']}'>"    // separate form to add new adoption
              .SEEDStd_StrNBSP("",15)
              .$this->oConsoleList->Hidden('AddButton')
              ."<INPUT type='submit' value='Add New Adoption'>"
@@ -178,7 +178,7 @@ class SLAdoption
 
         $s = "<DIV class='slAdminConsoleListItem' style='background-color:".($this->bListBgToggle ? "#ddd" : "#fff")."'>"
             ."Donor: ".$kfr->value('donor_name')    // unless fk_mbr_contacts
-            ." <A HREF='${_SERVER['PHP_SELF']}?sladopt_find=kMbr&sladopt_findstr=$kMbrDonor'>($kMbrDonor)</A> "
+            ." <A HREF='{$_SERVER['PHP_SELF']}?sladopt_find=kMbr&sladopt_findstr=$kMbrDonor'>($kMbrDonor)</A> "
             ."<SPAN style='background-color:#eff'>&nbsp;$sDonor&nbsp;</SPAN>"
             .SEEDStd_StrNBSP("",10)
             .$this->oConsoleList->ExpandTags( $kfr->Key(), " <A HREF='{$_SERVER['PHP_SELF']}?[[LinkParmEdit]]' style='color:red'>[Edit]</A><BR/>" )
@@ -193,7 +193,7 @@ class SLAdoption
             $kfrPCV = $this->oSLDBPCV->GetRecordByKey($kfr->value('fk_sl_pcv'));
             $s .= $kfrPCV->value('psp')." : ".$kfrPCV->value('name')." ";
         }
-        $s .= " <A HREF='${_SERVER['PHP_SELF']}?sladopt_find=kPCV&sladopt_findstr=".$kfr->value('fk_sl_pcv')."'>(".$kfr->value('fk_sl_pcv').")</A><BR/>"
+        $s .= " <A HREF='{$_SERVER['PHP_SELF']}?sladopt_find=kPCV&sladopt_findstr=".$kfr->value('fk_sl_pcv')."'>(".$kfr->value('fk_sl_pcv').")</A><BR/>"
              .$kfr->ExpandIfNotEmpty( 'notes', "Notes: [[]]" )
 
              ."<DIV style='border:1px solid #aaa;background-color:#eee;width:50%'>"
@@ -369,7 +369,7 @@ class SLAdminAdoption
         $s = "<DIV class='slAdminConsoleListItem' style='background-color:".($this->bListBgToggle ? "#ddd" : "#fff")."'>"
             ."<A ".$this->oConsole->oComp->EncodeUrlHREF(array('kCurrRow'=>$kfr->Key())).">[Edit]</A><br/>"
             ."Donor: ".$kfr->value('donor_name')    // unless fk_mbr_contacts
-            ." <A HREF='${_SERVER['PHP_SELF']}?sfAx_srch_fld1=T1.fk_mbr_contacts&sfAx_srch_op1=eq&sfAx_srch_val1=$kMbrDonor'>($kMbrDonor)</A> "
+            ." <A HREF='{$_SERVER['PHP_SELF']}?sfAx_srch_fld1=T1.fk_mbr_contacts&sfAx_srch_op1=eq&sfAx_srch_val1=$kMbrDonor'>($kMbrDonor)</A> "
             ."<SPAN style='background-color:#eff'>&nbsp;$sDonor&nbsp;</SPAN>"
             .SEEDStd_StrNBSP("",10)
             //.$this->oConsoleList->ExpandTags( $kfr->Key(), " <A HREF='{$_SERVER['PHP_SELF']}?[[LinkParmEdit]]' style='color:red'>[Edit]</A><BR/>" )
@@ -385,7 +385,7 @@ class SLAdminAdoption
                 $s .= $kfrPCV->value('psp')." : ".$kfrPCV->value('name')." ";
             }
         }
-        $s .= " <A HREF='${_SERVER['PHP_SELF']}?sfAx_srch_fld1=T1.fk_sl_pcv&sfAx_srch_op1=eq&sfAx_srch_val1={$kfr->value('fk_sl_pcv')}'>({$kfr->value('fk_sl_pcv')})</A><br/> "
+        $s .= " <A HREF='{$_SERVER['PHP_SELF']}?sfAx_srch_fld1=T1.fk_sl_pcv&sfAx_srch_op1=eq&sfAx_srch_val1={$kfr->value('fk_sl_pcv')}'>({$kfr->value('fk_sl_pcv')})</A><br/> "
              .$kfr->ExpandIfNotEmpty( 'notes', "Notes: [[]]" )
 
              ."<DIV style='border:1px solid #aaa;background-color:#eee;width:50%'>"
