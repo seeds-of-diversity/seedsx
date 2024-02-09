@@ -46,7 +46,7 @@ class SLCollectionGermination
     {
         $s = "";
 
-        $kEditG = substr(($p=SEEDSafeGPC_GetStrPlain('pCmd')),0,8) == 'editgerm' ? intval(substr($p,8)) : 0;
+        $kEditG = ($p=SEEDInput_Str('pCmd')) && substr($p,0,8) == 'editgerm' ? intval(substr($p,8)) : 0;
 
         if( !$kEditG ) {
             // put an empty form at the top if not editing an existing record
