@@ -194,7 +194,6 @@ class DocRepDB extends DocRep_DB
 
 
 
-
     function __construct( KeyframeDatabase $kfdb, $uid, $parms = array() )
     {
         parent::__construct( $kfdb, $uid, $parms );
@@ -417,13 +416,13 @@ class DocRepDB extends DocRep_DB
                    "Fields" => $fldDXD );
 
         // Data x DXD x Doc
-        $kfdef_Data_x_DXD_X_Doc = $kfdef_DocData_Base;
-        $kfdef_Data_x_DXD_X_Doc["Tables"][] =
+        $kfdef_Data_x_DXD_x_Doc = $kfdef_DocData_Base;
+        $kfdef_Data_x_DXD_x_Doc["Tables"][] =
             array( "Table"  => 'docrep_docs',
                    "Type"   => 'Parent',
                    "Alias"  => 'Doc',
                    "Fields" => $fldDoc );
-        $kfdef_Data_x_DXD_X_Doc["Tables"][] =
+        $kfdef_Data_x_DXD_x_Doc["Tables"][] =
             array( "Table"  => 'docrep_docxdata',
                    "Type"   => 'X',
                    "Alias"  => 'DXD',
@@ -435,7 +434,7 @@ class DocRepDB extends DocRep_DB
         $this->kfrelDoc_x_Data       = new KeyFrameRelation( $this->kfdb, $kfdef_Doc_x_Data,       $this->uid );
         $this->kfrelData_x_Doc       = new KeyFrameRelation( $this->kfdb, $kfdef_Data_x_Doc,       $this->uid );
         $this->kfrelDoc_x_DXD_x_Data = new KeyFrameRelation( $this->kfdb, $kfdef_Doc_x_DXD_x_Data, $this->uid );
-        $this->kfrelData_x_DXD_X_Doc = new KeyFrameRelation( $this->kfdb, $kfdef_Data_x_DXD_X_Doc, $this->uid );
+        $this->kfrelData_x_DXD_x_Doc = new KeyFrameRelation( $this->kfdb, $kfdef_Data_x_DXD_x_Doc, $this->uid );
     }
 
 
@@ -877,7 +876,7 @@ if (file_exists($file)) {
                 break;
             case "FILE":
             case "SFILE":
-                if( ($fp = fopen( $this->getDataFilenameUsingDoc(), "rb" )) ) { 
+                if( ($fp = fopen( $this->getDataFilenameUsingDoc(), "rb" )) ) {
                     fpassthru( $fp );
                     fclose( $fp );
                 }

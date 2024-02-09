@@ -126,6 +126,7 @@ class SEEDTemplate
 
 class SEEDTemplateLoader {
     protected $raTmpl = array();
+    var $runtime;
 
     function __construct() {}
 

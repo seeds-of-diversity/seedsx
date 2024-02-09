@@ -22,6 +22,7 @@ class H2o {
     var $searchpath;
     var $context;
     var $loader = false;
+    var $options, $nodelist, $stream;
 
     static $tags = array();
     static $filters = array();

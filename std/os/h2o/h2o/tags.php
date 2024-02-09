@@ -62,6 +62,7 @@ class If_Tag extends H2o_Node {
     private $body;
     private $else;
     private $negate;
+    var $args;
 
     function __construct($argstring, $parser, $position = 0) {
         if (preg_match('/\s(and|or)\s/', $argstring))
@@ -181,7 +182,7 @@ class For_Tag extends H2o_Node {
 class Block_Tag extends H2o_Node {
     public $name;
     public $position;
-    public $stack;
+    public $stack, $filename, $parent;
     private $syntax = '/^[a-zA-Z_][a-zA-Z0-9_-]*$/';
 
     function __construct($argstring, $parser, $position) {

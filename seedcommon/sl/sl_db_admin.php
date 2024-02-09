@@ -11,6 +11,7 @@
 class SLDB_Admin_Stats
 {
     private $oApp;
+    private $kfdb;
     private $raReferencesToPCV = array();
     private $raReferencesToSp = array();
 

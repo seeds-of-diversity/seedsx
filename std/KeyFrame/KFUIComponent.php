@@ -710,7 +710,7 @@ class KeyFrameUIComponent extends SEEDFormUIComponent
 
         $s = "<A ".$this->EncodeUrlHREF($raChange)." style='color:white;text-decoration:none;font-size:7pt;'>"
             ."<B>$label</B>"
-            .($img ? ("&nbsp;<IMG src='".W_ROOT_STD."img/triangle_blue_${img}_empty.gif' border='0'/>") : "")
+            .($img ? ("&nbsp;<IMG src='".W_ROOT_STD."img/triangle_blue_{$img}_empty.gif' border='0'/>") : "")
             ."</A>";
         return( $s );
     }

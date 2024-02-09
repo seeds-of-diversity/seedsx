@@ -65,6 +65,7 @@ class Evaluator {
  * $type of token, Block | Variable
  */
 class H2o_Token {
+    var $type, $content, $result, $position;
     function __construct ($type, $content, $position) {
         $this->type = $type;
         $this->content = $content;
@@ -142,11 +143,11 @@ class H2o_Info {
     function filters() {
         return array_keys(h2o::$filters);
     }
-    
+
     function tags() {
         return array_keys(h2o::$tags);
     }
-    
+
     function extensions() {
         return array_keys(h2o::$extensions);
     }
