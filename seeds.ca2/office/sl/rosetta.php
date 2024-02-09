@@ -187,7 +187,7 @@ $oDS->SetValue( 'psp', $psp );
     {
         $raOpts = $this->getPSPOpts();
 
-        $s = "";
+        $sRefs = "";
 
         if( ($kPCV = $oForm->GetKey()) ) {
             $raSyn = $this->kfdb->QueryRowsRA( "SELECT * FROM {$this->oApp->DBName('seeds1')}.sl_pcv_syn WHERE _status='0' AND fk_sl_pcv='$kPCV'" );
@@ -197,13 +197,13 @@ $oDS->SetValue( 'psp', $psp );
             // don't share this with PreStore because it caches its information, which possibly changes during update (after PreStore)
             $oStats = new SLDB_Admin_Stats( $this->kfdb );
 
-            $s .= "<div style='float:right;width:30%;border:1px solid #aaa;padding:10px'>"
+            $sRefs = "<div style='float:right;border:1px solid #aaa;padding:10px'>"
                  .($sSyn ? ("Synonyms: $sSyn<br/>") : "")
                  .$oStats->DrawReferencesToPCV( $kPCV )
                  ."</div>";
         }
 
-        $s .= "<table>"
+        $sForm = "<table>"
 // see it in the list  .($oForm->GetKey() ? ("<tr><td colspan='2'><b>Cultivar #".$oForm->GetKey()."</b></td></tr>") : "")
             ."<tr><td><b>Species</b></td><td>".$oForm->Select2( 'fk_sl_species', $raOpts )
             .SEEDStd_StrNBSP('',5)
@@ -211,10 +211,13 @@ $oDS->SetValue( 'psp', $psp );
             ."</td></tr>"
             ."<tr>".$oForm->TextTD( "name", "Name" )."</tr>"
             ."<tr><td colspan='2'><label>Description for seed packets (write what you would put in a seed catalogue)</label></td></tr>"
-            ."<tr>".$oForm->TextAreaTD( "packetLabel", "" )."</tr>"
+            ."<tr>".$oForm->TextAreaTD( "packetLabel", "" )
+            .$oForm->TextAreaTD( "originHistory", "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Origin/<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;History&nbsp;" )."</tr>"
             ."<tr>".$oForm->TextAreaTD( "notes", "Notes" )."</tr>"
             ."</table>"
             ."<input type='submit' value='Save'>";
+
+        $s = "<div class='container-fluid'><div class='row'><div class='col-md-10'>$sForm</div><div class='col-md-2'>$sRefs</div></div></div>";
 
         return( $s );
     }
@@ -511,5 +514,3 @@ $oC = new MyConsole( $kfdb, $sess, $raConsoleParms );
 header( "Content-type: text/html; charset=ISO-8859-1");    // this should be on all pages so accented chars look right (on Linux anyway)
 
 echo $oC->DrawConsole( "[[TabSet: TFmain]]" );
-
-?>
