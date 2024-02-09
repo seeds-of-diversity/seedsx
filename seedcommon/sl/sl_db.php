@@ -42,7 +42,12 @@ class sldb__base
     Protected class to contain defs
  */
 {
-    protected function __construct() {}
+    protected $oApp;
+
+    protected function __construct()
+    {
+        $this->oApp = SEEDConfig_NewAppConsole_LoginNotRequired( ['db'=>'seeds1'] );   // anonymous access
+    }
 
     static function kfrelFldSLCollection()
     {
@@ -246,6 +251,7 @@ class SLDB_Base extends sldb__base
 
     function __construct( KeyFrameDB $kfdb, $uid )
     {
+        parent::__construct();
         $this->kfdb = $kfdb;
         $this->uid = $uid;
 
@@ -285,15 +291,15 @@ class SLDB_Base extends sldb__base
 
     private function initKfrel()
     {
-        $this->tDef['C'] = array( "Table" => "seeds_1.sl_collection", "Alias" => "C", "Fields" => SLDB_base::kfrelFldSLCollection() );
-        $this->tDef['I'] = array( "Table" => "seeds_1.sl_inventory",  "Alias" => "I", "Fields" => SLDB_base::kfrelFldSLInventory() );
-        $this->tDef['A'] = array( "Table" => "seeds_1.sl_accession",  "Alias" => "A", "Fields" => SLDB_base::kfrelFldSLAccession() );
-        $this->tDef['D'] = array( "Table" => "seeds_1.sl_adoption",   "Alias" => "D", "Fields" => SLDB_base::kfrelFldSLAdoption() );
-        $this->tDef['G'] = array( "Table" => "seeds_1.sl_germ",       "Alias" => "G", "Fields" => SLDB_base::kfrelFldSLGerm() );
-        $this->tDef['P'] = array( "Table" => "seeds_1.sl_pcv",        "Alias" => "P", "Fields" => SLDB_base::kfrelFldSLPCV() );
-        $this->tDef['S'] = array( "Table" => "seeds_1.sl_species",    "Alias" => "S", "Fields" => SLDB_base::kfrelFldSLSpecies() );
-        $this->tDef['PY'] = array("Table" => "seeds_1.sl_pcv_syn",    "Alias" => "PY","Fields" => SLDB_base::kfrelFldSLPCVSyn() );
-        $this->tDef['SY'] = array("Table" => "seeds_1.sl_species_syn","Alias" => "SY","Fields" => SLDB_base::kfrelFldSLSpeciesSyn() );
+        $this->tDef['C'] = array( "Table" => "{$this->oApp->DBName('seeds1')}.sl_collection", "Alias" => "C", "Fields" => SLDB_base::kfrelFldSLCollection() );
+        $this->tDef['I'] = array( "Table" => "{$this->oApp->DBName('seeds1')}.sl_inventory",  "Alias" => "I", "Fields" => SLDB_base::kfrelFldSLInventory() );
+        $this->tDef['A'] = array( "Table" => "{$this->oApp->DBName('seeds1')}.sl_accession",  "Alias" => "A", "Fields" => SLDB_base::kfrelFldSLAccession() );
+        $this->tDef['D'] = array( "Table" => "{$this->oApp->DBName('seeds1')}.sl_adoption",   "Alias" => "D", "Fields" => SLDB_base::kfrelFldSLAdoption() );
+        $this->tDef['G'] = array( "Table" => "{$this->oApp->DBName('seeds1')}.sl_germ",       "Alias" => "G", "Fields" => SLDB_base::kfrelFldSLGerm() );
+        $this->tDef['P'] = array( "Table" => "{$this->oApp->DBName('seeds1')}.sl_pcv",        "Alias" => "P", "Fields" => SLDB_base::kfrelFldSLPCV() );
+        $this->tDef['S'] = array( "Table" => "{$this->oApp->DBName('seeds1')}.sl_species",    "Alias" => "S", "Fields" => SLDB_base::kfrelFldSLSpecies() );
+        $this->tDef['PY'] = array("Table" => "{$this->oApp->DBName('seeds1')}.sl_pcv_syn",    "Alias" => "PY","Fields" => SLDB_base::kfrelFldSLPCVSyn() );
+        $this->tDef['SY'] = array("Table" => "{$this->oApp->DBName('seeds1')}.sl_species_syn","Alias" => "SY","Fields" => SLDB_base::kfrelFldSLSpeciesSyn() );
 
         $this->raKfrel['C'] = $this->newKfrel2( array( "C" => $this->tDef['C'] ), "slinventory.log" );
         $this->raKfrel['I'] = $this->newKfrel2( array( "I" => $this->tDef['I'] ), "slinventory.log" );
@@ -353,11 +359,11 @@ class SLDB_Master extends SLDB_Base
 
 
         $this->kfrelA_P = $this->newKfrel(
-                array( "Tables" => array( array( "Table" => "seeds_1.sl_accession",
+                array( "Tables" => array( array( "Table" => "{$this->oApp->DBName('seeds1')}.sl_accession",
                                                  "Alias" => "A",
                                                  "Type"  => "Base",
                                                  "Fields" => SLDB_base::kfrelFldSLAccession() ),
-                                          array( "Table" => "seeds_1.sl_pcv",
+                                          array( "Table" => "{$this->oApp->DBName('seeds1')}.sl_pcv",
                                                  "Alias" => "P",
                                                  "Type"  => "LEFT JOIN",
                                                  "LeftJoinOn" => "A.fk_sl_pcv=P._key",
@@ -365,15 +371,15 @@ class SLDB_Master extends SLDB_Base
                 "slinventory.log" );
 
         $this->kfrelIxA_P = $this->newKfrel(
-                array( "Tables" => array( array( "Table" => "seeds_1.sl_inventory",
+                array( "Tables" => array( array( "Table" => "{$this->oApp->DBName('seeds1')}.sl_inventory",
                                                  "Alias" => "I",
                                                  "Type"  => "Base",
                                                  "Fields" => SLDB_base::kfrelFldSLInventory() ),
-                                          array( "Table" => "seeds_1.sl_accession",
+                                          array( "Table" => "{$this->oApp->DBName('seeds1')}.sl_accession",
                                                  "Alias" => "A",
                                                  "Type"  => "Join",
                                                  "Fields" => SLDB_base::kfrelFldSLAccession() ),
-                                          array( "Table" => "seeds_1.sl_pcv",
+                                          array( "Table" => "{$this->oApp->DBName('seeds1')}.sl_pcv",
                                                  "Alias" => "P",
                                                  "Type"  => "LEFT JOIN",
                                                  "LeftJoinOn" => "A.fk_sl_pcv=P._key",
@@ -435,8 +441,8 @@ class SLDB_Sources extends SLDB_Base
 
     private function initKfrel()
     {
-        $this->tDef['SRC']   = array( "Table" => "seeds_1.sl_sources",    "Alias" => "SRC",   "Fields" => SLDB_base::kfrelFldSLSources() );
-        $this->tDef['SRCCV'] = array( "Table" => "seeds_1.sl_cv_sources", "Alias" => "SRCCV", "Fields" => SLDB_base::kfrelFldSLSourcesCV() );
+        $this->tDef['SRC']   = array( "Table" => "{$this->oApp->DBName('seeds1')}.sl_sources",    "Alias" => "SRC",   "Fields" => SLDB_base::kfrelFldSLSources() );
+        $this->tDef['SRCCV'] = array( "Table" => "{$this->oApp->DBName('seeds1')}.sl_cv_sources", "Alias" => "SRCCV", "Fields" => SLDB_base::kfrelFldSLSourcesCV() );
 
         $this->raKfrel['SRC']       = $this->newKfrel2( array( "SRC"=>$this->tDef['SRC'] ), "slsources.log" );
         $this->raKfrel['SRCCV']     = $this->newKfrel2( array( "SRCCV"=>$this->tDef['SRCCV'] ), "slsources.log" );
@@ -453,17 +459,17 @@ class SLDB_Sources extends SLDB_Base
 
         // every SrcCV must have a Src, but it might not have a PCV
         $this->raKfrel['SRCCVxSRC_P'] = $this->newKfrel(
-                array( "Tables" => array( array( "Table" => "seeds_1.sl_cv_sources",
+                array( "Tables" => array( array( "Table" => "{$this->oApp->DBName('seeds1')}.sl_cv_sources",
                                                  "Alias" => "SRCCV",
                                                  "Type"  => "Base",
                                                  "Fields" => SLDB_base::kfrelFldSLSourcesCV() ),
 
-                                          array( "Table" => "seeds_1.sl_pcv",
+                                          array( "Table" => "{$this->oApp->DBName('seeds1')}.sl_pcv",
                                                  "Alias" => "P",
                                                  "Type"  => "LEFT JOIN",
                                                  "LeftJoinOn" => "SRCCV.fk_sl_pcv=P._key",
                                                  "Fields" => SLDB_base::kfrelFldSLPCV() ),
-                array( "Table" => "seeds_1.sl_sources",
+                                          array( "Table" => "{$this->oApp->DBName('seeds1')}.sl_sources",
                                                  "Alias" => "SRC",
                                                  "Type"  => "Join",
                                                  "Fields" => SLDB_base::kfrelFldSLSources() ), ) ),
@@ -493,10 +499,13 @@ class _sldb_base
     var $uid;
     var $kfrel;     // kfrel for the main relation managed by a derived object
 
+    protected $oApp;
+
     function __construct( KeyFrameDB $kfdb, $uid = 0 )
     {
         $this->kfdb = $kfdb;
         $this->uid = $uid;
+        $this->oApp = SEEDConfig_NewAppConsole_LoginNotRequired( ['db'=>'seeds1'] );   // anonymous access
         $this->initKFRel();
     }
 
@@ -726,7 +735,7 @@ class SLDB_Accession extends _sldb_base
 
     function initKFRelParms()
     {
-        $def = array( "Tables" => array( array( "Table" => "seeds_1.sl_accession",
+        $def = array( "Tables" => array( array( "Table" => "{$this->oApp->DBName('seeds1')}.sl_accession",
                                                 "Type"  => "Base",
                                                 "Fields" => _sldb_base::$kfrelFldSLAccession ) ) );
         return( array($def, "slaccession.log") );
@@ -743,7 +752,7 @@ class SLDB_Inventory extends _sldb_base
 
     function initKFRelParms()
     {
-        $def = array( "Tables" => array( array( "Table" => "seeds_1.sl_inventory",
+        $def = array( "Tables" => array( array( "Table" => "{$this->oApp->DBName('seeds1')}.sl_inventory",
                                                 "Type"  => "Base",
                                                 "Fields" => _sldb_base::kfrelFldSLInventory() ) ) );
         return( array($def, "slinventory.log") );
@@ -760,7 +769,7 @@ class SLDB_Adoption extends _sldb_base
 
     function initKFRelParms()
     {
-        $def = array( "Tables" => array( array( "Table" => "seeds_1.sl_adoption",
+        $def = array( "Tables" => array( array( "Table" => "{$this->oApp->DBName('seeds1')}.sl_adoption",
                                                 "Type"  => "Base",
                                                 "Fields" => _sldb_base::kfrelFldSLAdoption() ) ) );
         return( array($def, "sladoption.log") );
@@ -777,7 +786,7 @@ class SLDB_PCV extends _sldb_base
 
     function initKFRelParms()
     {
-        $def = array( "Tables" => array( array( "Table" => "seeds_1.sl_pcv",
+        $def = array( "Tables" => array( array( "Table" => "{$this->oApp->DBName('seeds1')}.sl_pcv",
                                                 "Type"  => "Base",
                                                 "Fields" => _sldb_base::kfrelFldSLPCV() ) ) );
         return( array($def, "slpcv.log") );
@@ -811,11 +820,11 @@ class SLDB_AxP extends _sldb_base
 
     function initKFRelParms()
     {
-        $def = array( "Tables" => array( array( "Table" => "seeds_1.sl_accession",
+        $def = array( "Tables" => array( array( "Table" => "{$this->oApp->DBName('seeds1')}.sl_accession",
                                                 "Alias" => "A",
                                                 "Type"  => "Base",
                                                 "Fields" => _sldb_base::$kfrelFldSLAccession ),
-                                         array( "Table" => "seeds_1.sl_pcv",
+                                         array( "Table" => "{$this->oApp->DBName('seeds1')}.sl_pcv",
                                                 "Alias" => "P",
                                                 "Type"  => "Join",
                                                 "Fields" => _sldb_base::kfrelFldSLPCV() )
@@ -833,11 +842,11 @@ class SLDB_A_P extends _sldb_base
 
     function initKFRelParms()
     {
-        $def = array( "Tables" => array( array( "Table" => "seeds_1.sl_accession",
+        $def = array( "Tables" => array( array( "Table" => "{$this->oApp->DBName('seeds1')}.sl_accession",
                                                 "Alias" => "A",
                                                 "Type"  => "Base",
                                                 "Fields" => _sldb_base::$kfrelFldSLAccession ),
-                                         array( "Table" => "seeds_1.sl_pcv",
+                                         array( "Table" => "{$this->oApp->DBName('seeds1')}.sl_pcv",
                                                 "Alias" => "P",
                                                 "Type"  => "LEFT JOIN",
                                                 "LeftJoinOn" => "A.fk_sl_pcv=P._key",
@@ -853,15 +862,15 @@ class SLDB_IxAxP extends _sldb_base
 
     function initKFRelParms()
     {
-        $def = array( "Tables" => array( array( "Table" => "seeds_1.sl_inventory",
+        $def = array( "Tables" => array( array( "Table" => "{$this->oApp->DBName('seeds1')}.sl_inventory",
                                                 "Alias" => "I",
                                                 "Type"  => "Base",
                                                 "Fields" => _sldb_base::kfrelFldSLInventory() ),
-                                         array( "Table" => "seeds_1.sl_accession",
+                                         array( "Table" => "{$this->oApp->DBName('seeds1')}.sl_accession",
                                                 "Alias" => "A",
                                                 "Type"  => "Join",
                                                 "Fields" => _sldb_base::$kfrelFldSLAccession ),
-                                         array( "Table" => "seeds_1.sl_pcv",
+                                         array( "Table" => "{$this->oApp->DBName('seeds1')}.sl_pcv",
                                                 "Alias" => "P",
                                                 "Type"  => "Join",
                                                 "Fields" => _sldb_base::kfrelFldSLPCV() )
@@ -879,15 +888,15 @@ class SLDB_IxA_P extends _sldb_base
 
     function initKFRelParms()
     {
-        $def = array( "Tables" => array( array( "Table" => "seeds_1.sl_inventory",
+        $def = array( "Tables" => array( array( "Table" => "{$this->oApp->DBName('seeds1')}.sl_inventory",
                                                 "Alias" => "I",
                                                 "Type"  => "Base",
                                                 "Fields" => _sldb_base::kfrelFldSLInventory() ),
-                                         array( "Table" => "seeds_1.sl_accession",
+                                         array( "Table" => "{$this->oApp->DBName('seeds1')}.sl_accession",
                                                 "Alias" => "A",
                                                 "Type"  => "Join",
                                                 "Fields" => _sldb_base::$kfrelFldSLAccession ),
-                                         array( "Table" => "seeds_1.sl_pcv",
+                                         array( "Table" => "{$this->oApp->DBName('seeds1')}.sl_pcv",
                                                 "Alias" => "P",
                                                 "Type"  => "LEFT JOIN",
                                                 "LeftJoinOn" => "A.fk_sl_pcv=P._key",
@@ -906,11 +915,11 @@ class SLDB_PD extends _sldb_base
 
     function initKFRelParms()
     {
-        $def = array( "Tables" => array( array( "Table" => "seeds_1.sl_pcv",
+        $def = array( "Tables" => array( array( "Table" => "{$this->oApp->DBName('seeds1')}.sl_pcv",
                                                 "Alias" => "P",
                                                 "Type"  => "Base",
                                                 "Fields" => _sldb_base::kfrelFldSLPCV() ),
-                                         array( "Table" => "seeds_1.sl_adoption",
+                                         array( "Table" => "{$this->oApp->DBName('seeds1')}.sl_adoption",
                                                 "Alias" => "D",
                                                 "Type"  => "LEFT JOIN",
                                                 "LeftJoinOn" => "D.fk_sl_pcv=P._key",
@@ -928,11 +937,11 @@ class SLDB_PA extends _sldb_base
 
     function initKFRelParms()
     {
-        $def = array( "Tables" => array( array( "Table" => "seeds_1.sl_pcv",
+        $def = array( "Tables" => array( array( "Table" => "{$this->oApp->DBName('seeds1')}.sl_pcv",
                                                 "Alias" => "P",
                                                 "Type"  => "Base",
                                                 "Fields" => _sldb_base::kfrelFldSLPCV() ),
-                                         array( "Table" => "seeds_1.sl_accession",
+                                         array( "Table" => "{$this->oApp->DBName('seeds1')}.sl_accession",
                                                 "Alias" => "A",
                                                 "Type"  => "LEFT JOIN",
                                                 "LeftJoinOn" => "A.fk_sl_pcv=P._key",
@@ -1000,11 +1009,11 @@ class SLDB_DP extends _sldb_base
 
     function initKFRelParms()
     {
-        $def = array( "Tables" => array( array( "Table" => "seeds_1.sl_adoption",
+        $def = array( "Tables" => array( array( "Table" => "{$this->oApp->DBName('seeds1')}.sl_adoption",
                                                 "Alias" => "D",
                                                 "Type"  => "Base",
                                                 "Fields" => _sldb_base::kfrelFldSLAdoption() ),
-                                         array( "Table" => "seeds_1.sl_pcv",
+                                         array( "Table" => "{$this->oApp->DBName('seeds1')}.sl_pcv",
                                                 "Alias" => "P",
                                                 "Type"  => "LEFT JOIN",
                                                 "LeftJoinOn" => "D.fk_sl_pcv=P._key",
