@@ -198,7 +198,7 @@ class MyConsole extends Console01
 
             // Edit || Close Editor button
             $s .= "<td>"
-                 ."<form method='POST' action='${_SERVER['PHP_SELF']}'>"
+                 ."<form method='POST' action='{$_SERVER['PHP_SELF']}'>"
                  .SEEDForm_Hidden( 'k', $kDoc )
                  .($bEditMode
                      ? "<input type='submit' value='Close Editor'/>"
@@ -218,7 +218,7 @@ class MyConsole extends Console01
         if( $dt == 'TEXT' || $dt == 'FOLDER' || $dt == 'DOC' ) {
             // Publish button
             $s .= "<td>"
-                 ."<form method='POST' action='${_SERVER['PHP_SELF']}'>"
+                 ."<form method='POST' action='{$_SERVER['PHP_SELF']}'>"
                  .SEEDForm_Hidden( 'k', $kDoc )
                  .SEEDForm_Hidden( 'drm_action', 'approve' )
                  ."<input type='submit' value='Publish'".($bPermP ? "" : " disabled='disabled'")."/>"
@@ -282,7 +282,7 @@ class MyConsole extends Console01
             ."<table border='0'><tr>"
             ."<td>"
             // Publish button
-            ."<form method='POST' action='${_SERVER['PHP_SELF']}'>".$sPublishButton."</form>"
+            ."<form method='POST' action='{$_SERVER['PHP_SELF']}'>".$sPublishButton."</form>"
             ."</td>"
             // Metadata
             ."<td valign='top' style='padding-left:30px;'>"

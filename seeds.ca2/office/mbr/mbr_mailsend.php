@@ -53,8 +53,8 @@ if( $bSendMail ) {
 }
 
 echo Console02Static::HTMLPage( $sBody,
-                                //($bSendMail ? "<meta http-equiv='refresh' CONTENT='${iDelay}; URL=https://seeds.ca/office/mbr/mbr_mailsend.php'>" : ""),
-                                ($bSendMail ? "<meta http-equiv='refresh' CONTENT='${iDelay}'>" : ""),      // refresh self after $iDelay seconds
+                                //($bSendMail ? "<meta http-equiv='refresh' CONTENT='{$iDelay}; URL=https://seeds.ca/office/mbr/mbr_mailsend.php'>" : ""),
+                                ($bSendMail ? "<meta http-equiv='refresh' CONTENT='{$iDelay}'>" : ""),      // refresh self after $iDelay seconds
                                 'EN', [] );
 
 

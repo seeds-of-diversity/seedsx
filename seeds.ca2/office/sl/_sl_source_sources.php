@@ -130,7 +130,7 @@ class SLSourceSources
         Return the filter string from the control area, modulo the oComp-managed part
      */
     {
-        $r = addslashes(SEEDSafeGPC_GetStrPlain( 'filter_sourcetype' ));
+        $r = addslashes(SEEDInput_Str('filter_sourcetype'));
 
         return( empty($r) ? "" : "sourcetype='$r'" );
     }

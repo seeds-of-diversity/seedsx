@@ -105,7 +105,7 @@ class MyConsole extends Console01KFUI
 
 
 $raConsoleParms = array(
-    'HEADER' => "Seed Library on ${_SERVER['SERVER_NAME']}",
+    'HEADER' => "Seed Library on {$_SERVER['SERVER_NAME']}",
     'CONSOLE_NAME' => "SLAdmin",
     'TABSETS' => array( "TFmain" => array( 'tabs' => array( 'Reports' => array( 'label' => "Reports" ),
     														'Adoptions' => array( 'label' => "Adoptions" ),

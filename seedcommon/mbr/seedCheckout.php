@@ -415,8 +415,8 @@ class SoDMbrOrderCheckout extends MbrOrderCheckout
             $s .= "<tr valign='top'><td colspan='2' class='mbro_boxheader'>Your Nametag</td></tr>"
             ."<tr valign='top'><td class='mbro_ctrl'>Name (as you would like it to appear on your nametag)<br/><br/>Organization (optional)<br/><br/>"
             ."<p>if you are registering more than one person please enter the other registrants' nametag information in the 'Send us a Note' area below</p></td>"
-            ."<td class='mbro_ctrl'>".$this->oKForm->Text("s${code}_NametagName","",array("size"=>15))
-            ."<br/><br/>".$this->oKForm->Text("s${code}_NametagOrg","",array("size"=>15))."</td></tr>";
+            ."<td class='mbro_ctrl'>".$this->oKForm->Text("s{$code}_NametagName","",array("size"=>15))
+            ."<br/><br/>".$this->oKForm->Text("s{$code}_NametagOrg","",array("size"=>15))."</td></tr>";
         }
         $s .= "<tr valign='top'><td colspan='2' class='mbro_boxheader'>".$this->oL->S("reg # tickets")."</td></tr>";
 
@@ -426,7 +426,7 @@ class SoDMbrOrderCheckout extends MbrOrderCheckout
             if( $raTicket['type'] != 'Ticket' )  continue;
 
             $s .= "<tr valign='top'><td class='mbro_ctrl'>".$this->oMbrOrder->RegistrationText( $raTicket, 'formtext' )."</td>"
-                 ."<td class='mbro_ctrl'>".$this->oKForm->Text("n${code}_{$ticketcode}","",array("size"=>5))." $ {$raTicket['price']} ea.</td></tr>";
+                 ."<td class='mbro_ctrl'>".$this->oKForm->Text("n{$code}_{$ticketcode}","",array("size"=>5))." $ {$raTicket['price']} ea.</td></tr>";
         }
 
         if( $nDinner ) {
@@ -436,7 +436,7 @@ $s .= "<tr valign='top'><td colspan='2' class='mbro_boxheader'>Fundraising Dinne
                 if( $raTicket['type'] != 'Dinner' )  continue;
 
                 $s .= "<tr valign='top'><td class='mbro_ctrl'>".$this->oMbrOrder->RegistrationText( $raTicket, 'formtext' )."</td>"
-                     ."<td class='mbro_ctrl'>".$this->oKForm->Text("n${code}_{$ticketcode}","",array("size"=>5))." $ {$raTicket['price']}</td></tr>";
+                     ."<td class='mbro_ctrl'>".$this->oKForm->Text("n{$code}_{$ticketcode}","",array("size"=>5))." $ {$raTicket['price']}</td></tr>";
             }
         }
 
@@ -959,33 +959,33 @@ $sGarlicVarieties =
                           "FR" => "How to Make a Pollinator Garden, by Clement Kent (anglais seulement)" ),
 
             "vend_ssh_en"
-                => array( "EN" => "<A HREF='${sPubPageEN}#ssh_e' target='_blank'><IMG src='${sSiteImg}vend/ssh_cv.gif' height='50'></A>",
-                          "FR" => "<A HREF='${sPubPageFR}#ssh_e' target='_blank'><IMG src='${sSiteImg}vend/ssh_cv.gif' height='50'></A>" ),
+                => array( "EN" => "<A HREF='{$sPubPageEN}#ssh_e' target='_blank'><IMG src='{$sSiteImg}vend/ssh_cv.gif' height='50'></A>",
+                          "FR" => "<A HREF='{$sPubPageFR}#ssh_e' target='_blank'><IMG src='{$sSiteImg}vend/ssh_cv.gif' height='50'></A>" ),
             "vend_ssh_en6_20"
-                => array( "EN" => "<A HREF='${sPubPageEN}#ssh_e' target='_blank'><IMG src='${sSiteImg}vend/ssh6en150.jpg' height='50'></A>",
-                          "FR" => "<A HREF='${sPubPageFR}#ssh_e' target='_blank'><IMG src='${sSiteImg}vend/ssh6en150.jpg' height='50'></A>" ),
+                => array( "EN" => "<A HREF='{$sPubPageEN}#ssh_e' target='_blank'><IMG src='{$sSiteImg}vend/ssh6en150.jpg' height='50'></A>",
+                          "FR" => "<A HREF='{$sPubPageFR}#ssh_e' target='_blank'><IMG src='{$sSiteImg}vend/ssh6en150.jpg' height='50'></A>" ),
             "vend_ssh_fr6_20"
-                => array( "EN" => "<A HREF='${sPubPageEN}#ssh_f' target='_blank'><IMG src='${sSiteImg}vend/ssh6fr150.jpg' height='50'></A>",
-                          "FR" => "<A HREF='${sPubPageFR}#ssh_f' target='_blank'><IMG src='${sSiteImg}vend/ssh6fr150.jpg' height='50'></A>" ),
+                => array( "EN" => "<A HREF='{$sPubPageEN}#ssh_f' target='_blank'><IMG src='{$sSiteImg}vend/ssh6fr150.jpg' height='50'></A>",
+                          "FR" => "<A HREF='{$sPubPageFR}#ssh_f' target='_blank'><IMG src='{$sSiteImg}vend/ssh6fr150.jpg' height='50'></A>" ),
             "vend_ssh_fr"
-                => array( "EN" => "<A HREF='${sPubPageEN}#ssh_f' target='_blank'><IMG src='${sSiteImg}vend/ssh_f_cv.gif' height='50'></A>",
-                          "FR" => "<A HREF='${sPubPageFR}#ssh_f' target='_blank'><IMG src='${sSiteImg}vend/ssh_f_cv.gif' height='50'></A>" ),
+                => array( "EN" => "<A HREF='{$sPubPageEN}#ssh_f' target='_blank'><IMG src='{$sSiteImg}vend/ssh_f_cv.gif' height='50'></A>",
+                          "FR" => "<A HREF='{$sPubPageFR}#ssh_f' target='_blank'><IMG src='{$sSiteImg}vend/ssh_f_cv.gif' height='50'></A>" ),
             "vend_nmd"
-                => array( "EN" => "<A HREF='${sPubPageEN}#niche1' target='_blank'><IMG src='${sSiteImg}vend/niche1_cv.gif' height='50'></A>",
-                          "FR" => "<A HREF='${sPubPageFR}#niche1' target='_blank'><IMG src='${sSiteImg}vend/niche1_cv.gif' height='50'></A>" ),
+                => array( "EN" => "<A HREF='{$sPubPageEN}#niche1' target='_blank'><IMG src='{$sSiteImg}vend/niche1_cv.gif' height='50'></A>",
+                          "FR" => "<A HREF='{$sPubPageFR}#niche1' target='_blank'><IMG src='{$sSiteImg}vend/niche1_cv.gif' height='50'></A>" ),
             "vend_shc"
-                => array( "EN" => "<A HREF='${sPubPageEN}#niche2' target='_blank'><IMG src='${sSiteImg}vend/niche2_cv.gif' height='50'></A>",
-                          "FR" => "<A HREF='${sPubPageFR}#niche2' target='_blank'><IMG src='${sSiteImg}vend/niche2_cv.gif' height='50'></A>" ),
+                => array( "EN" => "<A HREF='{$sPubPageEN}#niche2' target='_blank'><IMG src='{$sSiteImg}vend/niche2_cv.gif' height='50'></A>",
+                          "FR" => "<A HREF='{$sPubPageFR}#niche2' target='_blank'><IMG src='{$sSiteImg}vend/niche2_cv.gif' height='50'></A>" ),
             "vend_everyseed"
-                => array( "EN" => "<A HREF='${sPubPageEN}#every_seed' target='_blank'><IMG src='${sSiteImg}vend/EverySeed150.png' height='50'></A>",
-                          "FR" => "<A HREF='${sPubPageFR}#every_seed' target='_blank'><IMG src='${sSiteImg}vend/EverySeed150.png' height='50'></A>" ),
+                => array( "EN" => "<A HREF='{$sPubPageEN}#every_seed' target='_blank'><IMG src='{$sSiteImg}vend/EverySeed150.png' height='50'></A>",
+                          "FR" => "<A HREF='{$sPubPageFR}#every_seed' target='_blank'><IMG src='{$sSiteImg}vend/EverySeed150.png' height='50'></A>" ),
 
             "vend_suechan2012"
-                => array( "EN" => "<A HREF='${sPubPageEN}#suechan2012' target='_blank'><IMG src='//www.seeds.ca/d?n=pubs/cover-conserving-native-pollinators--600.jpg' height='50'></A>",
-                          "FR" => "<A HREF='${sPubPageEN}#suechan2012' target='_blank'><IMG src='//www.seeds.ca/d?n=pubs/cover-conserving-native-pollinators--600.jpg' height='50'></A>" ),
+                => array( "EN" => "<A HREF='{$sPubPageEN}#suechan2012' target='_blank'><IMG src='//www.seeds.ca/d?n=pubs/cover-conserving-native-pollinators--600.jpg' height='50'></A>",
+                          "FR" => "<A HREF='{$sPubPageEN}#suechan2012' target='_blank'><IMG src='//www.seeds.ca/d?n=pubs/cover-conserving-native-pollinators--600.jpg' height='50'></A>" ),
             "vend_kent2012"
-                => array( "EN" => "<A HREF='${sPubPageEN}#kent2012' target='_blank'><IMG src='//www.seeds.ca/d?n=pubs/cover-how-to-make-a-pollinator-garden--420.jpg' height='50'></A>",
-                          "FR" => "<A HREF='${sPubPageEN}#kent2012' target='_blank'><IMG src='//www.seeds.ca/d?n=pubs/cover-how-to-make-a-pollinator-garden--420.jpg' height='50'></A>" ),
+                => array( "EN" => "<A HREF='{$sPubPageEN}#kent2012' target='_blank'><IMG src='//www.seeds.ca/d?n=pubs/cover-how-to-make-a-pollinator-garden--420.jpg' height='50'></A>",
+                          "FR" => "<A HREF='{$sPubPageEN}#kent2012' target='_blank'><IMG src='//www.seeds.ca/d?n=pubs/cover-how-to-make-a-pollinator-garden--420.jpg' height='50'></A>" ),
 
             "Registration"
                 => array( "EN" => "Register for an Event",

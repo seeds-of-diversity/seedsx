@@ -498,7 +498,7 @@ class Rosetta_Admin extends Console01_Worker1
 
 
 $raConsoleParms = array(
-    'HEADER' => "RosettaSEED on ${_SERVER['SERVER_NAME']}",
+    'HEADER' => "RosettaSEED on {$_SERVER['SERVER_NAME']}",
     'CONSOLE_NAME' => "SLRosetta",
     'TABSETS' => array( "TFmain" => array( 'tabs' => array( 'Cultivars'    => array( 'label' => "Cultivars" ),
                                                             'Species'      => array( 'label' => "Species" ),

@@ -308,7 +308,7 @@ class CSCICultivars_obsolete
             }
         }
 
-        $s =  "<FORM class='csciForm' method='post' action='${_SERVER['PHP_SELF']}'>"
+        $s =  "<FORM class='csciForm' method='post' action='{$_SERVER['PHP_SELF']}'>"
              ."<TABLE border='0' cellpadding='3' cellspacing='0'>"
              ."<TR valign='center'><TD>"
              ."Show: ".$this->oFormCtrl->Select( 'company', "", $raCompanies, array('attrs'=>"onChange='submit();'") )
@@ -356,7 +356,7 @@ class CSCICultivars_obsolete
         if( ($kfr = $this->oCSCI->kfrelSeeds->CreateRecordCursor($sCond, $raKFParms) )) {
             $this->oForm->SetKFR( $kfr );
 
-            $s .= "<FORM class='csciForm' method='post' action='${_SERVER['PHP_SELF']}'>"
+            $s .= "<FORM class='csciForm' method='post' action='{$_SERVER['PHP_SELF']}'>"
                  ."<DIV style='float:left'>"
                  .$this->oForm->FormTableStart();  // "<TABLE border='0' cellspacing='5' cellpadding='5'>";
             while( $kfr->CursorFetch() ) {

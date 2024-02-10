@@ -73,7 +73,7 @@ class SEEDLocal {
                      * In dev or testing mode, show an error message. In prod mode, show the other language.
                      */
                     if( $this->bDebug ) {
-                        $ret = "<FONT color='red'>__TRANSLATE_${key}_</FONT>";
+                        $ret = "<FONT color='red'>__TRANSLATE_{$key}_</FONT>";
                     } else {
                         $ret = @$lookup[ $this->lang == 'EN' ? 'FR' : 'EN' ];
                     }

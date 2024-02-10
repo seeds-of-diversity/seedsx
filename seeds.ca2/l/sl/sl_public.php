@@ -7,6 +7,7 @@ class SL_Public
     private $kfdb;
     private $oSVA;
     private $lang;
+    public $oApp;
 
     private $p_sMode = '';
     private $p_kPCV = 0;

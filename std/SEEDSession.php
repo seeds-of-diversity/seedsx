@@ -490,7 +490,7 @@ class SEEDSessionAuth extends SEEDSession
     {
         $sUid = @$raParms['valueUID'];
         return( $sErrMsg
-               ."<FORM method='post' action='${_SERVER['PHP_SELF']}'>"
+               ."<FORM method='post' action='{$_SERVER['PHP_SELF']}'>"
                .SEEDForm_Text( $this->httpNameUID, $sUid, "User" )."<BR/>"
                ."Password: <INPUT type=password name='{$this->httpNamePWD}'><BR/>"
                ."<INPUT type=submit></FORM>" );
@@ -817,7 +817,7 @@ class SEEDSessionAuthUI extends SEEDSessionAuth
 
         $sUid = SEEDSafeGPC_GetStrPlain( $this->httpNameUID );
         return( $sErrMsg
-               ."<FORM method='post' action='${_SERVER['PHP_SELF']}'>"
+               ."<FORM method='post' action='{$_SERVER['PHP_SELF']}'>"
                .SEEDForm_Hidden( $this->httpNameMode, 'createacct' )
                .SEEDForm_Text( $this->httpNameUID.'0', $sUid, "User" )."<BR/>"
                .SEEDForm_Text( $this->httpNamePWD.'1', "", "Password",       20, "", array('bPassword'=>true) )."<BR/>"
@@ -922,7 +922,7 @@ class SEEDSessionAuthUI extends SEEDSessionAuth
     {
         $sUid = SEEDSafeGPC_GetStrPlain( $this->httpNameUID );
         return( $sErrMsg
-               ."<FORM method='post' action='${_SERVER['PHP_SELF']}'>"
+               ."<FORM method='post' action='{$_SERVER['PHP_SELF']}'>"
                .SEEDForm_Hidden( $this->httpNameMode, 'sendpwd' )
                .SEEDForm_Hidden( $this->httpNameUID, $sUid )
                .SEEDForm_Text( $this->httpNameUID.'1', $sUid, "User" )
@@ -997,7 +997,7 @@ class SEEDSessionAuthUI extends SEEDSessionAuth
      */
     {
         return( $sErrMsg
-               ."<FORM method='post' action='${_SERVER['PHP_SELF']}'>"
+               ."<FORM method='post' action='{$_SERVER['PHP_SELF']}'>"
                .SEEDForm_Hidden( $this->httpNameMode, 'changepwd' )
                // Must use httpNamePWD'0' instead of just httpNamePWD because MakeSession uses it and clears it (it thinks we're logging in)
                .SEEDForm_Text( $this->httpNamePWD.'0', "", "Current password",   20, "", array('bPassword'=>true) )."<BR/>"

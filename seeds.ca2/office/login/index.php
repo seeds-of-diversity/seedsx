@@ -100,7 +100,7 @@ $raLoginDef = array(
         ) ),
     array( "My Account", "Mon compte",
            array(
-               array( "",                        "PUBLIC",        "Change Password", "", "${_SERVER['PHP_SELF']}?sessioncmd=changepwd" ),
+               array( "",                        "PUBLIC",        "Change Password", "", "{$_SERVER['PHP_SELF']}?sessioncmd=changepwd" ),
         ) ),
 );
 

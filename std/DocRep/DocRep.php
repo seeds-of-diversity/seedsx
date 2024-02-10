@@ -111,7 +111,7 @@ function DR_link( $href, $title, $desc, $parms = array() )
 
     echo "<A HREF='$href'";
     if( !empty($parms['target']) ) {
-        echo " target='${parms['target']}'";
+        echo " target='{$parms['target']}'";
     }
     echo "><B>$title</B></A>";
     if( !empty($desc) || !empty($parms['author']) || !empty($parms['date']) ) {

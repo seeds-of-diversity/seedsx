@@ -218,7 +218,7 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
 //             ."<div>".$oDFC->DrawItem('bNoSED')." Online MSD</div>"
              ."<div>".$oDFC->DrawItem('bPrintedMSD')." Printed MSD</div>"
 
-             ."<button onclick='doContactFormSubmit(".'$(this)'.",${raMbr['_key']},".$kfrOrder->Key()." )'>Save</button>"
+             ."<button onclick='doContactFormSubmit(".'$(this)'.",{$raMbr['_key']},".$kfrOrder->Key()." )'>Save</button>"
              ."</form>"
              ."<div class='mbroContactForm_feedback'></div>";
 

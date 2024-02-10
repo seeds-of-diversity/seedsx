@@ -143,7 +143,7 @@ function EV2_drawFilterControl()
         }
     }
 
-    $s = "<FORM action='${_SERVER['PHP_SELF']}'>"
+    $s = "<FORM action='{$_SERVER['PHP_SELF']}'>"
         ."Year: "
         .SEEDForm_Select( 'EVfltYear', $raYearOpts, SEEDSafeGPC_GetInt("EVfltYear"), array( "selectAttrs" => "onChange='submit();'" ) )
         ."</FORM>";
@@ -208,7 +208,7 @@ function BS_Row2( $raCols, $raParms = array() )
     $s = "<div class='row'>";
 
     foreach( $raCols as $raCol ) {
-        $s .= "<div class='${raCol[0]}'>${raCol[1]}</div>";
+        $s .= "<div class='{$raCol[0]}'>{$raCol[1]}</div>";
     }
 
     $s .= "</div>";  // row
