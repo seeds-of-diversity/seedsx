@@ -91,6 +91,10 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
                 }
 
                 while( $nLimit-- && $kfrP->CursorFetch() ) {
+// msdSeedList-GetData with srch parameter and LISTABLE would be better than this
+                    $dDone = $oApp->kfdb->Query1("SELECT dDone FROM {$oApp->DBName('seeds1')}.sed_curr_growers WHERE mbr_id='{$kfrP->Value('uid_seller')}'");
+                    if( !$oMSDLib->IsGrowerDoneFromDate($dDone) )  continue;
+
                     // DrawProduct always returns utf8 now - construct MSDQ with $raConfig['config_bUTF8']=false to get cp1252.
                     // So just utf8_encode the order info
                     $raJX['sOut'] .= SEEDCore_utf8_encode($oSB->DrawProduct( $kfrP, SEEDBasketProductHandler_Seeds::DETAIL_ALL, ['bUTF8'=>false] ));
