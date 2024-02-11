@@ -55,53 +55,25 @@ if( ($cmd = SEEDInput_Str( "cmd" )) ) {
 
 
     switch( $cmd ) {
-
         case "msdSearch":
-// Can probably use MSDQ::msdSeedList-GetData with an added srch parameter to do this fetch. No because it doesn't join on description like below (it joins on category instead)
-
-            $dbSrch = addslashes(SEEDInput_Str( "srch" ));
-
-            /* Get sp/cv of seeds where variety or description contains the search term
-             *
-             * The way to use PxPE is to specify the PE.k for each ProdExtra. Then you get one row for each product with three PE tuples
-             * to the right that you can use to filter the rows.
-             */
-//$oSB->oDB->kfdb->SetDebug(2);
-            if( ($kfrP = $oSB->oDB->GetKFRC( "PxPE3",
-                                             "product_type='seeds' AND "
-                                            ."eStatus='ACTIVE' AND "
-                                            ."PE1.k='species' AND "
-                                            ."PE2.k='variety' AND "
-                                            ."PE3.k='description' AND "
-                                            ."(PE2.v LIKE '%$dbSrch%' OR PE3.v LIKE '%$dbSrch%')",
-                                             array('sSortCol'=>'PE1_v,PE2_v') )) )
-            {
-                $nLimit = 100;
-                $nRows = $kfrP->CursorNumRows();
-
-                $raJX['raOut']['numrows-found'] = $nRows;
-                $raJX['raOut']['numrows-returned'] = max($nRows,$nLimit);
-
-                if( !$nRows ) {
-                    $raJX['sOut'] .= "<p>No results found.</p>";
-                } else if( $nRows > $nLimit ) {
-                    $raJX['sOut'] .= "<p>$nRows results found. Showing the first $nLimit.</p>";
-                } else {
-                    $raJX['sOut'] .= "<p>$nRows results found.</p>";
-                }
-
-                while( $nLimit-- && $kfrP->CursorFetch() ) {
-// msdSeedList-GetData with srch parameter and LISTABLE would be better than this
-                    $dDone = $oApp->kfdb->Query1("SELECT dDone FROM {$oApp->DBName('seeds1')}.sed_curr_growers WHERE mbr_id='{$kfrP->Value('uid_seller')}'");
-                    if( !$oMSDLib->IsGrowerDoneFromDate($dDone) )  continue;
-
-                    // DrawProduct always returns utf8 now - construct MSDQ with $raConfig['config_bUTF8']=false to get cp1252.
-                    // So just utf8_encode the order info
-                    $raJX['sOut'] .= SEEDCore_utf8_encode($oSB->DrawProduct( $kfrP, SEEDBasketProductHandler_Seeds::DETAIL_ALL, ['bUTF8'=>false] ));
-                    //$raJX['sOut'] .= SEEDCore_utf8_encode(drawMSDOrderInfo( $oSB, $kfrP ));
-                    $raJX['sOut'] .= "<div style='display:none' class='msd-order-info msd-order-info-".$kfrP->Key()."'></div>";
-                }
+            $sSrch = SEEDInput_Str("srch");
+            $rQ = $oMSDQ->Cmd('msdSeedList-GetData-Search', ['sSrch'=>$sSrch, 'eFilter'=>'LISTABLE','eDrawMode'=>"VIEW_REQUESTABLE VIEW_SHOWCATEGORY VIEW_SHOWSPECIES"]);
+            if( $rQ['bOk'] ) {
                 $raJX['bOk'] = true;
+                $nFound = $raJX['raOut']['numrows-found'] = intval(@$rQ['raMeta']['numrows-found']);
+                $nReturned = $raJX['raOut']['numrows-returned'] = @intval($rQ['raMeta']['numrows-returned']);
+
+                if( !$nFound ) {
+                    $raJX['sOut'] .= "<p>No results found.</p>";
+                } else if( $nFound > $nReturned ) {
+                    $raJX['sOut'] .= "<p>$nFound results found. Showing the first $nReturned.</p>";
+                } else {
+                    $raJX['sOut'] .= "<p>$nFound results found.</p>";
+                }
+                foreach( $rQ['raOut'] as $ra ) {
+                    $raJX['sOut'] .= $ra['sSeedDraw']
+                                    ."<div style='display:none' class='msd-order-info msd-order-info-{$ra['_key']}'></div>";
+                }
             }
             break;
 
