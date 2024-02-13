@@ -101,7 +101,7 @@ $(document).ready(function() {
         data : { qcmd: "srcSrcCvCultivarList", sMode: "TopChoices" },
         success: function(data){
             data = window.JSON.parse(data);
-            console.log(data);
+            //console.log(data);
             
             var wrapper = $('<div class="sub-header col-lg-12 col-md-12 col-sm-12 col-xs-12"></div>');
             var message = $('<div class="alert alert-success message"><p align="center">'
