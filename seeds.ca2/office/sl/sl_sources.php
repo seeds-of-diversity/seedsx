@@ -106,6 +106,7 @@ class MyConsole extends Console01KFUI
 {
     public $kfdb1;
     public $oSLSrcCommon;
+    private $oApp;
     private $oSLDBSrc;
     private $oCCv;
     private $oSources;
@@ -124,6 +125,8 @@ class MyConsole extends Console01KFUI
         parent::__construct( $kfdb2, $sess, $raParms );
         $this->oSLSrcCommon = new SLSourcesCommon( $kfdb1, $sess->GetUID(), SITE_LOG_ROOT."sl_sources.log" );
         $this->oSLDBSrc = new SLDB_Sources( $this->oW->kfdb, $this->oW->sess->GetUID() );
+
+        $this->oApp = SEEDConfig_NewAppConsole_LoginNotRequired([]);
     }
 
     function TabSetInit( $tsid, $tabname )
@@ -217,7 +220,7 @@ class MyConsole extends Console01KFUI
             case 1:  $ra['fk_sl_sources'] = "PGRC";   break;
             case 2:  $ra['fk_sl_sources'] = "NPGS";   break;
             default:
-                $ra['fk_sl_sources'] = $this->oW->kfdb->Query1( "SELECT name_en FROM seeds_1.sl_sources WHERE _key='$kSrc'" );
+                $ra['fk_sl_sources'] = $this->oW->kfdb->Query1( "SELECT name_en FROM {$this->oApp->DBName('seeds1')}.sl_sources WHERE _key='$kSrc'" );
         }
 
         return( $ra );
