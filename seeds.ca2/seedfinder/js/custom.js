@@ -101,7 +101,7 @@ $(document).ready(function() {
         data : { qcmd: "srcSrcCvCultivarList", sMode: "TopChoices" },
         success: function(data){
             data = window.JSON.parse(data);
-            //console.log(data);
+            console.log(data);
             
             var wrapper = $('<div class="sub-header col-lg-12 col-md-12 col-sm-12 col-xs-12"></div>');
             var message = $('<div class="alert alert-success message"><p align="center">'
@@ -254,7 +254,9 @@ $(document).ready(function() {
                 var fullwidth = '<div class="details-header col col-lg-12 col-md-12 col-sm-12 col-xs-12"></div>';
 
                 var headAvailable = '<h2 align="center">' + $this.find('.panel-body').text() 
-                                  + ', available from <strong>' + data.raOut.length + '</strong> suppliers</h2>';
+                  + " "+sp+" "
+//                + "<br/>(aka Amish Knuttle, Amish Nuttle, Cornhill, Corn Hill, Seneca Cornhill, Mayflower)<br/>"
+                                  + ' available from <strong>' + data.raOut.length + '</strong> suppliers</h2>';
 
                 var button = '<p align="center"><a href="#" onclick="return false;" data-backto="' + $this.attr('data-backto') + '" '
                            + 'class="btn btn-success btn-lg back">Back</a></p><br />';
