@@ -116,7 +116,7 @@
                     </div>
                     <div class="col col-lg-5 col-md-12 col-sm-12 col-xs-12 search">
                         <div class="content">
-                            <h1>[[ifeq:$lang|EN|Search| ]]</h1>
+                            <h1>[[ifeq:$lang|EN|Find| ]]</h1>
                             <form role="form" method="get" id="finder">
                                 <div class="form-group">
                                     <select name="sfAp_sp" id="sfAp_sp" class="form-control" required>
@@ -173,19 +173,17 @@
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                <div class="checkbox form-control">
-                                    [[ifeq:$lang|EN|Certified organic only|Certifi&eacute; biologique]]
-                                    <input name="sfAp_organic" id="sfAp_organic" class="organic" type="checkbox" value="1">
-                                </div>
-                                <!-- 
-                                <div class="checkbox form-control">
-                                    [[ifeq:$lang|EN|Bulk|Bulk]]
-                                    <input name="sfAp_bulk" id="sfAp_bulk" class="bulk" type="checkbox" value="1">
-                                </div>
-                                -->
-                                <button type="submit" class="btn btn-default">
-                                    [[ifeq:$lang|EN|Find|Trouver]]
-                                </button>
+	                                <div class="checkbox form-control">
+	                                    [[ifeq:$lang|EN|Certified organic only|Certifi&eacute; biologique]]
+	                                    <input name="sfAp_organic" id="sfAp_organic" class="organic" type="checkbox" value="1">
+	                                </div>
+	                                <div class="checkbox form-control" style='margin-top:5px'>
+	                                    [[ifeq:$lang|EN|Bulk Quantity Available|Bulk Quantity Available]]
+	                                    <input name="sfAp_bulk" id="sfAp_bulk" class="bulk" type="checkbox" value="1">
+	                                </div>
+	                                <button type="submit" class="btn btn-default">
+	                                    [[ifeq:$lang|EN|Find|Trouver]]
+	                                </button>
                                 </div>
                             </form>
                         </div>
