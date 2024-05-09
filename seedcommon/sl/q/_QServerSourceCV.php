@@ -103,14 +103,9 @@ class QServerSourceCV_Old
 
         $sMode = @$raParms['sMode'];
 
-        $raCond = array();
-        $raCondKluge = array();
+        $raCond = $raCondSyn = $raCondKluge = array();
         $raKFParms = array();
-        if( ($dbSrch = addslashes(@$raParms['sSrch'] ?? '')) ) {
-// add a parm that specifies whether the search term applies to P, S, or both
-            $raCond[] = "(P.name LIKE '%$dbSrch%' OR S.name_en LIKE '%$dbSrch%')";
-            $raCondKluge[] = "(SRCCV.ocv LIKE '%$dbSrch%' OR S.name_en LIKE '%$dbSrch%')";
-        }
+
         if( ($kSp = @$raParms['kSp']) ) {
             $raCond[] = "S._key='$kSp'";
             $raCondKluge[] = "S._key='$kSp'";
@@ -132,8 +127,22 @@ class QServerSourceCV_Old
             $raCond[] = "SRCCV.bulk";
             $raCondKluge[] = "SRCCV.bulk";
         }
+/* Could just copy $raCondKluge = $raCond here because they're indentical
+ */
 
+        /* Include sSrch. Matches on sl_pcv_syn.name only work for cultivars where sl_cv_sources.fk_sl_pcv.
+         */
+        if( ($dbSrch = addslashes(@$raParms['sSrch'] ?? '')) ) {
+// add a parm that specifies whether the search term applies to P, S, or both
+            $raCondSyn = $raCond;
+            $raCond[] = "(P.name LIKE '%$dbSrch%' OR S.name_en LIKE '%$dbSrch%')";
+            $raCondSyn[] = "(PY.name LIKE '%$dbSrch%')";
+            // no way to connect this to sl_pcv_syn
+            $raCondKluge[] = "(SRCCV.ocv LIKE '%$dbSrch%' OR S.name_en LIKE '%$dbSrch%')";
+        }
 
+        /* Get matches on species or pcv
+         */
         //$kfdb->SetDebug(2);
         $nItems = 0;
         $raKlugeCollector = array();
@@ -164,6 +173,33 @@ class QServerSourceCV_Old
             }
 
             if( $sMode == 'TopChoices' ) goto sortMe;
+
+//$this->oQ->oApp->kfdb->SetDebug(2);
+
+            /* Get matches in sl_pcv_syn
+             */
+            //include_once(SEEDLIB."sl/sldb.php");
+            //$oSLDB = new SLDBRosetta($this->oQ->oApp);
+            //if( ($kfr2 = $oSLDB->GetKFRCond('PYxPxS', implode(" AND ",$raCondSyn)) ) ) {
+            if( ($dbc = $this->oQ->kfdb->CursorOpen( "SELECT P._key AS P__key, S.name_en AS S_name_en, S.name_fr AS S_name_fr, P.name as P_name "
+                                          ."FROM sl_pcv_syn PY, sl_pcv P, sl_species S, sl_cv_sources SRCCV "
+                                          ."WHERE PY._status=0 AND P._status='0' AND S._status='0' AND SRCCV._status='0' AND "
+                                                ."PY.fk_sl_pcv=P._key AND P.fk_sl_species=S._key AND SRCCV.fk_sl_pcv=P._key AND "
+                                                ."SRCCV.fk_sl_sources >= 3 AND "
+                                                ."(".(implode(' AND ',$raCondSyn)).")" ) ) )
+            {
+                while( $ra = $this->oQ->kfdb->CursorFetch($dbc) ) {
+                    $k1 = $this->charset($ra['S_name_en'].' '.$ra['P_name']);
+                    if( !isset($raKlugeCollector[$k1]) ) {
+                        $raKlugeCollector[$k1] = [
+                            'S_name_en' => $this->charset($ra['S_name_en']),
+                            'S_name_fr' => $this->charset($ra['S_name_fr']),
+                            'P_name'    => $this->charset($ra['P_name']),
+                            'P__key'    => $ra['P__key']
+                        ];
+                    }
+                }
+            }
 
             if( !count($raCondKluge) )  $raCondKluge = array("1=1");    // this is not a good idea because there are potentially thousands of results
 
