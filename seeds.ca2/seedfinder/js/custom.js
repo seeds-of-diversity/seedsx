@@ -66,6 +66,7 @@ $(document).ready(function() {
                        +'<div class="panel panel-default">'
                            +'<div class="panel-heading"><h3 class="panel-title">[[S_name_en]]</h3></div>'
                            +'<div class="panel-body">[[P_name]]</div>'
+                           +'<div>[[sSynonyms]]</div>'
                        +'</div>'
                    +'</div>'
                +'</a>'
@@ -77,6 +78,7 @@ $(document).ready(function() {
                        +'<div class="panel panel-default">'
                            +'<div class="panel-heading"><h3 class="panel-title">[[S_name_en]]</h3></div>'
                            +'<div class="panel-body">[[P_name]]</div>'
+                           +'<div style="margin-top:-10px;margin-bottom:5px;text-align:center;color:#233449">[[sSynonyms]]</div>'
                        +'</div>'
                    +'</div>'
                +'</a>'
@@ -113,6 +115,7 @@ $(document).ready(function() {
             $.each(data.raOut, function(key,value) {
                 var b = cvblock_topChoices;
                 b = b.replace( "[[P_name]]", value.P_name );
+                b = b.replace( "[[sSynonyms]]", value.sSynonyms ? `(aka ${value.sSynonyms})` : "" );
                 b = b.replace( "[[P__key]]", value.P__key );
                 b = b.replace( "[[S_name_en]]", sfLang=="EN" ? value.S_name_en : value.S_name_fr );
                 $('.seeds-results').append( $( b ) );   // parse the cvblock into DOM and append as the last child of seeds-results
@@ -176,6 +179,7 @@ $(document).ready(function() {
 		            $.each(data.raOut, function(key,value) {
 		                var b = cvblock;
 		                b = b.replace( "[[P_name]]", value.P_name );
+		                b = b.replace( "[[sSynonyms]]", value.sSynonyms ? `(aka ${value.sSynonyms})` : "" );
 		                b = b.replace( "[[P__key]]", value.P__key );
 		                b = b.replace( "[[S_name_en]]", sfLang=="EN" ? value.S_name_en : value.S_name_fr );
 		                $('.seeds-results').append( $( b ) );   // parse the cvblock into DOM and append as the last child of seeds-results

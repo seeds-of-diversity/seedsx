@@ -169,6 +169,7 @@ class QServerSourceCV_Old
                         'S_name_fr' => $this->charset($kfr->Value('S_name_fr')),
                         'P_name'    => $this->charset($kfr->Value('P_name')),
                         'P__key'    => $kfr->Value('P__key'),
+                        'sSynonyms' => ''
                 );
             }
 
@@ -178,8 +179,8 @@ class QServerSourceCV_Old
 
             /* Get matches in sl_pcv_syn
              */
-            //include_once(SEEDLIB."sl/sldb.php");
-            //$oSLDB = new SLDBRosetta($this->oQ->oApp);
+            include_once(SEEDLIB."sl/sldb.php");
+            $oSLDB = new SLDBRosetta($this->oQ->oApp);
             //if( ($kfr2 = $oSLDB->GetKFRCond('PYxPxS', implode(" AND ",$raCondSyn)) ) ) {
             if( ($dbc = $this->oQ->kfdb->CursorOpen( "SELECT P._key AS P__key, S.name_en AS S_name_en, S.name_fr AS S_name_fr, P.name as P_name "
                                           ."FROM sl_pcv_syn PY, sl_pcv P, sl_species S, sl_cv_sources SRCCV "
@@ -195,10 +196,18 @@ class QServerSourceCV_Old
                             'S_name_en' => $this->charset($ra['S_name_en']),
                             'S_name_fr' => $this->charset($ra['S_name_fr']),
                             'P_name'    => $this->charset($ra['P_name']),
-                            'P__key'    => $ra['P__key']
+                            'P__key'    => $ra['P__key'],
+                            'sSynonyms' => ''
                         ];
                     }
                 }
+            }
+
+            /* For each cultivar collected so far, add a string telling its synonyms.
+             */
+            foreach($raKlugeCollector as $k=>$ra) {
+                $raSyn = $oSLDB->Get1List('PY','name',"PY.fk_sl_pcv={$ra['P__key']}");
+                $raKlugeCollector[$k]['sSynonyms'] = implode(', ', $raSyn);
             }
 
             if( !count($raCondKluge) )  $raCondKluge = array("1=1");    // this is not a good idea because there are potentially thousands of results
@@ -221,6 +230,7 @@ class QServerSourceCV_Old
                         'S_name_fr' => $this->charset($ra['S_name_fr']),
                         'P_name'    => $this->charset($ra['ocv']),
                         'P__key'    => $ra['kluge_key'] + 10000000,
+                        'sSynonyms' => ""   // can't get these for non-indexed cv
                     );
                 }
             }
