@@ -256,7 +256,7 @@ $(document).ready(function() {
                 $.ajax({
                     async: false,
                     type: "POST",
-                    url: "http://localhost/~bob/seedsx/seeds.ca2/app/q/index.php",
+                    url: "https://seeds.ca/app/q/index.php",
                     data: { qcmd: "rosetta-cultivaroverview", kPcv: kPcv },
                     success: function(data) {
                         data = window.JSON.parse(data);
