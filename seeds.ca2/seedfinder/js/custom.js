@@ -249,12 +249,33 @@ $(document).ready(function() {
                     $(".fmt2").hide();
                 }
                 
+                let kPcv = $this.attr('data-kPcv');
+                let sSyn = "";
+                
+                // Get synonyms
+                $.ajax({
+                    async: false,
+                    type: "POST",
+                    url: "http://localhost/~bob/seedsx/seeds.ca2/app/q/index.php",
+                    data: { qcmd: "rosetta-cultivaroverview", kPcv: kPcv },
+                    success: function(data) {
+                        data = window.JSON.parse(data);
+                        if( typeof(data.raOut.raPY) != 'undefined' ) {
+                            for(const syn of data.raOut.raPY) {
+                                sSyn += (sSyn ? " / " : "") + syn.name;
+                            }
+                            sSyn = `<br/>(aka ${sSyn})<br/>`;
+                        }        
+                    },
+                }).done(function() {
+                    $.scrollTo($('.results').position().top - 80, 200);
+                });
                 
                 // full-width column
                 var fullwidth = '<div class="details-header col col-lg-12 col-md-12 col-sm-12 col-xs-12"></div>';
 
                 var headAvailable = '<h2 align="center">' + $this.find('.panel-body').text() 
-                  + " "+sp+" "
+                  + " "+sp+" "+sSyn
 //                + "<br/>(aka Amish Knuttle, Amish Nuttle, Cornhill, Corn Hill, Seneca Cornhill, Mayflower)<br/>"
                                   + ' available from <strong>' + data.raOut.length + '</strong> suppliers</h2>';
 
