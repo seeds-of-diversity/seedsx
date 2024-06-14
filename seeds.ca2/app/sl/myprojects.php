@@ -8,4 +8,4 @@
 
 if( !defined("SITEROOT") )  define("SITEROOT", "../../");
 include_once( SITEROOT."site.php" );
-include_once( SEEDAPP."sl/app_myprojects.php" );
+include_once( SEEDAPP."sl/myprojects/app_myprojects.php" );

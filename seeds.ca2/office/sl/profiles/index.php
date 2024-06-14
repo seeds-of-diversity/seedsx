@@ -170,7 +170,7 @@ if( $kVI ) {
     if( SEEDInput_Int('doForm') ) {
         // Show the form
         $sReport .= "<h3>Edit Record for $currSp : $currCv (#$kVI)</h3>"
-                   .$oCP->oProfilesReport->DrawVIForm( $kVI, $oComp );
+                   .$oCP->oProfilesReport->DrawVIForm( $kVI, $oComp, 'full' );
     } else {
         // Show the summary
         $sReport .= "<div style='border-left:1px solid #ddd;border-bottom:1px solid #ddd'>"
