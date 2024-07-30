@@ -8,7 +8,7 @@ static public $raDefsTomato = array(
 'tomato_SoD_s__vigour'         => ['l_EN' => "Plant vigour",
                                    'q_EN' => "Any comments on how vigorously it grew and suckered?"],
 
-'tomato_SoD_m__planthabit'     => array( 'l_EN' => "Plant growth type",
+'tomato_SoD_m__planthabit'     => array( 'l_EN' => "Plant growth habit",
 									 	 'q_EN' => "What type of plant is this tomato?
                                                     <ul><li>dwarf: very short</li>
                                                         <li>determinate : about 2-3 feet tall, produces one main crop of fruit then mostly stops growing,
