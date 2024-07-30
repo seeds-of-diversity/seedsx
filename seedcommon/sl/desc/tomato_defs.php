@@ -4,6 +4,10 @@ class SLDescDefsTomato
 
 static public $raDefsTomato = array(
 //Mid-Season
+
+'tomato_SoD_s__vigour'         => ['l_EN' => "Plant vigour",
+                                   'q_EN' => "Any comments on how vigorously it grew and suckered?"],
+
 'tomato_SoD_m__planthabit'     => array( 'l_EN' => "Plant growth type",
 									 	 'q_EN' => "What type of plant is this tomato?",
 									 	 'm' => array(
@@ -184,6 +188,22 @@ static public $raDefsTomato = array(
 												5=>"somewhat fuzzy",
 												7=>"densely fuzzy") ),
 
+'tomato_SoD_m__fruitsizeuniformity'  => ['l_EN' => "Fruit size uniformity",
+                                         'q_EN' => "How uniform is fruit size within a plant?",
+                                         'm' => [ 0=>"don't know",
+                                                  1=>"Very uniform",
+                                                  3=>"Slightly different sizes",
+                                                  7=>"Various fruit sizes"]],
+
+'tomato_SoD_m__fruitcategory'        => ['l_EN' => "Fruit category",
+                                         'q_EN' => "Which category best describes the variety?",
+                                         'm' => [ 0=>"don't know",
+                                                  1=>"slicer",
+                                                  2=>"paste/canning",
+                                                  3=>"saladette",
+                                                  4=>"cherry",
+                                                  5=>"grape",
+                                                  6=>"cluster"]],
+
 );
 }
-?>
