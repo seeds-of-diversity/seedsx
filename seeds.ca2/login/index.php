@@ -58,13 +58,12 @@ if( $oApp->sess->GetUID() == 1499 ) { // $sess->TestPerm( "Traductions", "W" ) |
 $raLoginDef = array(
     array( "Web site", "Site Web",
            array(
-               array( "user",                    "W DocRepMgr",   "Update drupal web site" ),
                array( "d/docedit.php",           "W DocRepMgr",   "Update SoD Docs Site" ),
                array( "app/traductions.php",     "W Traductions", "Traductions / Translations" ),
         ) ),
     array( "Member Seed Directory", "Catalogue de semences",
            array(
-               array( "app/seedexchange",        "PUBLIC",        "Member Seed Directory listings", "Catalogue de semences" ),
+               array( "seedexchange",            "PUBLIC",        "Member Seed Directory listings", "Catalogue de semences" ),
                array( "app/mbr/edit.php",        "W sed",         "Edit my Seed Directory Listings" ),
         ) ),
 
@@ -76,9 +75,9 @@ $raLoginDef = array(
 
                ) ),
            ),
-    array( "Variety Descriptions", "Variety Descriptions",
+    array( "My Projects", "My Projects",
            array(
-               array( "bauta/descriptions",      "PUBLIC",        "Record Your Crop Descriptions", "Record Your Crop Descriptions" ),
+               array( "app/sl/myprojects.php",  "PUBLIC",        "Record Your Crop Descriptions", "Record Your Crop Descriptions" ),
         ) ),
     array( "Logos", "",
            array(
