@@ -9,7 +9,14 @@ static public $raDefsTomato = array(
                                    'q_EN' => "Any comments on how vigorously it grew and suckered?"],
 
 'tomato_SoD_m__planthabit'     => array( 'l_EN' => "Plant growth type",
-									 	 'q_EN' => "What type of plant is this tomato?",
+									 	 'q_EN' => "What type of plant is this tomato?
+                                                    <ul><li>dwarf: very short</li>
+                                                        <li>determinate : about 2-3 feet tall, produces one main crop of fruit then mostly stops growing,
+                                                            little if any side growth, usually don't need much support</li>
+                                                        <li>semi-determinate : about 3-5 feet tall, some slow side growth, grow well on short stakes</li>
+                                                        <li>indeterminate : continuously grows long vines with new flower clusters until frost,
+                                                                            widely-spaced branches and lots of side shoots, needs staking</li>
+                                                    </ul>",
 									 	 'm' => array(
 									 			0=>"don't know",
 									 			1=>"dwarf (very short)",
