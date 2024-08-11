@@ -318,8 +318,7 @@ class Drupal8Template
 
             case 'diversity/seed-library-search':
                 include_once( SEEDAPP."sl/search.php" );
-                $o = new SLSearchApp( $this->oApp );
-                $s = SEEDCore_utf8_encode( $o->Draw() );
+                $s = SEEDCore_utf8_encode( (new SLSearchApp($this->oApp))->Draw() );
                 break;
 
             case 'diversity/seed-library-list':
