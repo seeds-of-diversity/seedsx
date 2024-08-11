@@ -16,10 +16,8 @@ class CropProfiles
 
     function __construct( SEEDAppConsole $oApp )
     {
-        $this->oProfilesDB = new SLProfilesDB( $oApp->kfdb, $oApp->sess->GetUID(), $oApp->logdir );
+        $this->oProfilesDB = new SLProfilesDB( $oApp );
         $this->oProfilesDefs = new SLProfilesDefs( $this->oProfilesDB );
         $this->oProfilesReport = new SLProfilesReport( $this->oProfilesDB, $this->oProfilesDefs, $oApp );
     }
 }
-
-?>

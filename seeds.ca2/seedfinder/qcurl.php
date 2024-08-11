@@ -19,6 +19,7 @@ switch( @$_REQUEST['cmd'] ) {
         );
         if( ($p = intval(@$_REQUEST['sfAp_sp'])) )       $post['kSp'] = $p;
         if( ($p = intval(@$_REQUEST['sfAp_organic'])) )  $post['bOrganic'] = $p;
+        if( ($p = intval(@$_REQUEST['sfAp_bulk'])) )     $post['bBulk'] = $p;
         if( ($p = @$_REQUEST['sfAp_region']) )           $post['sRegions'] = $p;
         if( ($p = @$_REQUEST['sfAp_srch']) )             $post['sSrch'] = $p;
         break;

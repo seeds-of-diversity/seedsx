@@ -2,7 +2,7 @@
 
 /* _QServerSourceCV
  *
- * Copyright 2015-2018 Seeds of Diversity Canada
+ * Copyright 2015-2024 Seeds of Diversity Canada
  *
  * Serve queries about sources of cultivars
  * (basically queries involving sl_sources and/or sl_cv_sources)
@@ -58,6 +58,7 @@ class QServerSourceCV_Old
             $raParms = array();
             if( ($p = intval(@$parms['kSp'])) )       $raParms['kSp'] = $p;
             if( ($p = intval(@$parms['bOrganic'])) )  $raParms['bOrganic'] = $p;
+            if( ($p = intval(@$parms['bBulk'])) )     $raParms['bBulk'] = $p;
             if( ($p = @$parms['sSrch']) )             $raParms['sSrch'] = $p;
             if( ($p = @$parms['sRegions']) )          $raParms['sRegions'] = $p;
             if( ($p = @$parms['sMode']) )             $raParms['sMode'] = $p;
@@ -102,14 +103,9 @@ class QServerSourceCV_Old
 
         $sMode = @$raParms['sMode'];
 
-        $raCond = array();
-        $raCondKluge = array();
+        $raCond = $raCondSyn = $raCondKluge = array();
         $raKFParms = array();
-        if( ($dbSrch = addslashes(@$raParms['sSrch'])) ) {
-// add a parm that specifies whether the search term applies to P, S, or both
-            $raCond[] = "(P.name LIKE '%$dbSrch%' OR S.name_en LIKE '%$dbSrch%')";
-            $raCondKluge[] = "(SRCCV.ocv LIKE '%$dbSrch%' OR S.name_en LIKE '%$dbSrch%')";
-        }
+
         if( ($kSp = @$raParms['kSp']) ) {
             $raCond[] = "S._key='$kSp'";
             $raCondKluge[] = "S._key='$kSp'";
@@ -127,9 +123,26 @@ class QServerSourceCV_Old
             $raCond[] = "SRCCV.bOrganic";
             $raCondKluge[] = "SRCCV.bOrganic";
         }
+        if( ($bBulk = @$raParms['bBulk']) ) {
+            $raCond[] = "SRCCV.bulk";
+            $raCondKluge[] = "SRCCV.bulk";
+        }
+/* Could just copy $raCondKluge = $raCond here because they're indentical
+ */
 
+        /* Include sSrch. Matches on sl_pcv_syn.name only work for cultivars where sl_cv_sources.fk_sl_pcv.
+         */
+        if( ($dbSrch = addslashes(@$raParms['sSrch'] ?? '')) ) {
+// add a parm that specifies whether the search term applies to P, S, or both
+            $raCondSyn = $raCond;
+            $raCond[] = "(P.name LIKE '%$dbSrch%' OR S.name_en LIKE '%$dbSrch%')";
+            $raCondSyn[] = "(PY.name LIKE '%$dbSrch%')";
+            // no way to connect this to sl_pcv_syn
+            $raCondKluge[] = "(SRCCV.ocv LIKE '%$dbSrch%' OR S.name_en LIKE '%$dbSrch%')";
+        }
 
-
+        /* Get matches on species or pcv
+         */
         //$kfdb->SetDebug(2);
         $nItems = 0;
         $raKlugeCollector = array();
@@ -156,10 +169,46 @@ class QServerSourceCV_Old
                         'S_name_fr' => $this->charset($kfr->Value('S_name_fr')),
                         'P_name'    => $this->charset($kfr->Value('P_name')),
                         'P__key'    => $kfr->Value('P__key'),
+                        'sSynonyms' => ''
                 );
             }
 
             if( $sMode == 'TopChoices' ) goto sortMe;
+
+//$this->oQ->oApp->kfdb->SetDebug(2);
+
+            /* Get matches in sl_pcv_syn
+             */
+            include_once(SEEDLIB."sl/sldb.php");
+            $oSLDB = new SLDBRosetta($this->oQ->oApp);
+            //if( ($kfr2 = $oSLDB->GetKFRCond('PYxPxS', implode(" AND ",$raCondSyn)) ) ) {
+            if( ($dbc = $this->oQ->kfdb->CursorOpen( "SELECT P._key AS P__key, S.name_en AS S_name_en, S.name_fr AS S_name_fr, P.name as P_name "
+                                          ."FROM sl_pcv_syn PY, sl_pcv P, sl_species S, sl_cv_sources SRCCV "
+                                          ."WHERE PY._status=0 AND P._status='0' AND S._status='0' AND SRCCV._status='0' AND "
+                                                ."PY.fk_sl_pcv=P._key AND P.fk_sl_species=S._key AND SRCCV.fk_sl_pcv=P._key AND "
+                                                ."SRCCV.fk_sl_sources >= 3 AND "
+                                                ."(".(implode(' AND ',$raCondSyn)).")" ) ) )
+            {
+                while( $ra = $this->oQ->kfdb->CursorFetch($dbc) ) {
+                    $k1 = $this->charset($ra['S_name_en'].' '.$ra['P_name']);
+                    if( !isset($raKlugeCollector[$k1]) ) {
+                        $raKlugeCollector[$k1] = [
+                            'S_name_en' => $this->charset($ra['S_name_en']),
+                            'S_name_fr' => $this->charset($ra['S_name_fr']),
+                            'P_name'    => $this->charset($ra['P_name']),
+                            'P__key'    => $ra['P__key'],
+                            'sSynonyms' => ''
+                        ];
+                    }
+                }
+            }
+
+            /* For each cultivar collected so far, add a string telling its synonyms.
+             */
+            foreach($raKlugeCollector as $k=>$ra) {
+                $raSyn = $oSLDB->Get1List('PY','name',"PY.fk_sl_pcv={$ra['P__key']}");
+                $raKlugeCollector[$k]['sSynonyms'] = implode(', ', $raSyn);
+            }
 
             if( !count($raCondKluge) )  $raCondKluge = array("1=1");    // this is not a good idea because there are potentially thousands of results
 
@@ -181,6 +230,7 @@ class QServerSourceCV_Old
                         'S_name_fr' => $this->charset($ra['S_name_fr']),
                         'P_name'    => $this->charset($ra['ocv']),
                         'P__key'    => $ra['kluge_key'] + 10000000,
+                        'sSynonyms' => ""   // can't get these for non-indexed cv
                     );
                 }
             }
@@ -251,6 +301,7 @@ class QServerSourceCV_Old
         $kPcv     = intval(@$raParms['kPcv']);
         $kSp      = intval(@$raParms['kSp']);
         $bOrganic = intval(@$raParms['bOrganic']);
+        $bBulk    = intval(@$raParms['bBulk']);
         $bPGRC    = intval(@$raParms['bPGRC']);
         $bNPGS    = intval(@$raParms['bNPGS']);
 
@@ -262,8 +313,8 @@ class QServerSourceCV_Old
         if( $kPcv ) {
 // kluge: some kPcv are fakes, actually SRCCV._key+10,000,000 representing the ocv at that row
 if( $kPcv > 10000000 ) {
-    if( ($ocv = $this->oSLDBSrc->kfdb->Query1("SELECT ocv FROM seeds_1.sl_cv_sources WHERE _key='".($kPcv-10000000)."'")) &&
-        ($osp = $this->oSLDBSrc->kfdb->Query1("SELECT osp FROM seeds_1.sl_cv_sources WHERE _key='".($kPcv-10000000)."'")) ) {
+    if( ($ocv = $this->oSLDBSrc->kfdb->Query1("SELECT ocv FROM {$this->oQ->oApp->DBName('seeds1')}.sl_cv_sources WHERE _key='".($kPcv-10000000)."'")) &&
+        ($osp = $this->oSLDBSrc->kfdb->Query1("SELECT osp FROM {$this->oQ->oApp->DBName('seeds1')}.sl_cv_sources WHERE _key='".($kPcv-10000000)."'")) ) {
         $raCond[] = "SRCCV.osp='".addslashes($osp)."' AND SRCCV.ocv='".addslashes($ocv)."'";
     }
 } else {
@@ -277,6 +328,9 @@ if( $kPcv > 10000000 ) {
         }
         if( $bOrganic ) {
             $raCond[] = "SRCCV.bOrganic";
+        }
+        if( $bBulk ) {
+            $raCond[] = "SRCCV.bulk";
         }
 
         /* Compose seedbank / provinces subcondition
@@ -503,7 +557,7 @@ if( ($k = intval(@$parms['kPcv'])) && $k > 10000000 ) $raParms['kPcvKluge'] = $k
 
 if( ($k = intval(@$raParms['kPcvKluge'])) ) {
 // kluge: some kPcv are fakes, actually SRCCV._key+10,000,000 representing the ocv at that row
-    if( ($ra = $this->oSLDBSrc->kfdb->QueryRA("SELECT osp,ocv FROM seeds_1.sl_cv_sources WHERE _key='".($k-10000000)."'")) ) {
+    if( ($ra = $this->oSLDBSrc->kfdb->QueryRA("SELECT osp,ocv FROM {$this->oQ->oApp->DBName('seeds1')}.sl_cv_sources WHERE _key='".($k-10000000)."'")) ) {
         $raCond[] = "SRCCV.osp='".addslashes($ra['osp'])."' AND SRCCV.ocv='".addslashes($ra['ocv'])."'";
     }
 }

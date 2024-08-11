@@ -4,8 +4,19 @@ class SLDescDefsTomato
 
 static public $raDefsTomato = array(
 //Mid-Season
-'tomato_SoD_m__planthabit'     => array( 'l_EN' => "Plant growth type",
-									 	 'q_EN' => "What type of plant is this tomato?",
+
+'tomato_SoD_s__vigour'         => ['l_EN' => "Plant vigour",
+                                   'q_EN' => "Any comments on how vigorously it grew and suckered?"],
+
+'tomato_SoD_m__planthabit'     => array( 'l_EN' => "Plant growth habit",
+									 	 'q_EN' => "What type of plant is this tomato?
+                                                    <ul><li>dwarf: very short</li>
+                                                        <li>determinate : about 2-3 feet tall, produces one main crop of fruit then mostly stops growing,
+                                                            little if any side growth, usually don't need much support</li>
+                                                        <li>semi-determinate : about 3-5 feet tall, some slow side growth, grow well on short stakes</li>
+                                                        <li>indeterminate : continuously grows long vines with new flower clusters until frost,
+                                                                            widely-spaced branches and lots of side shoots, needs staking</li>
+                                                    </ul>",
 									 	 'm' => array(
 									 			0=>"don't know",
 									 			1=>"dwarf (very short)",
@@ -184,6 +195,22 @@ static public $raDefsTomato = array(
 												5=>"somewhat fuzzy",
 												7=>"densely fuzzy") ),
 
+'tomato_SoD_m__fruitsizeuniformity'  => ['l_EN' => "Fruit size uniformity",
+                                         'q_EN' => "How uniform is fruit size within a plant?",
+                                         'm' => [ 0=>"don't know",
+                                                  1=>"Very uniform",
+                                                  3=>"Slightly different sizes",
+                                                  7=>"Various fruit sizes"]],
+
+'tomato_SoD_m__fruitcategory'        => ['l_EN' => "Fruit category",
+                                         'q_EN' => "Which category best describes the variety?",
+                                         'm' => [ 0=>"don't know",
+                                                  1=>"slicer",
+                                                  2=>"paste/canning",
+                                                  3=>"saladette",
+                                                  4=>"cherry",
+                                                  5=>"grape",
+                                                  6=>"cluster"]],
+
 );
 }
-?>

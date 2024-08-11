@@ -117,9 +117,9 @@ $sVI = "";
 $oGrid = new SEEDBootstrapGrid( array( 'classCol1'=>'col-sm-3', 'classCol2'=>'col-sm-5', 'classCol3'=>'col-sm-2', 'classCol4'=>'col-sm-2' ) );
 if( ($kfr = $oCP->oProfilesDB->GetKFRC( "VISite", "", array('sSortCol'=>$sSort,'bSortDown'=>$bSortDown))) ) {
     while( $kfr->CursorFetch() ) {
-        list($sp,$cv) = $oCP->oProfilesDB->ComputeVarInstName( $kfr->ValuesRA() );
+        list($psp,$sp,$cv) = $oCP->oProfilesDB->ComputeVarInstName($kfr);
 
-        $raList[] = array( 'sp'=>$sp, 'cv'=>$cv, 'year'=>$kfr->Value('year'), 'observer'=>$kfr->Value('Site_uid'),
+        $raList[] = array( 'sp'=>$psp, 'cv'=>$cv, 'year'=>$kfr->Value('year'), 'observer'=>$kfr->Value('Site_uid'),
                            'k'=>$kfr->Key(),'_key'=>$kfr->Key(), 'sfuiLink'=>"?kVi=".$kfr->Key() );
 
         if( $kfr->Key() == $kVI ) {
@@ -170,7 +170,7 @@ if( $kVI ) {
     if( SEEDInput_Int('doForm') ) {
         // Show the form
         $sReport .= "<h3>Edit Record for $currSp : $currCv (#$kVI)</h3>"
-                   .$oCP->oProfilesReport->DrawVIForm( $kVI, $oComp );
+                   .$oCP->oProfilesReport->DrawVIForm( $kVI, $oComp, 'full' );
     } else {
         // Show the summary
         $sReport .= "<div style='border-left:1px solid #ddd;border-bottom:1px solid #ddd'>"

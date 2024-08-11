@@ -291,7 +291,9 @@ class Drupal8Template
                         $kSp = intval(substr($sSp,3));
                     }
                     if( $kSp ) {
-                        $s .= "<p><a href='$pathSelf'>Back to Companies</a></p>"
+                        $s .= "<p><a href='$pathSelf'>Back to Companies</a></p>
+                                    <style>.slsrc_dcvblock_companies { padding-left:40px }
+                                    </style>"
                              .$oSLSrc->DrawCompaniesVarieties( $this->oApp, $kSp, $sSp, $lang,
                                   array( /*'sTemplate' => "<div style=''><a href='".Site_path_self()."?psp=[[var:k]]'>[[var:name]] ([[var:n]])</a></div>"*/ ) );
                     }
