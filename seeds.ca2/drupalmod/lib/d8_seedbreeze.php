@@ -311,9 +311,9 @@ class Drupal8Template
                 break;
 
             case 'store':
-            case 'boutique':
+            case 'boutique':    // deprecate and use store lang=FR
                 include_once( SITEROOT."l/mbr/checkout.php" );
-                $s = DrawMbr( $this->kfdb, $contentName == 'store' ? "EN" : "FR", true );
+                $s = DrawMbr( $this->kfdb, $contentName=='boutique' ? 'FR' : $lang, true );
                 //$s = iconv( 'ISO-8859-1', 'UTF-8', $s );
                 $s = iconv( 'Windows-1252', 'UTF-8//IGNORE', $s );
                 break;
