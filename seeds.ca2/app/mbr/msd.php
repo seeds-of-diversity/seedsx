@@ -93,7 +93,7 @@ class msdBasket extends SEEDBasketStore_Old
             'fTemplates' => array( SEEDAPP."templates/msd.html" ),
             'sFormCid'   => 'Plain',
             'raResolvers'=> array( array( 'fn'=>array($this,'ResolveTag'), 'raParms'=>array() ) ),
-            'raVars'      => array( 'msdYear'=> date('Y') )
+            'raVars'      => array( 'msdYear'=> $this->oMSDLib->GetCurrYear() )
         );
         $this->oTmpl = SEEDTemplateMaker( $raTmplParms );
 
