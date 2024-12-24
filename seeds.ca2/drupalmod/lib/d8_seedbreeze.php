@@ -258,9 +258,9 @@ class Drupal8Template
                 $s = DrawEvents( $this->kfdb, $contentName == 'events' ? "EN" : "FR" );
                 $s = iconv( 'Windows-1252', 'UTF-8//IGNORE', $s );
                 break;
-            case 'csci_species':
-            case 'csci_companies':
-            case 'csci_companies_varieties':
+            case 'csci_species_X':
+            case 'csci_companies_X':
+            case 'csci_companies_varieties_X':
                 /* csci_species draws the species list.
                  * csci_companies draws the companies list.
                  * csci_companies_varieties draws the varieties list if psp has a value,

@@ -25,6 +25,7 @@ class SLSourcesCommon
         $this->initKfrel( $kfdb, $uid, $sLogFile );
     }
 
+/* copied to QServerRosetta::spName */
     function GetSpeciesName( $kSpecies, $lang )
     {
         $s = "";
@@ -104,7 +105,7 @@ class SLSourcesCommon
         return( strcasecmp( $a['name'], $b['name'] ) );
     }
 
-// Move to SLSourcesDraw
+/* copied to SLSourceLib::DrawCompanyBlock */
     function SourceItemDraw( $kfr, $lang = 'EN', $raParms = array() )
     {
         $s = "";
@@ -264,6 +265,7 @@ Actually these styles are just defined in drupal page-tpl because it isn't neces
     }
 */
 
+/* copied to csci_page.php */
     function DrawSpeciesList( $sCond, $lang, $raParms = array() )
     {
         $s = "";
@@ -288,6 +290,7 @@ Actually these styles are just defined in drupal page-tpl because it isn't neces
         return( $s );
     }
 
+/* copied to csci_page.php */
     function DrawCompanies( $lang )
     {
         $s = "<h3>Seed Companies in Canada</h3>";
@@ -302,6 +305,10 @@ Actually these styles are just defined in drupal page-tpl because it isn't neces
         return( $s );
     }
 
+
+
+
+/* copied to csci_page.php */
     function DrawCompaniesVarieties( SEEDAppConsole $oApp, $kSp, $sSpKluge, $lang, $raParms = array() )
     {
 include_once( SEEDCOMMON."siteutil.php" );
