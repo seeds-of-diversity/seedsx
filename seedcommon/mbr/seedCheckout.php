@@ -43,40 +43,35 @@ class SoDMbrOrderCheckout extends MbrOrderCheckout
         $raDon = [35, 75, 100];
         $bDonX = !in_array($this->oKForm->oDS->Value('donation'), $raDon);     // using the type-your-own-number box
         $s .= $this->FormBox( $this->oL->S('Give a Charitable Donation'),
-                              "<div style='font-weight:bold;margin-bottom:5px'>{$this->oL->S('Give a Charitable Donation')}</div>"
-                             ."<div class='mbro_help'>".$this->oL->S('donation_desc')."</div>"
-                             ."<div class='mbro_ctrl' style='margin:1em 0 0 2em'>"
-//                                 ."<table border='0' cellspacing='0' cellpadding='10' style='margin-left:-10px;margin-top:5px'>"
-                                 .SEEDCore_ArrayExpandSeries( $raDon,
-                                                              function($k,$d) {
-                                                                  return("{$this->oKForm->Radio('donation','',$d)}&nbsp;{$this->oL->Dollar($d)}<br/>" );
-                                                              } )
-  //                               ."<tr><td style='padding-left:15px'>"
-                                     ."<input type='radio' style='display:inline' name='".$this->oKForm->oFormParms->sfParmField("donation")."' value='X'".($bDonX ? " checked" : "")."/>&nbsp;"
-                                     ."<input type='text' style='width:6em;display:inline' name='{$this->oKForm->oFormParms->sfParmField('donationX')}'
-                                                                   value='".($bDonX ? $this->myNumber($this->oKForm->oDS->valueEnt('donationX')) : "")."'/>"
-                               //  ."</div>"
-    //                             ."</tr></table>"
-                             ."</div>"
-                             ."<div class='mbro_ctrl' style='margin-top:2em'>
-                                   <p>Use my donation for (choose as many as you want):</p>
-                                   <div style='margin-left:2em'>"
-                                     .$this->oKForm->Checkbox('donpref_sl',  "Seed conservation: rescuing and distributing rare seed varieties")."<br/>"
-                                     .$this->oKForm->Checkbox('donpref_yfs', "Youth in Food Systems: inspiring youth to become the sustainable food leaders of tomorrow")."<br/>"
-                                     .$this->oKForm->Checkbox('donpref_ss',  "Seedy Saturdays/Sundays: supporting local community seed events")."<br/>"
-                                     .$this->oKForm->Checkbox('donpref_any', "Where it's needed the most", ['checked'=>1])
-                                 ."</div>"
-                             ."</div>"
-                             // display:inline-block makes the div width no larger than the content width
-                             ."<div style='border:1px solid #777;margin-top:1em;padding:1em;display:inline-block;'>
-                                 <p>We also encourage donations through CanadaHelps, a secure and trusted donation platform.<br/>Please use CanadaHelps for instant donations, gifts of securities, and monthly donations.</p>
-                                 <p style='font-size:1.2em'><a target='_blank' href='https://www.canadahelps.org/en/charities/seeds-of-diversity-canada-programme-semencier-du-patrimoin/'>
-                                    <img style='height:3em' src='https://seeds.ca/d?n=www/home/ch-logo.png' border='0' alt='Donate Now Through CanadaHelps.org!'/> Go to CanadaHelps</a>
-                                 </p>"
-                             ."</div>",
-                             false );
+                    "<div style='font-weight:bold;margin-bottom:5px'>{$this->oL->S('Give a Charitable Donation')}</div>
+                     <div class='mbro_help'>".$this->oL->S('donation_desc')."</div>
+                     <div class='mbro_ctrl' style='margin:1em 0 0 2em'>"
+                        .SEEDCore_ArrayExpandSeries( $raDon,
+                                                     function($k,$d) {
+                                                         return("{$this->oKForm->Radio('donation','',$d)}&nbsp;{$this->oL->Dollar($d)}<br/>" );
+                                                     } )
 
-
+                        ."<input type='radio' style='display:inline' name='{$this->oKForm->oFormParms->sfParmField("donation")}' value='X'".($bDonX ? " checked" : "")."/>&nbsp;
+                          <input type='text' style='width:6em;display:inline' name='{$this->oKForm->oFormParms->sfParmField('donationX')}'
+                                             value='".($bDonX ? $this->myNumber($this->oKForm->oDS->valueEnt('donationX')) : "")."'/>
+                     </div>
+                     <div class='mbro_ctrl' style='margin-top:2em'>
+                         <p>Use my donation for (choose as many as you want):</p>
+                         <div style='margin-left:2em'>
+                             {$this->oKForm->Checkbox('donpref_sl',  "Seed conservation: rescuing and distributing rare seed varieties")}<br/>
+                             {$this->oKForm->Checkbox('donpref_yfs', "Youth in Food Systems: inspiring youth to become the sustainable food leaders of tomorrow")}<br/>
+                             {$this->oKForm->Checkbox('donpref_ss',  "Seedy Saturdays/Sundays: supporting local community seed events")}<br/>
+                             {$this->oKForm->Checkbox('donpref_any', "Where it's needed the most", ['checked'=>1])}
+                         </div>
+                     </div>"
+                    // display:inline-block makes the div width no larger than the content width
+                   ."<div style='border:1px solid #777;margin-top:1em;padding:1em;display:inline-block;'>
+                         <p>We also encourage donations through CanadaHelps, a secure and trusted donation platform.<br/>Please use CanadaHelps for instant donations, gifts of securities, and monthly donations.</p>
+                         <p style='font-size:1.2em'><a target='_blank' href='https://www.canadahelps.org/en/charities/seeds-of-diversity-canada-programme-semencier-du-patrimoin/'>
+                             <img style='height:3em' src='https://seeds.ca/d?n=www/home/ch-logo.png' border='0' alt='Donate Now Through CanadaHelps.org!'/> Go to CanadaHelps</a>
+                         </p>
+                     </div>",
+                     false );
 
 // kluge : after storing checkbox state in the controls, reset in the sess so back->uncheck->next will do the right thing
         $oSVar = new SEEDSessionVarAccessor( $this->sess, "mbrocdata" );
