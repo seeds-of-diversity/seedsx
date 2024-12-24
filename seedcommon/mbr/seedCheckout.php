@@ -175,7 +175,6 @@ class SoDMbrOrderCheckout extends MbrOrderCheckout
          */
         $s .= $this->FormBox(
                  "Publications",        // same in EN and FR
-                 ("<p style='border:1px solid #822;color:#822;padding:10px'>Sorry! Due to Canada Post disruptions we cannot currently ship books. Thank you for your interest!</p>").
                  $this->formBodyPubs(),
                  true );
 
