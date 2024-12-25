@@ -258,51 +258,6 @@ class Drupal8Template
                 $s = DrawEvents( $this->kfdb, $contentName == 'events' ? "EN" : "FR" );
                 $s = iconv( 'Windows-1252', 'UTF-8//IGNORE', $s );
                 break;
-            case 'csci_species_X':
-            case 'csci_companies_X':
-            case 'csci_companies_varieties_X':
-                /* csci_species draws the species list.
-                 * csci_companies draws the companies list.
-                 * csci_companies_varieties draws the varieties list if psp has a value,
-                 *                          or the companies list if it doesn't (this simplifies the csci UI).
-                 */
-/*
-                include_once( SEEDCOMMON."sl/csci.php" );
-                $oCSCI = new SL_CSCI( $this->kfdb, $lang );
-                $s = ($contentName == 'csci_species')
-                    ? $oCSCI->DrawSpeciesList()
-                    : $oCSCI->DrawSeedSourceList( SEEDSafeGPC_GetStrPlain('psp') );
-*/
-                include_once( SEEDCOMMON."sl/sl_sources_common.php" );
-                $oSLSrc = new SLSourcesDraw( $this->kfdb );
-                $sSp = ""; //because it can be short-circuited
-                if( $contentName == 'csci_species' ) {
-                    $s .= $oSLSrc->DrawSpeciesList( "", $lang,
-                              array( 'bCompaniesOnly'=>true,
-                                     'bCount' => true,
-                                     'bIndex' => true,
-                                     'sTemplate' => "<div class='csci_species' style=''><a href='$pathSelf?psp=[[var:k]]'>[[var:name]] [[ifnot0:\$n|([[var:n]])]]</a></div>" ) );
-                } else if( $contentName == 'csci_companies_varieties' &&
-                           (($kSp = SEEDSafeGPC_GetInt('psp'))
-                             // kluge to pass non-indexed sp names
-                             || ($sSp = SEEDSafeGPC_GetStrPlain('psp'))) ) {
-// this should process spapp keys too
-                    if( $sSp && SEEDCore_StartsWith($sSp, 'spk') ) {
-                        $kSp = intval(substr($sSp,3));
-                    }
-                    if( $kSp ) {
-                        $s .= "<p><a href='$pathSelf'>Back to Companies</a></p>
-                                    <style>.slsrc_dcvblock_companies { padding-left:40px }
-                                    </style>"
-                             .$oSLSrc->DrawCompaniesVarieties( $this->oApp, $kSp, $sSp, $lang,
-                                  array( /*'sTemplate' => "<div style=''><a href='".Site_path_self()."?psp=[[var:k]]'>[[var:name]] ([[var:n]])</a></div>"*/ ) );
-                    }
-                } else {
-                    $s .= $oSLSrc->DrawCompanies( $lang );
-                }
-                //$s = iconv( 'ISO-8859-1', 'UTF-8', $s );
-                $s = iconv( 'Windows-1252', 'UTF-8//IGNORE', $s );
-                break;
 
             case 'historic-seed-catalogues':
                 include_once( SITEROOT."l/seedcat/seedcat.php" );

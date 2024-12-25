@@ -224,7 +224,7 @@ switch( $test ) {
         break;
 
     case 'csci':
-        $s .= $oTmpl->ExpandStr( "<div class='container-fluid'><div class='row'><div class='col-md-8'>[[SEEDContent:csci_companies_varieties]]</div><div class='col-md-4'>[[SEEDContent:csci_species]]</div></div></div>", [] );
+        $sTmpl = "<div class='container-fluid'><div class='row'><div class='col-md-8'>[[SEEDContent:csci_companies_varieties]]</div><div class='col-md-4'>[[SEEDContent:csci_species]]</div></div></div>";
         break;
 
     case 'bulletin':
