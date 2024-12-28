@@ -99,6 +99,7 @@ class QServerSourceCV_Old
 
     private function listCultivars( $raParms )
     {
+// should have separate srchSp (matches names in sl_species and sl_species_syn) and srchCv (matches sl_pcv and sl_pcv_syn)
         $raOut = array();
 
         $sMode = @$raParms['sMode'];
@@ -176,29 +177,31 @@ class QServerSourceCV_Old
             if( $sMode == 'TopChoices' ) goto sortMe;
 
 //$this->oQ->oApp->kfdb->SetDebug(2);
+            include_once(SEEDLIB."sl/sldb.php");
+            $oSLDB = new SLDBRosetta($this->oQ->oApp);
 
             /* Get matches in sl_pcv_syn
              */
-            include_once(SEEDLIB."sl/sldb.php");
-            $oSLDB = new SLDBRosetta($this->oQ->oApp);
-            //if( ($kfr2 = $oSLDB->GetKFRCond('PYxPxS', implode(" AND ",$raCondSyn)) ) ) {
-            if( ($dbc = $this->oQ->kfdb->CursorOpen( "SELECT P._key AS P__key, S.name_en AS S_name_en, S.name_fr AS S_name_fr, P.name as P_name "
-                                          ."FROM sl_pcv_syn PY, sl_pcv P, sl_species S, sl_cv_sources SRCCV "
-                                          ."WHERE PY._status=0 AND P._status='0' AND S._status='0' AND SRCCV._status='0' AND "
-                                                ."PY.fk_sl_pcv=P._key AND P.fk_sl_species=S._key AND SRCCV.fk_sl_pcv=P._key AND "
-                                                ."SRCCV.fk_sl_sources >= 3 AND "
-                                                ."(".(implode(' AND ',$raCondSyn)).")" ) ) )
-            {
-                while( $ra = $this->oQ->kfdb->CursorFetch($dbc) ) {
-                    $k1 = $this->charset($ra['S_name_en'].' '.$ra['P_name']);
-                    if( !isset($raKlugeCollector[$k1]) ) {
-                        $raKlugeCollector[$k1] = [
-                            'S_name_en' => $this->charset($ra['S_name_en']),
-                            'S_name_fr' => $this->charset($ra['S_name_fr']),
-                            'P_name'    => $this->charset($ra['P_name']),
-                            'P__key'    => $ra['P__key'],
-                            'sSynonyms' => ''
-                        ];
+            if($raCondSyn) {
+                //if( ($kfr2 = $oSLDB->GetKFRCond('PYxPxS', implode(" AND ",$raCondSyn)) ) ) {
+                if( ($dbc = $this->oQ->kfdb->CursorOpen( "SELECT P._key AS P__key, S.name_en AS S_name_en, S.name_fr AS S_name_fr, P.name as P_name "
+                                              ."FROM sl_pcv_syn PY, sl_pcv P, sl_species S, sl_cv_sources SRCCV "
+                                              ."WHERE PY._status=0 AND P._status='0' AND S._status='0' AND SRCCV._status='0' AND "
+                                                    ."PY.fk_sl_pcv=P._key AND P.fk_sl_species=S._key AND SRCCV.fk_sl_pcv=P._key AND "
+                                                    ."SRCCV.fk_sl_sources >= 3 AND "
+                                                    ."(".(implode(' AND ',$raCondSyn)).")" ) ) )
+                {
+                    while( $ra = $this->oQ->kfdb->CursorFetch($dbc) ) {
+                        $k1 = $this->charset($ra['S_name_en'].' '.$ra['P_name']);
+                        if( !isset($raKlugeCollector[$k1]) ) {
+                            $raKlugeCollector[$k1] = [
+                                'S_name_en' => $this->charset($ra['S_name_en']),
+                                'S_name_fr' => $this->charset($ra['S_name_fr']),
+                                'P_name'    => $this->charset($ra['P_name']),
+                                'P__key'    => $ra['P__key'],
+                                'sSynonyms' => ''
+                            ];
+                        }
                     }
                 }
             }
@@ -207,7 +210,7 @@ class QServerSourceCV_Old
              */
             foreach($raKlugeCollector as $k=>$ra) {
                 $raSyn = $oSLDB->Get1List('PY','name',"PY.fk_sl_pcv={$ra['P__key']}");
-                $raKlugeCollector[$k]['sSynonyms'] = implode(', ', $raSyn);
+                $raKlugeCollector[$k]['sSynonyms'] = $this->charset(implode(', ', $raSyn));
             }
 
             if( !count($raCondKluge) )  $raCondKluge = array("1=1");    // this is not a good idea because there are potentially thousands of results
