@@ -155,35 +155,36 @@ body {
 
 /* Search form */
 
-.search-form {
-	margin-bottom: 10px;
+.sf-formsection {
+/*	margin-bottom: 10px;  */
 }
 
-.search-form input,
-.search-form select,
-.search-form .checkbox {
+.sf-formsection input,
+.sf-formsection select,
+.sf-formsection .checkbox {
 	text-transform: uppercase;
 	color: #999999;
 }
 
-.search-form .col .content {
-	padding: 50px 35px;
+.sf-formsection .col .content {
+	padding: 50px 35px 20px 35px;
 	min-height: 297px;
 }
 
-.search-form .col.search .content {
+.sf-formsection .col.search .content {
 	padding: 20px 65px 20px 65px;
 }
 
-.search-form .description {
+.sf-formsection .description {
 	background-color: #233449;
 }
 
-.search-form .description:after {
+/* the blue arrow between Good Seeds and the form */
+.sf-formsection .description:after {
 	background-image: url('../../images/form/arrow.png');
 	background-repeat: no-repeat;
 	background-position: right;
-	background-size: contain;
+	background-size: 100% 100%; /*contain;*/
 	z-index: 99998;
 	position: absolute;
 	right: -48px;
@@ -193,54 +194,54 @@ body {
 	height: 100%;
 }
 
-.search-form .description h1 {
+.sf-formsection .description h1 {
 	color: #e8da73;
 	font-size: 4.5em;
 	text-transform: uppercase;
 	font-weight: lighter;
 }
 
-.search-form .description h1 span {
+.sf-formsection .description h1 span {
 	font-weight: bold;
 }
 
-.search-form .description h2 {
+.sf-formsection .description h2 {
 	color: #e8da73;
 }
 
-.search-form .description h2 span {
+.sf-formsection .description h2 span {
 	font-weight: bold;
 }
 
-.search-form .search h1 {
+.sf-formsection .search h1 {
 	font-size: 2.3em;
 	color: #e8da73;
 	text-align: center;
 	text-transform: uppercase;
 }
 
-.search-form .search {
+.sf-formsection .search {
 	background-color: #657e17;
 }
 
-.search-form .search .checkbox {
+.sf-formsection .search .checkbox {
 	margin: 0px;
 	width: 72%;
 	float: left;
 }
 
-.search-form .search .checkbox input {
+.sf-formsection .search .checkbox input {
 	float: right;
 	position: relative;
 }
 
-.search-form .search button.btn {
+.sf-formsection .search button.btn {
 	width: 25%;
 	margin-left: 3%;
 }
 
-.search-form .search .checkbox,
-.search-form .search button.btn {
+.sf-formsection .search .checkbox,
+.sf-formsection .search button.btn {
 	display: inline-block;
 }
 
@@ -395,11 +396,11 @@ body {
 }
 
 @media(max-width: 1399px){
-	.search-form .description h1 {
+	.sf-formsection .description h1 {
 		font-size: 3.4em;
 	}
 	
-	.search-form .description h2 {
+	.sf-formsection .description h2 {
 		font-size: 1.8em;
 	}
 	
@@ -483,8 +484,8 @@ body {
 		margin: 10px;
 	}
 	
-	.search-form .col.description .content,
-	.search-form .col.search .content {
+	.sf-formsection .col.description .content,
+	.sf-formsection .col.search .content {
 		padding: 40px 15px;
 	}
 }

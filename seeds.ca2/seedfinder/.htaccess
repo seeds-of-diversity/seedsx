@@ -1,0 +1,4 @@
+RewriteEngine on
+
+RewriteRule ^finder$ index.php?mode=finder      [L,QSA]
+RewriteRule ^research$ index.php?mode=research  [L,QSA]

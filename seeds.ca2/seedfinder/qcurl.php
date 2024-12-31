@@ -3,7 +3,7 @@
 header('Content-Type: application/json');
 
 $qurl = "https://seeds.ca/app/q/index.php";
-//$qurl = "http://localhost/~bob/seedsx/seeds.ca2/app/q/index.php";
+$qurl = "http://localhost/~bob/seedsx/seeds.ca2/app/q/index.php";
 
 switch( @$_REQUEST['cmd'] ) {
     case 'topchoices':

@@ -50,7 +50,7 @@ $(document).ready(function() {
 			$('.header').removeClass('fixed');
 			$('.banner').removeClass('top-spacing');
 		}
-	});
+    });
 
 
     /************
@@ -143,7 +143,9 @@ $(document).ready(function() {
 		
 	    $(".fmt1").show();
 	    $(".fmt2").hide();
-
+	   
+// do nothing if neither species nor variety selected
+console.log($(this).serialize() + "&cmd=find");
 		$.ajax({
 			type: "GET",
 			url: "qcurl.php",
@@ -323,4 +325,34 @@ $(document).ready(function() {
     $(window).resize(function() {
         $('.seeds-results .panel').matchHeight();
     });
+
+/*
+    $('.modeSelector').click(function(e) {
+        $('.modeSelector').removeClass('modeSelected'); 
+        $(this).addClass('modeSelected');
+
+        switch( $(this).attr('id') ) {
+            case 'modeSelector-find':       drawFinder();     break;
+            case 'modeSelector-research':   drawResearch();   break;
+        }
+    });
+*/
 });
+
+/*
+function drawFinder()
+{
+    $('#form-research').hide();
+    $('#results-research').hide();
+    $('#form-finder').show();
+    $('#results-finder').show();
+}
+
+function drawResearch()
+{
+    $('#form-finder').hide();
+    $('#results-finder').hide();
+    $('#form-research').show();
+    $('#results-research').show();
+}
+*/

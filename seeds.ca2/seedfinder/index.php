@@ -23,16 +23,14 @@ if( $rQ['bOk'] ) {
     }
 }
 
-    $raTmplVars = array( 'lang'=>$lang, 'spOptions'=>$spOpts, 'yCurrent'=>date('Y') );
+$raTmplVars = array( 'lang'=>$lang, 'spOptions'=>$spOpts, 'yCurrent'=>date('Y'), 'mode'=>SEEDInput_Smart('mode',['finder','research']) );
 
-    $o = new SEEDTemplate_Generator( array( 'fTemplates' => array(SITEROOT."seedfinder/seedfinder.html"),
-                                            'SEEDTagParms' => array(),
-                                            'vars' => $raTmplVars
-    ) );
-    $oTmpl = $o->MakeSEEDTemplate();
+$o = new SEEDTemplate_Generator( array( 'fTemplates' => array(SITEROOT."seedfinder/seedfinder.html"),
+                                        'SEEDTagParms' => array(),
+                                        'vars' => $raTmplVars
+) );
+$oTmpl = $o->MakeSEEDTemplate();
 
-    $s = $oTmpl->ExpandTmpl( "main" );
+$s = $oTmpl->ExpandTmpl( "main" );
 
-    echo $s;
-?>
-
+echo $s;
