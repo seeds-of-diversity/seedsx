@@ -60,17 +60,17 @@ $(document).ready(function() {
     /* data-backto records whether we got to the companies screen from TopChoices or from Search Results, so the Back button can go back there.
      */
     var cvblock_topChoices =
-            '<div class="col topChoices col-lg-2 col-md-3 col-sm-4 col-xs-12">'
-               +'<a class="get_details" data-backto=".topChoices" data-kPcv="[[P__key]]">'
-                   +'<div class="widget-block panel-block">'
-                       +'<div class="panel panel-default">'
-                           +'<div class="panel-heading"><h3 class="panel-title">[[S_name_en]]</h3></div>'
-                           +'<div class="panel-body">[[P_name]]</div>'
-                           +'<div>[[sSynonyms]]</div>'
-                       +'</div>'
-                   +'</div>'
-               +'</a>'
-           +'</div>';
+            `<div class="col topChoices col-lg-2 col-md-3 col-sm-4 col-xs-12">
+                 <a class="get_details" data-backto=".topChoices" data-kPcv="[[P__key]]">
+                     <div class="h-100 widget-block panel-block">
+                         <div class="h-100 panel panel-default">
+                             <div class="panel-heading"><h3 class="panel-title">[[S_name_en]]</h3></div>
+                             <div class="panel-body">[[P_name]]</div>
+                             <div>[[sSynonyms]]</div>
+                         </div>
+                     </div>
+                 </a>
+             </div>`;
     var cvblock = 
             '<div class="col species col-lg-2 col-md-3 col-sm-4 col-xs-12">'
                +'<a class="get_details" data-backto=".species" data-kPcv="[[P__key]]">'
@@ -111,22 +111,28 @@ $(document).ready(function() {
                             +'</p></div>');
 
             $('.seeds-results').append(wrapper.append(message));
-            
+/*            
             $.each(data.raOut, function(key,value) {
-                var b = cvblock_topChoices;
+                let b = cvblock_topChoices;
                 b = b.replace( "[[P_name]]", value.P_name );
                 b = b.replace( "[[sSynonyms]]", value.sSynonyms ? `(aka ${value.sSynonyms})` : "" );
                 b = b.replace( "[[P__key]]", value.P__key );
                 b = b.replace( "[[S_name_en]]", sfLang=="EN" ? value.S_name_en : value.S_name_fr );
                 $('.seeds-results').append( $( b ) );   // parse the cvblock into DOM and append as the last child of seeds-results
             });
+*/
+            SeedFinderUI.processResults(data.raOut);
 
-            $('.seeds-results .panel').matchHeight();
+//            $('.seeds-results .panel').matchHeight();
         },
         error : function( jqXHR, textStatus, errorThrown ) { console.log(errorThrown); }
     }).done(function() {
         $.scrollTo(0, 0);
     });
+
+
+
+
 
 
     /************
@@ -178,6 +184,7 @@ console.log($(this).serialize() + "&cmd=find");
 //						var block = $('<div class="col species col-lg-2 col-md-2 col-sm-12 col-xs-12"><a class="get_details" data-kPcv="' + value.P__key + '" data-backto=".species"><div class="widget-block panel-block"><div class="panel panel-default"><div class="panel-body">' + value.P_name + '</div></div></div></a></div>');
 //						$('.seeds-results').append(block);
 //					});
+/*
 		            $.each(data.raOut, function(key,value) {
 		                var b = cvblock;
 		                b = b.replace( "[[P_name]]", value.P_name );
@@ -186,11 +193,12 @@ console.log($(this).serialize() + "&cmd=find");
 		                b = b.replace( "[[S_name_en]]", sfLang=="EN" ? value.S_name_en : value.S_name_fr );
 		                $('.seeds-results').append( $( b ) );   // parse the cvblock into DOM and append as the last child of seeds-results
 		            });
-
+*/
+            SeedFinderUI.processResults(data.raOut);
+				
 					
 					
-					
-					$('.seeds-results .panel').matchHeight();
+				//	$('.seeds-results .panel').matchHeight();
 				}
 			}
 		}).done(function() {
@@ -356,3 +364,42 @@ function drawResearch()
     $('#results-research').show();
 }
 */
+
+class SeedFinderUI
+{
+    static processResults(raOut)
+    {
+                let oSpCv = {};
+            for(const [key, value] of Object.entries(raOut)) {
+                if( !(value.S_name_en in oSpCv) ) {
+                    oSpCv[value.S_name_en] = {sp:value.S_name_en, raCV:[]};
+                }
+                oSpCv[value.S_name_en].raCV.push( value.P_name + (value.sSynonyms ? `(aka ${value.sSynonyms})` : "") );
+            }
+            console.log(oSpCv);
+
+            for(const [key, value] of Object.entries(oSpCv)) {
+
+                let b = 
+            `<div class="w-100"></div>
+             <div class="col-8 offset-md-2 topChoices ">
+                     <div class="widget-block panel-block">
+                         <div class="panel panel-default">
+                             <div class="panel-heading"><h3 class="panel-title">[[S_name_en]]</h3></div>
+                             <div class="panel-body">[[P_name]]</div>
+                             
+                         </div>
+                     </div>
+             </div>`;
+                
+                let cv = value.raCV.join("<br/>");
+                
+                b = b.replace( "[[P_name]]", cv );
+                //b = b.replace( "[[sSynonyms]]", value.sSynonyms ? `(aka ${value.sSynonyms})` : "" );
+                //b = b.replace( "[[P__key]]", value.P__key );
+                b = b.replace( "[[S_name_en]]", value.sp );
+                $('.seeds-results').append( $(b) );   // parse the cvblock into DOM and append as the last child of seeds-results
+            }
+            return("");
+    }
+}
