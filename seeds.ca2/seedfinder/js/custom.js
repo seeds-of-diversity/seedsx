@@ -12,8 +12,6 @@ $(document).ready(function() {
     var sLocal_No_matches_found = sfLang=='EN' ? "No matches found" : "Aucun r&eacute;sultat trouv&eacute;";
 
 
-
-
     /************
       Slider
      */
@@ -37,6 +35,7 @@ $(document).ready(function() {
 		after: function(){}     // Function: After callback
 	});
 */	
+/*
 	$('#scroll').click(function(e) {
 		$.scrollTo($('#search').position().top - 80, 200);
 		return false;
@@ -51,7 +50,7 @@ $(document).ready(function() {
 			$('.banner').removeClass('top-spacing');
 		}
     });
-
+*/
 
     /************
       Variables
@@ -111,19 +110,10 @@ $(document).ready(function() {
                             +'</p></div>');
 
             $('.seeds-results').append(wrapper.append(message));
-/*            
-            $.each(data.raOut, function(key,value) {
-                let b = cvblock_topChoices;
-                b = b.replace( "[[P_name]]", value.P_name );
-                b = b.replace( "[[sSynonyms]]", value.sSynonyms ? `(aka ${value.sSynonyms})` : "" );
-                b = b.replace( "[[P__key]]", value.P__key );
-                b = b.replace( "[[S_name_en]]", sfLang=="EN" ? value.S_name_en : value.S_name_fr );
-                $('.seeds-results').append( $( b ) );   // parse the cvblock into DOM and append as the last child of seeds-results
-            });
-*/
-            SeedFinderUI.processResults(data.raOut);
-
-//            $('.seeds-results .panel').matchHeight();
+            
+            if(data.bOk) {
+                SeedFinderUI.drawResults(data.raOut);
+            }
         },
         error : function( jqXHR, textStatus, errorThrown ) { console.log(errorThrown); }
     }).done(function() {
@@ -131,14 +121,9 @@ $(document).ready(function() {
     });
 
 
-
-
-
-
     /************
       Process the Find button
      */
-
 	$("#finder").submit(function(e) {
 		var $this = $(this);
 		$('.seeds-results .species').remove();
@@ -177,28 +162,8 @@ console.log($(this).serialize() + "&cmd=find");
 						wrapper.append(message);
 						$('.seeds-results').append(wrapper);
 					}
-					
-//					$.each(data.raOut, function(key,value) {
-					
-					
-//						var block = $('<div class="col species col-lg-2 col-md-2 col-sm-12 col-xs-12"><a class="get_details" data-kPcv="' + value.P__key + '" data-backto=".species"><div class="widget-block panel-block"><div class="panel panel-default"><div class="panel-body">' + value.P_name + '</div></div></div></a></div>');
-//						$('.seeds-results').append(block);
-//					});
-/*
-		            $.each(data.raOut, function(key,value) {
-		                var b = cvblock;
-		                b = b.replace( "[[P_name]]", value.P_name );
-		                b = b.replace( "[[sSynonyms]]", value.sSynonyms ? `(aka ${value.sSynonyms})` : "" );
-		                b = b.replace( "[[P__key]]", value.P__key );
-		                b = b.replace( "[[S_name_en]]", sfLang=="EN" ? value.S_name_en : value.S_name_fr );
-		                $('.seeds-results').append( $( b ) );   // parse the cvblock into DOM and append as the last child of seeds-results
-		            });
-*/
-            SeedFinderUI.processResults(data.raOut);
-				
-					
-					
-				//	$('.seeds-results .panel').matchHeight();
+
+                    SeedFinderUI.drawResults(data.raOut);
 				}
 			}
 		}).done(function() {
@@ -206,20 +171,11 @@ console.log($(this).serialize() + "&cmd=find");
         });
 		e.preventDefault();
 	});
-	
-	$('.seeds-results').delegate("a.back", "click", function(e) {
-		$('.seeds-results .details').remove();
-		$('.seeds-results .details-header').remove();
-	    $(".fmt1").show();
-	    $(".fmt2").hide();
-		$('.seeds-results ' + $(e.target).data('backto')).css('display', 'block');
-		$('.seeds-results .sub-header').css('display', 'block');
-        $.scrollTo($('.results').position().top - 80, 200);
-	});
-	
+
 	
 	/* Show the companies that sell the variety given by data-kPcv
 	 */
+/*
 	$('.seeds-results').delegate("a.get_details", "click", function(e) {
 		var $this = $(this);
 		$('.seeds-results ' + $this.attr('data-backto')).css('display', 'none');
@@ -329,11 +285,12 @@ console.log($(this).serialize() + "&cmd=find");
         
         e.preventDefault();
     });
-
+*/
+/*
     $(window).resize(function() {
         $('.seeds-results .panel').matchHeight();
     });
-
+*/
 /*
     $('.modeSelector').click(function(e) {
         $('.modeSelector').removeClass('modeSelected'); 
@@ -347,59 +304,42 @@ console.log($(this).serialize() + "&cmd=find");
 */
 });
 
-/*
-function drawFinder()
-{
-    $('#form-research').hide();
-    $('#results-research').hide();
-    $('#form-finder').show();
-    $('#results-finder').show();
-}
 
-function drawResearch()
-{
-    $('#form-finder').hide();
-    $('#results-finder').hide();
-    $('#form-research').show();
-    $('#results-research').show();
-}
-*/
 
 class SeedFinderUI
 {
-    static processResults(raOut)
+    static drawResults(raCvList)
     {
-                let oSpCv = {};
-            for(const [key, value] of Object.entries(raOut)) {
-                if( !(value.S_name_en in oSpCv) ) {
-                    oSpCv[value.S_name_en] = {sp:value.S_name_en, raCV:[]};
-                }
-                oSpCv[value.S_name_en].raCV.push( value.P_name + (value.sSynonyms ? `(aka ${value.sSynonyms})` : "") );
+        // raCvList is the list of species/cultivars from the database, sorted by (sp, cv).  
+        // Group cultivars by species and draw the results. 
+        let oSpCv = {};
+        for(const [key, value] of Object.entries(raCvList)) {
+            if( !(value.S_name_en in oSpCv) ) {
+                oSpCv[value.S_name_en] = {sp:value.S_name_en, raCV:[]};
             }
-            console.log(oSpCv);
+            oSpCv[value.S_name_en].raCV.push( value.P_name + (value.sSynonyms ? ` <span style='font-size:75%;color:#233449'>(aka ${value.sSynonyms})</span>` : "") );
+        }
+        //console.log(oSpCv);
 
-            for(const [key, value] of Object.entries(oSpCv)) {
-
-                let b = 
-            `<div class="w-100"></div>
-             <div class="col-8 offset-md-2 topChoices ">
+        for(const [key, value] of Object.entries(oSpCv)) {
+            let b = 
+                `<div class="w-100"></div>
+                 <div class="col-8 offset-md-2 topChoices ">
                      <div class="widget-block panel-block">
                          <div class="panel panel-default">
                              <div class="panel-heading"><h3 class="panel-title">[[S_name_en]]</h3></div>
                              <div class="panel-body">[[P_name]]</div>
-                             
                          </div>
                      </div>
-             </div>`;
+                 </div>`;
                 
-                let cv = value.raCV.join("<br/>");
-                
-                b = b.replace( "[[P_name]]", cv );
-                //b = b.replace( "[[sSynonyms]]", value.sSynonyms ? `(aka ${value.sSynonyms})` : "" );
-                //b = b.replace( "[[P__key]]", value.P__key );
-                b = b.replace( "[[S_name_en]]", value.sp );
-                $('.seeds-results').append( $(b) );   // parse the cvblock into DOM and append as the last child of seeds-results
-            }
-            return("");
+            let cv = value.raCV.join("<br/>");
+            
+            b = b.replace( "[[P_name]]", cv );
+            //b = b.replace( "[[sSynonyms]]", value.sSynonyms ? `(aka ${value.sSynonyms})` : "" );
+            //b = b.replace( "[[P__key]]", value.P__key );
+            b = b.replace( "[[S_name_en]]", value.sp );
+            $('.seeds-results').append( $(b) );   // parse the cvblock into DOM and append as the last child of seeds-results
+        }
     }
 }
