@@ -12,23 +12,24 @@ body {
 }
 
 /* Header */
-
+/*
 .header {
 	background-color: #657e17;
 	padding: 20px 0px;
 }
-
 .header.fixed {
 	position: fixed;
 	width: 100%;
 	z-index: 99999;
 }
-
 .header h1 {
 	color: #ffffff;
 	margin: 0px;
 	text-transform: uppercase;
 }
+*/
+
+
 
 /* Banner */
 
@@ -37,7 +38,7 @@ body {
 }
 
 .banner.top-spacing {
-	padding-top: 80px;
+/*	padding-top: 80px;  */
 }
 
 .banner img {
@@ -266,8 +267,13 @@ body {
 	margin-bottom: 10px;
 }
 
+.results .panel-block {
+    padding-bottom: 5px;
+}
+
 .results .panel {
 	padding-top: 5px;
+    padding-bottom: 10px;
 	background: #f0f4df;
 	border-radius: 0px;
 	border: 1px solid #657e17;

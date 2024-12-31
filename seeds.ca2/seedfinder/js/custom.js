@@ -74,8 +74,8 @@ $(document).ready(function() {
     var cvblock = 
             '<div class="col species col-lg-2 col-md-3 col-sm-4 col-xs-12">'
                +'<a class="get_details" data-backto=".species" data-kPcv="[[P__key]]">'
-                   +'<div class="widget-block panel-block">'
-                       +'<div class="panel panel-default">'
+                   +'<div class="h-100 widget-block panel-block">'
+                       +'<div class="h-100 panel panel-default">'
                            +'<div class="panel-heading"><h3 class="panel-title">[[S_name_en]]</h3></div>'
                            +'<div class="panel-body">[[P_name]]</div>'
                            +'<div style="margin-top:-10px;margin-bottom:5px;text-align:center;color:#233449">[[sSynonyms]]</div>'
