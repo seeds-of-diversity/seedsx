@@ -324,7 +324,7 @@ class SeedFinderUI
         for(const [key, value] of Object.entries(oSpCv)) {
             let b = 
                 `<div class="w-100"></div>
-                 <div class="col-8 offset-md-2 topChoices ">
+                 <div class="col-xs-12 col-lg-8 offset-lg-2 topChoices ">
                      <div class="widget-block panel-block">
                          <div class="panel panel-default">
                              <div class="panel-heading"><h3 class="panel-title">[[S_name_en]]</h3></div>
@@ -333,7 +333,13 @@ class SeedFinderUI
                      </div>
                  </div>`;
                 
-            let cv = value.raCV.join("<br/>");
+            let cv = "";
+            value.raCV.forEach(function(v, k) {
+                cv += `<div class='cv-block'>
+                           <div class='cv-name'>${v}</div>
+                           <div class='cv-details' style='display:none'><h4>${v}</h4>DETAILS<br/>DETAILS<br/>DETAILS<br/></div>
+                       </div>`;
+            });
             
             b = b.replace( "[[P_name]]", cv );
             //b = b.replace( "[[sSynonyms]]", value.sSynonyms ? `(aka ${value.sSynonyms})` : "" );
@@ -341,5 +347,12 @@ class SeedFinderUI
             b = b.replace( "[[S_name_en]]", value.sp );
             $('.seeds-results').append( $(b) );   // parse the cvblock into DOM and append as the last child of seeds-results
         }
+        
+        // event listeners to open the details for each cultivar
+        $('.cv-block').click(function() {
+            event.stopPropagation();
+            $(this).find('.cv-name').slideToggle(200);
+            $(this).find('.cv-details').slideToggle(200);
+        });
     }
 }

@@ -20,6 +20,11 @@
     <!-- <h1>Search results</h1> -->
     <div class="container-fluid">
       {% if mode=='finder' %}
+        <div class='alert alert-success' style='text-align:center'>
+            <p>This is an index of Canadian seed company catalogues, showing the garden vegetable varieties available currently and during the past year.</p>
+            <p>This information is offered for free to everyone, and we don't accept advertising or charge fees to the companies.</br/>
+             Instead, it's part of our research and monitoring of Canada's seed diversity, which drives our conservation priorities.</p>
+        </div>
         <div id='results-finder'>
             <div class="fmt1 row seeds-results"></div>
             <div class="fmt2 row">
@@ -35,6 +40,10 @@
       {% else %}
         <div id='results-research'>
             <p>RESEARCH</p>
+            <p>Open Data Policy: This information is collected by Seeds of Diversity, and is available for you to download and use as you wish at no cost and with no restrictions. We appreciate acknowledgement to Seeds of Diversity Canada.</p>
+            <p>As-is Data: We try very hard to ensure the accuracy of this information, but we offer it as-is with no guarantees. We welcome corrections and additions.</p>
+            <p>Need something else? If these links don't give you exactly what you're looking for, just ask. We're glad to help our community of seed diversity researchers and conservators.</p>
+            
         </div>
       {% endif %}
     </div>
@@ -83,18 +92,18 @@
 
 %%sf-body-header
 <section class="sub-banner">
-  <img class="img-responsive" src="images/banner/background.jpg" width="100%" height="auto">
+  <img class="img-fluid" src="images/banner/background.jpg">
 </section>
 <section class="banner">
 <div class="container-fluid"><div class="row">
   <div class="col col-lg-4 col-md-4 col-sm-12 col-xs-12">
-    <a href='[[var:sodlink]]' target='_blank'><img class="img-responsive" src="[[var:sodlogo]]" width="100%" height="auto"/></a>
+    <a href='[[var:sodlink]]' target='_blank'><img class="img-fluid" src="[[var:sodlogo]]"/></a>
   </div>
   <div class="col col-lg-4 col-md-4 col-sm-12 col-xs-12">
-    <a href='[[var:usclink]]' target='_blank'><img class="img-responsive" src="[[var:usclogo]]" width="100%" height="auto"/></a>
+    <a href='[[var:usclink]]' target='_blank'><img class="img-fluid" src="[[var:usclogo]]"/></a>
   </div>
   <div class="col col-lg-4 col-md-4 col-sm-12 col-xs-12">
-    <a href='[[var:westonlink]]' target='_blank'><img class="img-responsive" src="[[var:westonlogo]]" width="100%" height="auto"/></a>
+    <a href='[[var:westonlink]]' target='_blank'><img class="img-fluid" src="[[var:westonlogo]]"/></a>
   </div>
 </div></div>
 </section>
