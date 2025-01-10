@@ -21,9 +21,10 @@
     <div class="container-fluid">
       {% if mode=='finder' %}
         <div class='alert alert-success' style='text-align:center'>
-            <p>This is an index of Canadian seed company catalogues, showing the garden vegetable varieties available currently and during the past year.</p>
+            <p style='font-size:125%'>This index of Canadian seed company catalogs shows the garden vegetable varieties available currently and during the past year.</p>
             <p>This information is offered for free to everyone, and we don't accept advertising or charge fees to the companies.</br/>
-             Instead, it's part of our research and monitoring of Canada's seed diversity, which drives our seed conservation priorities.</p>
+             Instead, the information is updated every year by volunteers and donations, as part of our research and monitoring of Canada's seed diversity, which drives our seed conservation priorities.</p>
+            <p style='font-size:125%'>Currently indexing [[var:nTotalCultivars]] varieties from [[var:nTotalSources]] Canadian seed companies.</p>
         </div>
         <div id='results-finder'>
             <div class="fmt1 row seeds-results"></div>
@@ -134,7 +135,7 @@
                     {% endif %}
                 </div>
             </div>
-            <div class="col col-lg-5 col-md-12 col-sm-12 col-xs-12 search">
+            <div class="col col-lg-5 col-md-12 col-sm-12 col-xs-12 search [[ifeq:$mode|finder|search-finder|search-research]]">
                 <div class="content">
                     {% if mode=='finder' %}
                         <div id='form-finder'>[[include:form-finder]]</div>
@@ -192,6 +193,11 @@
 <h1>[[ifeq:$lang|EN|Research| ]]</h1>
 <form role="form" method="get" id="form-research-form">
     <div class="form-group">
+        <select name="sfAp_sp" id="sfAp_report]" class="form-control" required>
+            <option value="1">[[ifeq:$lang|EN|Crop diversity over time|Diversit&eacute; des cultures au fil du temps]]</option>
+        </select>
+    </div>
+    <div class="form-group">
         <select name="sfAp_sp" id="sfAp_sp" class="form-control" required>
             <option value="0">[[ifeq:$lang|EN|By crop|Par culture]]</option>
             [[var:spOptions]]
@@ -199,16 +205,6 @@
     </div>
     <div class="form-group">
         <input name="sfAp_srch" id="sfAp_srch" value="" size="20" placeholder="[[ifeq:$lang|EN|By variety|Par Vari&eacute;t&eacute;]]" class="form-control" type="text">
-    </div>
-    <div class="form-group">
-        <select name="sfAp_region" id="sfAp_region" class="form-control">
-            <option value="0">[[ifeq:$lang|EN|By region|Par R&eacute;gion]]</option>
-            <option value="bc">B.C.</option>
-            <option value="pr">Prairies</option>
-            <option value="on">Ontario</option>
-            <option value="qc">Quebec</option>
-            <option value="at">Atlantic</option>
-        </select>
     </div>
     <div class="form-group">
         <div class="checkbox form-control">
@@ -220,7 +216,7 @@
             <input name="sfAp_bulk" id="sfAp_bulk" class="bulk" type="checkbox" value="1">
         </div>
         <button type="submit" class="btn btn-light">
-            [[ifeq:$lang|EN|Find|Trouver]]
+            [[ifeq:$lang|EN|Show|Trouver]]
         </button>
     </div>
 </form>

@@ -27,14 +27,18 @@ if( $rQ['bOk'] ) {
 /* Output a js object containing sl_sources details. Cultivar data contains keys of sl_sources so this is the lookup table.
  */
 // oldQ::srcSources joins on SRCCV so it can get sources of particular species, etc, which is maybe not what we really want here
-$raSLSources = (new SLDBSources($oApp))->GetListKeyed('SRC', '_key', "_key>=3", ['sSortCol'=>'name_en']);
+$oSLDBSrc = new SLDBSources($oApp);
+$raSLSources = $oSLDBSrc->GetListKeyed('SRC', '_key', "_key>=3", ['sSortCol'=>'name_en']);
 $scriptAtBottom = "var oSLSources = ".json_encode(SEEDCore_utf8_encode($raSLSources));
 
 $raTmplVars = ['lang'=>$lang,
                'yCurrent'=>date('Y'),
                'spOptions'=>$spOpts,
                'scriptAtBottom'=>$scriptAtBottom,
-               'mode'=>SEEDInput_Smart('mode',['finder','research']) ];
+               'mode'=>SEEDInput_Smart('mode',['finder','research']),
+               'nTotalSources' => $oSLDBSrc->GetCount('SRCCV','fk_sl_sources>=3',['sGroupCol'=>'fk_sl_sources']),
+               'nTotalCultivars' => $oSLDBSrc->GetCount('SRCCV','fk_sl_sources>=3',['sGroupCol'=>'fk_sl_species,ocv']),
+];
 
 $o = new SEEDTemplate_Generator( array( 'fTemplates' => array(SITEROOT."seedfinder/seedfinder.html"),
                                         'SEEDTagParms' => array(),
