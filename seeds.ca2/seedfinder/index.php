@@ -5,14 +5,15 @@
 include_once("../site.php");
 include_once(STDINC."SEEDTemplate.php");
 include_once(SEEDLIB."q/QServerSources.php");
+include_once(SEEDLIB."sl/sldb.php");
 
 list($kfdb, $sess, $lang) = SiteStartSessionAccountNoUI();
+$oApp = SEEDConfig_NewAppConsole_LoginNotRequired([]);
+
+$oSrc = new QServerSourceCV( $oApp, array() );
 
 // Make the species <select>
-$oApp = SEEDConfig_NewAppConsole_LoginNotRequired([]);
-$oSrc = new QServerSourceCV( $oApp, array() );
 $rQ = $oSrc->Cmd( 'srcSpecies', ['bAllComp'=>true, 'outFmt'=>'NameKey', 'opt_spMap'=>'ESF'] );
-
 $spOpts = "";
 if( $rQ['bOk'] ) {
     foreach( $rQ['raOut'] as $sSp => $kSp ) {
@@ -23,7 +24,17 @@ if( $rQ['bOk'] ) {
     }
 }
 
-$raTmplVars = array( 'lang'=>$lang, 'spOptions'=>$spOpts, 'yCurrent'=>date('Y'), 'mode'=>SEEDInput_Smart('mode',['finder','research']) );
+/* Output a js object containing sl_sources details. Cultivar data contains keys of sl_sources so this is the lookup table.
+ */
+// oldQ::srcSources joins on SRCCV so it can get sources of particular species, etc, which is maybe not what we really want here
+$raSLSources = (new SLDBSources($oApp))->GetListKeyed('SRC', '_key', "_key>=3", ['sSortCol'=>'name_en']);
+$scriptAtBottom = "var oSLSources = ".json_encode(SEEDCore_utf8_encode($raSLSources));
+
+$raTmplVars = ['lang'=>$lang,
+               'yCurrent'=>date('Y'),
+               'spOptions'=>$spOpts,
+               'scriptAtBottom'=>$scriptAtBottom,
+               'mode'=>SEEDInput_Smart('mode',['finder','research']) ];
 
 $o = new SEEDTemplate_Generator( array( 'fTemplates' => array(SITEROOT."seedfinder/seedfinder.html"),
                                         'SEEDTagParms' => array(),

@@ -317,7 +317,12 @@ class SeedFinderUI
             if( !(value.S_name_en in oSpCv) ) {
                 oSpCv[value.S_name_en] = {sp:value.S_name_en, raCV:[]};
             }
-            oSpCv[value.S_name_en].raCV.push( value.P_name + (value.sSynonyms ? ` <span style='font-size:75%;color:#233449'>(aka ${value.sSynonyms})</span>` : "") );
+            let sSyn = "";
+            if( typeof value.raPY != 'undefined' )  sSyn = value.raPY.join(", ");
+            let o = { P_name: value.P_name + (sSyn ? ` <span style='font-size:75%;color:#233449'>(aka ${sSyn})</span>` : ""),
+                      nSrc:   value.nSrc,
+                      raSrc:  value.raSrc };
+            oSpCv[value.S_name_en].raCV.push(o);
         }
         //console.log(oSpCv);
 
@@ -328,20 +333,32 @@ class SeedFinderUI
                      <div class="widget-block panel-block">
                          <div class="panel panel-default">
                              <div class="panel-heading"><h3 class="panel-title">[[S_name_en]]</h3></div>
-                             <div class="panel-body">[[P_name]]</div>
+                             <div class="panel-body">[[cvblocks]]</div>
                          </div>
                      </div>
                  </div>`;
                 
-            let cv = "";
+            let sCVBlocks = "";
             value.raCV.forEach(function(v, k) {
-                cv += `<div class='cv-block'>
-                           <div class='cv-name'>${v}</div>
-                           <div class='cv-details' style='display:none'><h4>${v}</h4>DETAILS<br/>DETAILS<br/>DETAILS<br/></div>
+                let nSrc = typeof v.nSrc != 'undefined' ? v.nSrc : 0;
+                let sSrc = "";
+                if(typeof v.raSrc != 'undefined')  v.raSrc.forEach(function(v,k) {
+                                                                       let sCmpName = oSLSources[v].name_en;
+                                                                       let web = oSLSources[v].web;
+                                                                       if(web) {
+                                                                           if(web.substr(0,8) != "https://") web = "https://"+web;
+                                                                           // stopPropagation allows the link to work but stops the cv-block from closing (click outside the <a> to close the cv-block)
+                                                                           sCmpName = `<a href='${web}' target='_blank' onclick='event.stopPropagation()'>${sCmpName}</a>`;
+                                                                       }
+                                                                       sSrc += sCmpName+"<br/>";
+                                                                   });
+                sCVBlocks += `<div class='cv-block'>
+                           <div class='cv-name'>${v.P_name} <span class='cv-name-nSrc'>(${nSrc})</span></div>
+                           <div class='cv-details' style='display:none'><h4>${v.P_name}</h4><p>${sSrc}</p></div>
                        </div>`;
             });
             
-            b = b.replace( "[[P_name]]", cv );
+            b = b.replace( "[[cvblocks]]", sCVBlocks );
             //b = b.replace( "[[sSynonyms]]", value.sSynonyms ? `(aka ${value.sSynonyms})` : "" );
             //b = b.replace( "[[P__key]]", value.P__key );
             b = b.replace( "[[S_name_en]]", value.sp );
