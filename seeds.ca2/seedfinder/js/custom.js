@@ -87,11 +87,12 @@ $(document).ready(function() {
     $(".fmt2").hide();
     
     var bProxy = true;
+    var bLocal = false;
 
     var qurl  = bProxy ? "qcurl.php" : "https://seeds.ca/app/q/index.php";  
-                                       //"http://localhost/~bob/seeds.ca2/app/q/index.php";
     var qurl2  = "https://seeds.ca/app/q2/index.php";  
-    //qurl2 = "http://localhost/~bob/seedsx/seeds.ca2/app/q2/index.php";
+
+    if(bLocal)  qurl2 = "http://localhost/~bob/seedsx/seeds.ca2/app/q2/index.php";
 
     /************
       Initialize the display with Popular Varieties
@@ -99,14 +100,15 @@ $(document).ready(function() {
     $.ajax({
         type: "POST",
         url: qurl2,
-        data : { qcmd: "srcSrcCvCultivarList", sMode: "TopChoices" },
+        data : { qcmd: "srcSrcCvCultivarList", sMode: "RareChoices" },
         success: function(data){
             data = window.JSON.parse(data);
             //console.log(data);
             
             var wrapper = $('<div class="sub-header col-lg-12 col-md-12 col-sm-12 col-xs-12"></div>');
             var message = $('<div class="alert alert-success message"><p align="center">'
-                            +(sfLang=="EN" ? 'Popular varieties' : 'Vari&eacute;t&eacute;s populaires')
+                            // +(sfLang=="EN" ? 'Popular varieties' : 'Vari&eacute;t&eacute;s populaires')
+                            +(sfLang=="EN" ? "here's a sample of the rarest varieties" : 'Les vari&eacute;t&eacute;s les plus rares')
                             +'</p></div>');
 
             $('.seeds-results').append(wrapper.append(message));
