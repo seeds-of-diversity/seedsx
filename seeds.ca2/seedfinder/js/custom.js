@@ -94,7 +94,7 @@ $(document).ready(function() {
                          "https://seeds.ca/app/q2/index.php";  
 
     /************
-      Initialize the display with Popular Varieties
+      Initialize the display with Rare Varieties
      */
     $.ajax({
         type: "POST",

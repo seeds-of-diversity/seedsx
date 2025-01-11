@@ -28,7 +28,11 @@ if( $rQ['bOk'] ) {
  */
 // oldQ::srcSources joins on SRCCV so it can get sources of particular species, etc, which is maybe not what we really want here
 $oSLDBSrc = new SLDBSources($oApp);
-$raSLSources = $oSLDBSrc->GetListKeyed('SRC', '_key', "_key>=3", ['sSortCol'=>'name_en']);
+$raSLSources = [];
+foreach( $oSLDBSrc->GetListKeyed('SRC', '_key', "_key>=3", ['sSortCol'=>'name_en']) as $k => $ra ) {
+    $raSLSources[$k] = ['name_en'=>$ra['name_en'], 'name_fr'=>$ra['name_fr'], 'web'=>$ra['web']];
+}
+
 $scriptAtBottom =
     /* Object contains SRC data
      */

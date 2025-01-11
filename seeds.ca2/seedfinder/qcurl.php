@@ -2,10 +2,10 @@
 
 header('Content-Type: application/json');
 
-$qurl = "https://seeds.ca/app/q/index.php";
-//$qurl = "http://localhost/~bob/seedsx/seeds.ca2/app/q/index.php";
-
+$qurl  = "https://seeds.ca/app/q/index.php";
 $qurl2 = "https://seeds.ca/app/q2/index.php";
+
+//$qurl  = "http://localhost/~bob/seedsx/seeds.ca2/app/q/index.php";
 //$qurl2 = "http://localhost/~bob/seedsx/seeds.ca2/app/q2/index.php";
 
 
