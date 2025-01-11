@@ -29,7 +29,20 @@ if( $rQ['bOk'] ) {
 // oldQ::srcSources joins on SRCCV so it can get sources of particular species, etc, which is maybe not what we really want here
 $oSLDBSrc = new SLDBSources($oApp);
 $raSLSources = $oSLDBSrc->GetListKeyed('SRC', '_key', "_key>=3", ['sSortCol'=>'name_en']);
-$scriptAtBottom = "var oSLSources = ".json_encode(SEEDCore_utf8_encode($raSLSources));
+$scriptAtBottom =
+    /* Object contains SRC data
+     */
+    "<script>var oSLSources = ".json_encode(SEEDCore_utf8_encode($raSLSources))."</script>"
+
+    /* Boot up the google charts
+     */
+   ."<script type='text/javascript' src='https://www.gstatic.com/charts/loader.js'></script>
+     <script type='text/javascript'>
+         // Load the Visualization API and the corechart package.
+         google.charts.load('current', {'packages':['corechart']});
+         // google.setOnLoadCallback(drawChart);        instead call drawChart() when we want to
+     </script>";
+
 
 $raTmplVars = ['lang'=>$lang,
                'yCurrent'=>date('Y'),

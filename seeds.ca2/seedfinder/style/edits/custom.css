@@ -236,13 +236,21 @@ body {
 
 .sf-formsection .search h1 {
 	font-size: 2.3em;
-	color: #e8da73;
 	text-align: center;
 	text-transform: uppercase;
 }
 
-.sf-formsection .search {
+.sf-formsection .search-finder {
 	background-color: #657e17;
+}
+.sf-formsection .search-finder h1 {
+    color: #e8da73;
+}
+.sf-formsection .search-research {
+    background-color: #f5c211;
+}
+.sf-formsection .search-research h1 {
+    color: #233449;
 }
 
 .sf-formsection .search .checkbox {

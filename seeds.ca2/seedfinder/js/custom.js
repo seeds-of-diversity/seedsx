@@ -90,9 +90,8 @@ $(document).ready(function() {
     var bLocal = false;
 
     var qurl  = bProxy ? "qcurl.php" : "https://seeds.ca/app/q/index.php";  
-    var qurl2  = "https://seeds.ca/app/q2/index.php";  
-
-    if(bLocal)  qurl2 = "http://localhost/~bob/seedsx/seeds.ca2/app/q2/index.php";
+    var qurl2 = bLocal ? "http://localhost/~bob/seedsx/seeds.ca2/app/q2/index.php" :
+                         "https://seeds.ca/app/q2/index.php";  
 
     /************
       Initialize the display with Popular Varieties
@@ -127,6 +126,8 @@ $(document).ready(function() {
       Process the Find button
      */
 	$("#finder").submit(function(e) {
+        e.preventDefault();
+
 		var $this = $(this);
 		$('.seeds-results .species').remove();
 		$('.seeds-results .topChoices').remove();
@@ -137,7 +138,14 @@ $(document).ready(function() {
 	    $(".fmt1").show();
 	    $(".fmt2").hide();
 	   
-// do nothing if neither species nor variety selected
+        // do nothing if neither species nor variety selected
+        let sp = $('#sfAp_sp').val();
+        let cv = $('#sfAp_srch').val();
+        if( !parseInt(sp) && !cv.trim() ) {
+           console.log("Button not allowed when no crop or search term set");
+           return;
+       }
+	   
 console.log($(this).serialize() + "&cmd=find");
 		$.ajax({
 			type: "GET",
@@ -171,9 +179,65 @@ console.log($(this).serialize() + "&cmd=find");
 		}).done(function() {
             $.scrollTo($('.results').position().top - 80, 500);
         });
-		e.preventDefault();
 	});
 
+    /************
+      Process the Research button
+     */
+    $("#form-research-form").submit(function(e) {
+        e.preventDefault();
+
+        var $this = $(this);
+
+//        $('.seeds-results .species').remove();
+//        $('.seeds-results .topChoices').remove();
+//        $('.seeds-results .sub-header').remove();
+//        $('.seeds-results .details').remove();
+//        $('.seeds-results .details-header').remove();
+//       
+        let sp = $('#sfAp_sp').val();
+        if( !parseInt(sp) ) {
+           console.log("Button not allowed when no crop or search term set");
+           return;
+        }
+
+        let sSpecies = $('#sfAp_sp option:selected').text();
+
+        $.ajax({
+            type: "GET",
+            url: qurl2,
+            data: { qcmd: "srcResearch-cvOverYears",
+                    kSp: sp
+            },
+            success: function(data){
+                data = window.JSON.parse(data);
+                if(!data.bOk){
+                    $('section.results h1').text(''); //'Search result');
+
+                    var wrapper = $('<div class="sub-header col-lg-12 col-md-12 col-sm-12 col-xs-12"></div>');
+                    var message = $('<div class="alert alert-danger message"><p align="center">'+sLocal_No_matches_found+'</p></div>');
+                    wrapper.append(message);
+                    $('.seeds-results').append(wrapper);
+                }
+                
+                if(data.bOk) {
+                    let sTitle = `Number of distinct cultivars of ${sSpecies} by year`;
+                    let sChartDiv = "chart-div";
+                    console.log(data.raOut);
+                    let raRows = []; // [['2008', 100], ['2010', 200]]; 
+                    data.raOut.forEach(function(o){ raRows.push([o.year+" ", parseInt(o.nCV)])});
+                    let raCols = [{type:'string',label:"Date"}, 
+                                  {type:'number','label':"Cultivars"}];
+                    drawChart(sTitle, sChartDiv, raCols, raRows);
+                }
+            }
+        }).done(function() {
+            $.scrollTo($('.results').position().top - 80, 500);
+        });
+    });
+
+	
+	
 	
 	/* Show the companies that sell the variety given by data-kPcv
 	 */
@@ -306,6 +370,25 @@ console.log($(this).serialize() + "&cmd=find");
 */
 });
 
+
+function drawChart( sTitle, sChartDiv, raCols, raRows ) 
+{
+    let data = new google.visualization.DataTable();
+
+    raCols.forEach(function(o) { data.addColumn(o.type, o.label)});
+    data.addRows(raRows);
+    
+    let options = {
+            title: sTitle,
+            vAxis: { minValue:0 }
+
+  //        'width':$nWidth,
+  //        'height':$nHeight
+  //        .(@$raParms['maxH'] ? ",'hAxis.minValue':0,'hAxis.maxValue':{$raParms['maxH']}" : "")
+    };
+    var chart = new google.visualization.ColumnChart(document.getElementById(sChartDiv));
+    chart.draw(data, options);
+}
 
 
 class SeedFinderUI

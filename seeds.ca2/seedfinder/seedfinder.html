@@ -40,11 +40,13 @@
         </div>
       {% else %}
         <div id='results-research'>
-            <p>RESEARCH</p>
-            <p>Open Data Policy: This information is collected by Seeds of Diversity, and is available for you to download and use as you wish at no cost and with no restrictions. We appreciate acknowledgement to Seeds of Diversity Canada.</p>
+        <div id='chart-div'></div>
+        </div>
+        <div class='alert alert-warning' style='text-align:center'>
+            <p style='font-size:125%'>Our Open Data Policy</p>
+            <p>This information is collected by Seeds of Diversity, and is available for you to download and use as you wish at no cost and with no restrictions. We appreciate acknowledgement to Seeds of Diversity Canada.</p>
             <p>As-is Data: We try very hard to ensure the accuracy of this information, but we offer it as-is with no guarantees. We welcome corrections and additions.</p>
             <p>Need something else? If these links don't give you exactly what you're looking for, just ask. We're glad to help our community of seed diversity researchers and conservators.</p>
-            
         </div>
       {% endif %}
     </div>
@@ -55,7 +57,7 @@
   [[include:sf-body-footer]]
   [[include:sf-body-copyright]]
   <script>sfLang = "[[var:lang]]";</script>
-  <script>[[var:scriptAtBottom]]</script>
+  [[var:scriptAtBottom]]
   </body>
 </html>
 
@@ -193,7 +195,7 @@
 <h1>[[ifeq:$lang|EN|Research| ]]</h1>
 <form role="form" method="get" id="form-research-form">
     <div class="form-group">
-        <select name="sfAp_sp" id="sfAp_report]" class="form-control" required>
+        <select name="sfAp_report" id="sfAp_report" class="form-control" required>
             <option value="1">[[ifeq:$lang|EN|Crop diversity over time|Diversit&eacute; des cultures au fil du temps]]</option>
         </select>
     </div>
@@ -203,18 +205,18 @@
             [[var:spOptions]]
         </select>
     </div>
-    <div class="form-group">
-        <input name="sfAp_srch" id="sfAp_srch" value="" size="20" placeholder="[[ifeq:$lang|EN|By variety|Par Vari&eacute;t&eacute;]]" class="form-control" type="text">
-    </div>
-    <div class="form-group">
-        <div class="checkbox form-control">
-            [[ifeq:$lang|EN|Certified organic only|Certifi&eacute; biologique]]
-            <input name="sfAp_organic" id="sfAp_organic" class="organic" type="checkbox" value="1">
-        </div>
-        <div class="checkbox form-control" style='margin-top:5px'>
-            [[ifeq:$lang|EN|Bulk Quantity Available|Bulk Quantity Available]]
-            <input name="sfAp_bulk" id="sfAp_bulk" class="bulk" type="checkbox" value="1">
-        </div>
+#    <div class="form-group">
+#        <input name="sfAp_srch" id="sfAp_srch" value="" size="20" placeholder="[[ifeq:$lang|EN|By variety|Par Vari&eacute;t&eacute;]]" class="form-control" type="text">
+#    </div>
+#    <div class="form-group">
+#        <div class="checkbox form-control">
+#            [[ifeq:$lang|EN|Certified organic only|Certifi&eacute; biologique]]
+#            <input name="sfAp_organic" id="sfAp_organic" class="organic" type="checkbox" value="1">
+#        </div>
+#        <div class="checkbox form-control" style='margin-top:5px'>
+#            [[ifeq:$lang|EN|Bulk Quantity Available|Bulk Quantity Available]]
+#            <input name="sfAp_bulk" id="sfAp_bulk" class="bulk" type="checkbox" value="1">
+#        </div>
         <button type="submit" class="btn btn-light">
             [[ifeq:$lang|EN|Show|Trouver]]
         </button>
