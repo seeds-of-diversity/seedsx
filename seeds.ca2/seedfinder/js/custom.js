@@ -261,6 +261,8 @@ console.log($(this).serialize() + "&cmd=find");
                 var sp = $this.find('.panel-title').text();
                 var cv = $this.find('.panel-body').text();
                 var sProfile = "";
+
+Get profile
                 
                 $.ajax({
                     async: false,
@@ -405,6 +407,7 @@ class SeedFinderUI
             let sSyn = "";
             if( typeof value.raPY != 'undefined' )  sSyn = value.raPY.join(", ");
             let o = { P_name: value.P_name + (sSyn ? ` <span style='font-size:75%;color:#233449'>(aka ${sSyn})</span>` : ""),
+                      P__key: value.P__key,
                       nSrc:   value.nSrc,
                       raSrc:  value.raSrc };
             oSpCv[value.S_name_en].raCV.push(o);
@@ -427,20 +430,28 @@ class SeedFinderUI
             value.raCV.forEach(function(v, k) {
                 let nSrc = typeof v.nSrc != 'undefined' ? v.nSrc : 0;
                 let sSrc = "";
-                if(typeof v.raSrc != 'undefined')  v.raSrc.forEach(function(v,k) {
-                                                                       let sCmpName = oSLSources[v].name_en;
-                                                                       let web = oSLSources[v].web;
-                                                                       if(web) {
-                                                                           if(web.substr(0,8) != "https://") web = "https://"+web;
-                                                                           // stopPropagation allows the link to work but stops the cv-block from closing (click outside the <a> to close the cv-block)
-                                                                           sCmpName = `<a href='${web}' target='_blank' onclick='event.stopPropagation()'>${sCmpName}</a>`;
-                                                                       }
-                                                                       sSrc += sCmpName+"<br/>";
-                                                                   });
-                sCVBlocks += `<div class='cv-block'>
-                           <div class='cv-name'>${v.P_name} <span class='cv-name-nSrc'>(${nSrc})</span></div>
-                           <div class='cv-details' style='display:none'><h4>${v.P_name}</h4><p>${sSrc}</p></div>
-                       </div>`;
+                if(typeof v.raSrc != 'undefined') {
+                    v.raSrc.forEach(function(v,k) {
+                                        let sCmpName = oSLSources[v].name_en;
+                                        let web = oSLSources[v].web;
+                                        if(web) {
+                                            if(web.substr(0,8) != "https://") web = "https://"+web;
+                                            // stopPropagation allows the link to work but stops the cv-block from closing (click outside the <a> to close the cv-block)
+                                            sCmpName = `<a href='${web}' target='_blank' onclick='event.stopPropagation()'>${sCmpName}</a>`;
+                                        }
+                                        sSrc += sCmpName+"<br/>";
+                                    });
+                }
+                sCVBlocks += 
+                        `<div class='cv-block' data-kpcv='${v.P__key}'>
+                             <div class='cv-name'>${v.P_name} <span class='cv-name-nSrc'>(${nSrc})</span></div>
+                             <div class='cv-details' style='display:none'><h4>${v.P_name}</h4>
+                                 <div class='row'>
+                                     <div class='col'><p>${sSrc}</p></div>
+                                     <div class='col cv-profile' style='display:none' onclick='event.stopPropagation()'> </div>
+                                 </div>
+                             </div>
+                         </div>`;
             });
             
             b = b.replace( "[[cvblocks]]", sCVBlocks );
@@ -452,9 +463,30 @@ class SeedFinderUI
         
         // event listeners to open the details for each cultivar
         $('.cv-block').click(function() {
-            event.stopPropagation();
+            event.stopPropagation();    // not sure why this is here
+            
+            // open/close the cultivar block
             $(this).find('.cv-name').slideToggle(200);
             $(this).find('.cv-details').slideToggle(200);
+
+            // if kPcv non-zero, look for a profile
+            let kPcv = $(this).data('kpcv');
+            if( kPcv ) {
+                let jProfile = $(this).find('.cv-profile');
+                $.ajax({
+                        async: true,
+                        type: "POST",
+                        url: "qcurl.php",
+                        data: { cmd: "profile", kPcv: kPcv },
+                        success: function(data) {
+                            if(data.sOut) {
+                                jProfile.html(data.sOut);
+                                jProfile.show();
+                            }   
+                        },
+                    }).done(function() {
+                    });
+            }
         });
     }
 }
