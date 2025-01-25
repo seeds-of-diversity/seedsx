@@ -210,9 +210,9 @@ $this->sess->VarSet( "console01".$this->sConsoleName."TF".substr($k,6), SEEDSafe
                  ."<td valign='top' style='float:right'>";
         if( isset($this->raParms['HEADER_LINKS']) ) {
             foreach( $this->raParms['HEADER_LINKS'] as $ra ) {
-                $sBody .= "<a href='${ra['href']}' class='console01-header-link'"
-                         .(isset($ra['target']) ? " target='${ra['target']}'" : "")
-                         .(isset($ra['onclick']) ? " onclick='${ra['onclick']}'" : "")
+                $sBody .= "<a href='{$ra['href']}' class='console01-header-link'"
+                         .(isset($ra['target']) ? " target='{$ra['target']}'" : "")
+                         .(isset($ra['onclick']) ? " onclick='{$ra['onclick']}'" : "")
                          .">"
                          .$ra['label']."</a>".SEEDStd_StrNBSP("",5);
             }
@@ -309,7 +309,7 @@ $this->sess->VarSet( "console01".$this->sConsoleName."TF".substr($k,6), SEEDSafe
 
     function TabSetGetSVA( $tsid, $tabname )
     {
-        $oSVA = new SEEDSessionVarAccessor( $this->sess, "console01".$this->sConsoleName."_${tsid}_${tabname}" );
+        $oSVA = new SEEDSessionVarAccessor( $this->sess, "console01".$this->sConsoleName."_{$tsid}_{$tabname}" );
         return( $oSVA );
     }
 
@@ -570,7 +570,7 @@ $s .= "<div class='console01_frame2-ctrl'>"
 
         // graphics for TabSet
         foreach( array( 'A0', 'A1', 'B00', 'B01', 'B10', 'C0', 'C1' ) as $tab ) {
-            $s .= ".console01_TFtab$tab { background-image: url( ${dirImg}c01_TFtab${tab}.png ); background-repeat: no-repeat; }";
+            $s .= ".console01_TFtab$tab { background-image: url( {$dirImg}c01_TFtab{$tab}.png ); background-repeat: no-repeat; }";
         }
 
         // graphics for Frame
@@ -589,7 +589,7 @@ $s .= "<div class='console01_frame2-ctrl'>"
                         '-5-2-bottommiddle' => 'repeat-x',
                         '-5-3-bottomright' => 'no-repeat',
         ) as $place=>$repeat ) {
-            $s .= ".console01_frame${place} { background-image: url( ${dirImg}c01_frame${place}.png ); background-repeat: ${repeat}; }";
+            $s .= ".console01_frame{$place} { background-image: url( {$dirImg}c01_frame{$place}.png ); background-repeat: {$repeat}; }";
         }
 
         $s .= "</STYLE>";
@@ -1012,8 +1012,8 @@ class Console01_ListEdit
 
         $this->oKFUForm->SetKFR( $kfrc );
 
-        $s = "<FORM method='post' action='${_SERVER['PHP_SELF']}'>".$this->Hidden('AddButton')."<INPUT type='submit' name='x' value='Add New'/></FORM>"
-        ."<DIV class='c01_leForm'><FORM method='post' action='${_SERVER['PHP_SELF']}'>"
+        $s = "<FORM method='post' action='{$_SERVER['PHP_SELF']}'>".$this->Hidden('AddButton')."<INPUT type='submit' name='x' value='Add New'/></FORM>"
+        ."<DIV class='c01_leForm'><FORM method='post' action='{$_SERVER['PHP_SELF']}'>"
         .$this->Hidden('FormSubmitted') // this tells Update() that the form was submitted
         .$this->oKFUForm->HiddenKey()  // put the key in the parms by default.  In the unusual case where the user can change the key, an raParm could disable this
         .$this->DrawListForm( $kfrc, $raParms )
@@ -1427,19 +1427,19 @@ class Console01_Stepper {
         if( isset($raRet['buttons']) ) {
             $s .= "<div>";
             if( strpos($raRet['buttons'], 'next') !== false ) {
-                $s .= "<form action='${_SERVER['PHP_SELF']}' method='post' style='display:inline'>"
+                $s .= "<form action='{$_SERVER['PHP_SELF']}' method='post' style='display:inline'>"
                      .$this->drawFormSubst( "[[next]]", $raRet )
                      ."</form>"
                      .SEEDStd_StrNBSP("",6);
             }
             if( strpos($raRet['buttons'], 'repeat') !== false ) {
-                $s .= "<form action='${_SERVER['PHP_SELF']}' method='post' style='display:inline'>"
+                $s .= "<form action='{$_SERVER['PHP_SELF']}' method='post' style='display:inline'>"
                      .$this->drawFormSubst( "[[repeat]]", $raRet )
                      ."</form>"
                      .SEEDStd_StrNBSP("",6);
             }
             if( strpos($raRet['buttons'], 'cancel') !== false ) {
-                $s .= "<form action='${_SERVER['PHP_SELF']}' method='post' style='display:inline'>"
+                $s .= "<form action='{$_SERVER['PHP_SELF']}' method='post' style='display:inline'>"
                      .$this->drawFormSubst( "[[cancel]]", $raRet )
                      ."</form>"
                      .SEEDStd_StrNBSP("",6);
@@ -1516,7 +1516,7 @@ class Console01_Stepper {
 
         $s = "<DIV>";
         if( ($lNext = @$raButtonText['next']) ) {
-            $s .= "<FORM action='${_SERVER['PHP_SELF']}' method='post' style='display:inline'>"
+            $s .= "<FORM action='{$_SERVER['PHP_SELF']}' method='post' style='display:inline'>"
                  .SEEDForm_Hidden( 'c01step', $this->GetNextStep() )
                  .$sHidden
                  ."<INPUT type='submit' value='$lNext'>"
@@ -1524,7 +1524,7 @@ class Console01_Stepper {
                  .SEEDStd_StrNBSP("",6);
         }
         if( ($lRepeat = @$raButtonText['repeat']) ) {
-            $s .= "<FORM action='${_SERVER['PHP_SELF']}' method='post' style='display:inline'>"
+            $s .= "<FORM action='{$_SERVER['PHP_SELF']}' method='post' style='display:inline'>"
                  .SEEDForm_Hidden( 'c01step', $this->step )
                  .$sHidden
                  ."<INPUT type='submit' value='$lRepeat'>"
@@ -1532,7 +1532,7 @@ class Console01_Stepper {
                  .SEEDStd_StrNBSP("",6);
         }
         if( ($lCancel = @$raButtonText['cancel']) ) {
-            $s .= "<FORM action='${_SERVER['PHP_SELF']}' method='post' style='display:inline'>"
+            $s .= "<FORM action='{$_SERVER['PHP_SELF']}' method='post' style='display:inline'>"
                  .$sHiddenCancel
                  ."<INPUT type='submit' value='$lCancel'>"
                  ."</FORM>";
