@@ -823,7 +823,7 @@ class KeyFrameRelation {
 
                 if( $t['Type'] == "LEFT JOIN" ) {
                     // The LEFT JOIN table cannot be the first one in the definition
-                    $sSelTables .= " LEFT JOIN ${t['Table']} ${t['Alias']} ON (${t['LeftJoinOn']})";
+                    $sSelTables .= " LEFT JOIN {$t['Table']} {$t['Alias']} ON ({$t['LeftJoinOn']})";
                 } else {
                     // Natural join
                     if( !empty($sSelTables) )  $sSelTables .= ", ";
