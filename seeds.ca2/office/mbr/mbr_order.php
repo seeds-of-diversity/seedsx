@@ -195,6 +195,9 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
 
     private function drawStatusFormContactData( KeyframeRecord $kfrOrder, $raMbr )
     {
+/* N.B. The ajax hander gets all http parms from this form, copies them to an array keyed by GetOfficeFlds(), and writes that to db.
+ *      That means all GetOfficeFlds() fields must be in this form, or they'll be overwritten by blank strings.
+ */
         $s = "<style>.mbroContactForm input[disabled] {background-color:#dff0d8;}</style>";
 
         $oForm = new SEEDCoreForm('M');
@@ -217,6 +220,7 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
              ."<div>".$oDFC->DrawItem('bNoDonorAppeals')." No Donor Appeals</div>"
 //             ."<div>".$oDFC->DrawItem('bNoSED')." Online MSD</div>"
              ."<div>".$oDFC->DrawItem('bPrintedMSD')." Printed MSD</div>"
+             ."<div style='vertical-align:top'>{$oDFC->DrawItem('comment')}</div>"
 
              ."<button onclick='doContactFormSubmit(".'$(this)'.",{$raMbr['_key']},".$kfrOrder->Key()." )'>Save</button>"
              ."</form>"
@@ -262,6 +266,7 @@ class drawFormContact
         'bNoDonorAppeals' => ['No Donor Appeals',     '',               'bNoDonorAppeals', 3],
 //        'bNoSED'       => ['Online MSD',     '',               'bNoSED', 3],
         'bPrintedMSD'       => ['Printed MSD',     '',               'bPrintedMSD', 3],
+        'comment'           => ['Comment', '', 'comment'],
     ];
 
     function GetItems() { return($this->raItems); }
@@ -290,7 +295,11 @@ class drawFormContact
             //$ra['disabledAddHidden'] = 1;   // disabled controls look right but don't report values; this appends a hidden element too
             $ra['disabled'] = 1;              // $().find() reads values of disabled controls though
         }
-        $s = $this->oForm->Text( $fld, "", $ra );
+        if($fld=='comment') {
+            $s = $this->oForm->TextArea( $fld, $ra );
+        } else {
+            $s = $this->oForm->Text( $fld, "", $ra );
+        }
 
         return( $s );
     }
