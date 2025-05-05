@@ -17,9 +17,7 @@ $cv = SEEDInput_Str( 'cv' );
 $s = "";
 
 if( ($kfr = $oCP->oProfilesDB->GetKFRCond( "VISite", "osp='".addslashes($sp)."' AND oname='".addslashes($cv)."'" )) ) {
-    $s = $oCP->oProfilesReport->DrawVIRecord( $kfr->Key(), false );
+    $s = $oCP->oProfilesReport->DrawVIRecord( $kfr, false );
 }
 
 echo json_encode(SEEDCore_utf8_encode( $s ));
-
-?>
