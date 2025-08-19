@@ -45,11 +45,11 @@ define( "SiteKFDB_PASSWORD_floralcal", "seeds" );
 define( "SiteKFDB_DB_floralcal",       "seeds3" );
 
 /* Defaults for your current site
- */
 define("SiteKFDB_HOST",     SiteKFDB_HOST_seeds1);
 define("SiteKFDB_DB",       SiteKFDB_DB_seeds1);
 define("SiteKFDB_USERID",   SiteKFDB_USERID_seeds1);
 define("SiteKFDB_PASSWORD", SiteKFDB_PASSWORD_seeds1);
+ */
 
 /* Or use this
 define("SiteKFDB_HOST",     SiteKFDB_HOST_seeds2);
@@ -66,22 +66,26 @@ define("SiteKFDB_PASSWORD", SiteKFDB_PASSWORD_seeds3);
 
 // new way
 $config_KFDB = array(
-    'seeds1'     => array( 'kfdbUserid'   => SiteKFDB_USERID,
-                           'kfdbPassword' => SiteKFDB_PASSWORD,
+    'seeds1'     => array( 'kfdbUserid'   => SiteKFDB_USERID_seeds1,
+                           'kfdbPassword' => SiteKFDB_PASSWORD_seeds1,
                            'kfdbDatabase' => 'seeds' ),
 
-    'seeds2'     => array( 'kfdbUserid'   => SiteKFDB_USERID,
-                           'kfdbPassword' => SiteKFDB_PASSWORD,
+    'seeds2'     => array( 'kfdbUserid'   => SiteKFDB_USERID_seeds2,
+                           'kfdbPassword' => SiteKFDB_PASSWORD_seeds2,
                            'kfdbDatabase' => 'seeds2' ),
 
-    'seeds3'     => array( 'kfdbUserid'   => SiteKFDB_USERID,
-                           'kfdbPassword' => SiteKFDB_PASSWORD,
+    'seeds3'     => array( 'kfdbUserid'   => SiteKFDB_USERID_seeds3,
+                           'kfdbPassword' => SiteKFDB_PASSWORD_seeds3,
                            'kfdbDatabase' => 'seeds3' ),
 
-    'seeds4'     => array( 'kfdbUserid'   => SiteKFDB_USERID,
-                           'kfdbPassword' => SiteKFDB_PASSWORD,
+    'seeds4'     => array( 'kfdbUserid'   => SiteKFDB_USERID_seeds4,
+                           'kfdbPassword' => SiteKFDB_PASSWORD_seeds4,
                            'kfdbDatabase' => 'seeds4' ),
 
+    'floralcal'  => array( 'kfdbUserid'   => SiteKFDB_USERID_seeds3,
+                           'kfdbPassword' => SiteKFDB_PASSWORD_seeds3,
+                           'kfdbDatabase' => 'seeds3' ),
+/*
     'phpbb'      => array( 'kfdbUserid'   => SiteKFDB_USERID,
                            'kfdbPassword' => SiteKFDB_PASSWORD,
                            'kfdbDatabase' => 'seeds4' ),
@@ -89,10 +93,5 @@ $config_KFDB = array(
     'seedliving' => array( 'kfdbUserid'   => SiteKFDB_USERID,
                            'kfdbPassword' => SiteKFDB_PASSWORD,
                            'kfdbDatabase' => 'seedliving' ),
-
-    'floralcal'  => array( 'kfdbUserid'   => SiteKFDB_USERID,
-                           'kfdbPassword' => SiteKFDB_PASSWORD,
-                           'kfdbDatabase' => 'seeds3' ),
+*/
 );
-
-?>
