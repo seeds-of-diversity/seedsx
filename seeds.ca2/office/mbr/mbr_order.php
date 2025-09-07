@@ -131,9 +131,9 @@ class mbrOrderFulfilUI extends SodOrderFulfilUI
         return( $s );
     }
 
-    private function drawStatusFormEStatus( $row, $raActions, KeyFrameRecord $kfrBasket )
+    private function drawStatusFormEStatus( $row, $raActions, ?KeyFrameRecord $kfrBasket )
     {
-        if( !$kfrBasket ) return( "" );
+        if( !$kfrBasket ) return( "" );     // old orders don't have SEEDBasket records
 
         $eStatus = $kfrBasket->Value('eStatus');
 
