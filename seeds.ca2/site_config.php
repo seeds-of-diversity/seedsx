@@ -27,10 +27,12 @@ define( "STD_isLocal", SEED_isLocal );
 
 
 /* full filesystem locations of SEEDSX_ROOT and the current script
+ *
+ * N.B. $_SERVER['SCRIPT_FILENAME'] doesn't give you what you want if mod_rewriting (e.g. in a Wordpress module)
  */
-define("SEEDSX_ROOT_REALDIR", realpath(dirname($_SERVER['SCRIPT_FILENAME'])."/".SEEDSX_ROOT)."/" );
-define("SITEROOT_REALDIR", realpath(dirname($_SERVER['SCRIPT_FILENAME'])."/".SITEROOT)."/" );
-define("STD_SCRIPT_REALDIR", realpath(dirname($_SERVER['SCRIPT_FILENAME']))."/" );
+if( !defined("SEEDSX_ROOT_REALDIR") )  define("SEEDSX_ROOT_REALDIR", realpath(dirname($_SERVER['SCRIPT_FILENAME'])."/".SEEDSX_ROOT)."/" );
+if( !defined("SITEROOT_REALDIR") )     define("SITEROOT_REALDIR", realpath(dirname($_SERVER['SCRIPT_FILENAME'])."/".SITEROOT)."/" );
+if( !defined("STD_SCRIPT_REALDIR") )   define("STD_SCRIPT_REALDIR", realpath(dirname($_SERVER['SCRIPT_FILENAME']))."/" );
 
 /* url location of SITEROOT
  *     - contains leading and trailing / (because on production there's only one
