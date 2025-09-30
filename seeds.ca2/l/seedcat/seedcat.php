@@ -13,7 +13,7 @@ function DrawSeedcatPage( $kfdb )
         $s = "<TABLE border='0'><TR><TD valign='center'>"
             //."<H2>Classic Canadian Seed Catalogues</H2></TD>"
             ."<TD>".SEEDStd_StrNBSP("",10)."</TD>"
-            ."<TD valign='center'><FORM method='post' action='${_SERVER['PHP_SELF']}?q=heritage'>"
+            ."<TD valign='center'><FORM method='post' action='{$_SERVER['PHP_SELF']}?q=heritage'>"
             .SEEDForm_Hidden( 'seedcat', 'index' )
             .SEEDForm_Select( 'sort', array('n'=>"Sort by Name", 'y'=>"Sort by Year"), $p_sort, array('selectAttrs'=>"onChange='submit();'") )
             ."</TD></TR></FORM></TABLE>";
