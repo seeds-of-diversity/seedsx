@@ -1,9 +1,5 @@
 <?php
 
-// javascript could offer and add up the various membership options
-
-// this file belongs in seeds.ca/mbr or equivalent.  it is only in seedcommon while moving to drupal.  point _DMod_Seeds_PageContent to the right place
-
 /* seedCheckout
  *
 * Copyright (c) 2009-2015 Seeds of Diversity Canada
@@ -819,9 +815,7 @@ $sGarlicVarieties =
 <td>Siberian<br /></td>
 </tr>
 <tr>
-<td>
-<p>Beletic Croatian</p>
-</td>
+<td>Belatic Croatian</td>
 <td>Chet's Italian</td>
 <td>German Red<br /></td>
 <td>Leningrad<br /></td>
