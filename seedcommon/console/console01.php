@@ -57,7 +57,7 @@ class Console01
     const TABSET_PERM_SHOW  = 1;  // show the tab fully
     const TABSET_PERM_GHOST = 2;  // show a non-clickable tab, no way to hack to the content (users will know that tab exists but can't use it)
 
-    function __construct( KeyFrameDB $kfdb = null, //deprecate use Console01_Worker instead (pass in null if you aren't using oC->kfdb)
+    function __construct( ?KeyFrameDB $kfdb = null, //deprecate use Console01_Worker instead (pass in null if you aren't using oC->kfdb)
                           SEEDSession $sess, $raParms = array() )
     {
         $this->kfdb = $kfdb;  //deprecate use Console01_Worker instead
@@ -1087,7 +1087,7 @@ class Console01Table_base
     protected $p_kDel = 0;
 
     // only derived classes can construct this
-    protected function __construct( KeyFrameRelation $kfrel, SEEDForm $oForm = NULL )
+    protected function __construct( KeyFrameRelation $kfrel, ?SEEDForm $oForm = NULL )
     {
         $this->kfrel = $kfrel;
         $this->oForm = $oForm;
@@ -1271,7 +1271,7 @@ class Console01Table_base
 
 class Console01TableKFRArray extends Console01Table_base
 {
-    function __construct( KeyFrameRelation $kfrel, SEEDForm $oForm = NULL ) { parent::__construct( $kfrel, $oForm ); }
+    function __construct( KeyFrameRelation $kfrel, ?SEEDForm $oForm = NULL ) { parent::__construct( $kfrel, $oForm ); }
 
     function DrawTable( $raKFR, $parms )
     {
@@ -1281,7 +1281,7 @@ class Console01TableKFRArray extends Console01Table_base
 
 class Console01TableKFRCursor extends Console01Table_base
 {
-    function __construct( KeyFrameRelation $kfrel, SEEDForm $oForm = NULL ) { parent::__construct( $kfrel, $oForm ); }
+    function __construct( KeyFrameRelation $kfrel, ?SEEDForm $oForm = NULL ) { parent::__construct( $kfrel, $oForm ); }
 
     function DrawTableKFRCursor( KFRecord $kfrc, $parms )
     {
