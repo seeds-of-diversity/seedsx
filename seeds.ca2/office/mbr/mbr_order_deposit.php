@@ -113,13 +113,22 @@ foreach( $raCodes as $code ) {
     $raOrders = $oOrder->kfrelOrder->GetRecordSetRA( "depositCode='".addslashes($code)."'" );
 
     $sT = "";
+    $raColTotals = $oMD->emptyRow();
     foreach( $raOrders as $raR ) {
         list($ra,$fSubtotal) = $oMD->order2table($raR);
         $fTotal += $fSubtotal;
-        $sT .= SEEDCore_ArrayExpand( $ra, "<tr><td>[[order]]</td><td style='text-align:left'>[[name]]</td>"
-                                            ."<td>[[membership]]</td><td>[[sed]]</td><td>[[donation]]</td><td>[[sladoption]]</td>"
-                                            ."<td>[[books]]</td><td>[[seeds]]</td><td>[[misc]]</td></tr>" );
+        // draw the row for this order
+        $sT .= "<tr><td>{$ra['order']}</td><td style='text-align:left'>{$ra['name']}</td>";
+        foreach(array_keys($raColTotals) as $k) {
+            $sT .= "<td>".($ra[$k] ?: "")."</td>";
+            $raColTotals[$k] += $ra[$k];
+        }
+        $sT .= "<td style='border-left:2px solid #aaa'>$fSubtotal</td></tr>";
     }
+    // draw the totals row
+    $sT .= "<tr style='border-top:2px solid #aaa'><td>&nbsp;</td><td>&nbsp;</td>";
+    foreach(array_keys($raColTotals) as $k) { $sT .= "<td style='font-weight:bold'>{$raColTotals[$k]}</td>"; }
+    $sT .= "<td style='border-left:2px solid #aaa; font-weight:bold;padding-left:1em'>$fTotal</td></tr>";
 
     $hsCode = SEEDCore_HSC($code);
     // make range string for Edit control
@@ -146,6 +155,7 @@ foreach( $raCodes as $code ) {
            </div>";
 }
 
+// 'sCharset'=>'cp1252' ?
 echo Console02Static::HTMLPage($s, "", "EN");
 
 class MbrOrderDeposit
@@ -158,6 +168,9 @@ class MbrOrderDeposit
         $this->oApp = $oApp;
         $this->oOrder = $oOrder;
     }
+
+    function emptyRow()     : array { return( ['membership'=>0.0, 'sed'=>0.0, 'donation'=>0.0, 'sladoption'=>0.0, 'books'=>0.0, 'seeds'=>0.0, 'misc'=>0.0] ); }
+    function purchaseKeys() : array { return(array_keys($this->emptyRow())); }
 
     function GetParms()
     /******************
@@ -243,8 +256,10 @@ class MbrOrderDeposit
         $row = 2;
         foreach( $raOut as $ra ) {
             $oXls->WriteRow( 0, $row,
-                           // A             B            C                  D           E                F                  G             H             I            J   K
-                             [$ra['order'], $ra['name'], $ra['membership'], $ra['sed'], $ra['donation'], $ra['sladoption'], $ra['books'], $ra['seeds'], $ra['misc'], "", "=sum(C$row:I$row)"] );
+                           // A             B            C                      D               E                    F
+                             [$ra['order'], $ra['name'], $ra['membership']?:"", $ra['sed']?:"", $ra['donation']?:"", $ra['sladoption']?:"",
+                           // G                 H                 I                J   K
+                              $ra['books']?:"", $ra['seeds']?:"", $ra['misc']?:"", "", "=sum(C$row:I$row)"] );
             // bold the total on right
             $oXls->SetCellStyle( 0, $row, 'K', ['font'=>['bold'=>true]] );
 
@@ -268,7 +283,7 @@ class MbrOrderDeposit
 
     function order2table( array $raR )
     {
-        $ra = array();
+        $ra = $this->emptyRow();
 
         $this->oOrder->setKOrder( $raR['_key'] );
         $this->oOrder->computeOrder();
@@ -278,31 +293,25 @@ class MbrOrderDeposit
         if( !($ra['name'] = trim(SEEDCore_utf8_encode($raR['mail_firstname']." ".$raR['mail_lastname']))) ) {    // trim removes the " " if no first/last
             $ra['name'] = SEEDCore_utf8_encode($raR['mail_company']);
         }
-        $ra['membership'] = (@$raOrder['mbr']=='mbr1_45sed' ? 45 : (@$raOrder['mbr']=='mbr1_35' ? 35 : "") );
-        $ra['sed'] = @$raOrder['mbr']=='mbr1_15sed' ? 15 : (@$raOrder['mbr']=='mbr1_10sed' ? 10 : "");
-        $ra['donation'] = @$raOrder['donation'];
-        $ra['sladoption'] = @$raOrder['slAdopt_amount'];
+        $ra['membership'] = (@$raOrder['mbr']=='mbr1_45sed' ? 45.0 : (@$raOrder['mbr']=='mbr1_35' ? 35.0 : 0.0) );
+        $ra['sed'] = @$raOrder['mbr']=='mbr1_15sed' ? 15.0 : (@$raOrder['mbr']=='mbr1_10sed' ? 10.0 : 0.0);
+        $ra['donation'] = floatval(@$raOrder['donation']);
+        $ra['sladoption'] = floatval(@$raOrder['slAdopt_amount']);
 
-        $ra['books'] = "";
         if( $raOrder['pubs'] ) {
-            $ra['books'] = 0;   // prevent non-numeric warning with +=
             foreach( $raOrder['pubs'] as $raPub ) {
                 $ra['books'] += $raPub[3];  // total price of n copies
             }
         }
-        $ra['seeds'] = "";
         if( @$raOrder['seeds'] ) {
-            $ra['seeds'] = 0;   // prevent non-numeric warning with +=
             foreach( $raOrder['seeds'] as $raSeeds ) {
                 $ra['seeds'] += $raSeeds['amount'];
             }
         }
 
         $ra['misc'] = @$raOrder['misc'] + @$raOrder['everyseed_shipping'];
-        if( !$ra['misc'] )  $ra['misc'] = "";
 
-        $fTotal = floatval($ra['membership']) + floatval($ra['sed']) + floatval($ra['donation']) + floatval($ra['sladoption'])
-                + floatval($ra['books']) + floatval($ra['seeds']) + floatval($ra['misc']);
+        $fTotal = array_sum(array_intersect_key($ra, array_flip($this->purchaseKeys())));   // sum of $ra elements whose keys are in purchasKeys()
 
         return( [$ra,$fTotal] );
     }
