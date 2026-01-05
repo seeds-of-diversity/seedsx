@@ -135,7 +135,7 @@ class SoDMbrOrderCheckout extends MbrOrderCheckout
         $bGarlicAdvertisedButGone = true;
 
         if( $bGarlicAdvertised ) {
-            $s .= "<a name='gafrlic'></a>"
+            $s .= "<a name='garlic'></a>"
                  .$this->FormBox(
                      $this->oL->S("Garlic bulbils available for planting"),
                      ($bGarlicAdvertisedButGone

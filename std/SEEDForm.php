@@ -790,7 +790,7 @@ class SEEDFormElements
         return( $s );
     }
 
-    function ResolveTag( $raTag, SEEDTagParser $oTagDummy = NULL, $raParms = array() )      // NULL allows $this->fnExpandHandleTag to pass null
+    function ResolveTag( $raTag, ?SEEDTagParser $oTagDummy = NULL, $raParms = array() )      // NULL allows $this->fnExpandHandleTag to pass null
     /****************************************************************
         Call here from SEEDTagParser::HandleTag to resolve tags having to do with templates
 
