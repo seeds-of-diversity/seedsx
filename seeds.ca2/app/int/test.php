@@ -32,6 +32,7 @@ $s = "<div style='border:1px solid #aaa;margin-bottom:30px;padding:10px'>"
     ."<div><a href='{$oApp->PathToSelf()}?test=csci'>CSCI test</a></div>"
     ."<div><a href='{$oApp->PathToSelf()}?test=sl-search'>Seed Library Search test</a></div>"
     ."<div><a href='{$oApp->PathToSelf()}?test=sl-list'>Seed Library List via Drupal test</a></div>"
+    ."<div><a href='{$oApp->PathToSelf()}?test=seedcat'>Historic seed catalogues test</a></div>"
     ."<div><a href='{$oApp->PathToSelf()}?test=bulletin'>bulletin signup test</a></div>"
     ."<div><a href='{$oApp->PathToSelf()}?test=docrep'>DocRep test</a></div>"
     ."<div><a href='{$oApp->PathToSelf()}?test=docrep_p_new'>DocRep test with New SEEDSessionAccount_Password enabled</a></div>"
@@ -229,6 +230,10 @@ switch( $test ) {
 
     case 'bulletin':
         $s .= $oTmpl->ExpandStr( "[[SEEDContent:bulletin-action]] Subscribe to Seeds of Diversity's free monthly e-bulletin! [[SEEDContent:bulletin-control]]", [] );
+        break;
+
+    case 'seedcat':
+        $s .= $oTmpl->ExpandStr( "[[SEEDContent:historic-seed-catalogues]]", [] );
         break;
 
     case 'docrep':
