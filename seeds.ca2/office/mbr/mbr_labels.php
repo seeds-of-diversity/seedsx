@@ -24,7 +24,7 @@
 
 define( "SITEROOT", "../../" );
 include_once( SITEROOT."site2.php" );
-include_once( SEEDCOMMON."mbr/mbrCommon.php" ); // MbrDrawAddressBlock
+include_once( SEEDLIB."mbr/MbrContacts.php" );
 
 include_once( SEEDCORE."SEEDCoreFormSession.php" );
 
@@ -166,7 +166,7 @@ class MbrLabelsApp
         $oMbr = new Mbr_Contacts( $this->oApp );
 
         foreach( preg_split('/\s+/', $this->oForm->Value('mbrorders')) as $v ) {
-            $ra = $this->oApp->kfdb->QueryRA( "SELECT * FROM seeds_1.mbr_order_pending WHERE _key='{$v}'" );
+            $ra = $this->oApp->kfdb->QueryRA( "SELECT * FROM {$this->oApp->DBName('seeds1')}.mbr_order_pending WHERE _key='{$v}'" );
             if( @$ra['_key'] ) {
                 $ra['mail_address'] = $ra['mail_addr'];
                 $ra['mail_province'] = $ra['mail_prov'];
@@ -226,7 +226,7 @@ if( @$_REQUEST['cmd'] == 'pdf' ) {
     exit;                       // DrawPDFLabels exits but this is a good reminder
 }
 
-echo Console02Static::HTMLPage( utf8_encode($oLA->DrawUI()), "", "EN" );
+echo Console02Static::HTMLPage( SEEDCore_utf8_encode($oLA->DrawUI()), "", "EN" );
 
 
 // for some reason when other apps launch this page via a post with a target, the url keeps the parameters like a get
