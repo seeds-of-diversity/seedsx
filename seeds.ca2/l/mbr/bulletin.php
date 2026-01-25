@@ -29,7 +29,7 @@ class SoDBulletin
         Draw the form that lets people subscribe/unsubscribe their email address
      */
     {
-        $s = $this->oTmpl->ExpandTmpl( 'bullControlForm', ['formAction'=>"https://seeds.ca/ebulletin" /*$this->oApp->PathToSelf()  resolves to "/1/index.php" */,
+        $s = $this->oTmpl->ExpandTmpl( 'bullControlForm', ['formAction'=>(SEED_isLocal ? $this->oApp->PathToSelf() : "https://seeds.ca/ebulletin"), /* PathToSelf() resolves to "/1/index.php" on seeds.ca */
                                                            'emailParmName'=>$this->oForm->Name('email')] );
         return( $s );
     }
@@ -176,7 +176,7 @@ class SoDBulletin
 
     private function getBullStatus( $email )
     {
-        $kfrBull = $this->oEbull->oDB->GetKFRCond('B', "email='".addslashes($email)."'");
+        $bIsBullSubscriber = !empty($this->oEbull->GetSubscriber($email));
 
         $oQ = new QServerMbr( $this->oApp, ['config_bUTF8'=>false] );
         $rQ = $oQ->Cmd( 'mbr!getOffice', ['sEmail'=>$email] );
@@ -184,7 +184,7 @@ class SoDBulletin
 
 // Actually, check if the member's expiry is within 2 years
 
-        $raBull = ['bIsBullSubscriber' => ($kfrBull != null),
+        $raBull = ['bIsBullSubscriber' => $bIsBullSubscriber,
                    'bIsMember' => isset($raMbr['_key']),
                    'bIsMemberSubscriber' => isset($raMbr['_key']) && !$raMbr['bNoEBull'],
         ];
