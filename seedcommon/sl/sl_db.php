@@ -1199,6 +1199,7 @@ class Priority
     }
 }
 
+// copied to SLUtil
 function _normalizePSP( $psp )
 {
     $psp = strtolower( $psp );
@@ -1217,6 +1218,7 @@ function _normalizePSP( $psp )
             return( $psp );
 }
 
+// copied to SLUtil
 function SLDB_SeedsPerGram( $psp )
 {
     $psp = _normalizePSP( $psp );
@@ -1282,6 +1284,7 @@ function SLDB_SeedsPerGram( $psp )
     return( $n );
 }
 
+// copied to SLUtil
 function SLDB_MinPopulation( $psp )
 {
     $psp = _normalizePSP( $psp );
