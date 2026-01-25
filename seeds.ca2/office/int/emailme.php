@@ -10,6 +10,7 @@ $oApp = new SEEDAppConsole( $config_KFDB['seeds2'] + [ 'sessPermsRequired' => ar
 
 $s = (new EmailMeApp($oApp, array('logdir'=>SITE_LOG_ROOT."emailme/")))->App();
 
+// 'sCharset'=>'cp1252' ?
 echo Console02Static::HtmlPage( $oApp->oC->DrawConsole( $s ), "", 'EN' );
 
 ?>
