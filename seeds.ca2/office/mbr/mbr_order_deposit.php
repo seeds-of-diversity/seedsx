@@ -155,7 +155,7 @@ foreach( $raCodes as $code ) {
            </div>";
 }
 
-// 'sCharset'=>'cp1252' ?
+//'sCharset'=>'cp1252' ?
 echo Console02Static::HTMLPage($s, "", "EN");
 
 class MbrOrderDeposit
