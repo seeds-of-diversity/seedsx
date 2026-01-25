@@ -38,6 +38,7 @@ class SLAdminReports
         return( $s );
     }
 
+// copied to app/sl/ : overviewTab
     private function cultivarSummary( $bUnionCSCI )
     {
         $s = "";
