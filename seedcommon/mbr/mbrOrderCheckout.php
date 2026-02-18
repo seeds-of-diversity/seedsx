@@ -372,6 +372,11 @@ include_once( SEEDAPP."basket/sodBasketFulfil.php" );
 //$this->sess->LogoutSession();
         $s = "";
 
+        $s .= "<div class='alert alert-success'>
+               If you're here to create a Seeds of Diversity account, so you can join our seed saving projects,
+               please use the Membership box below to register a free membership. Your password will be emailed to you right away.
+               </div>";
+
         /* Kluge: We use KFUIForm to draw the form and marshal input parms (with kfu prefix), but it uses a kfr to draw the form while we're keeping the data in session.
          * So copy the sess to a dummy kfr.
          * Note that the order form will have parms that don't exist in the kfrelOrder, so this is going to be a problem if KFRecord validates keys, and we can't use
