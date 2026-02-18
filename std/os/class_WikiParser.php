@@ -36,6 +36,8 @@
 
 class WikiParser {
 
+    var $reference_wiki,$image_uri,$ignore_images,$emphasis,$preformat;
+
     function __construct() {
         $this->reference_wiki = '';
         $this->image_uri = '';
