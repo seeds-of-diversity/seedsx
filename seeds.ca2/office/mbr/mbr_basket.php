@@ -350,7 +350,7 @@ class MyConsole02TabSet extends Console02TabSet
 
         // oApp->kfdb is seeds2 but SEEDBasketDB is created on seeds here
         $this->oApp = $oApp;
-        $this->oSB = new SEEDBasketCore( $oApp->kfdb, $oApp->sess, $oApp, SEEDBasketProducts_SoD::$raProductTypes,
+        $this->oSB = new SEEDBasketCore( $oApp, SEEDBasketProducts_SoD::$raProductTypes,
                                          ['logdir'=>$oApp->logdir, 'sbdb'=>'seeds1'] );
     }
 

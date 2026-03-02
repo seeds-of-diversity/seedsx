@@ -118,8 +118,7 @@ class MbrStore extends SEEDBasketStore
 {
     function __construct( SEEDAppConsole $oApp )
     {
-        parent::__construct( new SEEDBasketCore( null, null,
-                                                 $oApp, SEEDBasketProducts_SoD::$raProductTypes, ['sbdb'=>'seeds1'] )  );
+        parent::__construct( new SEEDBasketCore( $oApp, SEEDBasketProducts_SoD::$raProductTypes, ['sbdb'=>'seeds1'] )  );
     }
 }
 
