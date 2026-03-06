@@ -63,29 +63,29 @@ $raLoginDef = array(
         ) ),
     array( "Member Seed Directory", "Catalogue de semences",
            array(
-               array( "seedexchange",            "PUBLIC",        "Member Seed Directory listings", "Catalogue de semences" ),
-               array( "app/mbr/edit.php",        "W sed",         "Edit my Seed Directory Listings" ),
+               array( "seedexchange",            "PUBLIC",        "Seed Exchange", "Catalogue de semences" ),
+               array( "app/mbr/edit.php",        "W sed",         "Edit my Seed Exchange listings" ),
         ) ),
 
     array( "My Seed Collection", "My Seed Collection",
            array(
                array( "ONE-OF",
-                  array( "app/collection",      "A SL",              "Administrate All Seed Collections", "Administrate All Seed Collections" ),
-                  array( "app/collection",      "W SLCollection",    "Manage Your Own Seed Collection", "Manage Your Own Seed Collection" ),
+                  array( "app/collection",      "A SL",              "Administrate all seed collections", "Administrate all seed collections" ),
+                  array( "app/collection",      "W SLCollection",    "Manage your own seed collection", "Manage your own seed collection" ),
 
                ) ),
            ),
     array( "My Projects", "My Projects",
            array(
-               array( "app/sl/myprojects.php",  "PUBLIC",        "Record Your Crop Descriptions", "Record Your Crop Descriptions" ),
+               array( "app/sl/myprojects.php",  "PUBLIC",        "Join a growout project, record your results", "Join a growout project, record your results" ),
         ) ),
     array( "Logos", "",
            array(
-               array( "app/logos.php",           "PUBLIC",        "Download Logos" ),
+               array( "app/logos.php",           "PUBLIC",        "Download logos" ),
         ) ),
     array( "My Account", "Mon compte",
            array(
-               array( "",                        "PUBLIC",        "Change Password", "", "{$_SERVER['PHP_SELF']}?sessioncmd=changepwd" ),
+               array( "",                        "PUBLIC",        "Change password", "", "{$_SERVER['PHP_SELF']}?sessioncmd=changepwd" ),
         ) ),
 );
 
