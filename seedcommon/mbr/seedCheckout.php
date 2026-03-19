@@ -141,7 +141,7 @@ class SoDMbrOrderCheckout extends MbrOrderCheckout
                      ($bGarlicAvailable
                       ? ($this->oL->S("Garlic-bulbils-instr")
                          ."<p>".$this->oKForm->Checkbox( 'bBulbils', $this->oL->S("Please send samples of garlic bulbils for $15") )."</p>")
-                      : ("<p style='border:1px solid #822;color:#822;padding:10px'>Sorry! Our garlic bulbils are sold out for ".date("Y").".  Thank you for your interest!</p>")
+                      : ("<p style='border:1px solid #822;color:#822;padding:10px'>Sorry! Our garlic bulbils are sold out. Please check back in late summer and fall. Thank you for your interest!</p>")
                      )
                      ."<br/><br/>",
                      true );
