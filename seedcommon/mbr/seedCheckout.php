@@ -131,18 +131,18 @@ class SoDMbrOrderCheckout extends MbrOrderCheckout
         $this->oKForm->SetValue('bBulbils',0);
         $_SESSION['mbrocdata']['bBulbils'] = "";    // have to do this too because we're storing everything in the session during this stage
 
-        $bGarlicAdvertised = true;
-        $bGarlicAdvertisedButGone = true;
+        $bGarlicAdvertised  = defined("STORE_GARLIC_ADVERTISED") && STORE_GARLIC_ADVERTISED;  // true: show the garlic box
+        $bGarlicAvailable   = defined("STORE_GARLIC_AVAILABLE")  && STORE_GARLIC_AVAILABLE;   // true: enable sales, false: explain not available
 
         if( $bGarlicAdvertised ) {
             $s .= "<a name='garlic'></a>"
                  .$this->FormBox(
                      $this->oL->S("Garlic bulbils available for planting"),
-                     ($bGarlicAdvertisedButGone
-                      ? ("<p style='border:1px solid #822;color:#822;padding:10px'>Sorry! Our garlic bulbils are sold out for ".date("Y").".  Thank you for your interest!</p>")
-                      : ($this->oL->S("Garlic-bulbils-instr")
+                     ($bGarlicAvailable
+                      ? ($this->oL->S("Garlic-bulbils-instr")
                          ."<p>".$this->oKForm->Checkbox( 'bBulbils', $this->oL->S("Please send samples of garlic bulbils for $15") )."</p>")
-                        )
+                      : ("<p style='border:1px solid #822;color:#822;padding:10px'>Sorry! Our garlic bulbils are sold out for ".date("Y").".  Thank you for your interest!</p>")
+                     )
                      ."<br/><br/>",
                      true );
         }
