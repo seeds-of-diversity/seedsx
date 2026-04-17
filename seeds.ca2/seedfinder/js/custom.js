@@ -432,6 +432,8 @@ class SeedFinderUI
                 let sSrc = "";
                 if(typeof v.raSrc != 'undefined') {
                     v.raSrc.forEach(function(v,k) {
+                                        if(typeof(oSLSources[v]) == 'undefined') return;  // shouldn't happen but did when db tables were unsynced
+
                                         let sCmpName = oSLSources[v].name_en;
                                         let web = oSLSources[v].web;
                                         if(web) {
