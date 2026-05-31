@@ -76,7 +76,8 @@ class MyConsole extends Console01KFUI
                   "ListSize" => 15,
                   "fnFormDraw"      => array($this,"CultivarsFormDraw"),
                   "fnPreDelete"     => array($this,"CultivarsPreDelete"),
-                  "raSEEDFormParms" => array( "DSParms" => array('fn_DSPreStore'=>array($this,'CultivarsDSPreStore') ) )
+                  "raSEEDFormParms" => array( "DSParms" => array('fn_DSPreStore'=>array($this,'CultivarsDSPreStore'),
+                                                                 'fn_DSPostStore'=>array($this,'CultivarsDSPostStore')) )
             ),
             'species' => array(
                   "Label" => "Species",
@@ -106,6 +107,7 @@ class MyConsole extends Console01KFUI
                   "ListSizePad" => 1,
                   "fnListRowTranslate" => array($this,"CultivarsSynListRowTranslate"),
                   "fnFormDraw" => array($this,"CultivarsSynFormDraw"),
+                  "raSEEDFormParms" => array( "DSParms" => ['fn_DSPostStore'=>array($this,'CultivarsSynDSPostStore')] )
             ),
             'species_syn' => array(
                   "Label" => "Species Synonym",
@@ -170,6 +172,19 @@ $oDS->SetValue( 'psp', $psp );
             $ok = true;
         }
         return( $ok );
+    }
+
+    /* Reindex sl_cv_sources rows affected by pcv/syn changes
+     */
+    function CultivarsDSPostStore( KFRecord $kfr, KeyFrameUIForm $oForm )
+    {
+        include_once(SEEDLIB."sl/sources/sl_sources_rosetta.php");
+        SLSourceCV_Build::CultivarIndex_Single(SEEDConfig_NewAppConsole_LoginNotRequired(['db'=>'seeds1']), $kfr->Key());
+    }
+    function CultivarsSynDSPostStore( KFRecord $kfr, KeyFrameUIForm $oForm )
+    {
+        include_once(SEEDLIB."sl/sources/sl_sources_rosetta.php");
+        SLSourceCV_Build::CultivarIndex_Single(SEEDConfig_NewAppConsole_LoginNotRequired(['db'=>'seeds1']), $kfr->Value("fk_sl_pcv"));
     }
 
     private function drawStats( $ra )
