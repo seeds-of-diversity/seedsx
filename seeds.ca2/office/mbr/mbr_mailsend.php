@@ -22,40 +22,75 @@ $kfdb1 = SiteKFDB( SiteKFDB_DB_seeds1 ) or die( "Cannot connect to database" );
 //print_r($_REQUEST);
 
 
-$iDelay = 90;   // seconds to delay between sends
+$iDelay = 10;   // seconds to delay between sends
 
 
 $oApp = SEEDConfig_NewAppConsole_LoginNotRequired( ['db'=>'seeds2'] );
 
+$oSend = new mbr_mailsend( $kfdb1, $kfdb2, 1499 );   /* **************  UID ************************************/
+
+if( ($cmd = SEEDInput_Str('cmd')) ) {
+    if( $cmd == 'sendOne' ) {
+        list($kMailRec,$sMsg) = $oSend->sendOne();
+        $kMailRec = 1;
+        echo json_encode(['kMailRec'=>$kMailRec,'sMsg'=>$sMsg]);
+    }
+    exit;
+}
+
+
 $n = $oApp->kfdb->Query1("SELECT count(*) FROM {$oApp->GetDBName('seeds2')}.mbr_mail_send_recipients WHERE _status='0' AND eStatus='READY'");
 
 $sBody = "<h2>Seeds of Diversity Bulk Mailer</h2>"
-        ."<p>There are $n emails ready to send at ".date('Y-m-d H:i:s').".</p>";
+        ."<p>There are $n emails ready to send at ".date('Y-m-d H:i:s').".</p>"
+        ."<p>Sending one email every $iDelay seconds.</p>"
+         ."<br/><br/>";
 
 list($bTestOk,$sTest) = testMailHistory( $oApp );
 $sBody .= $sTest;
 
 $bSendMail = ($bTestOk && $n);
 
-if( $bSendMail ) {
-    $sBody .= "<p>Sending one email every $iDelay seconds.</p>"
-             ."<p>You can see the progress in the Bulk Mailer table by clicking the Refresh link.</p>";
-    $sBody .= "<br/><br/>";
-    $oSend = new mbr_mailsend( $kfdb1, $kfdb2, 1499 );   /* **************  UID ************************************/
-
-    for( $i = 0; $i < 1; ++$i ) {
-        list($kRec,$sMsg) = $oSend->sendOne();
-        $sBody .= $kRec." ".microtime()."<br/>".($sMsg ? "$sMsg<br/>" : "");
-        if( !$kRec )  break;
+if( SEEDInput_Int('oldway') ) {
+    if( $bSendMail ) {
+        for( $i = 0; $i < 1; ++$i ) {
+            list($kRec,$sMsg) = $oSend->sendOne();
+            $sBody .= $kRec." ".microtime()."<br/>".($sMsg ? "$sMsg<br/>" : "");
+            if( !$kRec )  break;
+        }
+        // don't delay here so results appear right away, refresh browser every 20 seconds
+        //sleep( 20 );
     }
-    // don't delay here so results appear right away, refresh browser every 20 seconds
-    //sleep( 20 );
-}
 
-echo Console02Static::HTMLPage( $sBody,
-                                //($bSendMail ? "<meta http-equiv='refresh' CONTENT='{$iDelay}; URL=https://seeds.ca/office/mbr/mbr_mailsend.php'>" : ""),
-                                ($bSendMail ? "<meta http-equiv='refresh' CONTENT='{$iDelay}'>" : ""),      // refresh self after $iDelay seconds
-                                'EN', [] );
+    echo Console02Static::HTMLPage( $sBody,
+                                    //($bSendMail ? "<meta http-equiv='refresh' CONTENT='{$iDelay}; URL=https://seeds.ca/office/mbr/mbr_mailsend.php'>" : ""),
+                                    ($bSendMail ? "<meta http-equiv='refresh' CONTENT='{$iDelay}'>" : ""),      // refresh self after $iDelay seconds
+                                    'EN', [] );
+
+} else {
+    $sBody .= "<div id='output'></div>".
+<<<SCRIPT
+<script>
+const iDelay = $iDelay;
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function sendMailLoop() {
+    let oRet = null;
+    let k = 5;
+    do {
+        oRet = SEEDJXSync( "mbr_mailsend.php", {cmd: 'sendOne'} );
+console.log(iDelay);
+        $('#output').html( oRet.kMailRec+" "+oRet.sMsg+"<br/>" + $('#output').html() );
+        await sleep(iDelay*1000);
+    } while(--k);
+}
+sendMailLoop();
+</script>
+SCRIPT;
+
+    echo Console02Static::HTMLPage( $sBody, "", 'EN', ['raScriptFiles'=>[$oApp->UrlW("js/SEEDCore.js")]] );
+}
 
 
 class mbr_mailsend {
