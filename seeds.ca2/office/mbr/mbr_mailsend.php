@@ -32,7 +32,6 @@ $oSend = new mbr_mailsend( $kfdb1, $kfdb2, 1499 );   /* **************  UID ****
 if( ($cmd = SEEDInput_Str('cmd')) ) {
     if( $cmd == 'sendOne' ) {
         list($kMailRec,$sMsg) = $oSend->sendOne();
-        $kMailRec = 1;
         echo json_encode(['kMailRec'=>$kMailRec,'sMsg'=>$sMsg]);
     }
     exit;
@@ -80,10 +79,9 @@ async function sendMailLoop() {
     let k = 5;
     do {
         oRet = SEEDJXSync( "mbr_mailsend.php", {cmd: 'sendOne'} );
-console.log(iDelay);
         $('#output').html( oRet.kMailRec+" "+oRet.sMsg+"<br/>" + $('#output').html() );
         await sleep(iDelay*1000);
-    } while(--k);
+    } while(oRet.kMailRec);
 }
 sendMailLoop();
 </script>
