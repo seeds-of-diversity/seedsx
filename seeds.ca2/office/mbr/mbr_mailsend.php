@@ -76,12 +76,18 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function sendMailLoop() {
     let oRet = null;
-    let k = 5;
+    let bSuccess = false;
+    let sMsg = "";
     do {
-        oRet = SEEDJXSync( "mbr_mailsend.php", {cmd: 'sendOne'} );
-        $('#output').html( oRet.kMailRec+" "+oRet.sMsg+"<br/>" + $('#output').html() );
+        bSuccess = false;
+        oRet = SEEDJXSync( "mbr_mailsend.php", {cmd: 'sendOne'},
+                           function (oRet) { bSuccess = true; },        // success()
+                           function ()     { bSuccess = false; }        // error()
+                         );
+        sMsg = bSuccess ? (oRet.kMailRec+" "+oRet.sMsg) : "Server error";
+        $('#output').html( sMsg+"<br/>" + $('#output').html() );
         await sleep(iDelay*1000);
-    } while(oRet.kMailRec);
+    } while(!bSuccess || oRet.kMailRec);    // keep trying until successfully find no email to send
 }
 sendMailLoop();
 </script>
