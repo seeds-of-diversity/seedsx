@@ -5,7 +5,7 @@ include_once( SITEROOT."site2.php" );
 
 $raConfig = [
     'rootdir' => '/home/bob/junk/imgtest/',
-    'imgmanlib' => ['targetExt'=>'jpg']
+    'imgmanlib' => ['targetExt'=>'webp']
 ];
 
 include_once( SEEDAPP."imgman/ImgManager.php" );
