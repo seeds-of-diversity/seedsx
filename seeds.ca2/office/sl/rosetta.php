@@ -306,7 +306,7 @@ $oDS->SetValue( 'psp', $psp );
         $s = "<TABLE class='slAdminForm SFUAC_Anchor' width='100%' border='0' cellpadding='0' style='position:relative'>"
             .$oForm->ExpandForm(
                "||| *Primary cultivar* "
-                  ."|| <span id='cultivarText' style='font-size:9pt'>[[Value:P_psp]] : [[Value:P_name]] ([[Value:P__key]])</span> "
+                  ."|| <span id='cultivarText' style='font-size:9pt'>[[Value:S_psp]] : [[Value:P_name]] ([[Value:P__key]])</span> "
                      ."[[dummy_pcv | size:10 class:SFU_AutoComplete | placeholder='Search']] "
                      ."[[hidden:fk_sl_pcv]]"
 // this is the selection box that gets appended to the SFU_AutoComplete
