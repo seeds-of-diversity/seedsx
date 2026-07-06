@@ -63,6 +63,18 @@ function SiteKFDB( $db = SiteKFDB_DB )
             $kfdb->Execute( "SET SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'" );
             $kfdb->SetDebug(1);
         }
+
+        if( defined("is_SOD_SITE") ) {
+            /* SoD apps were developed on the following mysql config. The SoD host changed that, so we have to set these explicitly.
+             */
+            $kfdb->Execute("set character_set_client=latin1");
+            $kfdb->Execute("set character_set_connection=latin1");
+            $kfdb->Execute("set character_set_database=latin1");
+            $kfdb->Execute("set character_set_results=latin1");
+            $kfdb->Execute("set character_set_server=latin1");
+            //read only value $this->kfdb->Execute("set character_set_system=utf8mb3");
+        }
+
     }
     return( $ok ? $kfdb : NULL );
 }
