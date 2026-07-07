@@ -11,6 +11,7 @@ if( !defined("SITEROOT") )  die( "You have to define SITEROOT (path from your sc
 
 //define("SEEDROOT", SITEROOT."../../seeds-wt/");
 
+define("is_SOD_SITE", true);    // kluge for SoD servers
 
 // path to seedsx directory
 if( !defined("SEEDSX_ROOT") )    define( "SEEDSX_ROOT", SITEROOT."../" );

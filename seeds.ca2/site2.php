@@ -2,8 +2,6 @@
 
 if( $_SERVER['PHP_SELF'] == "/site2.php" ) exit;  // don't let anyone look at this directly
 
-define("is_SOD_SITE", true);    // kluge for SoD servers
-
 if( !defined("SITEROOT") )  { define("SITEROOT", "../"); }
 include_once( "site_config.php" );
 
