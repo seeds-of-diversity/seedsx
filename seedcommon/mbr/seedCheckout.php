@@ -776,78 +776,75 @@ include_once(SEEDLIB."mbr/MbrContacts.php");
 
 $sGarlicVarieties =
 "
-<style>#garlictable td {padding:5px}</style>
-<table id='garlictable' style='border: 1px solid #aaa;margin-bottom:10px;' border='0' cellspacing='10'>
-<tbody style='font-size: 9pt;'>
-<tr>
-<td colspan='6'><strong>Varieties available / Les vari&eacute;t&eacute;s disponibles</strong>
-</tr>
-<tr>
-<td>Alison's</td>
-<td>California Late</td>
-<td>Fauquier</td>
-<td>Killarney<br /></td>
-<td>Mennonite<br /></td>
-<td>Red Rezan</td>
-</tr>
-<tr>
-<td>Armenian Porcelain</td>
-<td>Cedar Creek</td>
-<td>French Red<br /></td>
-<td>Korean Purple</td>
-<td>Metechi<br /></td>
-<td>Russian Giant</td>
-</tr>
-<tr>
-<td>Baba Franchuk's</td>
-<td>Central Siberian<br /></td>
-<td>Gaia's Joy<br /></td>
-<td>Lavigna<br /></td>
-<td>Music<br /></td>
-<td>Shatilli<br /></td>
-</tr>
-<tr>
-<td>Belarus</td>
-<td>Chesnuk Red</td>
-<td>Georgian Crystal<br /></td>
-<td>Legacy<br /></td>
-<td>Persian Star<br /></td>
-<td>Siberian<br /></td>
-</tr>
-<tr>
-<td>Belatic Croatian</td>
-<td>Chet's Italian</td>
-<td>German Red<br /></td>
-<td>Leningrad<br /></td>
-<td>Portugal Azores 1</td>
-<td>Sicilian</td>
-</tr>
-<tr>
-<td>Bogatyr</td>
-<td>Chiloe</td>
-<td>German Stiffneck<br /></td>
-<td>Lukak<br /></td>
-<td>Purple Glazer<br /></td>
-<td>Slovak<br /></td>
-</tr>
-<tr>
-<td>Brown Rose</td>
-<td>Chinese 1</td>
-<td>Khabar</td>
-<td>Malpasse<br /></td>
-<td>Racey</td>
-<td>Wild Buff<br /></td>
-</tr>
-<tr>
-<td>Brown Tempest</td>
-<td>Chinese 2</td>
-<td>Kiev</td>
-<td>Mediterranean</td>
-<td>Railway Creek</td>
-<td>Yugoslavian</td>
-</tr>
-</tbody>
-</table>
+<div class='container-fluid' style='border: 1px solid #aaa;font-size:9pt;background-color:white'>
+<p><strong>Varieties available / Les vari&eacute;t&eacute;s disponibles</strong></p>
+<div class='row'>
+<div class='col-md-2'>
+    Alison's<br/><br/>
+    Armenian Porcelain<br/><br/>
+    Baba Franchuk's</br><br/>
+    Belarus<br/><br/>
+    Belatic Croatian<br/><br/>
+    Brown Rose<br/><br/>
+    Brown Tempest<br/><br/>
+    California Late<br/><br/>
+    Cedar Creek<br/><br/>
+    Central Siberian<br/><br/>
+    Chesnuk Red<br/><br/>
+</div>
+<div class='col-md-2'>
+    Chet's Italian<br/><br/>
+    Chiloe<br/><br/>
+    Chinese 1<br/><br/>
+    Chinese 2<br/><br/>
+    Czech Broadleaf<br/><br/>
+    Fauquier<br/><br/>
+    French Red<br/><br/>
+    Gaia's Joy<br/><br/>
+    Georgian Crystal<br/><br/>
+    German Red<br/><br/>
+    German Stiffneck<br/><br/>
+</div>
+<div class='col-md-2'>
+    Italian Purple<br/><br/>
+    Jesuit<br/><br/>
+    Khabar<br/><br/>
+    Kiev<br/><br/>
+    Killarney<br/><br/>
+    Korean Purple<br/><br/>
+    Lavigna<br/><br/>
+    Legacy<br/><br/>
+    Leningrad<br/><br/>
+    Lukak<br/><br/>
+    Malpasse<br/><br/>
+</div>
+<div class='col-md-2'>
+    Mediterranean<br/><br/>
+    Mennonite<br/><br/>
+    Metechi<br/><br/>
+    Music<br/><br/>
+    Persian Star<br/><br/>
+    Portugal Azores 1<br/><br/>
+    Portugeorge<br/><br/>
+    Purple Glazer<br/><br/>
+    Racey<br/><br/>
+    Railway Creek<br/><br/>
+    Red Janice<br/><br/>
+</div>
+<div class='col-md-2'>
+    Red Rezan<br/><br/>
+    Rose de Lautrec<br/><br/>
+    Russian Giant<br/><br/>
+    Shatilli<br/><br/>
+    Siberian<br/><br/>
+    Sicilian<br/><br/>
+    Slovak<br/><br/>
+    Vevak Czech<br/><br/>
+    Wild Buff<br/><br/>
+    Yugoslavian<br/><br/>
+</div>
+</div></div>
+
 <p>Sorry, we are not able to ship garlic to the U.S.</p>";
 
 
