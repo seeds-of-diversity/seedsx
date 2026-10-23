@@ -16,13 +16,10 @@ define("is_SOD_SITE", true);    // kluge for SoD servers
 // path to seedsx directory
 if( !defined("SEEDSX_ROOT") )    define( "SEEDSX_ROOT", SITEROOT."../" );
 
-// Always make seeds_log a sibling of seeds.ca because on prod it's the sibling of public_html and on dev it's in seedsx so git creates the empty dir.
-if( !defined("SEED_LOG_DIR") )  define( "SEED_LOG_DIR", SEEDSX_ROOT."seeds_log/" );
-define( "SITE_LOG_ROOT", SEED_LOG_DIR );
-
 
 // SEEDROOT/SEEDAPP config specific to this site, independent of seedsx
 include_once( SITEROOT."site_seedapp.php" );
+define( "SITE_LOG_ROOT", SEED_LOG_DIR );    // deprecate: use SEED_LOG_DIR as defined in site_seedapp
 
 define( "STD_isLocal", SEED_isLocal );
 

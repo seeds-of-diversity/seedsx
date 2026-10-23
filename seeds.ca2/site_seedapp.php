@@ -10,6 +10,10 @@ if( !defined('SITEROOT') )  { die("SITEROOT has to be defined"); }
 // ironically we do define this in order to clarify the searches below
 if( !defined("SEEDSX_ROOT") )  define( "SEEDSX_ROOT", SITEROOT."../" );
 
+// Always make seeds_log a sibling of seeds.ca because on prod it's the sibling of public_html and on dev it's in seedsx so git creates the empty dir.
+if( !defined("SEED_LOG_DIR") )  define( "SEED_LOG_DIR", SEEDSX_ROOT."seeds_log/" );
+
+
 if( !defined("SEEDROOT") ) {
     if( substr($_SERVER["SERVER_NAME"],0,9) != "localhost" ) {  // same as SEED_isLocal but that is not defined yet
         // On typical production systems the seeds directory is a sibling of public_html
