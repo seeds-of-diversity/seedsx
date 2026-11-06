@@ -27,6 +27,7 @@ $s = "<div style='border:1px solid #aaa;margin-bottom:30px;padding:10px'>"
     ."<div><a href='{$oApp->PathToSelf()}?test=home-fr'>Home page test - French</a></div>"
     ."<div><a href='{$oApp->PathToSelf()}?test=home-edit'>Home page configuration</a></div>"
     ."<div><a href='{$oApp->PathToSelf()}?test=store'>Store test</a></div>"
+    ."<div><a href='{$oApp->PathToSelf()}?test=store2'>Store2 test</a></div>"
     ."<div><a href='{$oApp->PathToSelf()}?test=events'>Events test</a></div>"
     ."<div><a href='{$oApp->PathToSelf()}?test=eventsOld'>Old Events test</a></div>"
     ."<div><a href='{$oApp->PathToSelf()}?test=csci'>CSCI test</a></div>"
@@ -40,6 +41,7 @@ $s = "<div style='border:1px solid #aaa;margin-bottom:30px;padding:10px'>"
     ."<div><a href='{$oApp->PathToSelf()}?test=msd'>MSE my seeds</a></div>"
     ."<div><a href='{$oApp->PathToSelf()}?test=dompdf'>DomPDF</a></div>"
     ."<div><a href='{$oApp->PathToSelf()}?test=postmark'>Postmark</a></div>"
+    ."<div><a href='{$oApp->PathToSelf()}?test=tinymce'>TinyMCE</a></div>"
     ."</div>";
 
 
@@ -205,7 +207,10 @@ switch( $test ) {
         $s .= $oMbrOC->Checkout();
         break;
 
-    case 'events':
+    case 'store2':
+        break;
+
+        case 'events':
         $raConsoleParms['raScriptFiles'][] = "https://seeds.ca/app/ev/dist/jquery.vmap.js";
         $raConsoleParms['raScriptFiles'][] = "https://seeds.ca/app/ev/dist/maps/jquery.vmap.canada.js";
         $raConsoleParms['raCSSFiles'][]    = "https://seeds.ca/app/ev/dist/jqvmap.css";
@@ -293,8 +298,53 @@ switch( $test ) {
         }
         break;
 
+    case 'tinymce':
+        $s .= "<script src='".SEEDROOT."vendor/tinymce/tinymce/tinymce.min.js'></script>
+               <h2>TinyMCE installed at seeds/vendor</h2>
+               <div><textarea id='tiny'></textarea></div>
+               <script>
+                   tinymce.init({
+                       selector: 'textarea#tiny',
+                       toolbar: '',
+                       plugins: 'code fullscreen',
+                       license_key: 'gpl',
+                       promotion: false
+                   });
+               </script>";
+
     default:
         $s .= $oTmpl->ExpandStr( "[[lower:Foo]] [[upper:Foo]] <br/><br/> [[Image://www.seeds.ca/i/img/logo/logoA_h-en-750x.png|{width=100}]]<br/><br/> [[docreptest:]]", [] );
+/*
+        $s .= "<script src='https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js'></script>
+<link href='https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css' rel='stylesheet'>
+<script src='https://unpkg.com/quill-html-edit-button@2.2.7/dist/quill.htmlEditButton.min.js'></script>
+
+<div id='editor'>
+  <h2>Demo Content</h2>
+  <p>Preset build with <code>snow</code> theme, and some common formats.</p>
+</div>
+
+<script>
+Quill.register('modules/htmlEditButton', htmlEditButton);
+
+  const quill = new Quill('#editor', {
+    theme: 'snow',
+modules: {
+      toolbar: [
+        ['bold', 'italic', 'underline'],
+        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+        ['clean']
+      ],
+      // Enable the HTML source code button
+      htmlEditButton: {
+        debug: true,          // Logs syntax errors to console
+        msg: 'Edit HTML:',    // Modal title text
+        okText: 'Save',       // Save button text
+        cancelText: 'Cancel'  // Cancel button text
+      }}
+  });
+</script>";
+*/
         break;
 }
 
