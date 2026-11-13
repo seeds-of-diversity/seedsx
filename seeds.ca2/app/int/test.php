@@ -208,9 +208,10 @@ switch( $test ) {
         break;
 
     case 'store2':
+        $sTmpl = "[[SEEDContent:store2]]";
         break;
 
-        case 'events':
+    case 'events':
         $raConsoleParms['raScriptFiles'][] = "https://seeds.ca/app/ev/dist/jquery.vmap.js";
         $raConsoleParms['raScriptFiles'][] = "https://seeds.ca/app/ev/dist/maps/jquery.vmap.canada.js";
         $raConsoleParms['raCSSFiles'][]    = "https://seeds.ca/app/ev/dist/jqvmap.css";
